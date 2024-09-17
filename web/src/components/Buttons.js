@@ -86,3 +86,13 @@ export const ViewButtonNok = ({ onClick }) => {
 		</a>
 	);
 };
+
+export const RestoreButton = ({ onClick }) => {
+	return (
+		<a className="text-btn text-primary" role="button" onClick={onClick}>
+			<Tooltip title="Restore">
+				<i className="ri-arrow-go-back-fill fs-16" />
+			</Tooltip>
+		</a>
+	);
+};
