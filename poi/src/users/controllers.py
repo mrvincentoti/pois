@@ -1,22 +1,20 @@
 from flask import request, jsonify, json, g
-import os, jwt, redis
+import os, jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from ..redis_manager import get_token, remove_token, custom_jwt_required
+from ..util import custom_jwt_required
 from ..rabbitmq_manager import publish_to_rabbitmq
 from datetime import datetime as dt
 from .. import db
 from .models import User
 from sqlalchemy import or_
-from sqlalchemy.orm import joinedload, class_mapper
+from sqlalchemy.orm import joinedload
 from ..roles.models import Role
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..rolePermissions.models import RolePermission
 from ..util import encrypt, decrypt, save_audit_data
 
-REDIS_HOST = os.getenv("REDIS_HOST")
-redis_client = redis.StrictRedis(host=REDIS_HOST, port=6379, decode_responses=True)
 
 
 def parsePermissions(permissions):
@@ -423,6 +421,7 @@ def login_user():
         current_time = dt.utcnow()
         audit_data = {
             "user_id": user.id,
+            "user_email": user.email,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "pfs_num": user.pfs_num,

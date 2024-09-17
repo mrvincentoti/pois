@@ -1,17 +1,90 @@
 from datetime import datetime
-import os
+import os, jwt, json
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from binascii import hexlify, unhexlify
 from dotenv import load_dotenv
 import psutil
-import json
 from . import db
+from datetime import datetime as dt
+from flask import request, jsonify, g
+from functools import wraps
 
 # Load environment variables from a .env file
 load_dotenv()
 
+import jwt
+from flask import jsonify, request, g
+from functools import wraps
+from datetime import datetime as dt
+
+# Custom JWT decorator
+def custom_jwt_required(fn):
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        try:
+            # Extract token from Authorization header
+            token = request.headers.get("Authorization", "").split()[1]
+            
+            # Decode the token to get the payload
+            try:
+                secret_key = os.getenv("SECRET_KEY")
+                token_data = jwt.decode(token, secret_key, algorithms=["HS256"])
+
+                # Extract the expiry time and other fields
+                expiry = token_data.get("exp")
+                if not expiry:
+                    return jsonify({"message": "No expiry time in token"}), 401
+
+                # Check if the token has expired
+                if is_token_expired(expiry):
+                    return jsonify({"message": "Token has expired"}), 401
+                
+                # Extract user fields from token
+                user_id = token_data.get("sub")
+                first_name = token_data.get("first_name")
+                last_name = token_data.get("last_name")
+                pfs_num = token_data.get("pfs_num")
+
+                if not all([user_id, first_name, last_name, pfs_num]):
+                    return jsonify({
+                        "message": "Some fields are missing",
+                        "user_id": user_id,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "pfs_num": pfs_num
+                    }), 401
+
+                # Attach user details to the request context
+                g.user = {
+                    "id": user_id,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "pfs_num": pfs_num
+                }
+
+                # Continue to your route function
+                return fn(*args, **kwargs)
+            except jwt.ExpiredSignatureError:
+                return jsonify({"message": "Token has expired"}), 401
+            except jwt.InvalidTokenError as e:
+                # Log the error for debugging
+                print("Invalid Token Error:", str(e))
+                return jsonify({"message": "Invalid token"}), 401
+        except IndexError:
+            return jsonify({"message": "Token not provided"}), 401
+
+    return decorated_function
+
+# Check if the token expiry time is valid
+def is_token_expired(expiry):
+    try:
+        current_time = dt.utcnow()
+        expiry_time = dt.utcfromtimestamp(expiry)  # Convert expiry timestamp
+        return current_time > expiry_time
+    except (ValueError, KeyError):
+        return True  # If there's an issue with the expiry field
 
 def find_key_file(search_paths):
     key_file_name = 'key.txt'
