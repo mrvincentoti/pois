@@ -77,14 +77,14 @@ const Navdata = () => {
 			permission: checkPermission(permissions, 'can-see-dashboard-link'),
 		},
 		{
-			id: 'employees',
-			label: 'Employees',
+			id: 'entity',
+			label: 'Entity',
 			icon: 'ri-group-line',
 			link: '/#',
 			click: function (e) {
 				e.preventDefault();
 				updateIconSidebar(e);
-				setIsCurrentState('Employees');
+				setIsCurrentState('Entity');
 				setIsEmployees(!isEmployees);
 				setIsAccounts(false);
 				setIsSetup(false);

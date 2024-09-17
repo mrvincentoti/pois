@@ -1,10 +1,10 @@
 import { BASE_AUDIT_URL, BASE_AUTH_URL, BASE_EMPLOYEE_URL } from './constants';
 
 // authentication apis
-export const LOGIN_API = `${BASE_AUTH_URL}/user/login`;
-export const USER_API = `${BASE_AUTH_URL}/users/:id`;
-export const LOGOUT_API = `${BASE_AUTH_URL}/user/logout`;
-export const SET_PASSWORD_API = `${BASE_AUTH_URL}/user/set_password/:id`;
+export const LOGIN_API = `${BASE_AUTH_URL}/poi/user/login`;
+export const USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
+export const LOGOUT_API = `${BASE_AUTH_URL}/poi/user/logout`;
+export const SET_PASSWORD_API = `${BASE_AUTH_URL}/poi/user/set_password/:id`;
 
 // modules api
 export const FETCH_MODULES_API = `${BASE_AUTH_URL}/modules`;
