@@ -21,10 +21,11 @@ export const CREATE_ROLE_API = `${BASE_AUTH_URL}/roles`;
 export const DELETE_ROLE_API = `${BASE_AUTH_URL}/roles/:id`;
 
 // users api
-export const FETCH_USERS_API = `${BASE_AUTH_URL}/users`;
-export const CREATE_USER_API = `${BASE_AUTH_URL}/users`;
-export const DELETE_USER_API = `${BASE_AUTH_URL}/users/:id`;
-export const UPDATE_USER_API = `${BASE_AUTH_URL}/users/:id`;
+export const FETCH_USERS_API = `${BASE_AUTH_URL}/poi/users`;
+export const CREATE_USER_API = `${BASE_AUTH_URL}/poi/users`;
+export const DELETE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
+export const UPDATE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
+export const RESTORE_USER_API= `${BASE_AUTH_URL}/poi/user/restore/:id`;
 
 // dashboard apis
 export const FETCH_DASHBOARD_API = `${BASE_EMPLOYEE_URL}/dashboard`;

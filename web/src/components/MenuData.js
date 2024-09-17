@@ -55,7 +55,7 @@ const Navdata = () => {
 
 	const menuItems = [
 		{
-			label: 'hr menu',
+			label: 'menu',
 			isHeader: true,
 			permission:
 				checkPermission(permissions, 'can-see-dashboard-link') ||
@@ -92,53 +92,53 @@ const Navdata = () => {
 			permission: checkPermission(permissions, 'can-see-employee-link'),
 			stateVariables: isEmployees,
 			subItems: [
-				{
-					id: 'profiles',
-					label: 'Employee List',
-					link: '/employees/profiles',
-					parentId: 'employees',
-					permission: checkPermission(permissions, 'can-see-employee-list'),
-					id: 'employees',
-					label: 'Employees',
-					link: '/#',
-					isChildItem: true,
-					click: function (e) {
-						e.preventDefault();
-						setIsPromotions(!isPromotions);
-					},
-					permission: checkPermission(permissions, 'can-see-promotions-link'),
-					stateVariables: isPromotions,
-					childItems: [
-						{
-							id: 'profiles',
-							label: 'Employee List',
-							link: '/employees/profiles',
-							parentId: 'employees',
-							permission: checkPermission(permissions, 'can-see-employee-list'),
-						},
-						{
-							id: 'retired-employees',
-							label: 'Retired Employees',
-							icon: 'ri-group-fill',
-							link: '/retired-employees',
-							click: function (e) {
-								e.preventDefault();
-								setIsCurrentState('Retired');
-								setIsEmployees(false);
-								setIsAccounts(false);
-								setIsSetup(false);
-							},
-							permission: checkPermission(
-								permissions,
-								'can-see-dependents-link'
-							),
-						},
-					],
-				},
+				// {
+				// 	id: 'profiles',
+				// 	label: 'Employee List',
+				// 	link: '/employees/profiles',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(permissions, 'can-see-employee-list'),
+				// 	id: 'employees',
+				// 	label: 'Employees',
+				// 	link: '/#',
+				// 	isChildItem: true,
+				// 	click: function (e) {
+				// 		e.preventDefault();
+				// 		setIsPromotions(!isPromotions);
+				// 	},
+				// 	permission: checkPermission(permissions, 'can-see-promotions-link'),
+				// 	stateVariables: isPromotions,
+				// 	childItems: [
+				// 		{
+				// 			id: 'profiles',
+				// 			label: 'Employee List',
+				// 			link: '/employees/profiles',
+				// 			parentId: 'employees',
+				// 			permission: checkPermission(permissions, 'can-see-employee-list'),
+				// 		},
+				// 		{
+				// 			id: 'retired-employees',
+				// 			label: 'Retired Employees',
+				// 			icon: 'ri-group-fill',
+				// 			link: '/retired-employees',
+				// 			click: function (e) {
+				// 				e.preventDefault();
+				// 				setIsCurrentState('Retired');
+				// 				setIsEmployees(false);
+				// 				setIsAccounts(false);
+				// 				setIsSetup(false);
+				// 			},
+				// 			permission: checkPermission(
+				// 				permissions,
+				// 				'can-see-dependents-link'
+				// 			),
+				// 		},
+				// 	],
+				// },
 
 				{
 					id: 'dependents',
-					label: 'Dependents',
+					label: 'POI',
 					icon: 'ri-group-fill',
 					link: '/dependents',
 					click: function (e) {
@@ -152,7 +152,7 @@ const Navdata = () => {
 				},
 				{
 					id: 'next-of-kin',
-					label: 'Next Of Kin',
+					label: 'Organization',
 					icon: 'ri-group-fill',
 					link: '/next-of-kin',
 					click: function (e) {
@@ -166,7 +166,7 @@ const Navdata = () => {
 				},
 				{
 					id: 'deployments',
-					label: 'Deployments',
+					label: 'Brief',
 					link: '/employees/deployments',
 					parentId: 'employees',
 					permission: checkPermission(
@@ -174,97 +174,97 @@ const Navdata = () => {
 						'can-see-employee-deployment-list'
 					),
 				},
-				{
-					id: 'postings',
-					label: 'Postings',
-					link: '/employees/postings',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-posting-list'
-					),
-				},
-				{
-					id: 'trainings',
-					label: 'Trainings',
-					link: '/employees/trainings',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-training-list'
-					),
-				},
-				{
-					id: 'conferences',
-					label: 'Seminars / Conferences',
-					link: '/employees/conferences',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-conference-list'
-					),
-				},
-				{
-					id: 'awards',
-					label: 'Awards',
-					link: '/employees/awards',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-award-list'
-					),
-				},
-				{
-					id: 'promotions',
-					label: 'Promotions',
-					link: '/#',
-					isChildItem: true,
-					click: function (e) {
-						e.preventDefault();
-						setIsPromotions(!isPromotions);
-					},
-					permission: checkPermission(permissions, 'can-see-promotions-link'),
-					stateVariables: isPromotions,
-					childItems: [
-						{
-							id: 1,
-							label: 'Promotions',
-							link: '/employees/promotions',
-							permission: checkPermission(
-								permissions,
-								'can-see-promotions-list'
-							),
-						},
-						{
-							id: 2,
-							label: 'Due for promotion',
-							link: '/employees/promotions/due',
-							permission: checkPermission(
-								permissions,
-								'can-see-promotions-list'
-							),
-						},
-						{
-							id: 3,
-							label: 'Promotion Briefs',
-							link: '/employees/promotions/briefs',
-							permission: checkPermission(
-								permissions,
-								'can-see-promotions-brief'
-							),
-						},
-					],
-				},
-				{
-					id: 'sanctions',
-					label: 'Sanctions',
-					link: '/employees/sanctions',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-sanction-list'
-					),
-				},
+				// {
+				// 	id: 'postings',
+				// 	label: 'Postings',
+				// 	link: '/employees/postings',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(
+				// 		permissions,
+				// 		'can-see-employee-posting-list'
+				// 	),
+				// },
+				// {
+				// 	id: 'trainings',
+				// 	label: 'Trainings',
+				// 	link: '/employees/trainings',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(
+				// 		permissions,
+				// 		'can-see-employee-training-list'
+				// 	),
+				// },
+				// {
+				// 	id: 'conferences',
+				// 	label: 'Seminars / Conferences',
+				// 	link: '/employees/conferences',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(
+				// 		permissions,
+				// 		'can-see-employee-conference-list'
+				// 	),
+				// },
+				// {
+				// 	id: 'awards',
+				// 	label: 'Awards',
+				// 	link: '/employees/awards',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(
+				// 		permissions,
+				// 		'can-see-employee-award-list'
+				// 	),
+				// },
+				// {
+				// 	id: 'promotions',
+				// 	label: 'Promotions',
+				// 	link: '/#',
+				// 	isChildItem: true,
+				// 	click: function (e) {
+				// 		e.preventDefault();
+				// 		setIsPromotions(!isPromotions);
+				// 	},
+				// 	permission: checkPermission(permissions, 'can-see-promotions-link'),
+				// 	stateVariables: isPromotions,
+				// 	childItems: [
+				// 		{
+				// 			id: 1,
+				// 			label: 'Promotions',
+				// 			link: '/employees/promotions',
+				// 			permission: checkPermission(
+				// 				permissions,
+				// 				'can-see-promotions-list'
+				// 			),
+				// 		},
+				// 		{
+				// 			id: 2,
+				// 			label: 'Due for promotion',
+				// 			link: '/employees/promotions/due',
+				// 			permission: checkPermission(
+				// 				permissions,
+				// 				'can-see-promotions-list'
+				// 			),
+				// 		},
+				// 		{
+				// 			id: 3,
+				// 			label: 'Promotion Briefs',
+				// 			link: '/employees/promotions/briefs',
+				// 			permission: checkPermission(
+				// 				permissions,
+				// 				'can-see-promotions-brief'
+				// 			),
+				// 		},
+				// 	],
+				// },
+				// {
+				// 	id: 'sanctions',
+				// 	label: 'Sanctions',
+				// 	link: '/employees/sanctions',
+				// 	parentId: 'employees',
+				// 	permission: checkPermission(
+				// 		permissions,
+				// 		'can-see-employee-sanction-list'
+				// 	),
+				// },
 			],
 		},
 		{
