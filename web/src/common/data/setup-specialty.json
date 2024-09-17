@@ -1,0 +1,33 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "Software Developer",
+            "description": "Directorate of research & analysis",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "2",
+            "name": "Security",
+            "description": "Directorate of inspection",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "3",
+            "name": "Administrator",
+            "description": "Directorate of administration",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+            
+        },
+        {
+            "id": "4",
+            "name": "Secretary",
+            "description": "Counter Intelligence",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "inactive"
+        }
+    ]
+}

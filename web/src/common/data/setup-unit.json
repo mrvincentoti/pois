@@ -1,0 +1,12 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "RIDU",
+            "description": "Research & development",
+            "department": "R&A",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        }
+    ]
+}

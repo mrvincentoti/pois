@@ -1,0 +1,25 @@
+.vertical-ellipsis-toggle::after {
+  content: '\22EE'; /* Unicode character for vertical ellipsis */
+   /* Adjust the spacing as needed */
+     margin-left: 0.1rem;
+}
+
+.show-style{
+ position: fixed;
+  inset: auto 0px 0px auto; margin: 0px;
+  transform: translate3d(0.5px, -32px, 0px);
+}
+
+.dropdown-menu{
+    position: fixed !important;
+}
+
+
+.card-equal {
+  height: 100%; /* Ensure each card occupies full height */
+}
+
+.card-body-equal {
+  height: calc(100% - 56.8px); /* Adjusted height to accommodate the card header */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds card body height */
+}

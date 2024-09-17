@@ -1,0 +1,28 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "Super",
+            "description": "Super admin role",
+            "status": "active"
+        },
+        {
+            "id": "2",
+            "name": "Admin",
+            "description": "Admin role",
+            "status": "Inactive"
+        },
+        {
+            "id": "3",
+            "name": "HOD",
+            "description": "Head Of Department",
+            "status": "active"
+        },
+        {
+            "id": "4",
+            "name": "User",
+            "description": "User role",
+            "status": "active"
+        }
+    ]
+}

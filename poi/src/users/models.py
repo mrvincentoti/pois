@@ -1,0 +1,104 @@
+from .. import db  # from __init__.py
+from datetime import datetime
+from bcrypt import hashpw, gensalt, checkpw
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(256), unique=True, nullable=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    is_first_time = db.Column(db.Boolean, default=True)
+    last_login_time = db.Column(db.DateTime, nullable=True)
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False)
+    employee_id = db.Column(db.Integer, nullable=True)
+    first_name = db.Column(db.String(128), unique=True, nullable=False)
+    last_name = db.Column(db.String(128), unique=True, nullable=False)
+    pfs_num = db.Column(db.String(128), unique=True, nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    role = db.relationship("Role", backref="users")
+
+    def __init__(
+        self, email, username, password, role_id, employee_id, first_name, last_name, pfs_num, is_active=True, is_first_time=True):
+        self.email = email
+        self.username = username
+        self.set_password(password)
+        self.is_active = is_active
+        self.is_first_time = is_first_time
+        self.role_id = role_id
+        self.employee_id= employee_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.pfs_num = pfs_num
+
+    def soft_delete(self):
+        self.deleted_at = datetime.now()
+
+    def set_password(self, password):
+        salt = gensalt()
+        self.password = hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+    def check_password(self, password):
+        return checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, username=None, role_id=None, email=None):
+        if username:
+            self.username = username
+
+        if role_id:
+            self.role_id = role_id
+
+        if email:
+            self.email = email
+        db.session.commit()
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+
+    @classmethod
+    def create_seed_data(cls):
+        # Sample data for users
+        users_data = [
+            {
+                "email": "admin@eims.com",
+                "username": "admin",
+                "password": "1234",
+                "role_id": 2,
+                "employee_id": None,
+                "first_name": "Admin",
+                "last_name": "Admin",
+                "pfs_num": "Admin"
+            },
+            {
+                "email": "user@eims.com",
+                "username": "user",
+                "password": "1234",
+                "role_id": 1,
+                "employee_id": None,
+                "first_name": "User",
+                "last_name": "User",
+                "pfs_num": "User"
+            }
+        ]
+
+        for user_data in users_data:
+            # Check if the user with the specified username already exists
+            existing_user = cls.query.filter(
+                (cls.username == user_data["username"])
+                | (cls.email == user_data["email"])
+            ).first()
+
+            if existing_user is None:
+                new_user = cls(**user_data)
+                db.session.add(new_user)
+
+        # Commit the changes to the database
+        db.session.commit()

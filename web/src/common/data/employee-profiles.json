@@ -1,0 +1,64 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"pfs_number": "PFS0001",
+			"first_name": "Musa",
+            "last_name": "Sadam",
+            "rank": "IS2",
+            "cadre": "PROF",
+            "directorate": "DTR ",
+            "designation": "Analyst",
+            "date_of_appointment": "31 Oct, 2026",
+            "date_of_employment": "31 Oct, 2026"
+		},
+		{
+			"id": "2",
+			"pfs_number": "PFS0002",
+			"first_name": "Aliyu",
+            "last_name": "Usman",
+            "rank": "IS1",
+            "cadre": "OPS",
+            "directorate": "DST ",
+            "designation": "Software Developer ",
+            "date_of_appointment": "2026-10-31 ",
+            "date_of_employment": "2026-10-31 "
+		},
+		{
+			"id": "3",
+			"pfs_number": "PFS0003",
+			"first_name": "Sulaiman",
+            "last_name": "Sadam",
+            "rank": "SIS",
+            "cadre": "PROF",
+            "directorate": "DRT ",
+            "designation": "Technician",
+            "date_of_appointment": "2026-10-31 ",
+            "date_of_employment": "2026-10-31 "
+		},
+		{
+			"id": "4",
+			"pfs_number": "PFS0004",
+			"first_name": "Mu'utassim",
+            "last_name": "Hassan",
+            "rank": "PIS",
+            "cadre": "OPS",
+            "directorate": "DRT ",
+            "designation": "Head of RIDU",
+            "date_of_appointment": "2026-10-31 ",
+            "date_of_employment": "2026-10-31 "
+		},
+        {
+			"id": "5",
+			"pfs_number": "PFS0005",
+			"first_name": "John",
+            "last_name": "Doe",
+            "rank": "ACIS",
+            "cadre": "GEN",
+            "directorate": "DTR ",
+            "designation": "Trainer ",
+            "date_of_appointment": "2026-10-31 ",
+            "date_of_employment": "2026-10-31 "
+		}
+	]
+}

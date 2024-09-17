@@ -1,0 +1,28 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "can_add_user",
+            "description": "Can add user",
+            "status": "active"
+        },
+        {
+            "id": "2",
+            "name": "can_edit_user",
+            "description": "Can edit a user",
+            "status": "Inactive"
+        },
+        {
+            "id": "3",
+            "name": "can_view_report",
+            "description": "Can view report",
+            "status": "active"
+        },
+        {
+            "id": "4",
+            "name": "can_view_audit_trial",
+            "description": "Can view audit trails",
+            "status": "active"
+        }
+    ]
+}

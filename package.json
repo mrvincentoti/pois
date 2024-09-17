@@ -1,0 +1,19 @@
+{
+  "name": "employee-mgt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Employee management system",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.8",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "web_service/src/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
+  }
+}

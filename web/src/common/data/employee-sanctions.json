@@ -1,0 +1,39 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"employee": "Musa Mamman",
+            "sanction": "Slashed 50% salary",
+            "reason": "Killed Monkey ",
+            "date": "2023-10-31 "
+		},
+		{
+			"id": "2",
+			"employee": "Isma'il Aliyu",
+            "sanction": "Demoted",
+            "reason": "Exceeded Speed Limit", 
+            "date": "2023-10-31 "
+		},
+		{
+			"id": "3",
+			"employee": "Saka Bukayo",
+            "sanction": "Demoted",
+            "reason": "Exceeded Speed Limit",
+            "date": "2023-10-31 "
+		},
+		{
+			"id": "4",
+			"employee": "Basiru Kumurci",
+            "sanction": "Suspension",
+            "reason": "Absent without reason ",
+            "date": "2023-10-31 "
+		},
+        {
+			"id": "5",
+			"employee": "Lekan John",
+            "sanction": "Suspension",
+            "reason": "Failed Mission",
+            "date": "2023-10-31 "
+		}
+	]
+}

@@ -1,0 +1,88 @@
+services:
+  gateway:
+    container_name: gateway
+    build: ./gateway
+    ports:
+      - "80:80"
+    links:
+      - poi-service
+      - web
+    networks:
+      - poi-network
+
+  web:
+    container_name: web
+    build: ./web
+    env_file:
+      - ./web/.env
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - WDS_SOCKET_PORT=3000
+    ports:
+      - "3000:3000"
+    networks:
+      - poi-network
+
+  poi-service:
+    container_name: poi-service
+    build: ./poi
+    env_file:
+      - ./poi/.env
+    ports:
+      - "5001:5000"
+    links:
+      - db
+    volumes:
+      - ./poi:/app
+    networks:
+      - poi-network
+
+  db:
+    container_name: db
+    image: mysql:8.3.0
+    env_file: 
+      - ./db/.env
+    ports:
+      - "3306:3306"
+    command:
+            --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    volumes:
+        - db_data:/var/lib/mysql
+    networks:
+      - poi-network
+
+  supervisor:
+    container_name: supervisor
+    build:
+      context: ./supervisor
+      dockerfile: Dockerfile
+    env_file:
+      - ./supervisor/.env
+    volumes:
+      - ./supervisor:/app
+    links:
+      - db
+      - rabbitmq
+    networks:
+      - poi-network
+
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+      dockerfile: Dockerfile
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ./rabbitmq/.env
+    networks:
+      - poi-network
+
+networks:
+  poi-network:
+
+volumes:
+  db_data:

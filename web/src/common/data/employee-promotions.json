@@ -1,0 +1,39 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"employee": "Musa Ajiya",
+            "rank": "IS",
+            "next_promotion_date": "2026-10-31 ",
+            "date_promoted": "2023-10-31 "
+		},
+		{
+			"id": "2",
+			"employee": "Isma'il Aliyu",
+            "rank": "IO",
+            "next_promotion_date": "2026-10-31 ",
+            "date_promoted": "2023-10-31 "
+		},
+		{
+			"id": "3",
+			"employee": "Saka Bukayo",
+            "rank": "PIO",
+            "next_promotion_date": "2026-10-31 ",
+            "date_promoted": "2023-10-31 "
+		},
+		{
+			"id": "4",
+			"employee": "Basiru Kumurci",
+            "rank": "PIS",
+            "next_promotion_date": "2026-10-31 ",
+            "date_promoted": "2026-10-31 "
+		},
+        {
+			"id": "5",
+			"employee": "Lekan John",
+            "rank": "ACIS",
+            "next_promotion_date": "2026-10-31 ",
+            "date_promoted": "2023-10-31 "
+		}
+	]
+}

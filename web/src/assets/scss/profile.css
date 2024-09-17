@@ -1,0 +1,42 @@
+@media print {
+  /* Adjust the layout for printing */
+  .row {
+    display: flex;
+    flex-wrap: nowrap; /* Ensure the columns stay on the same row */
+  }
+
+  .col {
+    flex: 0 0 auto; /* Reset flex properties to default */
+    width: auto; /* Reset width to auto */
+  }
+
+  /* Optionally, you can adjust specific columns' widths if needed */
+  .col-6 {
+    width: 50%; /* Make each column take up 50% of the row */
+  }
+}
+
+
+.setRight{
+  text-align: right !important;
+}
+
+.border-right{
+  border-right: 1px dashed black;
+}
+
+.printme{
+  display: none !important;
+}
+@media print {
+	.no-printme  {
+		display: none !important;
+	}
+	.printme  {
+		display: block !important;
+	}
+
+  .folder-list {
+    height: 100vh !important;
+  }
+}

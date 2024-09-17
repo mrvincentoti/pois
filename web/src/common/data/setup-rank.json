@@ -1,0 +1,32 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "IS",
+            "description": "Intelligence Staff",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "2",
+            "name": "IO",
+            "description": "Intelligence Officer",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "3",
+            "name": "PIO",
+            "description": "Principal Intelligence Officer",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "3",
+            "name": "PIS",
+            "description": "Principal Intelligence Staff",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        }
+    ]
+}

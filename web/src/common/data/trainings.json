@@ -1,0 +1,34 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"name": "Project Management 1",
+			"description": "Description",
+			"date_created": "2023-10-31 "
+		},
+		{
+			"id": "2",
+			"name": "Project Management 2",
+			"description": "Description",
+			"date_created": "2023-10-31 "
+		},
+		{
+			"id": "3",
+			"name": "Data Science",
+			"description": "Description",
+			"date_created": "2023-10-31 "
+		},
+		{
+			"id": "4",
+			"name": "Professional Cybersecurity",
+			"description": "Description",
+			"date_created": "2023-10-31 "
+		},
+        {
+			"id": "5",
+			"name": "Professional UI/UX",
+			"description": "Description",
+			"date_created": "2023-10-31 "
+		}
+	]
+}

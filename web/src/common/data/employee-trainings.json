@@ -1,0 +1,49 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"employee": "Musa Ajiya",
+            "training": "Professional Cybersecurity",
+            "certificate": "Certified Network Security Specialist",
+            "date_given": "2023-10-31 ",
+            "date_approved": "2023-10-31 ",
+            "action": "Approved "
+		},
+		{
+			"id": "2",
+			"employee": "Isma'il Aliyu",
+            "training": "Data Analysis",
+            "certificate": "Foundation of Data Analysis ",
+            "date_given": "2023-10-31 ",
+            "date_approved": "2023-10-31 ",
+            "action": "Approved"
+		},
+		{
+			"id": "3",
+			"employee": "Saka Bukayo",
+            "training": "Project Management",
+            "certificate": "Foundation of Project Management ",
+            "date_given": "2023-10-31 ",
+            "date_approved": "",
+            "action": "Pending"
+		},
+		{
+			"id": "4",
+			"employee": "Basiru Kumurci",
+            "training": "Project Management",
+            "certificate": "Advance Project Management ",
+            "date_given": "2023-10-31 ",
+            "date_approved": "",
+            "action": "Pending"
+		},
+        {
+			"id": "5",
+			"employee": "Lekan John",
+            "training": "Data Science",
+            "certificate": "Foundation of Data Science",
+            "date_given": "2023-10-31 ",
+            "date_approved": "2023-10-31 ",
+            "action": "Approved "
+		}
+	]
+}

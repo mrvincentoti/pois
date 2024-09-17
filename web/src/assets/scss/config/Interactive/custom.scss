@@ -1,0 +1,153 @@
+/*
+Template Name: Velzon - Admin & Dashboard Template
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Custom Css File
+*/
+
+
+// .navbar-menu{
+//     background: #132649 !important;
+//     border-right: 1px solid #132649;
+// }
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.ant-notification {
+    z-index: 9999;
+
+    .anticon {
+        color: $white !important;
+    }
+
+    .ant-notification-notice-message,
+    .ant-notification-notice-description {
+        color: $white !important;
+    }
+
+    .ant-notification-notice-message {
+        text-transform: capitalize;
+        font-weight: 700;
+    }
+
+    .ant-notification-notice-success {
+        background-color: $success;
+    }
+
+    .ant-notification-notice-info {
+        background-color: $info;
+    }
+
+    .ant-notification-notice-warning {
+        background-color: $warning;
+    }
+
+    .ant-notification-notice-error {
+        background-color: $danger;
+    }
+}
+
+.navbar-menu .navbar-nav .nav-link.active {
+    color: #ffffff !important;
+}
+
+.navbar-menu .navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+}
+
+.navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse][aria-expanded=true] {
+    color: #ffffff !important;
+}
+
+.navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse][aria-expanded=true]:after {
+    transform: rotate(90deg);
+    color: #ffffff;
+}
+
+.profile-wid-bg::before {
+    background: linear-gradient(to top, #1f13bb, #5596f7) !important;
+}
+
+.custom-modal {
+  max-width: 900px; /* Set your desired width */
+}
+
+.fs-25{
+    font-size: 25px !important;
+}
+
+.avatar-lg-custom{
+    height: 12rem;
+    width: 12rem;
+}
+
+.ml-5{
+    margin-left: 5px !important;
+}
+
+.ml-10{
+    margin-left: 10px !important;
+}
+
+.fetching {
+    height: 200px;
+}
+
+.modal-backdrop {
+    &.fade {
+        display: none;
+    }
+}
+
+.modal-open {
+    overflow: hidden;
+    padding-right: 0;
+
+    .modal-backdrop {
+        display: block;
+        opacity: var(--vz-backdrop-opacity);
+    }
+
+    .modal {
+        &.show {display: block;}
+    }
+}
+
+.form-select {
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.is-invalid {
+    div[class$='control']{
+        border: 1px solid $danger;
+    }
+}
+
+.selector {
+    select {
+        appearance: menulist !important;
+        padding: 0.25rem 0.4rem;
+        width: 50px;
+    }
+}
+
+.form-control{
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.page-link {
+    &:focus {
+        box-shadow: none !important;
+    }
+}
+
+.text-underline {
+    text-decoration: underline !important;
+}

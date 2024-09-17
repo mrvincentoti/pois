@@ -1,0 +1,284 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "employee": "E. Johnson",
+            "rank": "IG (GL.13)",
+            "dob": "2023-10-31 ",
+            "age": "29",
+            "date_of_first_appointment": "02/6/2000",
+            "date_of_appointment_into_abc": "2023-10-31",
+            "date_of_last_promotion": "1/1/2014",
+            "caper_score": "4.67/5",
+            "exam_score": "89/100",
+            "interview_score": "8/10",
+            "total_score": "99",
+            "remarks": "",
+            "current_deployment": "AT POST",
+            "in_service_course_attended": "Report writing, intelligence processing, analysis course",
+            "placement": "",
+            "number_of_years_on_present_grade": "1/1/2017: 3 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "very good",
+                    "2015": "outstanding",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "2",
+            "employee": "A. Smith",
+            "rank": "SG (GL.12)",
+            "dob": "2023-09-15",
+            "age": "31",
+            "date_of_first_appointment": "05/12/2002",
+            "date_of_appointment_into_abc": "2023-09-15",
+            "date_of_last_promotion": "3/5/2015",
+            "caper_score": "4.45/5",
+            "exam_score": "92/100",
+            "interview_score": "7/10",
+            "total_score": "98",
+            "remarks": "",
+            "current_deployment": "FIELD",
+            "in_service_course_attended": "Leadership training, crisis management",
+            "placement": "",
+            "number_of_years_on_present_grade": "3/5/2017: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "excellent",
+                    "2015": "outstanding",
+                    "2016": "excellent"
+                }
+            ]
+        },
+        {
+            "id": "3",
+            "employee": "K. Williams",
+            "rank": "CG (GL.07)",
+            "dob": "2023-07-22",
+            "age": "35",
+            "date_of_first_appointment": "10/20/2005",
+            "date_of_appointment_into_abc": "2023-07-22",
+            "date_of_last_promotion": "7/15/2018",
+            "caper_score": "4.85/5",
+            "exam_score": "95/100",
+            "interview_score": "9/10",
+            "total_score": "99.5",
+            "remarks": "",
+            "current_deployment": "HEADQUARTERS",
+            "in_service_course_attended": "Strategic planning, communication skills",
+            "placement": "",
+            "number_of_years_on_present_grade": "7/15/2021: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "outstanding",
+                    "2015": "excellent",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "4",
+            "employee": "M. Davis",
+            "rank": "DS (GL.09)",
+            "dob": "2023-05-09",
+            "age": "28",
+            "date_of_first_appointment": "03/15/2010",
+            "date_of_appointment_into_abc": "2023-05-09",
+            "date_of_last_promotion": "5/1/2016",
+            "caper_score": "4.2/5",
+            "exam_score": "87/100",
+            "interview_score": "6/10",
+            "total_score": "93.2",
+            "remarks": "",
+            "current_deployment": "OPERATIONS",
+            "in_service_course_attended": "Tactical training, surveillance techniques",
+            "placement": "",
+            "number_of_years_on_present_grade": "5/1/2019: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "good",
+                    "2015": "satisfactory",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "5",
+            "employee": "J. Martinez",
+            "rank": "IG (GL.07)",
+            "dob": "2023-12-18",
+            "age": "33",
+            "date_of_first_appointment": "08/8/2007",
+            "date_of_appointment_into_abc": "2023-12-18",
+            "date_of_last_promotion": "12/1/2013",
+            "caper_score": "4.6/5",
+            "exam_score": "91/100",
+            "interview_score": "8/10",
+            "total_score": "98.6",
+            "remarks": "",
+            "current_deployment": "AT POST",
+            "in_service_course_attended": "Counter-terrorism, negotiation skills",
+            "placement": "",
+            "number_of_years_on_present_grade": "12/1/2016: 3 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "outstanding",
+                    "2015": "excellent",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "6",
+            "employee": "S. Thompson",
+            "rank": "SG (GL.08)",
+            "dob": "2023-06-27",
+            "age": "30",
+            "date_of_first_appointment": "04/10/2011",
+            "date_of_appointment_into_abc": "2023-06-27",
+            "date_of_last_promotion": "6/1/2015",
+            "caper_score": "4.4/5",
+            "exam_score": "88/100",
+            "interview_score": "7/10",
+            "total_score": "95.4",
+            "remarks": "",
+            "current_deployment": "FIELD",
+            "in_service_course_attended": "Leadership training, crisis management",
+            "placement": "",
+            "number_of_years_on_present_grade": "6/1/2018: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "excellent",
+                    "2015": "outstanding",
+                    "2016": "excellent"
+                }
+            ]
+        },
+        {
+            "id": "7",
+            "employee": "R. Baker",
+            "rank": "CG (GL.07)",
+            "dob": "2023-04-02",
+            "age": "36",
+            "date_of_first_appointment": "11/18/2004",
+            "date_of_appointment_into_abc": "2023-04-02",
+            "date_of_last_promotion": "4/1/2017",
+            "caper_score": "4.8/5",
+            "exam_score": "94/100",
+            "interview_score": "9/10",
+            "total_score": "99.8",
+            "remarks": "",
+            "current_deployment": "HEADQUARTERS",
+            "in_service_course_attended": "Strategic planning, communication skills",
+            "placement": "",
+            "number_of_years_on_present_grade": "4/1/2020: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "outstanding",
+                    "2015": "excellent",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "8",
+            "employee": "N. Anderson",
+            "rank": "DS (GL.09)",
+            "dob": "2023-08-11",
+            "age": "27",
+            "date_of_first_appointment": "07/2/2012",
+            "date_of_appointment_into_abc": "2023-08-11",
+            "date_of_last_promotion": "8/1/2016",
+            "caper_score": "4.1/5",
+            "exam_score": "86/100",
+            "interview_score": "6/10",
+            "total_score": "92.1",
+            "remarks": "",
+            "current_deployment": "OPERATIONS",
+            "in_service_course_attended": "Tactical training, surveillance techniques",
+            "placement": "",
+            "number_of_years_on_present_grade": "8/1/2019: 2 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "good",
+                    "2015": "satisfactory",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "9",
+            "employee": "L. Hernandez",
+            "rank": "IG (GL.07)",
+            "dob": "2023-11-05",
+            "age": "32",
+            "date_of_first_appointment": "09/12/2006",
+            "date_of_appointment_into_abc": "2023-11-05",
+            "date_of_last_promotion": "11/1/2012",
+            "caper_score": "4.5/5",
+            "exam_score": "90/100",
+            "interview_score": "8/10",
+            "total_score": "96.5",
+            "remarks": "",
+            "current_deployment": "AT POST",
+            "in_service_course_attended": "Counter-terrorism, negotiation skills",
+            "placement": "",
+            "number_of_years_on_present_grade": "11/1/2015: 3 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "outstanding",
+                    "2015": "excellent",
+                    "2016": "outstanding"
+                }
+            ]
+        },
+        {
+            "id": "10",
+            "employee": "G. Lewis",
+            "rank": "SG (GL.08)",
+            "dob": "2023-02-14",
+            "age": "34",
+            "date_of_first_appointment": "01/24/2009",
+            "date_of_appointment_into_abc": "2023-02-14",
+            "date_of_last_promotion": "2/1/2014",
+            "caper_score": "4.4/5",
+            "exam_score": "88/100",
+            "interview_score": "7/10",
+            "total_score": "95.4",
+            "remarks": "",
+            "current_deployment": "FIELD",
+            "in_service_course_attended": "Leadership training, crisis management",
+            "placement": "",
+            "number_of_years_on_present_grade": "2/1/2017: 3 Years",
+            "number_of_time_present_to_promotion_board_on_this_rank": "",
+            "has_been_sanction": "",
+            "annual_performance_evaluation_report": [
+                {
+                    "2014": "excellent",
+                    "2015": "outstanding",
+                    "2016": "excellent"
+                }
+            ]
+        }
+    ]
+}

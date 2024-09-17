@@ -1,0 +1,36 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "name": "RA",
+            "description": "Research & analysis",
+            "directorate":"DRA",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "2",
+            "name": "INSP",
+            "directorate": "DINSP",
+            "description": "Inspection",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "3",
+            "name": "Admin",
+            "directorate": "DA",
+            "description": "Department of administration",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "active"
+        },
+        {
+            "id": "4",
+            "name": "CITU",
+            "directorate": "CITU",
+            "description": "Counter Intelligence",
+            "date_created": "2023-10-10 09:10:23",
+            "status": "inactive"
+        }
+    ]
+}

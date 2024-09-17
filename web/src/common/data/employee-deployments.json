@@ -1,0 +1,74 @@
+{
+	"result": [
+		{
+			"id": "1",
+			"employee": "E. Johnson",
+			"rank": "IS",
+			"country": "South Africa",
+			"department": "Research & analysis",
+			"deployed_to": "Counter Intelligence",
+			"region": "South Africa ",
+            "station": "Cape Town",
+			"designation_at_post": "Liason Officer",
+            "assumption_date": "2023-10-31 ",
+            "expected_date_of_return": "2026-10-31 ",
+			"date_of_return": "2026-10-31 "
+		},
+		{
+			"id": "2",
+			"employee": "F. Kennedy",
+			"rank": "IO",
+			"country": "Uganda",
+			"department": "Counter Intelligence",
+			"deployed_to": "Office Of The NSA",
+			"region": "East Africa ",
+            "station": "Kampala ",
+			"designation_at_post": "Station Officer",
+            "assumption_date": "2023-10-31 ",
+			"expected_date_of_return": "2026-10-31 ",
+            "date_of_return": "2026-10-31 "
+		},
+		{
+			"id": "3",
+			"employee": "A. Amadi",
+			"rank": "PIS",
+			"country": "Ruwanda",
+			"department": "Research & analysis",
+			"deployed_to": "ICT",
+			"region": "East Africa ",
+            "station": "Kigali ",
+			"designation_at_post": "Liason Officer",
+            "assumption_date": "2023-10-31 ",
+			"expected_date_of_return": "2026-10-31 ",
+            "date_of_return": "2026-10-31 "
+		},
+		{
+			"id": "4",
+			"employee": "L. Adam",
+			"rank": "PIO",
+			"country": "Egypt",
+			"department": "Inspectorate",
+			"deployed_to": "SIGINT",
+			"region": "North Africa ",
+            "station": "Cairo ",
+			"designation_at_post": "Station Officer",
+            "assumption_date": "2023-10-31 ",
+            "expected_date_of_return": "2026-10-31 ",
+			"date_of_return": "2026-10-31 "
+		},
+        {
+			"id": "5",
+			"employee": "A. Assad",
+			"rank": "CIS",
+			"country": "Tanzaniya",
+			"department": "Web Intelligence",
+			"deployed_to": "Tech Ops",
+			"region": "East Africa ",
+            "station": "Zanzibar ",
+			"designation_at_post": "Attachè",
+            "assumption_date": "2023-10-31 ",
+			"expected_date_of_return": "2026-10-31 ",
+            "date_of_return": "2026-10-31 "
+		}
+	]
+}

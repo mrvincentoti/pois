@@ -1,0 +1,68 @@
+{
+    "result": [
+        {
+            "id": "1",
+            "email": "demo1@test.com",
+            "username": "user1@test.com",
+            "role": "admin",
+            "status": "active",
+            "last_login": "2023-01-01 00:00:00.000000"
+        },
+        {
+            "id": "2",
+            "email": "demo2@test.com",
+            "username": "user2@test.com",
+            "role": "user",
+            "status": "active",
+            "last_login": "2023-01-02 00:00:00.000000"
+        },
+        {
+            "id": "3",
+            "email": "demo3@test.com",
+            "username": "user3@test.com",
+            "role": "user",
+            "status": "inactive",
+            "last_login": "2023-01-03 00:00:00.000000"
+        },
+        {
+            "id": "4",
+            "email": "demo4@test.com",
+            "username": "user4@test.com",
+            "role": "user",
+            "status": "active",
+            "last_login": "2023-01-04 00:00:00.000000"
+        },
+        {
+            "id": "5",
+            "email": "demo5@test.com",
+            "username": "user5@test.com",
+            "role": "admin",
+            "status": "inactive",
+            "last_login": "2023-01-05 00:00:00.000000"
+        },
+        {
+            "id": "6",
+            "email": "demo6@test.com",
+            "username": "user6@test.com",
+            "role": "user",
+            "status": "active",
+            "last_login": "2023-01-06 00:00:00.000000"
+        },
+        {
+            "id": "7",
+            "email": "demo7@test.com",
+            "username": "user7@test.com",
+            "role": "admin",
+            "status": "active",
+            "last_login": "2023-01-07 00:00:00.000000"
+        },
+        {
+            "id": "8",
+            "email": "demo8@test.com",
+            "username": "user8@test.com",
+            "role": "user",
+            "status": "inactive",
+            "last_login": "2023-01-08 00:00:00.000000"
+        }
+    ]
+}
