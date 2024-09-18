@@ -6,7 +6,7 @@ from datetime import datetime
 from .. import db
 from .models import Role
 from sqlalchemy import or_
-from ..util import custom_jwt_required
+from ..util import custom_jwt_required, save_audit_data
 
 
 def parsePermissions(permissions):
@@ -47,11 +47,10 @@ def add_role():
             current_time = datetime.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
                 "first_name": g.user["first_name"] if hasattr(g, "user") else None,
                 "last_name": g.user["last_name"] if hasattr(g, "user") else None,
                 "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-                "user_email": g.user["id"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
                 "event": "add_role",
                 "auditable_id": new_role.id,
                 "old_values": None,
@@ -66,8 +65,7 @@ def add_role():
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
             
             return jsonify({'message': 'Role added successfully'}), 201
         except Exception as e:
@@ -121,11 +119,10 @@ def edit_role(role_id):
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
             "first_name": g.user["first_name"] if hasattr(g, "user") else None,
             "last_name": g.user["last_name"] if hasattr(g, "user") else None,
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "edit_role",
             "auditable_id": role.id,
             "old_values": json.dumps({
@@ -143,8 +140,7 @@ def edit_role(role_id):
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
         
         return jsonify({'message': 'Role updated successfully'}), 200
     except Exception as e:
@@ -167,11 +163,10 @@ def delete_role(role_id):
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
             "first_name": g.user["first_name"] if hasattr(g, "user") else None,
             "last_name": g.user["last_name"] if hasattr(g, "user") else None,
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "delete_role",
             "auditable_id": role.id,
             "old_values": json.dumps({
@@ -187,8 +182,7 @@ def delete_role(role_id):
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
         
         return jsonify({'message': 'Role deleted successfully'}), 200
     except Exception as e:
@@ -209,10 +203,10 @@ def restore_role(role_id):
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
             "first_name": g.user["first_name"] if hasattr(g, "user") else None,
             "last_name": g.user["last_name"] if hasattr(g, "user") else None,
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "restore_role",
             "auditable_id": role.id,
             "old_values": None,
@@ -229,6 +223,8 @@ def restore_role(role_id):
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
+
+        save_audit_data(audit_data)
 
         role.restore()
         db.session.commit()
@@ -281,11 +277,10 @@ def list_roles():
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
             "first_name": g.user["first_name"] if hasattr(g, "user") else None,
             "last_name": g.user["last_name"] if hasattr(g, "user") else None,
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "list_role",
             "auditable_id": None,
             "old_values": None,
@@ -298,8 +293,7 @@ def list_roles():
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
 
         response = {
             "status": "success",
