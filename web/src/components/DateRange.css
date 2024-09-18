@@ -1,0 +1,11 @@
+.date-range-wrapper .ant-picker {
+    width: 300px;
+    border-color: blue;
+    border-radius: 8px;
+}
+
+.date-range-wrapper {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
