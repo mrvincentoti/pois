@@ -25,11 +25,11 @@ const GuestLayout = ({ children }) => {
 			<div className="auth-page-content overflow-hidden pt-lg-5">
 				<div className="container">
 					<div className="row">
-						<div className="col-lg-12">
+						<div className="col-lg-6 offset-lg-3">
 							<div className="card overflow-hidden">
 								<div className="row g-0">
-									<AuthSlider />
-									<div className="col-lg-6">{children}</div>
+									{/* <AuthSlider /> */}
+									<div className="col-lg-12">{children}</div>
 								</div>
 							</div>
 						</div>

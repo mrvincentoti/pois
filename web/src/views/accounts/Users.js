@@ -12,8 +12,8 @@ import {
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
-import { DeleteButton, EditButton, RestoreButton } from '../../components/Buttons';
-import { DELETE_USER_API, FETCH_USERS_API,RESTORE_USER_API, } from '../../services/api';
+import { DeleteButton, EditButton } from '../../components/Buttons';
+import { DELETE_USER_API, FETCH_USERS_API } from '../../services/api';
 import ManageUser from '../../modals/ManageUser';
 
 const Users = () => {
@@ -25,7 +25,6 @@ const Users = () => {
 	const [meta, setMeta] = useState(paginate);
 	const [showModal, setShowModal] = useState(false);
 	const [selectedUser, setSelectedUser] = useState(null);
-	
 
 	const [page, setPage] = useState(null);
 	const [search, setSearch] = useState('');
@@ -113,35 +112,6 @@ const Users = () => {
 		}
 	};
 
-	const doRestore = useCallback(
-		async item => {
-			try {
-				setWorking(true);
-				const config = { method: 'POST' };
-				const uri = RESTORE_USER_API.replaceAll(':id', item.uuid);
-				const rs = await request(uri, config);
-				// setDataList(updateImmutable(dataList, rs.result));
-				notifyWithIcon('success', rs.message);
-				setWorking(false);
-			} catch (e) {
-				notifyWithIcon('error', e.message);
-				setWorking(false);
-			}
-		},
-		// [dataList]
-	);
-
-	const confirmRestore = useCallback(
-		item =>
-			confirmAction(
-				doRestore,
-				item,
-				'restore',
-				'You want to restore this user account'
-			),
-		[doRestore]
-	);
-
 	const min = useMemo(() => {
 		return meta.per_page * (meta.current_page - 1) + 1;
 	}, [meta.per_page, meta.current_page]);
@@ -195,8 +165,7 @@ const Users = () => {
 															<EditButton onClick={() => editUser(item)} />
 															<DeleteButton
 																onClick={() => confirmRemove(item)}/>
-															{/* <RestoreButton
-																onClick={() => confirmRestore(item)}/> */}
+															
 														</div>
 													</td>
 												</tr>

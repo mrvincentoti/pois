@@ -24,7 +24,7 @@ export const layoutSlice = createSlice({
 		layoutWidthType: layoutWidthTypes.FLUID,
 		layoutPositionType: layoutPositionTypes.FIXED,
 		topbarThemeType: topbarThemeTypes.DARK,
-		leftSidebarSizeType: leftSidebarSizeTypes.DEFAULT,
+		leftSidebarSizeType: leftSidebarSizeTypes.SMALLICON,
 		leftSidebarViewType: leftSidebarViewTypes.DEFAULT,
 		leftSidebarImageType: leftSidebarImageTypes.NONE,
 		preloader: preloaderTypes.DISABLE,

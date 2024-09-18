@@ -3,35 +3,20 @@ import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 
 import ModalWrapper from '../container/ModalWrapper';
-import {formatEmployeeName, notifyWithIcon, request} from '../services/utilities';
+import { notifyWithIcon, request } from '../services/utilities';
 import {
-	CREATE_USER_API, FETCH_EMPLOYEES_API,
+	CREATE_USER_API,
 	FETCH_ROLE_API,
 	UPDATE_USER_API,
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
 import Select from 'react-select';
-import AsyncSelect from "react-select/async";
 
 const ManageUser = ({ closeModal, update, selectedUser }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [roles, setRoles] = useState([]);
 	const [role, setRole] = useState(null);
-	const [username, setUsername] = useState(null);
-	const [employee, setEmployee] = useState(null);
-	const [isDisabled, setIsDisabled] = useState(null);
-
-
-	const getEmployees = async q => {
-		if (!q || q.length <= 1) {
-			return [];
-		}
-
-		const rs = await request(`${FETCH_EMPLOYEES_API}?q=${q}`);
-		return rs?.employees || [];
-	};
-
 
 	const loadRoles = useCallback(async () => {
 		try {
@@ -50,24 +35,17 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 					name: selectedUser.role?.name,
 				};
 				setRole(userRole);
-				setUsername(selectedUser.username)
 			}
-			loadRoles().then(_ => setLoaded(true));
+			loadRoles().then(() => setLoaded(true));
 		}
 	}, [loadRoles, loaded, selectedUser]);
 
 	const onSubmit = async values => {
-
 		try {
 			const config = {
 				method: selectedUser ? 'PUT' : 'POST',
-				body: { ...values, username: username,
-					...(employee?.first_name ? { first_name: employee.first_name } : {}),
-					...(employee?.last_name ? { last_name: employee.last_name } : {}),
-  					...(employee?.pf_num ? { pfs_num: employee.pf_num } : {})
-				},
+				body: { ...values },
 			};
-
 
 			const apiURL = selectedUser
 				? UPDATE_USER_API.replace(':id', selectedUser.id)
@@ -82,9 +60,6 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 		}
 	};
 
-
-
-
 	return (
 		<ModalWrapper
 			title={`${selectedUser ? 'Edit' : 'Add'} User`}
@@ -95,8 +70,8 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
-					if (!values.role && role==null) {
-						errors.role_id = 'select role';
+					if (!values.role && role === null) {
+						errors.role_id = 'Select role';
 					}
 					return errors;
 				}}
@@ -105,6 +80,7 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 						<div className="modal-body">
 							<FormSubmitError error={submitError} />
 							<div className="row g-3">
+								{/* Existing Fields */}
 								<div className="col-lg-12">
 									<label htmlFor="username" className="form-label">
 										Username
@@ -114,46 +90,47 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 											<input
 												{...input}
 												type="text"
-												value={username}
 												className={`form-control ${error(meta)}`}
-												id="username"
-												disabled={true}
 												placeholder="Enter username"
 											/>
 										)}
 									</Field>
 									<ErrorBlock name="username" />
 								</div>
-								{
-									!selectedUser ?
-										<>
-										<div className="col-lg-12">
-									<label htmlFor="employee_id" className="form-label">
-										Employee
+
+								<div className="col-lg-12">
+									<label htmlFor="firstname" className="form-label">
+										First Name
 									</label>
-									<Field id="employee_id" name="employee_id">
+									<Field id="first_name" name="first_name">
 										{({ input, meta }) => (
-											<AsyncSelect
-												isClearable
-												getOptionValue={option => option.id}
-												getOptionLabel={option => formatEmployeeName(option)}
-												value={employee}
-												className={error(meta)}
-												loadOptions={getEmployees}
-												onChange={e => {
-													setEmployee(e);
-													setUsername(e?.pf_num)
-													e ? input.onChange(e.id) : input.onChange('');
-												}}
-												placeholder="Search employee"
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												placeholder="Enter first name"
 											/>
 										)}
 									</Field>
-									<ErrorBlock name="employee_id" />
+									<ErrorBlock name="first_name" />
 								</div>
 
-										</>: ""
-								}
+								<div className="col-lg-12">
+									<label htmlFor="lastname" className="form-label">
+										Last Name
+									</label>
+									<Field id="last_name" name="last_name">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												placeholder="Enter last name"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="last_name" />
+								</div>
 
 								<div className="col-lg-12">
 									<label htmlFor="role_id" className="form-label">
@@ -171,13 +148,14 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 												value={role}
 												onChange={e => {
 													setRole(e);
-													e ? input.onChange(e.id) : input.onChange('');
+													input.onChange(e?.id || '');
 												}}
 											/>
 										)}
 									</Field>
 									<ErrorBlock name="role_id" />
 								</div>
+
 								<div className="col-lg-12">
 									<label htmlFor="email" className="form-label">
 										Email Address
@@ -188,16 +166,59 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 												{...input}
 												type="email"
 												className={`form-control ${error(meta)}`}
-												id="email"
 												placeholder="Enter email"
 											/>
 										)}
 									</Field>
+									<ErrorBlock name="email" />
+								</div>
+
+								{/* New Password Field */}
+								<div className="col-lg-12">
+									<label htmlFor="password" className="form-label">
+										Password
+									</label>
+									<Field id="password" name="password">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="password"
+												className={`form-control ${error(meta)}`}
+												placeholder="Enter password"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="password" />
+								</div>
+
+								{/* New PFS Field */}
+								<div className="col-lg-12">
+									<label htmlFor="pfs_num" className="form-label">
+										PFS Number
+									</label>
+									<Field id="pfs_num" name="pfs_num">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												placeholder="Enter PFS Number"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="pfs_num" />
 								</div>
 							</div>
 						</div>
+
 						<div className="modal-footer">
 							<div className="hstack gap-2 justify-content-end">
+								<button
+									type="button"
+									className="btn btn-light"
+									onClick={() => closeModal()}>
+									Close
+								</button>
 								<button
 									type="submit"
 									className="btn btn-success"
