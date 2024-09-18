@@ -1,13 +1,10 @@
 import os
 
-from flask import request, jsonify
-from flask import Flask, jsonify
-from redis import ResponseError
+from flask import request, Flask, jsonify
 
 from . import create_app  # from __init__ file
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy import or_
-import redis
 import json
 from . import util
 
