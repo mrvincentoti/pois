@@ -1,6 +1,5 @@
 from flask import request, jsonify, json, g
 from sqlalchemy import func
-from ..rabbitmq_manager import publish_to_rabbitmq
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
