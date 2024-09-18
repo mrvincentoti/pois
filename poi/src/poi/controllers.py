@@ -1,42 +1,180 @@
-from flask import jsonify, request
+from flask import jsonify, request, g, json
+from datetime import datetime as dt
 from .models import Poi
 from .. import db
+from ..util import save_audit_data, custom_jwt_required
 
 # Create POI
+@custom_jwt_required
 def create_poi():
     data = request.json
-    poi = Poi(
-        ref_numb=data.get('ref_numb'),
-        first_name=data['first_name'],
-        middle_name=data.get('middle_name'),
-        last_name=data['last_name'],
-        alias=data.get('alias'),
-        dob=data.get('dob'),
-        passport_number=data.get('passport_number'),
-        other_id_number=data.get('other_id_number'),
-        phone_number=data.get('phone_number'),
-        email=data.get('email'),
-        role=data.get('role'),
-        affiliation=data.get('affiliation'),
-        address=data.get('address'),
-        remark=data.get('remark'),
-        category_id=data.get('category_id'),
-        source_id=data.get('source_id'),
-        country_id=data.get('country_id'),
-        state_id=data.get('state_id'),
-        gender_id=data.get('gender_id')
-    )
-    poi.save()
-    return jsonify(poi.to_dict()), 201
+
+    ref_numb = data.get('ref_numb'),
+    first_name = data['first_name'],
+    middle_name = data.get('middle_name'),
+    last_name = data['last_name'],
+    alias = data.get('alias'),
+    dob = data.get('dob'),
+    passport_number = data.get('passport_number'),
+    other_id_number = data.get('other_id_number'),
+    phone_number = data.get('phone_number'),
+    email = data.get('email'),
+    role = data.get('role'),
+    affiliation = data.get('affiliation'),
+    address = data.get('address'),
+    remark = data.get('remark'),
+    category_id = data.get('category_id'),
+    source_id = data.get('source_id'),
+    country_id = data.get('country_id'),
+    state_id = data.get('state_id'),
+    gender_id = data.get('gender_id')
+
+    response = {}
+    try:
+        poi = Poi (
+            ref_numb=ref_numb,
+            first_name=first_name,
+            middle_name=middle_name,
+            last_name=last_name,
+            alias=alias,
+            dob=dob,
+            passport_number=passport_number,
+            other_id_number=other_id_number,
+            phone_number=phone_number,
+            email=email,
+            role=role,
+            affiliation=affiliation,
+            address=address,
+            remark=remark,
+            category_id=category_id,
+            source_id=source_id,
+            country_id=country_id,
+            state_id=state_id,
+            gender_id=gender_id
+        )
+
+
+        current_time = dt.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "add_poi",
+            "auditable_id": poi.id,
+            "old_values": None,
+            "new_values": json.dumps(
+                {
+                    "ref_numb": poi.ref_numb,
+                    "first_name": poi.first_name,
+                    "middle_name": poi.middle_name,
+                    "last_name": poi.last_name,
+                    "alias": poi.alias,
+                    "dob": poi.dob,
+                    "passport_number": poi.passport_number,
+                    "other_id_number": poi.other_id_number,
+                    "phone_number": poi.phone_number,
+                    "email": poi.email,
+                    "role": poi.role,
+                    "affiliation": poi.affiliation,
+                    "address": poi.address,
+                    "remark": poi.remark,
+                    "category_id": poi.category_id,
+                    "source_id": poi.source_id,
+                    "country_id": poi.country_id,
+                    "state_id": poi.state_id,
+                    "gender_id": poi.gender_id
+                }
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "POI, Poi, Create",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        save_audit_data(audit_data)
+
+        response["status"] = "success"
+        response["status_code"] = 201
+        response["message"] = "POI created successfully"
+    except KeyError as e:
+        return jsonify({"error": f"Missing field: {str(e)}"}), 400
+    except Exception as e:
+        db.session.rollback()
+        response["status"] = "error"
+        response["status_code"] = 500
+        response["message"] = f"An error occurred while creating the poi: {str(e)}"
+
+    return jsonify(response), response["status_code"]
 
 # Get POI by ID
+@custom_jwt_required
 def get_poi(poi_id):
-    poi = Poi.query.get(poi_id)
-    if poi and not poi.deleted_at:
-        return jsonify(poi.to_dict()), 200
-    return jsonify({'message': 'POI not found'}), 404
+    try:
+        poi = Poi.query.get(poi_id)
+        if poi and not poi.deleted_at:
+            poi_data = {
+                "ref_numb": poi.ref_numb,
+                "first_name": poi.first_name,
+                "middle_name": poi.middle_name,
+                "last_name": poi.last_name,
+                "alias": poi.alias,
+                "dob": poi.dob,
+                "passport_number": poi.passport_number,
+                "other_id_number": poi.other_id_number,
+                "phone_number": poi.phone_number,
+                "email": poi.email,
+                "role": poi.role,
+                "affiliation": poi.affiliation,
+                "address": poi.address,
+                "remark": poi.remark,
+                "category": {
+                    "id": poi.category.id,
+                    "name": poi.category.name,
+                } if poi.category else None,
+                "source": {
+                    "id": poi.source.id,
+                    "name": poi.source.name,
+                } if poi.source else None,
+                "country": {
+                    "id": poi.country.id,
+                    "name": poi.country.en_short_name,
+                } if poi.country else None,
+                "state": {
+                    "id": poi.state.id,
+                    "name": poi.state.name,
+                } if poi.state else None,
+                "gender": {
+                    "id": poi.gender.id,
+                    "name": poi.gender.name,
+                } if poi.gender else None
+            }
+
+            response = {
+                "status": "success",
+                "status_code": 200,
+                "user_data": poi_data
+            }
+        else:
+            response = {
+                "status": "error",
+                "status_code": 404,
+                "message": "Poi not found",
+            }
+    except Exception as e:
+        response = {
+            "status": "error",
+            "status_code": 500,
+            "message": "An error occurred while retrieving the poi.",
+        }
+
+    return jsonify(response), response["status_code"]
 
 # Update POI
+@custom_jwt_required
 def update_poi(poi_id):
     data = request.json
     poi = Poi.query.get(poi_id)
@@ -67,6 +205,7 @@ def update_poi(poi_id):
     return jsonify({'message': 'POI not found'}), 404
 
 # Soft Delete POI
+@custom_jwt_required
 def delete_poi(poi_id):
     poi = Poi.query.get(poi_id)
     if poi:
@@ -76,6 +215,7 @@ def delete_poi(poi_id):
     return jsonify({'message': 'POI not found'}), 404
 
 # Restore Soft-Deleted POI
+@custom_jwt_required
 def restore_poi(poi_id):
     poi = Poi.query.filter(Poi.id == poi_id, Poi.deleted_at != None).first()
     if poi:
@@ -85,6 +225,7 @@ def restore_poi(poi_id):
     return jsonify({'message': 'POI not found or not deleted'}), 404
 
 # List all POIs
+@custom_jwt_required
 def list_pois():
     # Get pagination and search term from request parameters
     page = request.args.get('page', default=1, type=int)
