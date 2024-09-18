@@ -7,7 +7,7 @@ export const LOGOUT_API = `${BASE_AUTH_URL}/poi/user/logout`;
 export const SET_PASSWORD_API = `${BASE_AUTH_URL}/poi/user/set_password/:id`;
 
 // modules api
-export const FETCH_MODULES_API = `${BASE_AUTH_URL}/modules`;
+export const FETCH_MODULES_API = `${BASE_AUTH_URL}/poi/modules`;
 
 // permissions api
 export const FETCH_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/permissions`;
