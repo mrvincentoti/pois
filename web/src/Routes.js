@@ -41,6 +41,7 @@ const publicRoutes = [
 
 // authenticated routes
 const Dashboard = lazy(() => import('./views/Dashboard'));
+const EntityIndex = lazy(() => import('./views/Entity/Index'));
 const EmployeesIndex = lazy(() => import('./views/employees/Index'));
 const AuditTrail = lazy(() => import('./views/AuditTrail'));
 const AccountsIndex = lazy(() => import('./views/accounts/Index'));
@@ -65,6 +66,7 @@ const RetiredEmployees = lazy(
 
 const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
+	{ path: 'entity/*', component: <EntityIndex /> },
 	{ path: 'users/:username', component: <Profile /> },
 	{ path: 'dependents/:id', component: <DependentsProfile /> },
 	{ path: 'deployments/:id', component: <DeploymentsProfile /> },

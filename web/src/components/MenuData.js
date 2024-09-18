@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 
 const Navdata = () => {
-	const [isEmployees, setIsEmployees] = useState(false);
+	const [isEntity, setIsEntity] = useState(false);
 	const [isAccounts, setIsAccounts] = useState(false);
 	const [isSetup, setIsSetup] = useState(false);
 	const [isPromotions, setIsPromotions] = useState(false);
@@ -32,18 +32,15 @@ const Navdata = () => {
 		if (
 			isCurrentState === 'Dashboard' ||
 			isCurrentState === 'Audit Trail'
-			// isCurrentState === 'Awards' ||
-			// isCurrentState === 'Trainings' ||
-			// isCurrentState === 'Conferences' ||
-			// isCurrentState === 'Sanctions'
+			
 		) {
 			document.body.classList.add('twocolumn-panel');
 		}
-		if (isCurrentState !== 'Employees') {
-			setIsEmployees(false);
+		if (isCurrentState !== 'Entity') {
+			setIsEntity(false);
 		}
-		if (isCurrentState !== 'Employees') {
-			setIsEmployees(false);
+		if (isCurrentState !== 'Entity') {
+			setIsEntity(false);
 		}
 		if (isCurrentState !== 'Accounts') {
 			setIsAccounts(false);
@@ -59,7 +56,7 @@ const Navdata = () => {
 			isHeader: true,
 			permission:
 				checkPermission(permissions, 'can-see-dashboard-link') ||
-				checkPermission(permissions, 'can-see-employee-link') ||
+				checkPermission(permissions, 'can-see-entity-link') ||
 				checkPermission(permissions, 'can-see-audit-trail-link'),
 		},
 		{
@@ -70,203 +67,85 @@ const Navdata = () => {
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Dashboard');
-				setIsEmployees(false);
+				setIsEntity(false);
 				setIsAccounts(false);
 				setIsSetup(false);
 			},
 			permission: checkPermission(permissions, 'can-see-dashboard-link'),
 		},
+		// {
+		// 	id: 'entity',
+		// 	label: 'Entity',
+		// 	link: '/#',
+		// 	click: function (e) {
+		// 		e.preventDefault();
+		// 		updateIconSidebar(e);
+		// 		setIsCurrentState('Entity');
+		// 		setIsEntity(false);
+		// 		setIsAccounts(false);
+		// 		setIsSetup(false);
+		// 	},
+		// 	permission: checkPermission(permissions, 'can-see-entity-link'),
+		// 	stateVariables: isEntity,
+		// 	subItems: [
+
+				
+		// 	],
+		// },
 		{
-			id: 'entity',
-			label: 'Entity',
-			icon: 'ri-group-line',
-			link: '/#',
+			label: 'entities',
+			isHeader: true,
+			permission:
+				checkPermission(permissions, 'can-see-poi-link') ||
+				checkPermission(permissions, 'can-see-organisation-link')||
+				checkPermission(permissions, 'can-see-brieflink')
+		},
+		{
+			id: 'poi',
+			label: 'POI',
+			icon: 'ri-group-fill',
+			link: '/entity/poi',
 			click: function (e) {
 				e.preventDefault();
-				updateIconSidebar(e);
-				setIsCurrentState('Entity');
-				setIsEmployees(!isEmployees);
+				setIsCurrentState('POI');
+				setIsEntity(false);
 				setIsAccounts(false);
 				setIsSetup(false);
 			},
-			permission: checkPermission(permissions, 'can-see-employee-link'),
-			stateVariables: isEmployees,
-			subItems: [
-				// {
-				// 	id: 'profiles',
-				// 	label: 'Employee List',
-				// 	link: '/employees/profiles',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(permissions, 'can-see-employee-list'),
-				// 	id: 'employees',
-				// 	label: 'Employees',
-				// 	link: '/#',
-				// 	isChildItem: true,
-				// 	click: function (e) {
-				// 		e.preventDefault();
-				// 		setIsPromotions(!isPromotions);
-				// 	},
-				// 	permission: checkPermission(permissions, 'can-see-promotions-link'),
-				// 	stateVariables: isPromotions,
-				// 	childItems: [
-				// 		{
-				// 			id: 'profiles',
-				// 			label: 'Employee List',
-				// 			link: '/employees/profiles',
-				// 			parentId: 'employees',
-				// 			permission: checkPermission(permissions, 'can-see-employee-list'),
-				// 		},
-				// 		{
-				// 			id: 'retired-employees',
-				// 			label: 'Retired Employees',
-				// 			icon: 'ri-group-fill',
-				// 			link: '/retired-employees',
-				// 			click: function (e) {
-				// 				e.preventDefault();
-				// 				setIsCurrentState('Retired');
-				// 				setIsEmployees(false);
-				// 				setIsAccounts(false);
-				// 				setIsSetup(false);
-				// 			},
-				// 			permission: checkPermission(
-				// 				permissions,
-				// 				'can-see-dependents-link'
-				// 			),
-				// 		},
-				// 	],
-				// },
-
-				{
-					id: 'dependents',
-					label: 'POI',
-					icon: 'ri-group-fill',
-					link: '/dependents',
-					click: function (e) {
-						e.preventDefault();
-						setIsCurrentState('Dependents');
-						setIsEmployees(false);
-						setIsAccounts(false);
-						setIsSetup(false);
-					},
-					permission: checkPermission(permissions, 'can-see-dependents-link'),
-				},
-				{
-					id: 'next-of-kin',
-					label: 'Organization',
-					icon: 'ri-group-fill',
-					link: '/next-of-kin',
-					click: function (e) {
-						e.preventDefault();
-						setIsCurrentState('NextOfKin');
-						setIsEmployees(false);
-						setIsAccounts(false);
-						setIsSetup(false);
-					},
-					permission: checkPermission(permissions, 'can-see-dependents-link'),
-				},
-				{
-					id: 'deployments',
-					label: 'Brief',
-					link: '/employees/deployments',
-					parentId: 'employees',
-					permission: checkPermission(
-						permissions,
-						'can-see-employee-deployment-list'
-					),
-				},
-				// {
-				// 	id: 'postings',
-				// 	label: 'Postings',
-				// 	link: '/employees/postings',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(
-				// 		permissions,
-				// 		'can-see-employee-posting-list'
-				// 	),
-				// },
-				// {
-				// 	id: 'trainings',
-				// 	label: 'Trainings',
-				// 	link: '/employees/trainings',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(
-				// 		permissions,
-				// 		'can-see-employee-training-list'
-				// 	),
-				// },
-				// {
-				// 	id: 'conferences',
-				// 	label: 'Seminars / Conferences',
-				// 	link: '/employees/conferences',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(
-				// 		permissions,
-				// 		'can-see-employee-conference-list'
-				// 	),
-				// },
-				// {
-				// 	id: 'awards',
-				// 	label: 'Awards',
-				// 	link: '/employees/awards',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(
-				// 		permissions,
-				// 		'can-see-employee-award-list'
-				// 	),
-				// },
-				// {
-				// 	id: 'promotions',
-				// 	label: 'Promotions',
-				// 	link: '/#',
-				// 	isChildItem: true,
-				// 	click: function (e) {
-				// 		e.preventDefault();
-				// 		setIsPromotions(!isPromotions);
-				// 	},
-				// 	permission: checkPermission(permissions, 'can-see-promotions-link'),
-				// 	stateVariables: isPromotions,
-				// 	childItems: [
-				// 		{
-				// 			id: 1,
-				// 			label: 'Promotions',
-				// 			link: '/employees/promotions',
-				// 			permission: checkPermission(
-				// 				permissions,
-				// 				'can-see-promotions-list'
-				// 			),
-				// 		},
-				// 		{
-				// 			id: 2,
-				// 			label: 'Due for promotion',
-				// 			link: '/employees/promotions/due',
-				// 			permission: checkPermission(
-				// 				permissions,
-				// 				'can-see-promotions-list'
-				// 			),
-				// 		},
-				// 		{
-				// 			id: 3,
-				// 			label: 'Promotion Briefs',
-				// 			link: '/employees/promotions/briefs',
-				// 			permission: checkPermission(
-				// 				permissions,
-				// 				'can-see-promotions-brief'
-				// 			),
-				// 		},
-				// 	],
-				// },
-				// {
-				// 	id: 'sanctions',
-				// 	label: 'Sanctions',
-				// 	link: '/employees/sanctions',
-				// 	parentId: 'employees',
-				// 	permission: checkPermission(
-				// 		permissions,
-				// 		'can-see-employee-sanction-list'
-				// 	),
-				// },
-			],
+			permission: checkPermission(permissions, 'can-see-poi-link'),
 		},
+		{
+			id: 'organisation',
+			label: 'Organisation',
+			icon: 'ri-organization-chart',
+			link: '/entity/organisation',
+			click: function (e) {
+				e.preventDefault();
+				setIsCurrentState('Organisation');
+				setIsEntity(false);
+				setIsAccounts(false);
+				setIsSetup(false);
+			},
+			permission: checkPermission(permissions, 'can-see-organisation-link'),
+		},
+		{
+			id: 'brief',
+			label: 'Brief',
+			icon: 'ri-file-shred-line',
+			link: '/entity/brief',
+			parentId: 'entity',
+			permission: checkPermission(
+				permissions,
+				'can-see-brief-list'
+			),
+		},
+		{
+			label: 'AUDIT',
+			isHeader: true,
+			permission:
+				checkPermission(permissions, 'can-see-audit-trail-link') 
+		},
+		
 		{
 			id: 'audit',
 			label: 'Audit Trail',
@@ -275,7 +154,7 @@ const Navdata = () => {
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Audit Trail');
-				setIsEmployees(false);
+				setIsEntity(false);
 				setIsAccounts(false);
 				setIsSetup(false);
 			},
@@ -297,7 +176,7 @@ const Navdata = () => {
 				e.preventDefault();
 				updateIconSidebar(e);
 				setIsCurrentState('Accounts');
-				setIsEmployees(false);
+				setIsEntity(false);
 				setIsAccounts(!isAccounts);
 				setIsSetup(false);
 			},
@@ -346,7 +225,7 @@ const Navdata = () => {
 				e.preventDefault();
 				updateIconSidebar(e);
 				setIsCurrentState('Setup');
-				setIsEmployees(false);
+				setIsEntity(false);
 				setIsAccounts(false);
 				setIsSetup(!isSetup);
 			},
@@ -467,7 +346,7 @@ const Navdata = () => {
 		// 	click: function (e) {
 		// 		e.preventDefault();
 		// 		setIsCurrentState('Trainings');
-		// 		setIsEmployees(false);
+		// 		setisEntity(false);
 		// 		setIsAccounts(false);
 		// 		setIsSetup(false);
 		// 	},
@@ -481,7 +360,7 @@ const Navdata = () => {
 		// 	click: function (e) {
 		// 		e.preventDefault();
 		// 		setIsCurrentState('Conferences');
-		// 		setIsEmployees(false);
+		// 		setisEntity(false);
 		// 		setIsAccounts(false);
 		// 		setIsSetup(false);
 		// 	},
