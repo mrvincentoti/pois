@@ -1,10 +1,10 @@
-from flask import request, jsonify
+from flask import request, jsonify, json, g
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
-
+from datetime import datetime
 from .. import db
 from .models import Module
-from ..redis_manager import custom_jwt_required
+from ..util import custom_jwt_required, save_audit_data
 
 
 @custom_jwt_required
@@ -22,6 +22,30 @@ def add_module():
         try:
             db.session.add(new_module)
             db.session.commit()
+
+            current_time = datetime.utcnow()
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "add_module",
+                "auditable_id": new_module.id,
+                "old_values": None,
+                "new_values": json.dumps(
+                    {"module_name": module_name, "module_description": module_description}
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Module, Create",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+            save_audit_data(audit_data)
+
             return jsonify({"message": "Module added successfully"}), 201
         except Exception as e:
             db.session.rollback()
@@ -115,6 +139,32 @@ def edit_module(module_id):
 
     try:
         db.session.commit()
+
+        current_time = datetime.utcnow()
+        audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "edit_module",
+                "auditable_id": module_id,
+                "old_values": json.dumps(
+                    {"module_name": module.name, "module_description": module.description}
+                ),
+                "new_values": json.dumps(
+                    {"module_name": module_name, "module_description": module_description}
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Module, Update, Edit",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+        save_audit_data(audit_data)
+
         return jsonify({"message": "Module updated successfully"}), 200
     except Exception as e:
         db.session.rollback()
@@ -133,13 +183,84 @@ def delete_module(module_id):
     try:
         module.soft_delete()
         db.session.commit()
+
+        current_time = datetime.utcnow()
+        audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "delete_module",
+                "auditable_id": module.id,
+                "old_values": json.dumps(
+                    {"module_name": module.name, "module_description": module.description}
+                ),
+                "new_values": None,
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Module, Create",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+        save_audit_data(audit_data)
+
         return jsonify({"message": "Module deleted successfully"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error deleting module", "error": str(e)}), 500
     finally:
         db.session.close()
-    
+
+@custom_jwt_required
+def restore_module(module_id):
+    module = Module.query.filter_by(id=module_id).first()
+
+    if module is None:
+        return jsonify({"message": "Module not found"}), 404
+
+    try:
+        # Audit - Record before restoration
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "restore_module",
+            "auditable_id": module.id,
+            "old_values": None,
+            "new_values": json.dumps(
+                {
+                    "name": module.name,
+                    "description": module.description,
+                }
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Setup, Module, Restore",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        save_audit_data(audit_data)
+
+        module.restore()
+        db.session.commit()
+        return (
+            jsonify({"message": "Module restored successfully"}),
+            200,
+        )
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error restoring module", "error": str(e)}), 500
+    finally:
+        db.session.close()
+
 def seed_data():
     try:
         Module.create_seed_data()

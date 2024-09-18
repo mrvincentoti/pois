@@ -110,7 +110,7 @@ from .category import urls
 from .source import urls
 from .poi import urls
 from .poiMedia import urls
-
+from .modules import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
