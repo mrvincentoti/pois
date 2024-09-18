@@ -14,11 +14,6 @@ from functools import wraps
 # Load environment variables from a .env file
 load_dotenv()
 
-import jwt
-from flask import jsonify, request, g
-from functools import wraps
-from datetime import datetime as dt
-
 # Custom JWT decorator
 def custom_jwt_required(fn):
     @wraps(fn)
