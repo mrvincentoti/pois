@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from .. import db
 from ..util import encrypt, decrypt
@@ -29,6 +29,7 @@ class Poi(db.Model):
     state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'))
     deleted_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=True)
 
     category = db.relationship("Category", backref="poi")
     source = db.relationship("Source", backref="poi")
@@ -145,3 +146,6 @@ class Poi(db.Model):
         return f'<Poi {self.name}>'
 
 
+@event.listens_for(Poi, 'before_insert')
+def before_insert_listener(mapper, connection, target):
+    target.created_at = target.updated_at = datetime.utcnow()
