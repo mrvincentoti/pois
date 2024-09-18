@@ -13,7 +13,7 @@ from ..roles.models import Role
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..rolePermissions.models import RolePermission
-from ..util import encrypt, decrypt, save_audit_data
+from ..util import save_audit_data
 
 
 
@@ -57,17 +57,17 @@ def create_user():
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
             "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "event": encrypt("add_user"),
+            "event": "add_user",
             "auditable_id": user.id,
             "old_values": None,
-            "new_values": encrypt(json.dumps(
+            "new_values": json.dumps(
                 {"email": email, "username": username, "password": password, "role_id": role_id,
                  "employee_id": employee_id}
-            )),
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Account, Users, Create"),
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Account, Users, Create",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -156,14 +156,14 @@ def list_users():
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
                 "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-                "event": encrypt("list_users"),
+                "event": "list_users",
                 "auditable_id": None,
                 "old_values": None,
                 "new_values": None,
-                "url": encrypt(request.url),
-                "ip_address": encrypt(request.remote_addr),
-                "user_agent": encrypt(request.user_agent.string),
-                "tags": encrypt("Account, Users, List"),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Account, Users, List",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -260,18 +260,18 @@ def update_user(user_id):
             current_time = dt.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "event": encrypt("edit_user"),
+                "event": "edit_user",
                 "auditable_id": user.id,
-                "old_values": encrypt(json.dumps(
+                "old_values": json.dumps(
                     old_values
-                )),
-                "new_values": encrypt(json.dumps(
+                ),
+                "new_values": json.dumps(
                     new_value
-                )),
-                "url": encrypt(request.url),
-                "ip_address": encrypt(request.remote_addr),
-                "user_agent": encrypt(request.user_agent.string),
-                "tags": encrypt("Account, Users, Update"),
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Account, Users, Update",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -497,14 +497,14 @@ def logout_user():
 
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("user_logout"),
+            "event": "user_logout",
             "auditable_id": None,
             "old_values": None,
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, User, Logout"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, User, Logout",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -554,14 +554,14 @@ def search_users():
 
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("user_search"),
+            "event": "user_search",
             "auditable_id": None,
             "old_values": None,
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, User, Search"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, User, Search",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }

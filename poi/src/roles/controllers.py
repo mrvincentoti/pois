@@ -1,13 +1,12 @@
 from flask import request, jsonify, json, g
 from sqlalchemy import func
-from ..redis_manager import  custom_jwt_required
 from ..rabbitmq_manager import publish_to_rabbitmq
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Role
 from sqlalchemy import or_
-from ..util import decrypt, encrypt
+from ..util import decrypt, encrypt, custom_jwt_required
 
 
 def parsePermissions(permissions):
