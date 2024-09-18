@@ -106,6 +106,7 @@ from .employeePosting import urls
 from .implication import urls
 from .users import urls
 from .roles import urls
+from .permissions import urls
 from .rolePermissions import urls
 from .audit import urls
 from .category import urls

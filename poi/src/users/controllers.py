@@ -449,7 +449,8 @@ def login_user():
             "first_name": user.first_name,
             "last_name": user.last_name,
             "pfs_num": user.pfs_num,
-            "exp": expiration.timestamp()  # Use timestamp for expiration
+            "email": user.email,
+            "exp": expiration.timestamp()  
         }
 
         # Load the secret key from the environment variable

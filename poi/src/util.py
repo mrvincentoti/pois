@@ -41,14 +41,16 @@ def custom_jwt_required(fn):
                 first_name = token_data.get("first_name")
                 last_name = token_data.get("last_name")
                 pfs_num = token_data.get("pfs_num")
+                email = token_data.get("email")
 
-                if not all([user_id, first_name, last_name, pfs_num]):
+                if not all([user_id, first_name, last_name, pfs_num, email]):
                     return jsonify({
                         "message": "Some fields are missing",
                         "user_id": user_id,
                         "first_name": first_name,
                         "last_name": last_name,
-                        "pfs_num": pfs_num
+                        "pfs_num": pfs_num,
+                        "email": email
                     }), 401
 
                 # Attach user details to the request context
@@ -56,7 +58,8 @@ def custom_jwt_required(fn):
                     "id": user_id,
                     "first_name": first_name,
                     "last_name": last_name,
-                    "pfs_num": pfs_num
+                    "pfs_num": pfs_num,
+                    "email": email
                 }
 
                 # Continue to your route function
