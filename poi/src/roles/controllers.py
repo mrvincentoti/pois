@@ -48,20 +48,20 @@ def add_role():
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
                 "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-                "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-                "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-                "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
                 "user_email": g.user["id"] if hasattr(g, "user") else None,
-                "event": encrypt("add_role"),
+                "event": "add_role",
                 "auditable_id": new_role.id,
                 "old_values": None,
-                "new_values": encrypt(json.dumps(
+                "new_values": json.dumps(
                     {"role_name": role_name, "role_description": role_description}
-                )),
-                "url": encrypt(request.url),
-                "ip_address": encrypt(request.remote_addr),
-                "user_agent": encrypt(request.user_agent.string),
-                "tags": encrypt("Auth, Role, Create"),
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Auth, Role, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
