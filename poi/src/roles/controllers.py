@@ -6,7 +6,7 @@ from datetime import datetime
 from .. import db
 from .models import Role
 from sqlalchemy import or_
-from ..util import decrypt, encrypt, custom_jwt_required
+from ..util import custom_jwt_required
 
 
 def parsePermissions(permissions):
@@ -122,23 +122,23 @@ def edit_role(role_id):
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
             "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("edit_role"),
+            "event": "edit_role",
             "auditable_id": role.id,
-            "old_values": encrypt(json.dumps({
+            "old_values": json.dumps({
                 "name": role.name,
                 "description": role.description,
-            })),
-            "new_values": encrypt(json.dumps(
+            }),
+            "new_values": json.dumps(
                 {"role_name": role.name, "role_description": role.description}
-            )),
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Role, Create"),
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Role, Create",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -168,21 +168,21 @@ def delete_role(role_id):
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
             "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("delete_role"),
+            "event": "delete_role",
             "auditable_id": role.id,
-            "old_values": encrypt(json.dumps({
-                "name": decrypt(role.name),
-                "description": decrypt(role.description),
-            })),
+            "old_values": json.dumps({
+                "name": role.name,
+                "description": role.description,
+            }),
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Role, Delete"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Role, Delete",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -194,6 +194,51 @@ def delete_role(role_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Error deleting role', 'error': str(e)}), 500
+    finally:
+        db.session.close()
+
+@custom_jwt_required
+def restore_role(role_id):
+    role = Role.query.filter_by(id=role_id).first()
+
+    if role is None:
+        return jsonify({"message": "Role not found"}), 404
+
+    try:
+        # Audit - Record before restoration
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "event": "restore_role",
+            "auditable_id": role.id,
+            "old_values": None,
+            "new_values": json.dumps(
+                {
+                    "name": role.name,
+                    "description": role.description,
+                }
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Setup, Role, Restore",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        role.restore()
+        db.session.commit()
+        return (
+            jsonify({"message": "Role restored successfully"}),
+            200,
+        )
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error restoring role", "error": str(e)}), 500
     finally:
         db.session.close()
 
@@ -237,18 +282,18 @@ def list_roles():
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
             "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("list_role"),
+            "event": "list_role",
             "auditable_id": None,
             "old_values": None,
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Role, List"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Role, List",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
