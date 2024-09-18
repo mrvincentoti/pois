@@ -2,7 +2,7 @@ from flask import request
 
 
 from ..app import app
-from .controllers import add_role, list_roles, get_role, edit_role, delete_role, seed_data
+from .controllers import add_role, list_roles, get_role, edit_role, delete_role, seed_data, restore_role
 
 
 @app.route("/roles", methods=['GET', 'POST'])
@@ -16,6 +16,11 @@ def retrieve_update_destroy_roles(role_id):
     if request.method == 'GET': return get_role(role_id)
     if request.method == 'PUT': return edit_role(role_id)
     if request.method == 'DELETE': return delete_role(role_id)
+    else: return 'Method is Not Allowed'
+
+@app.route("/role/restore/<role_id>", methods=['GET'])
+def restore_single_role(role_id):
+    if request.method == 'GET': return restore_role(role_id)
     else: return 'Method is Not Allowed'
     
 
