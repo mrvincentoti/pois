@@ -1,12 +1,10 @@
 from flask import request, jsonify,json, g
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
-from ..redis_manager import custom_jwt_required
-from ..rabbitmq_manager import publish_to_rabbitmq
 from datetime import datetime
 from .. import db
 from .models import Permission
-from ..util import decrypt, encrypt
+from ..util import custom_jwt_required, save_audit_data
 
 
 def slugify(text):
@@ -36,32 +34,30 @@ def add_permission():
             current_time = datetime.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-                "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-                "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-                "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
-                "user_email": g.user["id"] if hasattr(g, "user") else None,
-                "event": encrypt("add_role"),
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event":"add_permission",
                 "auditable_id": new_permission.id,
                 "old_values": None,
-                "new_values": encrypt(json.dumps(
+                "new_values": json.dumps(
                     {
                         "permission_name": permission_name,
                         "permission_description": permission_description,
                         "permission_group": permission_group,
                         "permission_module_id": permission_module_id
                     }
-                )),
-                "url": encrypt(request.url),
-                "ip_address": encrypt(request.remote_addr),
-                "user_agent": encrypt(request.user_agent.string),
-                "tags": encrypt("Auth, Role, Create"),
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Auth, Permission, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
             
             return jsonify({"message": "Permission added successfully"}), 201
         except Exception as e:
@@ -120,25 +116,23 @@ def list_permissions():
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("list_permission"),
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "list_permission",
             "auditable_id": None,
             "old_values": None,
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Permission, List"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Permission, List",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
 
         response = {
             "status": "success",
@@ -180,25 +174,23 @@ def list_all_permissions():
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("list_all_permissions"),
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "list_all_permissions",
             "auditable_id": None,
             "old_values": None,
             "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Permission, List"),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Permission, List",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
 
         response = {
             "status": "success",
@@ -229,6 +221,28 @@ def get_permission(permission_id):
                 "name": permission.module.name,
             },
         }
+
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "get_permission",
+            "auditable_id": None,
+            "old_values": None,
+            "new_values": None,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Auth, Permission, Get",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        save_audit_data(audit_data)
+
         return jsonify({"permission": permission_data})
     else:
         return jsonify({"message": "Permission not found"}), 404
@@ -256,33 +270,31 @@ def edit_permission(permission_id):
         
         current_time = datetime.utcnow()
         audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("add_permission"),
-            "auditable_id": permission.id,
-            "old_values": None,
-            "new_values": encrypt(json.dumps(
-                {
-                    "permission_name": permission.name,
-                    "permission_description": permission.description,
-                    "permission_group": permission.group,
-                    "permission_module_id": permission.module_id
-                }
-            )),
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Permission, Create"),
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event":"edit_permission",
+                "auditable_id": permission.id,
+                "old_values": None,
+                "new_values": json.dumps(
+                    {
+                        "permission_name": permission_name,
+                        "permission_description": permission_description,
+                        "permission_group": permission.group,
+                        "permission_module_id": permission.module_id
+                    }
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Auth, Permission, Update",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
         
         return jsonify({"message": "Permission updated successfully"}), 200
     except Exception as e:
@@ -305,37 +317,83 @@ def delete_permission(permission_id):
         
         current_time = datetime.utcnow()
         audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "first_name": encrypt(g.user["first_name"]) if hasattr(g, "user") else None,
-            "last_name": encrypt(g.user["last_name"]) if hasattr(g, "user") else None,
-            "pfs_num": encrypt(g.user["pfs_num"]) if hasattr(g, "user") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": encrypt("edit_permission"),
-            "auditable_id": permission.id,
-            "old_values": encrypt(json.dumps(
-                {
-                    "permission_name": permission.name,
-                    "permission_description": permission.description,
-                    "permission_group": permission.group,
-                    "permission_module_id": permission.module_id
-                }
-            )),
-            "new_values": None,
-            "url": encrypt(request.url),
-            "ip_address": encrypt(request.remote_addr),
-            "user_agent": encrypt(request.user_agent.string),
-            "tags": encrypt("Auth, Permission, Delete"),
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event":"delete_permission",
+                "auditable_id": permission.id,
+                "old_values": None,
+                "new_values": json.dumps(
+                    {
+                        "permission_name": permission.name,
+                        "permission_description": permission.description,
+                        "permission_group": permission.group,
+                        "permission_module_id": permission.module_id
+                    }
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Auth, Permission, Delete",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
         
         return jsonify({"message": "Permission deleted successfully"}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error deleting permission", "error": str(e)}), 500
+    finally:
+        db.session.close()
+
+
+@custom_jwt_required
+def restore_permission(permission_id):
+    permission = Permission.query.filter_by(id=permission_id).first()
+
+    if permission is None:
+        return jsonify({"message": "Permission not found"}), 404
+
+    try:
+        # Audit - Record before restoration
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "restore_permission",
+            "auditable_id": permission.id,
+            "old_values": None,
+            "new_values": json.dumps(
+                {
+                    "name": permission.name,
+                    "description": permission.description,
+                }
+            ),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Setup, Permission, Restore",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        save_audit_data(audit_data)
+
+        permission.restore()
+        db.session.commit()
+        return (
+            jsonify({"message": "Permission restored successfully"}),
+            200,
+        )
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error restoring permission", "error": str(e)}), 500
     finally:
         db.session.close()

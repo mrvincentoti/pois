@@ -31,6 +31,9 @@ class Permission(db.Model):
 
     def soft_delete(self):
         self.deleted_at = datetime.now()
+   
+    def restore(self):
+        self.deleted_at = None
 
     @classmethod
     def create_seed_data(cls, path):
