@@ -10,15 +10,15 @@ export const SET_PASSWORD_API = `${BASE_AUTH_URL}/poi/user/set_password/:id`;
 export const FETCH_MODULES_API = `${BASE_AUTH_URL}/modules`;
 
 // permissions api
-export const FETCH_PERMISSIONS_API = `${BASE_AUTH_URL}/permissions`;
-export const FETCH_ALL_PERMISSIONS_API = `${BASE_AUTH_URL}/all-permissions`;
-export const CREATE_PERMISSION_API = `${BASE_AUTH_URL}/permissions`;
-export const SET_ROLE_PERMISSIONS_API = `${BASE_AUTH_URL}/roles/:id/permissions`;
+export const FETCH_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/permissions`;
+export const FETCH_ALL_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/all-permissions`;
+export const CREATE_PERMISSION_API = `${BASE_AUTH_URL}/poi/permissions`;
+export const SET_ROLE_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/roles/:id/permissions`;
 
 // roles api
-export const FETCH_ROLE_API = `${BASE_AUTH_URL}/roles`;
-export const CREATE_ROLE_API = `${BASE_AUTH_URL}/roles`;
-export const DELETE_ROLE_API = `${BASE_AUTH_URL}/roles/:id`;
+export const FETCH_ROLE_API = `${BASE_AUTH_URL}/poi/roles`;
+export const CREATE_ROLE_API = `${BASE_AUTH_URL}/poi/roles`;
+export const DELETE_ROLE_API = `${BASE_AUTH_URL}/poi/roles/:id`;
 
 // users api
 export const FETCH_USERS_API = `${BASE_AUTH_URL}/poi/users`;
