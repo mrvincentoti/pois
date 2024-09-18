@@ -5,8 +5,7 @@ from .models import RolePermission
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..roles.models import Role
-from ..redis_manager import  custom_jwt_required
-from ..rabbitmq_manager import publish_to_rabbitmq
+from ..util import  custom_jwt_required, save_audit_data
 from datetime import datetime
 
 @custom_jwt_required
@@ -67,10 +66,12 @@ def add_role_premission(role_id):
             current_time = datetime.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-                "user_email": g.user["id"] if hasattr(g, "user") else None,
-                "event": "add_permission",
-                "auditable_id": new_object.id,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "add_role_permission",
+                "auditable_id": permission.id,
                 "old_values": None,
                 "new_values": json.dumps(
                     permissions
@@ -78,15 +79,14 @@ def add_role_premission(role_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Role, Create",
+                "tags": "Auth, RolePermission, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
             
-            return jsonify({'message': 'Role permissions assigned added successfully'}), 201
+            return jsonify({'message': 'Role permissions assigned successfully'}), 201
         except Exception as e:
             db.session.rollback()
             return jsonify({'message': 'Error adding role permission', 'error': str(e)}), 500
@@ -177,7 +177,6 @@ def get_role_permission(role_id):
     #group sort the modules and permissions by modules
     return get_grouped_modules_permissions(permission_list, role), 200
 
-
 def get_grouped_modules_permissions(listdata, role):
     result_dict = {}
     permission_list = []
@@ -216,7 +215,6 @@ def get_grouped_modules_permissions(listdata, role):
     result_list = list(result_dict.values())
 
     return result_list
-
 
 def get_grouped_module_permissions(data, role):
     grouped_data = {}
@@ -276,26 +274,27 @@ def delete_role_permission_by_module(role_id, module_id, permission_id):
             db.session.close()
 
         current_time = datetime.utcnow()
-        audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-           "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
-            "user_email": g.user["id"] if hasattr(g, "user") else None,
-            "event": "delete_permission",
-            "auditable_id": rolePermissions.id,
-            "old_values": json.dumps(
-                rolePermissions
-            ),
-            "new_values": None,
-            "url": request.url,
-            "ip_address": request.remote_addr,
-            "user_agent": request.user_agent.string,
-            "tags": "Auth, Role, Permission, Delete",
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
-        }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "delete_role_permission",
+                "auditable_id": rolePermissions.id,
+                "old_values": json.dumps(
+                    rolePermissions
+                ),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Auth, Role, Permission, Delete",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+        save_audit_data(audit_data)
         
     return jsonify({'message': 'Role permission deleted successfully'}), 200
 
