@@ -2,8 +2,6 @@ from flask import request, jsonify, json, g
 import os, jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from ..util import custom_jwt_required
-from ..rabbitmq_manager import publish_to_rabbitmq
 from datetime import datetime as dt
 from .. import db
 from .models import User
@@ -13,7 +11,7 @@ from ..roles.models import Role
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..rolePermissions.models import RolePermission
-from ..util import save_audit_data
+from ..util import save_audit_data, custom_jwt_required
 
 
 
@@ -56,7 +54,10 @@ def create_user():
         current_time = dt.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "add_user",
             "auditable_id": user.id,
             "old_values": None,
@@ -72,8 +73,7 @@ def create_user():
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
 
         response["status"] = "success"
         response["status_code"] = 201  # 201 Created
@@ -155,7 +155,10 @@ def list_users():
             current_time = datetime.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "employee_id": g.user["employee_id"] if hasattr(g, "employee") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
                 "event": "list_users",
                 "auditable_id": None,
                 "old_values": None,
@@ -168,8 +171,7 @@ def list_users():
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
 
         response = {
             "status": "success",
@@ -260,6 +262,10 @@ def update_user(user_id):
             current_time = dt.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
                 "event": "edit_user",
                 "auditable_id": user.id,
                 "old_values": json.dumps(
@@ -276,8 +282,7 @@ def update_user(user_id):
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
 
             response = {
                 "status": "success",
@@ -311,6 +316,10 @@ def soft_delete_user(user_id):
             current_time = dt.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
                 "event": "delete_user",
                 "auditable_id": user.id,
                 "old_values": json.dumps(
@@ -326,8 +335,7 @@ def soft_delete_user(user_id):
                 "updated_at": current_time.isoformat(),
             }
 
-            serialized_data = json.dumps(audit_data)
-            publish_to_rabbitmq(serialized_data)
+            save_audit_data(audit_data)
 
             response = {
                 "status": "success",
@@ -362,6 +370,10 @@ def restore_user(user_id):
         current_time = dt.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "restore_user",
             "auditable_id": user.id,
             "old_values": json.dumps(
@@ -377,8 +389,7 @@ def restore_user(user_id):
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
 
         response = {
             "status": "success",
@@ -498,6 +509,10 @@ def logout_user():
 
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "user_logout",
             "auditable_id": None,
             "old_values": None,
@@ -510,8 +525,8 @@ def logout_user():
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
+
         return (
             jsonify({"message": "Logged out successfully"}),
             200,
@@ -555,6 +570,10 @@ def search_users():
 
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "user_search",
             "auditable_id": None,
             "old_values": None,
@@ -567,8 +586,8 @@ def search_users():
             "updated_at": current_time.isoformat(),
         }
 
-        serialized_data = json.dumps(audit_data)
-        publish_to_rabbitmq(serialized_data)
+        save_audit_data(audit_data)
+
     else:
         response = {
             "status": "error",
