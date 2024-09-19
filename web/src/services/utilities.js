@@ -311,10 +311,10 @@ export const formatGetInitialsName = employee => {
 export const formatFullName = employee => {
 	if (employee) {
 		const firstNameInitial = employee.first_name
-			? `${employee.first_name.charAt(0).toUpperCase()}.`
+			? `${employee.first_name.toUpperCase()} `
 			: '';
 		const middleNameInitial = employee.middle_name
-			? `${employee.middle_name.charAt(0).toUpperCase()}.`
+			? `${employee.middle_name.toUpperCase()} `
 			: '';
 		const lastNameInitial = employee.last_name
 			? employee.last_name.toUpperCase()
@@ -495,3 +495,19 @@ export function calculateAge(dobString) {
 
     return age;
 }
+
+
+export const formatName = employee => {
+	if (employee) {
+		const firstNameInitial = employee.first_name
+			? employee.first_name.charAt(0)
+			: '';
+		const lastNameInitial = employee.last_name
+			? employee.last_name.charAt(0)
+			: '';
+
+		return `${firstNameInitial}${lastNameInitial}`;
+	}
+
+	return '';
+};

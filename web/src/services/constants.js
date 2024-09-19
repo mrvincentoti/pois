@@ -11,6 +11,9 @@ export const TOKEN_EXPIRATION = 'eims:token:expire';
 export const LOGGED_IN_UID = 'eims:uid';
 export const PREVIOUS_PATH = 'hr:path';
 
+// Poi
+export const BASE_POI_URL = process.env.REACT_APP_BASE_POI_URL;
+
 export const limits = [2, 4, 8, 12, 16, 20];
 export const limit = 8;
 export const paginate = {

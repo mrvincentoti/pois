@@ -1,4 +1,4 @@
-import { BASE_AUDIT_URL, BASE_AUTH_URL, BASE_EMPLOYEE_URL } from './constants';
+import { BASE_AUDIT_URL, BASE_AUTH_URL, BASE_EMPLOYEE_URL, BASE_POI_URL } from './constants';
 
 // authentication apis
 export const LOGIN_API = `${BASE_AUTH_URL}/poi/user/login`;
@@ -224,3 +224,7 @@ export const DELETE_SINGLE_BRIEF_API = `${BASE_EMPLOYEE_URL}/brief/:id`;
 //Audit api
 export const FETCH_AUDITS_API = `${BASE_AUDIT_URL}/audits`;
 export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
+
+// Poi api
+export const FET_POIS_API = `${BASE_POI_URL}/pois`;
+export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`;
