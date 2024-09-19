@@ -1,5 +1,4 @@
 from .. import db  # from __init__.py
-from ..util import encrypt, decrypt
 
 
 class Country(db.Model):
@@ -529,15 +528,15 @@ class Country(db.Model):
 
     def __init__(self, id, num_code, alpha_2_code, en_short_name, nationality, alpha_3_code):
         self.id = id
-        self.num_code = encrypt(num_code)
-        self.alpha_2_code = encrypt(alpha_2_code)
-        self.en_short_name = encrypt(en_short_name)
-        self.alpha_3_code = encrypt(alpha_3_code)
-        self.nationality = encrypt(nationality)
+        self.num_code = num_code
+        self.alpha_2_code = alpha_2_code
+        self.en_short_name = en_short_name
+        self.alpha_3_code = alpha_3_code
+        self.nationality = nationality
 
     def to_dict(self):
         return {
             'id': self.id,
-            'num_code': decrypt(self.num_code),
-            'en_short_name': decrypt(self.en_short_name),
+            'num_code': self.num_code,
+            'en_short_name': self.en_short_name,
         }
