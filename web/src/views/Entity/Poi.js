@@ -216,7 +216,7 @@ const Poi = () => {
 								hasEmployeeCreate={true}
 								hasUploadBtn={true}
 								uploadBtnTitle="Bulk Upload"
-								linkTo="/poi/new"
+								linkTo="/pois/new"
 								hasFilter={true}
 								openFilter={() => setIsFilterOpen(true)}
 								filters={filters}

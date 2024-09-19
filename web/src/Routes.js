@@ -64,6 +64,9 @@ const RetiredEmployees = lazy(
 	() => import('./views/employees/RetiredEmployees')
 );
 
+// POI
+const PoiIndex = lazy(() => import('./views/poi/Index'));
+
 const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
 	{ path: 'entity/*', component: <EntityIndex /> },
@@ -86,6 +89,8 @@ const authProtectedRoutes = [
 	{ path: 'trainings', component: <Trainings /> },
 	{ path: 'conferences', component: <Conferences /> },
 	{ path: 'retired-employees', component: <RetiredEmployees /> },
+	// POI
+	{ path: 'pois/*', component: <PoiIndex /> },
 ];
 
 function RequireAuth({ children }) {

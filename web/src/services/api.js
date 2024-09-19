@@ -228,3 +228,4 @@ export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
 // Poi api
 export const FET_POIS_API = `${BASE_POI_URL}/pois`;
 export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`;
+export const CREATE_POI_API = `${BASE_POI_URL}/pois`;
