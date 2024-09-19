@@ -4,9 +4,9 @@ from .controllers import create_poi, get_poi, update_poi, delete_poi, restore_po
 
 @app.route("/pois", methods=['GET', 'POST'])
 def poi_list_create():
-    if request.method == 'POST':
-        return create_poi()
-    return list_pois()
+    if request.method == 'GET': return list_pois()
+    if request.method == 'POST': return create_poi()
+    else: return 'Method is Not Allowed'
 
 @app.route("/pois/<int:poi_id>", methods=['GET', 'PUT', 'DELETE'])
 def poi_detail_update_delete(poi_id):

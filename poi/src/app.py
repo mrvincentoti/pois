@@ -28,27 +28,16 @@ from .category.models import Category
 from .source.models import Source
 from .poi.models import Poi
 from .poiMedia.models import PoiMedia
+from .affiliation.models import Affiliation
+from .arms.models import Arms
+from .armsRecovered.models import ArmsRecovered
+
 
 from . import create_app, db
 
 
 app = create_app(os.getenv("CONFIG_MODE"))
 app.config['TIMEZONE'] = 'Africa/Lagos'
-
-
-# @app.before_first_request
-# def load_key():
-#     if util.APP_ENCRYPTION_KEY is None:
-#         print("Encryption key not set.")
-
-# if APP_ENCRYPTION_KEY is None:
-#     print("Encryption key not set.")
-
-# @app.before_request
-# def ensure_key_set():
-#     APP_ENCRYPTION_KEY = util.get_app_encryption_key()
-#     if APP_ENCRYPTION_KEY is None:
-#         return jsonify({"error": "Encryption key not set. Please ensure the key is available."}), 500
 
 @app.route('/')
 def hello_world():
@@ -111,6 +100,9 @@ from .source import urls
 from .poi import urls
 from .poiMedia import urls
 from .modules import urls
+from .affiliation import urls
+from .arms import urls
+from .armsRecovered import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

@@ -8,44 +8,58 @@ from ..util import save_audit_data, custom_jwt_required
 @custom_jwt_required
 def create_poi():
     data = request.json
-
-    ref_numb = data.get('ref_numb'),
-    first_name = data['first_name'],
-    middle_name = data.get('middle_name'),
-    last_name = data['last_name'],
-    alias = data.get('alias'),
-    dob = data.get('dob'),
-    passport_number = data.get('passport_number'),
-    other_id_number = data.get('other_id_number'),
-    phone_number = data.get('phone_number'),
-    email = data.get('email'),
-    role = data.get('role'),
-    affiliation = data.get('affiliation'),
-    address = data.get('address'),
-    remark = data.get('remark'),
-    category_id = data.get('category_id'),
-    source_id = data.get('source_id'),
-    country_id = data.get('country_id'),
-    state_id = data.get('state_id'),
+    ref_numb = data.get('ref_numb')
+    picture = data.get('picture')
+    first_name = data.get('first_name')
+    middle_name = data.get('middle_name')
+    last_name = data['last_name']
+    alias = data.get('alias')
+    dob = data.get('dob')
+    passport_number = data.get('passport_number')
+    other_id_number = data.get('other_id_number')
+    phone_number = data.get('phone_number')
+    email = data.get('email')
+    role = data.get('role')
+    affiliation_id = data.get('affiliation_id')
+    address = data.get('address')
+    remark = data.get('remark')
+    category_id = data.get('category_id')
+    source_id = data.get('source_id')
+    country_id = data.get('country_id')
+    state_id = data.get('state_id')
     gender_id = data.get('gender_id')
+    crime_committed = data.get('crime_committed')
+    crime_date = data.get('crime_date')
+    casualties_recorded = data.get('casualties_recorded')
+    arresting_body = data.get('arresting_body')
+    place_of_detention = data.get('place_of_detention')
+    action_taken = data.get('action_taken')
 
     response = {}
     try:
-        poi = Poi (
+        # Create POI instance
+        poi = Poi(
             ref_numb=ref_numb,
             first_name=first_name,
             middle_name=middle_name,
             last_name=last_name,
             alias=alias,
+            picture=picture,
             dob=dob,
             passport_number=passport_number,
             other_id_number=other_id_number,
             phone_number=phone_number,
             email=email,
             role=role,
-            affiliation=affiliation,
+            affiliation_id=affiliation_id,
             address=address,
             remark=remark,
+            crime_committed=crime_committed,
+            crime_date=crime_date,
+            casualties_recorded=casualties_recorded,
+            arresting_body=arresting_body,
+            place_of_detention=place_of_detention,
+            action_taken=action_taken,
             category_id=category_id,
             source_id=source_id,
             country_id=country_id,
@@ -53,6 +67,8 @@ def create_poi():
             gender_id=gender_id
         )
 
+        db.session.add(poi)
+        db.session.commit()
 
         current_time = dt.utcnow()
         audit_data = {
@@ -64,29 +80,34 @@ def create_poi():
             "event": "add_poi",
             "auditable_id": poi.id,
             "old_values": None,
-            "new_values": json.dumps(
-                {
-                    "ref_numb": poi.ref_numb,
-                    "first_name": poi.first_name,
-                    "middle_name": poi.middle_name,
-                    "last_name": poi.last_name,
-                    "alias": poi.alias,
-                    "dob": poi.dob,
-                    "passport_number": poi.passport_number,
-                    "other_id_number": poi.other_id_number,
-                    "phone_number": poi.phone_number,
-                    "email": poi.email,
-                    "role": poi.role,
-                    "affiliation": poi.affiliation,
-                    "address": poi.address,
-                    "remark": poi.remark,
-                    "category_id": poi.category_id,
-                    "source_id": poi.source_id,
-                    "country_id": poi.country_id,
-                    "state_id": poi.state_id,
-                    "gender_id": poi.gender_id
-                }
-            ),
+            "new_values": json.dumps({
+                "ref_numb": poi.ref_numb,
+                "first_name": poi.first_name,
+                "middle_name": poi.middle_name,
+                "last_name": poi.last_name,
+                "alias": poi.alias,
+                "dob": poi.dob,
+                "passport_number": poi.passport_number,
+                "other_id_number": poi.other_id_number,
+                "phone_number": poi.phone_number,
+                "email": poi.email,
+                "role": poi.role,
+                "affiliation_id": poi.affiliation_id,
+                "crime_committed": poi.crime_committed,
+                "crime_date": poi.crime_date,
+                "casualties_recorded": poi.casualties_recorded,
+                "arresting_body": poi.arresting_body,
+                "place_of_detention": poi.place_of_detention,
+                "action_taken": poi.action_taken,
+                "address": poi.address,
+                "remark": poi.remark,
+                "category_id": poi.category_id,
+                "source_id": poi.source_id,
+                "country_id": poi.country_id,
+                "state_id": poi.state_id,
+                "gender_id": poi.gender_id,
+                "deleted_at": poi.deleted_at,  # Add new fields to audit logging if needed
+            }),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
@@ -194,6 +215,13 @@ def update_poi(poi_id):
             remark=data.get('remark'),
             middle_name=data.get('middle_name'),
             alias=data.get('alias'),
+            picture=data.get('picture'),
+            crime_committed=data.get('crime_committed'),
+            crime_date=data.get('crime_date'),
+            casualties_recorded=data.get('casualties_recorded'),
+            arresting_body=data.get('arresting_body'),
+            place_of_detention=data.get('place_of_detention'),
+            action_taken=data.get('action_taken'),
             category_id=data.get('category_id'),
             source_id=data.get('source_id'),
             country_id=data.get('country_id'),
@@ -244,15 +272,18 @@ def list_pois():
             (Poi.middle_name.ilike(search)) |
             (Poi.last_name.ilike(search)) |
             (Poi.alias.ilike(search)) |
-            (Poi.dob.ilike(search)) |  # You might need to format `dob` as a string in the actual database if it's a Date field
             (Poi.passport_number.ilike(search)) |
             (Poi.other_id_number.ilike(search)) |
             (Poi.phone_number.ilike(search)) |
             (Poi.email.ilike(search)) |
             (Poi.role.ilike(search)) |
-            (Poi.affiliation.ilike(search)) |
             (Poi.address.ilike(search)) |
-            (Poi.remark.ilike(search))
+            (Poi.remark.ilike(search)) |
+            (Poi.crime_committed.ilike(search)) |
+            (Poi.casualties_recorded.ilike(search)) |
+            (Poi.arresting_body.ilike(search)) |
+            (Poi.place_of_detention.ilike(search)) |
+            (Poi.action_taken.ilike(search))
         )
 
     # Pagination
