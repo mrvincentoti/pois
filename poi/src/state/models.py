@@ -1,5 +1,4 @@
 from .. import db  # from __init__.py
-from ..util import encrypt, decrypt
 
 
 class State(db.Model):
@@ -11,7 +10,7 @@ class State(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'name': decrypt(self.name)
+            'name': self.name
         }
 
     @classmethod
@@ -71,4 +70,4 @@ class State(db.Model):
 
     def __init__(self, id, name):
         self.id = id
-        self.name = encrypt(name)
+        self.name = name
