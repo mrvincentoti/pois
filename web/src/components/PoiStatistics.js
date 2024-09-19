@@ -1,6 +1,7 @@
 import React from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Menu, Space } from 'antd';
+import PoiStatisticsChart from './PoiStatisticsChart';
 
 const menuItems = [
     {
@@ -45,7 +46,7 @@ const POICategoryStatistics = () => {
                         <Dropdown overlay={menu} trigger={['click']}>
                             <a href="#" className="text-reset dropdown-btn" onClick={(e) => e.preventDefault()}>
                                 <Space>
-                                    <span className="fw-semibold text-uppercase fs-12">Sort by:</span>
+                                    <span className="fw-semibold text-uppercase fs-12">Filter by:</span>
                                     <span className="text-muted">
                                         Today
                                         <DownOutlined className="ms-1" />
@@ -54,6 +55,9 @@ const POICategoryStatistics = () => {
                             </a>
                         </Dropdown>
                     </div>
+                </div>
+                <div className="card-header align-items-center d-flex">
+                    <PoiStatisticsChart />
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Menu, Space } from 'antd';
+import ReportByUnitsChart from './ReportByUnitsChart';
 
 const menuItems = [
     {
@@ -44,7 +45,7 @@ const ReportsByUnits = () => {
                     <Dropdown overlay={menu} trigger={['click']}>
                         <a href="#" className="text-reset dropdown-btn" onClick={(e) => e.preventDefault()}>
                             <Space>
-                                <span className="fw-semibold text-uppercase fs-12">Sort by:</span>
+                                <span className="fw-semibold text-uppercase fs-12">Filter by:</span>
                                 <span className="text-muted">
                                     Today
                                     <DownOutlined className="ms-1" />
@@ -57,7 +58,7 @@ const ReportsByUnits = () => {
 
             <div className="card-body p-0 pb-2">
                 <div className="w-100">
-                    <div id="customer_impression_charts" className="apex-charts" style={{ height: '300px' }}></div>
+                    <ReportByUnitsChart />
                 </div>
             </div>
         </div>
