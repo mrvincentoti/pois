@@ -360,10 +360,27 @@ const NewPoi = () => {
 								<div className="col-lg-8">
 									<div className="card">
 										<div className="card-header">
-											<h5 className="card-title mb-0">POI Bio</h5>
+											<h5 className="card-title mb-0">Personal Information</h5>
 										</div>
 										<div className="card-body">
 											<div className="row">
+												<div className="col-lg-12 mb-3">
+													<label className="form-label" htmlFor="ref_numb">
+														Reference Number <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="ref_numb" name="ref_numb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="ref_numb"
+																placeholder="Enter Reference number"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="ref_numb" />
+												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="first_name">
 														First Name <span style={{ color: 'red' }}>*</span>
@@ -414,12 +431,79 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="last_name" />
 												</div>
-											</div>
-											<div className="row">
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="alias">
+														Alias <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="alias" name="alias">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="alias"
+																placeholder="Enter alias"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="alias" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="phone_number">
+														Phone
+													</label>
+													<Field id="phone_number" name="phone_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="phone_number"
+																placeholder="Enter phone number"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="phone" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="email">
+														Email
+													</label>
+													<Field id="email" name="email">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="email"
+																className={`form-control ${error(meta)}`}
+																id="email"
+																placeholder="Enter email address"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="email" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="gender">
+														Gender <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="gender" name="gender">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																className={error(meta)}
+																placeholder="Select gender"
+																options={genders}
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="gender" />
+												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="dob">
 														Date Of Birth{' '}
-														<span style={{ color: 'red' }}>*</span>
+														<span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="dob" name="dob">
 														{({ input, meta }) => (
@@ -442,123 +526,6 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="dob" />
 												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="gender">
-														Gender <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="gender" name="gender">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select gender"
-																options={genders}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="gender" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="email">
-														Email
-													</label>
-													<Field id="email" name="email">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="email"
-																className={`form-control ${error(meta)}`}
-																id="email"
-																placeholder="Enter email address"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="email" />
-												</div>
-											</div>
-											<div className="row">
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="religion">
-														Religion <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="religion" name="religion">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select religion"
-																options={religions}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="state_id">
-														State Of Origin{' '}
-														<span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="state_id" name="state_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select state"
-																options={states}
-																value={stateOrigin}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setStateOrigin(e);
-																	fetchLgas(e?.id);
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="state_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="lga">
-														Local Government Area{' '}
-														<span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="lga" name="lga">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select local govt area"
-																options={lgas}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="lga" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="home_town">
-														Hometown
-													</label>
-													<Field id="home_town" name="home_town">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="home_town"
-																placeholder="Enter hometown"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="home_town" />
-												</div>
-
 												<div className="col-lg-4 mb-3">
 													<label
 														className="form-label"
@@ -586,193 +553,238 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="marital_status" />
 												</div>
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="residential_address"
-													>
-														Residential Address
-													</label>
-													<Field
-														id="residential_address"
-														name="residential_address"
-													>
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="residential_address"
-																placeholder="Enter residential address"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="residential_address" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="passport_official"
-													>
-														Official Passport
-													</label>
-													<Field
-														id="passport_official"
-														name="passport_official"
-													>
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="passport_official"
-																placeholder="Enter official passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="passport_offical" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="passport_diplomatic"
-													>
-														Diplomatic Passport No
-													</label>
-													<Field
-														id="passport_diplomatic"
-														name="passport_diplomatic"
-													>
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="passport_diplomatic"
-																placeholder="Enter diplomatic passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="passport_diplomatic" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="passport_personal"
-													>
-														Standard Passport
-													</label>
-													<Field
-														id="passport_personal"
-														name="passport_personal"
-													>
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="passport_personal"
-																placeholder="Enter standard passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="passport_personal" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="phone">
-														Phone
-													</label>
-													<Field id="phone" name="phone">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="phone"
-																placeholder="Enter phone number"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="phone" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="year_of_grad">
-														Year Of Graduation
-													</label>
-													<Field id="year_of_grad" name="year_of_grad">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="year_of_grad"
-																placeholder="Enter year of graduation"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="year_of_grad" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="qualification">
-														Qualifications
-													</label>
-													<Field id="qualification" name="qualification">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="qualification"
-																placeholder="Enter qualification"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="qualification" />
-												</div>
-
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="language_spoken">
-														Languages Spoken
-													</label>
-
-													<Field name="language_spoken">
-										{({ input, meta }) => (
-											<div className={`form-control ${error(meta)}`}>
-												{tagChild}
-												{inputVisible && (
-													<Input
-														type="text"
-														size="small"
-														value={inputValue}
-														onChange={handleInputChange}
-														onBlur={handleInputConfirm}
-														onPressEnter={handleInputConfirm}
-														style={{ width: 78, marginRight: 8, marginTop: 5 }}
-													/>
-												)}
-												{!inputVisible && (
-													<Tag onClick={showInput}  className="site-tag-plus">
-														<i className="ri-add-line" />  New Tag
-													</Tag>
-												)}
-												<input
-													{...input}
-													type="hidden"
-													value={language}
-													onChange={() => {}}
-													onBlur={() => input.onBlur(language)}
-												/>
 											</div>
-										)}
-									</Field>
-
-													<ErrorBlock name="language_spoken" />
+										</div>
+									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Technical Information</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-6 mb-3">
+													<label
+														className="form-label"
+														htmlFor="passport_number"
+													>
+														Passport Number
+													</label>
+													<Field
+														id="passport_number"
+														name="passport_number"
+													>
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="passport_number"
+																placeholder="Enter passport no"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="passport_number" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label
+														className="form-label"
+														htmlFor="other_id_number"
+													>
+														Other ID Number
+													</label>
+													<Field
+														id="other_id_number"
+														name="other_id_number"
+													>
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="other_id_number"
+																placeholder="Enter passport no"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="other_id_number" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="affiliation_id">
+														Affiliation <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="affiliation_id" name="affiliation_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																className={error(meta)}
+																placeholder="Select affiliation"
+																options={religions}
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+															/>
+														)}
+													</Field>
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="role">
+														Role
+													</label>
+													<Field id="role" name="role">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="role"
+																placeholder="Enter role"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="role" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label
+														className="form-label"
+														htmlFor="category_id"
+													>
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category_id" name="category_id">
+														{({ input, meta }) => (
+															<AsyncSelect
+																isClearable
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+																defaultOptions
+																value={directorate}
+																className={error(meta)}
+																loadOptions={getDirectorates}
+																onChange={e => {
+																	setDirectorate(e);
+																	e ? input.onChange(e.id) : input.onChange('');
+																	fetchDepartments(e?.id);
+																	setDepartments([]);
+																	setDepartment(null);
+																	setUnits([]);
+																	form.change('department_id', undefined);
+																	form.change('unit', undefined);
+																}}
+																placeholder="Search Category"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category_id" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="source_id">
+														Source <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="source_id" name="source_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																placeholder="Select source"
+																options={departments}
+																value={department}
+																className={error(meta)}
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+																onChange={e => {
+																	e ? input.onChange(e.id) : input.onChange('');
+																	setDepartment(e);
+																	if (e && e.id !== department?.id) {
+																		form.change('unit', undefined);
+																		fetchUnits(e?.id);
+																	}
+																}}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="source_id" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="country_id">
+														Country{' '}
+														<span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="country_id" name="country_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																className={error(meta)}
+																placeholder="Select country"
+																options={states}
+																value={stateOrigin}
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+																onChange={e => {
+																	e ? input.onChange(e.id) : input.onChange('');
+																	setStateOrigin(e);
+																	fetchLgas(e?.id);
+																}}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="country_id" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="state_id">
+														State{' '}
+														<span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="state_id" name="state_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																className={error(meta)}
+																placeholder="Select state"
+																options={lgas}
+																getOptionValue={option => option.id}
+																getOptionLabel={option => option.name}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="state_id" />
+												</div>
+												<div className="col-lg-12 mb-3">
+													<label
+														className="form-label"
+														htmlFor="address"
+													>
+														Address
+													</label>
+													<Field
+														id="address"
+														name="address"
+													>
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="address"
+																placeholder="Enter address"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="address" />
+												</div>
+												<div className="col-lg-12 mb-3">
+													<label className="form-label" htmlFor="remark">
+														Remark
+													</label>
+													<Field id="remark" name="remark">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="remark"
+																placeholder="Enter remark"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="remark" />
 												</div>
 											</div>
 										</div>
@@ -795,33 +807,33 @@ const NewPoi = () => {
 									<div className="card">
 										<div className="card-body">
 											<div className="mb-3">
-												<label className="form-label" htmlFor="ref_numb">
-													Reference Number <span style={{ color: 'red' }}>*</span>
+												<label className="form-label" htmlFor="crime_committed">
+													Crime Committed <span style={{ color: 'red' }}>*</span>
 												</label>
-												<Field id="ref_numb" name="ref_numb">
+												<Field id="crime_committed" name="crime_committed">
 													{({ input, meta }) => (
 														<input
 															{...input}
 															type="text"
 															className={`form-control ${error(meta)}`}
-															id="ref_numb"
-															placeholder="Enter Reference number"
+															id="crime_committed"
+															placeholder="Enter Crime Committed"
 														/>
 													)}
 												</Field>
-												<ErrorBlock name="pf_num" />
+												<ErrorBlock name="crime_committed" />
 											</div>
 											<div className="mb-3">
 												<label
 													className="form-label"
-													htmlFor="date_of_employment"
+													htmlFor="crime_date"
 												>
-													Date Of Employment{' '}
-													<span style={{ color: 'red' }}>*</span>
+													Crime Date{' '}
+													<span style={{ color: 'red' }}></span>
 												</label>
 												<Field
-													id="date_of_employment"
-													name="date_of_employment"
+													id="crime_date"
+													name="crime_date"
 												>
 													{({ input, meta }) => (
 														<Flatpickr
@@ -829,7 +841,7 @@ const NewPoi = () => {
 															options={{
 																dateFormat: 'd M, Y',
 															}}
-															placeholder="Select date of employment"
+															placeholder="Select date of crime"
 															value={dateOfEmployment}
 															onChange={([date]) => {
 																input.onChange(
@@ -840,289 +852,75 @@ const NewPoi = () => {
 														/>
 													)}
 												</Field>
-												<ErrorBlock name="date_of_employment" />
+												<ErrorBlock name="crime_date" />
 											</div>
-											<div className="mb-2">
-												<label
-													className="form-label"
-													htmlFor="date_of_appointment"
-												>
-													Date Of Appointment{' '}
-													<span style={{ color: 'red' }}>*</span>
+											<div className="mb-3">
+												<label className="form-label" htmlFor="casualties_recorded">
+													Casualties Recorded <span style={{ color: 'red' }}></span>
 												</label>
-												<Field
-													id="date_of_appointment"
-													name="date_of_appointment"
-												>
+												<Field id="casualties_recorded" name="casualties_recorded">
 													{({ input, meta }) => (
-														<Flatpickr
-															className={`form-control ${error(meta)}`}
-															options={{
-																dateFormat: 'd M, Y',
-																minDate: new Date(dateOfEmployment),
-															}}
-															placeholder="Select date of appointment"
-															value={dateOfAppointment}
-															onChange={([date]) => {
-																input.onChange(
-																	moment(date).format('YYYY-MM-DD')
-																);
-																setDateOfAppointment(date);
-															}}
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="date_of_appointment" />
-											</div>
-
-											<div className="mb-2">
-												<label
-													htmlFor="confirmation_of_app"
-													className="form-label"
-												>
-													Has Appointment Been Confirmed?
-												</label>
-												<Field
-													id="confirmation_of_app"
-													name="confirmation_of_app"
-												>
-													{({ input, meta }) => (
-														<Select
+														<input
 															{...input}
-															options={confirmationList}
-															className={error(meta)}
-															placeholder="Select type"
-															getOptionValue={option => option.name}
-															getOptionLabel={option => option.name}
-															value={confirmation}
-															onChange={e => {
-																setConfirmation(e);
-																e ? input.onChange(e.name) : input.onChange('');
-															}}
+															type="number"
+															className={`form-control ${error(meta)}`}
+															id="casualties_recorded"
+															placeholder="Casualties Recorded"
 														/>
 													)}
 												</Field>
-												<ErrorBlock name="confirmation_of_app" />
+												<ErrorBlock name="casualties_recorded" />
 											</div>
-										</div>
-									</div>
-								</div>
-								<div className="col-lg-12">
-									<div className="card">
-										<div className="card-body">
-											<div className="row">
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="directorate_id"
-													>
-														Directorate <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="directorate_id" name="directorate_id">
-														{({ input, meta }) => (
-															<AsyncSelect
-																isClearable
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-																defaultOptions
-																value={directorate}
-																className={error(meta)}
-																loadOptions={getDirectorates}
-																onChange={e => {
-																	setDirectorate(e);
-																	e ? input.onChange(e.id) : input.onChange('');
-																	fetchDepartments(e?.id);
-																	setDepartments([]);
-																	setDepartment(null);
-																	setUnits([]);
-																	form.change('department_id', undefined);
-																	form.change('unit', undefined);
-																}}
-																placeholder="Search directorate"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="directorate_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="department_id">
-														Department <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="department_id" name="department_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select department"
-																options={departments}
-																value={department}
-																className={error(meta)}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setDepartment(e);
-																	if (e && e.id !== department?.id) {
-																		form.change('unit', undefined);
-																		fetchUnits(e?.id);
-																	}
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="department_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="unit_id">
-														Unit
-													</label>
-													<Field id="unit_id" name="unit_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select unit"
-																options={units}
-																className={error(meta)}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="unit_id" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="cadre_id">
-														Cadre <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="cadre_id" name="cadre_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select cadre"
-																className={error(meta)}
-																options={cadres}
-																value={cadre}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setCadre(e);
-																	fetchRanks(e?.id);
-																	setRank(null);
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="cadre_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="rank_id">
-														Rank <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="rank_id" name="rank_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select rank"
-																options={ranks}
-																value={rank}
-																className={error(meta)}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setRank(e);
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="rank_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="designation">
-														Designation <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="designation" name="designation">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select designation"
-																options={designations}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="grade_on_app">
-														Grade On Appointment{' '}
-														<span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="grade_on_app" name="grade_on_app">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select rank"
-																options={ranks}
-																value={gradeOnApp}
-																className={error(meta)}
-																getOptionValue={option => option.name}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e
-																		? input.onChange(e.name)
-																		: input.onChange('');
-																	setGradeOnApp(e);
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="grade_on_app" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="specialty">
-														Specialty <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="specialty" name="specialty">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																placeholder="Select specialty"
-																options={specialties}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
-															/>
-														)}
-													</Field>
-												</div>
-
-												<div className="col-lg-4 mb-3">
-													<label htmlFor="category" className="form-label">
-														Category
-													</label>
-													<Field id="category" name="category">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																options={categoryList}
-																className={error(meta)}
-																placeholder="Select type"
-																getOptionValue={option => option.name}
-																getOptionLabel={option => option.name}
-																value={category}
-																onChange={e => {
-																	setCategory(e);
-																	e
-																		? input.onChange(e.name)
-																		: input.onChange('');
-																}}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="category" />
-												</div>
+											<div className="mb-3">
+												<label className="form-label" htmlFor="arresting_body">
+													Arresting Body <span style={{ color: 'red' }}></span>
+												</label>
+												<Field id="arresting_body" name="arresting_body">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="number"
+															className={`form-control ${error(meta)}`}
+															id="arresting_body"
+															placeholder="Arresting Body"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="arresting_body" />
+											</div>
+											<div className="mb-3">
+												<label className="form-label" htmlFor="place_of_detention">
+													Place of Detention <span style={{ color: 'red' }}></span>
+												</label>
+												<Field id="place_of_detention" name="place_of_detention">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="number"
+															className={`form-control ${error(meta)}`}
+															id="place_of_detention"
+															placeholder="Place of Detention"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="place_of_detention" />
+											</div>
+											<div className="mb-3">
+												<label className="form-label" htmlFor="action_taken">
+													Action taken <span style={{ color: 'red' }}></span>
+												</label>
+												<Field id="action_taken" name="action_taken">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="number"
+															className={`form-control ${error(meta)}`}
+															id="action_taken"
+															placeholder="Action taken"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="action_taken" />
 											</div>
 										</div>
 									</div>

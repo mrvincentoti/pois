@@ -9,33 +9,33 @@ from ..util import encrypt, decrypt
 class Poi(db.Model):
     __tablename__ = 'poi'
 
-    id = db.Column(db.Integer, primary_key=True)
-    ref_numb = db.Column(db.String(64), unique=False, nullable=True)
-    picture = db.Column(db.String(255), unique=False, nullable=True)
-    first_name = db.Column(db.String(64), nullable=False)
-    middle_name = db.Column(db.String(64), nullable=True)
-    last_name = db.Column(db.String(64), nullable=False)
-    alias = db.Column(db.String(64), nullable=True)
-    dob = db.Column(db.Date, nullable=True)
-    passport_number = db.Column(db.String(64), nullable=True)
-    other_id_number = db.Column(db.String(64), nullable=True)
-    phone_number = db.Column(db.String(64), nullable=True)
-    email = db.Column(db.String(64), nullable=True)
-    role = db.Column(db.String(64), nullable=True)
-    affiliation_id = db.Column(db.Integer, db.ForeignKey('affiliations.id'), nullable=True)
-    address = db.Column(db.Text, nullable=True)
-    remark = db.Column(db.Text, nullable=True)
-    crime_committed = db.Column(db.String(255), nullable=True)
-    crime_date = db.Column(db.Date, nullable=True)
-    casualties_recorded = db.Column(db.Integer, nullable=True)
-    arresting_body = db.Column(db.String(255), nullable=True)
-    place_of_detention = db.Column(db.String(255), nullable=True)
-    action_taken = db.Column(db.String(255), nullable=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    source_id = db.Column(db.Integer, db.ForeignKey('sources.id'))
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
-    state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
-    gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'))
+    id = db.Column(db.Integer, primary_key=True) #captured
+    ref_numb = db.Column(db.String(64), unique=False, nullable=True) #captured
+    picture = db.Column(db.String(255), unique=False, nullable=True) #captured
+    first_name = db.Column(db.String(64), nullable=False) #captured
+    middle_name = db.Column(db.String(64), nullable=True) #captured
+    last_name = db.Column(db.String(64), nullable=False) #captured
+    alias = db.Column(db.String(64), nullable=True) #captured
+    dob = db.Column(db.Date, nullable=True) #captured
+    passport_number = db.Column(db.String(64), nullable=True) #captured
+    other_id_number = db.Column(db.String(64), nullable=True) #captured
+    phone_number = db.Column(db.String(64), nullable=True) #captured
+    email = db.Column(db.String(64), nullable=True) #captured
+    role = db.Column(db.String(64), nullable=True) #captured
+    affiliation_id = db.Column(db.Integer, db.ForeignKey('affiliations.id'), nullable=True) #captured
+    address = db.Column(db.Text, nullable=True) #captured
+    remark = db.Column(db.Text, nullable=True) #captured
+    crime_committed = db.Column(db.String(255), nullable=True) #captured
+    crime_date = db.Column(db.Date, nullable=True) #captured
+    casualties_recorded = db.Column(db.Integer, nullable=True) #captured
+    arresting_body = db.Column(db.String(255), nullable=True) #captured
+    place_of_detention = db.Column(db.String(255), nullable=True) #captured
+    action_taken = db.Column(db.String(255), nullable=True) #captured
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id')) #captured
+    source_id = db.Column(db.Integer, db.ForeignKey('sources.id')) #captured
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id')) #captured
+    state_id = db.Column(db.Integer, db.ForeignKey('state.id')) #captured
+    gender_id = db.Column(db.Integer, db.ForeignKey('genders.id')) #captured
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
 
