@@ -789,10 +789,24 @@ const NewPoi = () => {
 											</div>
 										</div>
 									</div>
+									<div className="text-end mb-4">
+										<Link
+											to="/pois/poi"
+											className="btn btn-danger w-sm me-1"
+										>
+											Cancel
+										</Link>
+										<button type="submit" className="btn btn-success w-sm">
+											Create POI
+										</button>
+									</div>
 								</div>
 
 								<div className="col-lg-4">
 									<div className="card mb-3">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Picture</h5>
+										</div>
 										<div className="card-body">
 											<div className="mb-3 text-center">
 												<UploadButton
@@ -804,7 +818,10 @@ const NewPoi = () => {
 										</div>
 									</div>
 
-									<div className="card">
+									{/* <div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Crime Information</h5>
+										</div>
 										<div className="card-body">
 											<div className="mb-3">
 												<label className="form-label" htmlFor="crime_committed">
@@ -923,9 +940,18 @@ const NewPoi = () => {
 												<ErrorBlock name="action_taken" />
 											</div>
 										</div>
-									</div>
+									</div> */}
+
+									{/* <div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Arms Recovered</h5>
+										</div>
+										<div className="card-body">
+											
+										</div>
+									</div> */}
 								</div>
-								<div className="col-lg-12">
+								{/* <div className="col-lg-12">
 									<div className="text-end mb-4">
 										<Link
 											to="/employees/profiles"
@@ -937,7 +963,7 @@ const NewPoi = () => {
 											Create employee
 										</button>
 									</div>
-								</div>
+								</div> */}
 							</div>
 						</FormWrapper>
 					)}

@@ -19,7 +19,7 @@ import {
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
-import { EditLink, ViewLink } from '../../components/Buttons';
+import { EditLink, ViewLink, ManagePoi } from '../../components/Buttons';
 import EmployeeFilter from '../../components/EmployeeFilter';
 import { DELETE_POI_API, FETCH_EMPLOYEES_API, FET_POIS_API } from '../../services/api';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -289,11 +289,9 @@ const Poi = () => {
 														<td>{formatDate(item.date_of_employment)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
-																<ViewLink to={`/employees/${item.id}/view`} />
-																<EditLink to={`/employees/${item.id}/edit`} />
-																{/* <DeleteButton
-																	onClick={() => confirmRemove(item)}
-																/> */}
+																<ViewLink to={`/pois/${item.id}/view`} />
+																<EditLink to={`/pois/${item.id}/edit`} />
+																<ManagePoi to={`/pois/${item.id}/manage`} />
 															</div>
 														</td>
 													</tr>

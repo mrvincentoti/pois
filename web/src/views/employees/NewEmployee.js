@@ -749,35 +749,35 @@ const NewEmployee = () => {
 													</label>
 
 													<Field name="language_spoken">
-										{({ input, meta }) => (
-											<div className={`form-control ${error(meta)}`}>
-												{tagChild}
-												{inputVisible && (
-													<Input
-														type="text"
-														size="small"
-														value={inputValue}
-														onChange={handleInputChange}
-														onBlur={handleInputConfirm}
-														onPressEnter={handleInputConfirm}
-														style={{ width: 78, marginRight: 8, marginTop: 5 }}
-													/>
-												)}
-												{!inputVisible && (
-													<Tag onClick={showInput}  className="site-tag-plus">
-														<i className="ri-add-line" />  New Tag
-													</Tag>
-												)}
-												<input
-													{...input}
-													type="hidden"
-													value={language}
-													onChange={() => {}}
-													onBlur={() => input.onBlur(language)}
-												/>
-											</div>
-										)}
-									</Field>
+														{({ input, meta }) => (
+															<div className={`form-control ${error(meta)}`}>
+																{tagChild}
+																{inputVisible && (
+																	<Input
+																		type="text"
+																		size="small"
+																		value={inputValue}
+																		onChange={handleInputChange}
+																		onBlur={handleInputConfirm}
+																		onPressEnter={handleInputConfirm}
+																		style={{ width: 78, marginRight: 8, marginTop: 5 }}
+																	/>
+																)}
+																{!inputVisible && (
+																	<Tag onClick={showInput}  className="site-tag-plus">
+																		<i className="ri-add-line" />  New Tag
+																	</Tag>
+																)}
+																<input
+																	{...input}
+																	type="hidden"
+																	value={language}
+																	onChange={() => {}}
+																	onBlur={() => input.onBlur(language)}
+																/>
+															</div>
+														)}
+													</Field>
 
 													<ErrorBlock name="language_spoken" />
 												</div>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export const ViewLink = ({ to }) => {
 	return (
 		<Link className="link-success fs-15" role="button" to={to}>
-			<Tooltip title="view">
+			<Tooltip title="View">
 				<i className="ri-eye-line" />
 			</Tooltip>
 		</Link>
@@ -44,7 +44,7 @@ export const EditButton = ({ onClick }) => {
 export const EditLink = ({ to }) => {
 	return (
 		<Link className="link-primary fs-15" role="button" to={to}>
-			<Tooltip title="edit">
+			<Tooltip title="Edit">
 				<i className="ri-edit-2-line" />
 			</Tooltip>
 		</Link>
@@ -94,5 +94,15 @@ export const RestoreButton = ({ onClick }) => {
 				<i className="ri-arrow-go-back-fill fs-16" />
 			</Tooltip>
 		</a>
+	);
+};
+
+export const ManagePoi = ({ to }) => {
+	return (
+		<Link className="link-danger fs-15" role="button" to={to}>
+			<Tooltip title="Manage">
+				<i className="ri-briefcase-5-fill" />
+			</Tooltip>
+		</Link>
 	);
 };
