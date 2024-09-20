@@ -104,7 +104,7 @@ const Navdata = () => {
 			id: 'poi',
 			label: 'POI',
 			icon: 'ri-group-fill',
-			link: '/entity/poi',
+			link: '/pois/poi',
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('POI');
