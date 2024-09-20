@@ -13,7 +13,7 @@ def get_affiliations():
         return jsonify({
             "status": "success",
             "status_code": 200,
-            'categories': affilition_list,
+            'affiliations': affilition_list,
         })
     except Exception as e:
         return jsonify({'error': str(e)})

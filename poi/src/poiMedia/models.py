@@ -19,15 +19,16 @@ class PoiMedia(db.Model):
     poi = db.relationship('Poi', backref='poi_media')
 
     def __init__(self, document_url=None, picture_url=None, audio_url=None, video_url=None, poi_id=None,
-                 deleted_at=None):
+                 deleted_at=None, created_by=None):
         self.document_url = document_url
         self.picture_url = picture_url
         self.audio_url = audio_url
         self.video_url = video_url
         self.poi_id = poi_id
         self.deleted_at = deleted_at
+        self.created_by = created_by
 
-    def update(self, document_url=None, picture_url=None, audio_url=None, video_url=None, poi_id=None, deleted_at=None):
+    def update(self, document_url=None, picture_url=None, audio_url=None, video_url=None, poi_id=None, deleted_at=None, created_by=None):
         if document_url is not None:
             self.document_url = document_url
         if picture_url is not None:
@@ -40,6 +41,8 @@ class PoiMedia(db.Model):
             self.poi_id = poi_id
         if deleted_at is not None:
             self.deleted_at = deleted_at
+        if created_by is not None:
+            self.created_by = created_by
         db.session.commit()
 
     def to_dict(self):
@@ -51,7 +54,8 @@ class PoiMedia(db.Model):
             'video_url': self.video_url,
             'poi_id': self.poi_id,
             'deleted_at': self.deleted_at,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'created_by': self.created_by
         }
 
     def soft_delete(self):
