@@ -9,11 +9,10 @@ class PoiMedia(db.Model):
     __tablename__ = 'poi_media'
 
     id = db.Column(db.Integer, primary_key=True)
-    document_url = db.Column(db.String(255), nullable=True)
-    picture_url = db.Column(db.String(255), nullable=True)
-    audio_url = db.Column(db.String(255), nullable=False)
-    video_url = db.Column(db.String(255), nullable=True)
     poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'), nullable=False)
+    media_type = db.Column(db.String(255), nullable=True)
+    media_url = db.Column(db.String(255), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
