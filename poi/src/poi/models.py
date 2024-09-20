@@ -36,6 +36,7 @@ class Poi(db.Model):
     country_id = db.Column(db.Integer, db.ForeignKey('country.id')) #captured
     state_id = db.Column(db.Integer, db.ForeignKey('state.id')) #captured
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id')) #captured
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
 
@@ -51,7 +52,7 @@ class Poi(db.Model):
                  affiliation_id=None, address=None, remark=None, crime_committed=None, crime_date=None,
                  casualties_recorded=None, arresting_body=None, place_of_detention=None, action_taken=None,
                  category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
-                 created_at=None):
+                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
         self.first_name = first_name
@@ -80,6 +81,7 @@ class Poi(db.Model):
         self.gender_id = gender_id
         self.deleted_at = deleted_at
         self.created_at = created_at
+        self.created_by = created_by
 
     def soft_delete(self):
         self.deleted_at = datetime.now()
@@ -94,7 +96,7 @@ class Poi(db.Model):
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
                email=None, role=None, affiliation=None, address=None, remark=None, crime_committed=None, arresting_body=None, place_of_detention=None,
                action_taken=None, crime_date=None, casualties_recorded=None, middle_name=None, alias=None,picture=None,
-               category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None):
+               category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
         if picture:
@@ -149,6 +151,8 @@ class Poi(db.Model):
             self.gender_id = gender_id
         if deleted_at:
             self.deleted_at = deleted_at
+        if created_by:
+            self.created_by = created_by
 
         db.session.commit()
 
@@ -182,7 +186,8 @@ class Poi(db.Model):
             'state': self.state.to_dict() if self.state else None,
             'gender': self.gender.to_dict() if self.gender else None,
             'deleted_at': self.deleted_at,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'created_by': self.created_by
         }
 
     def __repr__(self):
