@@ -21,7 +21,7 @@ import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { EditLink, ViewLink, ManagePoi } from '../../components/Buttons';
 import EmployeeFilter from '../../components/EmployeeFilter';
-import { DELETE_POI_API, FETCH_EMPLOYEES_API, FET_POIS_API } from '../../services/api';
+import { DELETE_POI_API, FET_POIS_API } from '../../services/api';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';

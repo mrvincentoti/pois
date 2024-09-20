@@ -197,10 +197,11 @@ export const FETCH_STATIONS_API = `${BASE_EMPLOYEE_URL}/stations`;
 export const FETCH_STATIONS_BY_REGION_API = `${BASE_EMPLOYEE_URL}/stations?:region_id`;
 
 // gender api
-export const FETCH_GENDERS_API = `${BASE_EMPLOYEE_URL}/genders`;
+// export const FETCH_GENDERS_API = `${BASE_EMPLOYEE_URL}/genders`;
 
 // state api
-export const FETCH_STATES_API = `${BASE_EMPLOYEE_URL}/states`;
+export const FETCH_COUNTRIES_API = `${BASE_POI_URL}/countries`;
+export const FETCH_STATES_API = `${BASE_POI_URL}/states/:id`;
 
 // lga api
 export const FETCH_LGAS_BY_STATE_API = `${BASE_EMPLOYEE_URL}/lgas/:state_id`;
@@ -229,3 +230,15 @@ export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
 export const FET_POIS_API = `${BASE_POI_URL}/pois`;
 export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const CREATE_POI_API = `${BASE_POI_URL}/pois`;
+
+// genders api
+export const FETCH_GENDERS_API = `${BASE_POI_URL}/genders`;
+
+// categories api
+export const FETCH_CATEGORIES_API = `${BASE_POI_URL}/categories`;
+
+// sources api
+export const FETCH_SOURCES_API = `${BASE_POI_URL}/sources`;
+
+// Affiliations api
+export const FETCH_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations`;
