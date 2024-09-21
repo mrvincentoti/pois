@@ -7,7 +7,7 @@ class ArmsRecovered(db.Model):
     arm_id = db.Column(db.Integer, db.ForeignKey('arms.id'))
     number_recovered = db.Column(db.Integer, nullable=True)
     ammunition = db.Column(db.String(64))
-    arm = db.relationship("Arms", backref="arms_recovered")
+    arm = db.relationship("Arm", backref="arms_recovered")
     poi = db.relationship("Poi", backref="arms_recovered")
 
     def to_dict(self):
