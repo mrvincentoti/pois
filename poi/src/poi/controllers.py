@@ -35,6 +35,7 @@ def create_poi():
     arresting_body = data.get('arresting_body')
     place_of_detention = data.get('place_of_detention')
     action_taken = data.get('action_taken')
+    created_by = g.user["id"]
 
     response = {}
     try:
@@ -65,7 +66,8 @@ def create_poi():
             source_id=source_id,
             country_id=country_id,
             state_id=state_id,
-            gender_id=gender_id
+            gender_id=gender_id,
+            created_by=created_by
         )
 
         db.session.add(poi)
