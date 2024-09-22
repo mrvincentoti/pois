@@ -2,9 +2,6 @@ from datetime import datetime
 from .. import db  # from __init__.py
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, event
 
-from ..util import encrypt, decrypt
-
-
 class PoiMedia(db.Model):
     __tablename__ = 'poi_media'
 
@@ -18,25 +15,19 @@ class PoiMedia(db.Model):
 
     poi = db.relationship('Poi', backref='poi_media')
 
-    def __init__(self, document_url=None, picture_url=None, audio_url=None, video_url=None, poi_id=None,
+    def __init__(self, media_type=None, media_url=None, poi_id=None,
                  deleted_at=None, created_by=None):
-        self.document_url = document_url
-        self.picture_url = picture_url
-        self.audio_url = audio_url
-        self.video_url = video_url
+        self.media_type = media_type
+        self.media_url = media_url
         self.poi_id = poi_id
         self.deleted_at = deleted_at
         self.created_by = created_by
 
-    def update(self, document_url=None, picture_url=None, audio_url=None, video_url=None, poi_id=None, deleted_at=None, created_by=None):
-        if document_url is not None:
-            self.document_url = document_url
-        if picture_url is not None:
-            self.picture_url = picture_url
-        if audio_url is not None:
-            self.audio_url = audio_url
-        if video_url is not None:
-            self.video_url = video_url
+    def update(self, media=None, media_url=None, poi_id=None, deleted_at=None, created_by=None):
+        if media_type is not None:
+            self.media_type = media_type
+        if media_url is not None:
+            self.media_url = media_url
         if poi_id is not None:
             self.poi_id = poi_id
         if deleted_at is not None:
@@ -48,10 +39,8 @@ class PoiMedia(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'document_url': self.document_url,
-            'picture_url': self.picture_url,
-            'audio_url': self.audio_url,
-            'video_url': self.video_url,
+            'media_type': self.media_type,
+            'media_url': self.media_url,
             'poi_id': self.poi_id,
             'deleted_at': self.deleted_at,
             'created_at': self.created_at,

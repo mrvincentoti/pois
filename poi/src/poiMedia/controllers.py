@@ -21,7 +21,26 @@ def get_medias():
         return jsonify({'error': str(e)})
 
 @custom_jwt_required
-def upload_media(poi_id):
+def get_poi_medias(poi_id):
+    try:
+        medias = PoiMedia.query.all()
+
+        media_list = []
+        for media in medias:
+            media_data = media.to_dict()
+            media_list.append(media_data)
+
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            'medias': media_list,
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+    
+@custom_jwt_required
+def add_poi_media(poi_id):
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
 
