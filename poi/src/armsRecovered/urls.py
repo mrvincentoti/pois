@@ -1,7 +1,7 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_arm_recovered, get_arms_recovered, get_arm_recovered, edit_arm_recovered, delete_arm_recovered, restore_arm_recovered
+from .controllers import add_arm_recovered, get_arms_recovered, get_arm_recovered, edit_arm_recovered, delete_arm_recovered, restore_arm_recovered, get_arms_recovered_by_poi
 from .models import ArmsRecovered
 
 @app.route("/recovered-arms", methods=['GET', 'POST'])
@@ -21,3 +21,8 @@ def retrieve_update_destroy_arms_recovered(recovery_id):
 def restore_single_arm_recovered(recovery_id):
    if request.method == 'GET': return restore_arm_recovered(recovery_id)
    else: return 'Method is Not Allowed'
+
+@app.route("/poi-recovered-arms/<poi_id>", methods=['GET'])
+def poi_arms_recovered(poi_id):
+   if request.method == 'GET': return get_arms_recovered_by_poi(poi_id)
+   else: return 'Method is Not Allowed'  
