@@ -22,3 +22,9 @@ class ArmsRecovered(db.Model):
     def __init__(self, id, name):
         self.id = id
         self.name = name
+        
+    def soft_delete(self):
+        self.deleted_at = datetime.now()
+   
+    def restore(self):
+        self.deleted_at = None
