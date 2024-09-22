@@ -25,10 +25,15 @@ import {
 import '../../assets/scss/profile.css'
 import profileBg from '../../assets/images/profile-bg.jpg';
 import samplePicture from '../../assets/images/users/avatar-1.jpg';
+import sampleMedia5 from '../../assets/images/small/img-5.jpg';
+import sampleMedia6 from '../../assets/images/small/img-6.jpg';
 import { Button } from "antd";
 import PoiPrint from "./PoiPrint";
+import MediaAndDocument from '../../components/MediaAndDocument';
+import EmployeePrint from "../employees/EmployeeProfilePrint";
 
 const ViewPoi = () => {
+    const employeePrintRef = useRef();
     const [loaded, setLoaded] = useState(false);
     const [employeeData, setEmployeeData] = useState(null);
 
@@ -58,11 +63,20 @@ const ViewPoi = () => {
     // }, [fetchEmployeeDetails, loaded, navigate, params.id]);
 
 
+    // const handlePrint = () => {
+    //     window.print();
+    // };
+
     const handlePrint = () => {
+        // Add a print-specific class to the body
+        document.body.classList.add('print-mode');
+
+        // Trigger the print dialog
         window.print();
+
+        // Remove the print-specific class after printing
+        document.body.classList.remove('print-mode');
     };
-
-
 
     return (
         <>
@@ -145,41 +159,52 @@ const ViewPoi = () => {
                                         <div className="col-xxl-3">
                                             <div className="card">
                                                 <div className="card-body">
-                                                    <h5 className="card-title mb-3">Person Information</h5>
-                                                    <div className="table-responsive">
-                                                        <table className="table table-borderless mb-0">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">Full Name :</th>
-                                                                    <td className="text-muted">Anna Adame Anade</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">Alias :</th>
-                                                                    <td className="text-muted">Bisco</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">Mobile :</th>
-                                                                    <td className="text-muted">+(234) 987 6543</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">E-mail :</th>
-                                                                    <td className="text-muted">daveadame@velzon.com</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">Gender :</th>
-                                                                    <td className="text-muted">Male</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">DOB :</th>
-                                                                    <td className="text-muted">24 Nov 2021</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <th className="ps-0" scope="row">Marital Status :</th>
-                                                                    <td className="text-muted">Single</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
+                                                    <div class="d-flex align-items-center mb-4">
+                                                        <h5 class="card-title flex-grow-1 mb-0">Personal Information</h5>
+                                                        <div class="flex-shrink-0">
+                                                            <input class="form-control d-none" type="file" id="formFile" />
+                                                            <label for="formFile" class="btn btn-info">
+                                                                <i class="ri-upload-2-fill me-1 align-bottom"></i> Edit
+                                                            </label>
+                                                        </div>
                                                     </div>
+                                                    <div className="row">
+                                                        <div className="table-responsive">
+                                                            <table className="table table-borderless mb-0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">Full Name :</th>
+                                                                        <td className="text-muted">Anna Adame Anade</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">Alias :</th>
+                                                                        <td className="text-muted">Bisco</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">Mobile :</th>
+                                                                        <td className="text-muted">+(234) 987 6543</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">E-mail :</th>
+                                                                        <td className="text-muted">daveadame@velzon.com</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">Gender :</th>
+                                                                        <td className="text-muted">Male</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">DOB :</th>
+                                                                        <td className="text-muted">24 Nov 2021</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th className="ps-0" scope="row">Marital Status :</th>
+                                                                        <td className="text-muted">Single</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                   
                                                 </div>
                                                 {/* end card body */}
                                             </div>
@@ -226,7 +251,7 @@ const ViewPoi = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Affiliation :</p>
-                                                                    <h6  className="fw-semibold">BZ</h6>
+                                                                    <h6 className="fw-semibold">BZ</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -240,7 +265,7 @@ const ViewPoi = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Role :</p>
-                                                                    <h6  className="fw-semibold">Spokesperson</h6>
+                                                                    <h6 className="fw-semibold">Spokesperson</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -254,7 +279,7 @@ const ViewPoi = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Category :</p>
-                                                                    <h6  className="fw-semibold">Group</h6>
+                                                                    <h6 className="fw-semibold">Group</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -336,6 +361,180 @@ const ViewPoi = () => {
                                             </div>
                                             {/* end card */}
 
+                                            <div className="card">
+                                                <div className="card-body">
+                                                    <div class="d-flex align-items-center mb-4">
+                                                        <h5 class="card-title flex-grow-1 mb-0">Crime Committed</h5>
+                                                        <div class="flex-shrink-0">
+                                                            <input class="form-control d-none" type="file" id="formFile" />
+                                                            <label for="formFile" class="btn btn-danger">
+                                                                <i class="ri-upload-2-fill me-1 align-bottom"></i> Add
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-xxl-3 col-sm-4">
+                                                            <div className="card profile-project-card shadow-none profile-project-warning">
+                                                                <div className="card-body p-4">
+                                                                    <div className="d-flex">
+                                                                        <div className="flex-grow-1 text-muted overflow-hidden">
+                                                                            <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Kidnapping Children</a></h5>
+                                                                            <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                        </div>
+                                                                        <div className="flex-shrink-0 ms-2">
+                                                                            <div className="badge bg-warning-subtle text-warning fs-10">Terrorism</div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* <div className="d-flex mt-4">
+                                                                        <div className="flex-grow-1">
+                                                                            <div className="d-flex align-items-center gap-2">
+                                                                                <div>
+                                                                                    <h5 className="fs-12 text-muted mb-0">Members :</h5>
+                                                                                </div>
+                                                                                <div className="avatar-group">
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-1.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-3.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <div className="avatar-title rounded-circle bg-light text-primary">
+                                                                                                J
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div> */}
+                                                                </div>
+                                                                {/* end card body */}
+                                                            </div>
+                                                            {/* end card */}
+                                                        </div>
+                                                        {/* end col */}
+                                                        <div className="col-xxl-3 col-sm-4">
+                                                            <div className="card profile-project-card shadow-none profile-project-danger">
+                                                                <div className="card-body p-4">
+                                                                    <div className="d-flex">
+                                                                        <div className="flex-grow-1 text-muted overflow-hidden">
+                                                                            <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Kidnapping Children</a></h5>
+                                                                            <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                        </div>
+                                                                        <div className="flex-shrink-0 ms-2">
+                                                                            <div className="badge bg-warning-subtle text-warning fs-10">Terrorism</div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* <div className="d-flex mt-4">
+                                                                        <div className="flex-grow-1">
+                                                                            <div className="d-flex align-items-center gap-2">
+                                                                                <div>
+                                                                                    <h5 className="fs-12 text-muted mb-0">Members :</h5>
+                                                                                </div>
+                                                                                <div className="avatar-group">
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-1.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-3.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <div className="avatar-title rounded-circle bg-light text-primary">
+                                                                                                J
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div> */}
+                                                                </div>
+                                                                {/* end card body */}
+                                                            </div>
+                                                            {/* end card */}
+                                                        </div>
+                                                        {/* end col */}
+                                                        <div className="col-xxl-3 col-sm-4">
+                                                            <div className="card profile-project-card shadow-none profile-project-success">
+                                                                <div className="card-body p-4">
+                                                                    <div className="d-flex">
+                                                                        <div className="flex-grow-1 text-muted overflow-hidden">
+                                                                            <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Stealing of 2000 Create Of Eggs</a></h5>
+                                                                            <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                                                            <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                                                        </div>
+                                                                        <div className="flex-shrink-0 ms-2">
+                                                                            <div className="badge bg-warning-subtle text-warning fs-10">Banditry</div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* <div className="d-flex mt-4">
+                                                                        <div className="flex-grow-1">
+                                                                            <div className="d-flex align-items-center gap-2">
+                                                                                <div>
+                                                                                    <h5 className="fs-12 text-muted mb-0">Members :</h5>
+                                                                                </div>
+                                                                                <div className="avatar-group">
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-1.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <img src="assets/images/users/avatar-3.jpg" alt="" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="avatar-group-item">
+                                                                                        <div className="avatar-xs">
+                                                                                            <div className="avatar-title rounded-circle bg-light text-primary">
+                                                                                                J
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div> */}
+                                                                </div>
+                                                                {/* end card body */}
+                                                            </div>
+                                                            {/* end card */}
+                                                        </div>
+                                                        {/* end col */}
+                                                    </div>
+                                                    {/* end row */}
+                                                </div>
+                                                {/* end card-body */}
+                                            </div>
+                                            {/* end card */}
+
+                                            <MediaAndDocument />
+
                                         </div>
                                     </div>
                                 </div>
@@ -343,6 +542,9 @@ const ViewPoi = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div style={{ display: 'none' }}>
+                <EmployeePrint employeeData={employeeData} />
             </div>
         </>
 
