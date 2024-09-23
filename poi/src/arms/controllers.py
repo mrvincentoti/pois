@@ -63,7 +63,7 @@ def add_arm():
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Arm, Create",
+                "tags": "Arm, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -149,7 +149,7 @@ def edit_arm(arm_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Arm, Update",
+                "tags": "Arm, Update",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -193,7 +193,7 @@ def delete_arm(arm_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Arm, Delete",
+                "tags": "Arm, Delete",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -235,7 +235,7 @@ def restore_arm(arm_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Setup, Arm, Restore",
+            "tags": "Arm, Restore",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
