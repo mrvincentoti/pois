@@ -42,27 +42,9 @@ const publicRoutes = [
 // authenticated routes
 const Dashboard = lazy(() => import('./views/Dashboard'));
 const EntityIndex = lazy(() => import('./views/Entity/Index'));
-const EmployeesIndex = lazy(() => import('./views/employees/Index'));
-const AuditTrail = lazy(() => import('./views/AuditTrail'));
 const AccountsIndex = lazy(() => import('./views/accounts/Index'));
-const Setup = lazy(() => import('./views/setup/Index'));
 const Profile = lazy(() => import('./views/Profile'));
-const DependentsProfile = lazy(() => import('./views/Dependents-Profile'));
-const PostingProfile = lazy(() => import('./views/employees/EmployeePostings'));
-const TrainingsProfile = lazy(() => import('./views/employees/TrainingsProfile'));
-const ConferencesProfile = lazy(() => import('./views/employees/ConferencesProfile'));
-const NextOfKinProfile = lazy(() => import('./views/employees/NextOfKinProfile'));
-const DeploymentsProfile = lazy(() => import('./views/employees/DeploymentProfile'));
-const PromotionsProfile = lazy(() => import('./views/employees/PromotionsProfile'));
-const AwardsProfile = lazy(() => import('./views/employees/AwardsProfile'));
-const SanctionsProfile = lazy(() => import('./views/employees/SanctionsProfile'));
-const Dependents = lazy(() => import('./views/Dependents'));
-const NextOfKin = lazy(() => import('./views/NextOfKin'));
-const Trainings = lazy(() => import('./views/Trainings'));
-const Conferences = lazy(() => import('./views/Conferences'));
-const RetiredEmployees = lazy(
-	() => import('./views/employees/RetiredEmployees')
-);
+
 
 // POI
 const PoiIndex = lazy(() => import('./views/poi/Index'));
@@ -71,25 +53,6 @@ const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
 	{ path: 'entity/*', component: <EntityIndex /> },
 	{ path: 'users/:username', component: <Profile /> },
-	{ path: 'dependents/:id', component: <DependentsProfile /> },
-	{ path: 'deployments/:id', component: <DeploymentsProfile /> },
-	{ path: 'next-of-kin/:id', component: <NextOfKinProfile /> },
-	{ path: 'trainings/:id', component: <TrainingsProfile /> },
-	{ path: 'conferences/:id', component: <ConferencesProfile /> },
-	{ path: 'promotions/:id', component: <PromotionsProfile /> },
-	{ path: 'awards/:id', component: <AwardsProfile /> },
-	{ path: 'sanctions/:id', component: <SanctionsProfile /> },
-	{ path: 'employee-posting/:id', component: <PostingProfile /> },
-	{ path: 'employees/*', component: <EmployeesIndex /> },
-	{ path: 'accounts/*', component: <AccountsIndex /> },
-	{ path: 'audit-trail', component: <AuditTrail /> },
-	{ path: 'setup/*', component: <Setup /> },
-	{ path: 'dependents', component: <Dependents /> },
-	{ path: 'next-of-kin', component: <NextOfKin /> },
-	{ path: 'trainings', component: <Trainings /> },
-	{ path: 'conferences', component: <Conferences /> },
-	{ path: 'retired-employees', component: <RetiredEmployees /> },
-	// POI
 	{ path: 'pois/*', component: <PoiIndex /> },
 ];
 

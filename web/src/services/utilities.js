@@ -93,21 +93,12 @@ export async function request(uri, { body, ...customConfig } = {}) {
 
 
 
-	const keyCheckResponse= await checkKey()
-
-
-	const response = keyCheckResponse.ok
-				  ? await fetch(uri, config)
-				  : new Response(JSON.stringify({ message: keyCheckResponse.message }), {
-					  status: 401,
-					  statusText: 'UNAUTHORIZED',
-					  headers: { 'Content-Type': 'application/json' }
-					});
+	
 
 
 
-	const result = await checkStatus(response);
-
+	const response = await fetch(uri, config);
+	const result = await checkStatus(response)
 
 	return parseJSON(result);
 
