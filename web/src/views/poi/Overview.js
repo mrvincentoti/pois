@@ -1,19 +1,64 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
+import { useEffect, useState } from 'react';
+import { GET_POI_API } from '../../services/api';
+import {
+	antIconSync,
+	formatDate, formatDateWord,
+	formatPoiName,
+	formatGetInitialsName,
+	notifyWithIcon,
+	request,
+} from '../../services/utilities';
+import Spin from 'antd/es/spin';
+// import PoiPrint from "./PoiProfilePrint";
 
 
 
 const Overview = () => {
+
+    const [loaded, setLoaded] = useState(false);
+	const [poiData, setPoiData] = useState(null);
+
     const navigate = useNavigate();
     const params = useParams();
+
+    const fetchPoiDetails = useCallback(async poiId => {
+		try {
+			const rs = await request(GET_POI_API.replace(':id', poiId));
+
+			setPoiData(rs.user_data);
+		} catch (error) {
+			throw error;
+		}
+	}, []);
+
+    useEffect(() => {
+		if (!loaded) {
+			fetchPoiDetails(params.id)
+				.then(_ => setLoaded(true))
+				.catch(e => {
+					notifyWithIcon('error', e.message);
+					navigate('/not-found');
+				});
+		}
+	}, [fetchPoiDetails, loaded, navigate, params.id]);
 
     const handleEditClick = (id) => {
         navigate(`/pois/${id}/edit`);
     };
 
+    const handlePrint = () => {
+        window.print();
+          };
+
     return (
         <>
+        <div className="container-fluid no-printme mb-5">
+            {loaded && poiData ? (
+        <>
+        
             <div className="card">
                 <div className="card-body">
                     <div class="d-flex align-items-center mb-4">
@@ -31,31 +76,31 @@ const Overview = () => {
                                 <tbody>
                                     <tr>
                                         <th className="ps-0" scope="row">Full Name :</th>
-                                        <td className="text-muted">Anna Adame Anade</td>
+                                        <td className="text-muted">{formatPoiName(poiData, true)}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">Alias :</th>
-                                        <td className="text-muted">Bisco</td>
+                                        <td className="text-muted">{poiData.alias || 'N/A'}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">Mobile :</th>
-                                        <td className="text-muted">+(234) 987 6543</td>
+                                        <td className="text-muted">{poiData.phone_number || 'N/A'}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">E-mail :</th>
-                                        <td className="text-muted">daveadame@velzon.com</td>
+                                        <td className="text-muted">{poiData.email?poiData.email: 'N/A'}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">Gender :</th>
-                                        <td className="text-muted">Male</td>
+                                        <td className="text-muted">{poiData.gender?.name || 'N/A'}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">DOB :</th>
-                                        <td className="text-muted">24 Nov 2021</td>
+                                        <td className="text-muted">{poiData.dob || 'N/A'}</td>
                                     </tr>
                                     <tr>
                                         <th className="ps-0" scope="row">Marital Status :</th>
-                                        <td className="text-muted">Single</td>
+                                        <td className="text-muted">{poiData.marital_status || 'N/A'}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -66,7 +111,7 @@ const Overview = () => {
                 {/* end card body */}
             </div>
             {/* end card */}
-            <div className="card">
+                                             <div className="card">
                                                 <div className="card-body">
                                                     <h5 className="card-title mb-3">Technical Information</h5>
                                                     <div className="row">
@@ -79,7 +124,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Passport Number :</p>
-                                                                    <h6 className="text-truncate mb-0">AA100002U</h6>
+                                                                    <h6 className="text-truncate mb-0">
+                                                                        {poiData.passport_number|| 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -93,7 +139,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Other ID Number :</p>
-                                                                    <h6 className="text-truncate">BB78U387</h6>
+                                                                    <h6 className="text-truncate">
+                                                                        {poiData.other_id_number || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -107,7 +154,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Affiliation :</p>
-                                                                    <h6 className="fw-semibold">BZ</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                        {poiData.affiliation_id || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -121,7 +169,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Role :</p>
-                                                                    <h6 className="fw-semibold">Spokesperson</h6>
+                                                                    <h6 className="fw-semibold"> 
+                                                                    {poiData.role || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -135,7 +184,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Category :</p>
-                                                                    <h6 className="fw-semibold">Group</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                         {poiData.category ?.name || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -149,7 +199,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Source :</p>
-                                                                    <h6 className="fw-semibold">News Paper</h6>
+                                                                    <h6 className="fw-semibold"> 
+                                                                    {poiData.source ?.name || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -163,7 +214,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Country :</p>
-                                                                    <h6 className="fw-semibold">Nigeria</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                        {poiData.country ?.name || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -177,7 +229,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">State :</p>
-                                                                    <h6 className="fw-semibold">Enugu</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                        {poiData.state ?.name || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -191,7 +244,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Address :</p>
-                                                                    <h6 className="fw-semibold">112 Nike Street</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                        {poiData.address || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -205,7 +259,8 @@ const Overview = () => {
                                                                 </div>
                                                                 <div className="flex-grow-1 overflow-hidden">
                                                                     <p className="mb-1">Remark :</p>
-                                                                    <h6 className="fw-semibold">This is just a test remark</h6>
+                                                                    <h6 className="fw-semibold">
+                                                                        {poiData.remark  || 'N/A'}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -213,10 +268,21 @@ const Overview = () => {
                                                     </div>
                                                     {/* end row */}
                                                 </div>
-                                                {/* end card-body */}
+                                              {/* end card-body */}
             </div>
-            {/* end card */}
-        </>
+           </>
+           
+             ) : (
+				<div>
+					<Spin spinning={true} indicator={antIconSync}>
+						<div className="fetching" />
+					</Spin>
+				</div>
+			)} 
+
+             </div>
+        </>  
+        
     );
 };
 

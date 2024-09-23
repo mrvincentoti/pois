@@ -276,6 +276,13 @@ export const formatEmployeeName = (employee, show_middlename = false) => {
 		? `${employee.first_name}${middlename} ${employee.last_name} (${employee.pf_num})`
 		: '';
 };
+export const formatPoiName = (poi, show_middlename = false) => {
+	const middlename =
+		show_middlename && poi.middle_name ? ` ${poi.middle_name}` : '';
+	return poi
+		? `${poi.first_name}${middlename} ${poi.last_name} (${poi.ref_numb})`
+		: '';
+};
 
 export const dateChecker = date => {
 	const currentDate = new Date();
