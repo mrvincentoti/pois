@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
+import NewEditCrime from './NewEditCrime';
 
 
 const routes = {
@@ -10,6 +12,24 @@ const routes = {
 
 
 const CrimeCommitted = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState("");
+    const [modalType, setModalType] = useState("");
+
+    const showModal = (type, data = "") => {
+        setModalType(type);
+        setModalData(data);
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
     return (
 
         <div className="card">

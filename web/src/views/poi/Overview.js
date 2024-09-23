@@ -1,20 +1,28 @@
 import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 
 
 
 const Overview = () => {
+    const navigate = useNavigate();
+    const params = useParams();
+
+    const handleEditClick = (id) => {
+        navigate(`/pois/${id}/edit`);
+    };
+
     return (
         <>
             <div className="card">
                 <div className="card-body">
                     <div class="d-flex align-items-center mb-4">
                         <h5 class="card-title flex-grow-1 mb-0">Personal Information</h5>
-                        <div class="flex-shrink-0">
-                            <input class="form-control d-none" type="file" id="formFile" />
-                            <label for="formFile" class="btn btn-info">
-                                <i class="ri-pencil-line me-1 align-bottom"></i> Edit
-                            </label>
+                        <div className="flex-shrink-0">
+                            <input className="form-control d-none" type="file" id="formFile" />
+                            <button className="btn btn-info" onClick={() => handleEditClick(params.id)}>
+                                <i className="ri-pencil-line me-1 align-bottom"></i> Edit
+                            </button>
                         </div>
                     </div>
                     <div className="row">
