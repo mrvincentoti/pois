@@ -29,12 +29,6 @@ def create_poi():
     country_id = data.get('country_id')
     state_id = data.get('state_id')
     gender_id = data.get('gender_id')
-    crime_committed = data.get('crime_committed')
-    crime_date = data.get('crime_date')
-    casualties_recorded = data.get('casualties_recorded')
-    arresting_body = data.get('arresting_body')
-    place_of_detention = data.get('place_of_detention')
-    action_taken = data.get('action_taken')
     created_by = g.user["id"]
 
     response = {}
@@ -56,12 +50,6 @@ def create_poi():
             affiliation_id=affiliation_id,
             address=address,
             remark=remark,
-            crime_committed=crime_committed,
-            crime_date=crime_date,
-            casualties_recorded=casualties_recorded,
-            arresting_body=arresting_body,
-            place_of_detention=place_of_detention,
-            action_taken=action_taken,
             category_id=category_id,
             source_id=source_id,
             country_id=country_id,
@@ -96,12 +84,6 @@ def create_poi():
                 "email": poi.email,
                 "role": poi.role,
                 "affiliation_id": poi.affiliation_id,
-                "crime_committed": poi.crime_committed,
-                "crime_date": poi.crime_date,
-                "casualties_recorded": poi.casualties_recorded,
-                "arresting_body": poi.arresting_body,
-                "place_of_detention": poi.place_of_detention,
-                "action_taken": poi.action_taken,
                 "address": poi.address,
                 "remark": poi.remark,
                 "category_id": poi.category_id,
@@ -222,12 +204,6 @@ def update_poi(poi_id):
                 middle_name=data.get('middle_name'),
                 alias=data.get('alias'),
                 picture=data.get('picture'),
-                crime_committed=data.get('crime_committed'),
-                crime_date=data.get('crime_date'),
-                casualties_recorded=data.get('casualties_recorded'),
-                arresting_body=data.get('arresting_body'),
-                place_of_detention=data.get('place_of_detention'),
-                action_taken=data.get('action_taken'),
                 category_id=data.get('category_id'),
                 source_id=data.get('source_id'),
                 country_id=data.get('country_id'),
@@ -259,12 +235,6 @@ def update_poi(poi_id):
                     "email": poi.email,
                     "role": poi.role,
                     "affiliation_id": poi.affiliation_id,
-                    "crime_committed": poi.crime_committed,
-                    "crime_date": poi.crime_date,
-                    "casualties_recorded": poi.casualties_recorded,
-                    "arresting_body": poi.arresting_body,
-                    "place_of_detention": poi.place_of_detention,
-                    "action_taken": poi.action_taken,
                     "address": poi.address,
                     "remark": poi.remark,
                     "category_id": poi.category_id,
@@ -411,12 +381,7 @@ def list_pois():
             (Poi.email.ilike(search)) |
             (Poi.role.ilike(search)) |
             (Poi.address.ilike(search)) |
-            (Poi.remark.ilike(search)) |
-            (Poi.crime_committed.ilike(search)) |
-            (Poi.casualties_recorded.ilike(search)) |
-            (Poi.arresting_body.ilike(search)) |
-            (Poi.place_of_detention.ilike(search)) |
-            (Poi.action_taken.ilike(search))
+            (Poi.remark.ilike(search))
         )
 
     # Pagination
