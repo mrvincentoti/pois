@@ -1,9 +1,11 @@
 from .. import db
+from datetime import datetime
 
-class Arms(db.Model):
+class Arm(db.Model):
     __tablename__ = 'arms'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):
         return {
@@ -11,6 +13,14 @@ class Arms(db.Model):
             'name': self.name
         }
 
-    def __init__(self, id, name):
-        self.id = id
+    def __init__(self, name):
         self.name = name
+
+    def __repr__(self):
+        return f'<Arm {self.name}>'
+
+    def soft_delete(self):
+        self.deleted_at = datetime.now()
+   
+    def restore(self):
+        self.deleted_at = None
