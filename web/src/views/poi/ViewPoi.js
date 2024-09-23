@@ -29,8 +29,13 @@ import sampleMedia5 from '../../assets/images/small/img-5.jpg';
 import sampleMedia6 from '../../assets/images/small/img-6.jpg';
 import { Button } from "antd";
 import PoiPrint from "./PoiPrint";
-import MediaAndDocument from '../../components/MediaAndDocument';
+// import MediaAndDocument from '../../components/MediaAndDocument';
 import EmployeePrint from "../employees/EmployeeProfilePrint";
+
+import Overview from './Overview'; // Your components
+import CrimeCommitted from './CrimeCommitted';
+import MediaAndDocument from './MediaAndDocument';
+import Activities from './Activities';
 
 const ViewPoi = () => {
     const employeePrintRef = useRef();
@@ -145,6 +150,28 @@ const ViewPoi = () => {
                                             <span className="d-none d-md-inline-block">Overview</span>
                                         </a>
                                     </li>
+                                    {/* End li */}
+                                    <li className="nav-item">
+                                        <a className="nav-link fs-14 active" data-bs-toggle="tab" role="tab">
+                                            <i className="ri-airplay-fill d-inline-block d-md-none"></i>
+                                            <span className="d-none d-md-inline-block">Crime Committed</span>
+                                        </a>
+                                    </li>
+                                    {/* End li */}
+                                    <li className="nav-item">
+                                        <a className="nav-link fs-14 active" data-bs-toggle="tab" role="tab">
+                                            <i className="ri-airplay-fill d-inline-block d-md-none"></i>
+                                            <span className="d-none d-md-inline-block">Media/Document</span>
+                                        </a>
+                                    </li>
+                                    {/* End li */}
+                                    <li className="nav-item">
+                                        <a className="nav-link fs-14 active" data-bs-toggle="tab" role="tab">
+                                            <i className="ri-airplay-fill d-inline-block d-md-none"></i>
+                                            <span className="d-none d-md-inline-block">Activities</span>
+                                        </a>
+                                    </li>
+                                    {/* End li */}
                                 </ul>
                                 <div className="flex-shrink-0">
                                     <a href="pages-profile-settings.html" className="btn btn-info">
