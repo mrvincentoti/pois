@@ -52,6 +52,7 @@ const PoiIndex = lazy(() => import('./views/poi/Index'));
 const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
 	{ path: 'entity/*', component: <EntityIndex /> },
+	{ path: 'accounts/*', component: <AccountsIndex /> },
 	{ path: 'users/:username', component: <Profile /> },
 	{ path: 'pois/*', component: <PoiIndex /> },
 ];
