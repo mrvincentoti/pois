@@ -32,6 +32,7 @@ from .affiliation.models import Affiliation
 from .arms.models import Arm
 from .armsRecovered.models import ArmsRecovered
 from .crimes.models import Crime
+from .arrestingBody.models import ArrestingBody
 
 
 from . import create_app, db
@@ -105,6 +106,7 @@ from .affiliation import urls
 from .arms import urls
 from .armsRecovered import urls
 from .crimes import urls
+from .arrestingBody import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
