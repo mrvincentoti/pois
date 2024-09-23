@@ -11,19 +11,13 @@ import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
 
 import {
-	CREATE_EMPLOYEE_API,
-	FETCH_ALL_DESIGNATIONS_API,
-	FETCH_ALL_RANKS_API,
-	FETCH_ALL_SPECIALTIES_API,
-	FETCH_CADRES_API,
-	FETCH_DEPARTMENTS_API,
-	FETCH_DIRECTORATES_API,
+	CREATE_POI_API,
 	FETCH_GENDERS_API,
-	FETCH_LGAS_BY_STATE_API,
-	FETCH_RANKS_BY_CADRE_API,
-	FETCH_RELIGIONS_API,
 	FETCH_STATES_API,
-	FETCH_UNITS_API,
+	FETCH_CATEGORIES_API,
+	FETCH_SOURCES_API,
+	FETCH_COUNTRIES_API,
+	FETCH_AFFILIATIONS_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -33,7 +27,6 @@ import UploadButton from '../../components/UploadItem';
 import {
 	categoryList,
 	confirmationList,
-	employeeStatusList,
 	hasImplications,
 	maritalStatusList,
 	passportCategoryList,
@@ -42,30 +35,20 @@ import {
 const NewPoi = () => {
 	const [loaded, setLoaded] = useState(false);
 	const [stateOrigin, setStateOrigin] = useState(null);
-	const [directorate, setDirectorate] = useState(null);
-	const [department, setDepartment] = useState(null);
-	const [cadre, setCadre] = useState(null);
-	const [rank, setRank] = useState(null);
-	const [gradeOnApp, setGradeOnApp] = useState(null);
 	const [maritalStatus, setMaritalStatus] = useState(null);
 	const [passportCategory, setPassportCategory] = useState(null);
-	const [employeeStatus, setEmployeeStatus] = useState(null);
 	const [confirmation, setConfirmation] = useState(null);
 	const [category, setCategory] = useState(null);
+	const [categories, setCategories] = useState([]);
+	const [sources, setSources] = useState([]);
+	const [affiliations, setAffliations] = useState([]);
 
 	const [genders, setGenders] = useState([]);
+	const [countries, setCountries] = useState([]);
+	const [country, setCountry] = useState(null);
 	const [states, setStates] = useState([]);
-	const [lgas, setLgas] = useState([]);
-	const [religions, setReligions] = useState([]);
-	const [cadres, setCadres] = useState([]);
-	const [departments, setDepartments] = useState([]);
-	const [units, setUnits] = useState([]);
-	const [ranks, setRanks] = useState([]);
-	const [designations, setDesignations] = useState([]);
-	const [specialties, setSpecialties] = useState([]);
+	
 
-	const [dateOfAppointment, setDateOfAppointment] = useState('');
-	const [dateOfEmployment, setDateOfEmployment] = useState('');
 	const [dateOfBirth, setDateOfBirth] = useState('');
 	const [imageUrl, setImageUrl] = useState();
 	const [loading, setLoading] = useState(false);
@@ -120,70 +103,38 @@ const NewPoi = () => {
 		setEditInputValue('');
 	  };
 
-	const getDirectorates = async q => {
-		if (!q || q.length <= 1) {
-			return [];
-		}
-
-		const rs = await request(`${FETCH_DIRECTORATES_API}?q=${q}`);
-		return rs?.directorates || [];
-	};
-
 	const fetchApis = useCallback(async () => {
 		try {
 			const urls = [
 				FETCH_GENDERS_API,
-				FETCH_STATES_API,
-				FETCH_RELIGIONS_API,
-				`${FETCH_CADRES_API}?page=1&per_page=10`,
-				FETCH_ALL_RANKS_API,
-				FETCH_ALL_DESIGNATIONS_API,
-				FETCH_ALL_SPECIALTIES_API,
+				`${FETCH_COUNTRIES_API}?per_page=300`,
+				FETCH_CATEGORIES_API,
+				FETCH_SOURCES_API,
+				FETCH_AFFILIATIONS_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
 			);
 			const [
 				rs_genders,
-				rs_states,
-				rs_religions,
-				rs_cadres,
-				rs_ranks,
-				rs_designations,
-				rs_specialties,
+				rs_countries,
+				rs_categories,
+				rs_sources,
+				rs_affiliations,
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
-			setStates(rs_states.states);
-			setReligions(rs_religions.religions);
-			setCadres(rs_cadres.cadres);
-			setRanks(rs_ranks.ranks);
-			setDesignations(rs_designations.designations);
-			setSpecialties(rs_specialties.specialties);
+			setCountries(rs_countries.countries);
+			setCategories(rs_categories.categories)
+			setSources(rs_sources.sources)
+			setAffliations(rs_affiliations.affiliations)
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
 	}, []);
 
-	const fetchLgas = useCallback(async id => {
-		try {
-			const rs = await request(
-				FETCH_LGAS_BY_STATE_API.replace(':state_id', id)
-			);
-			setLgas(rs.lgas);
-		} catch (error) {
-			notifyWithIcon('error', error.message);
-		}
-	}, []);
-
-	const fetchRanks = useCallback(async id => {
-		try {
-			const rs = await request(
-				FETCH_RANKS_BY_CADRE_API.replace(':cadre_id', id)
-			);
-			setRanks(rs.ranks);
-		} catch (error) {
-			notifyWithIcon('error', error.message);
-		}
+	const fetchStates = useCallback(async country_id => {
+		const rs = await request(FETCH_STATES_API.replace('/:id', ''));
+		setStates(rs.states);
 	}, []);
 
 	const getBase64 = (img, callback) => {
@@ -231,30 +182,6 @@ const NewPoi = () => {
 		return isJpgOrPng && isLt2M;
 	};
 
-	const fetchDepartments = useCallback(async id => {
-		try {
-			if (!id) {
-				return;
-			}
-			const rs = await request(
-				`${FETCH_DEPARTMENTS_API}?directorate_id=${id}&page=1&per_page=50`
-			);
-			setDepartments(rs.departments);
-		} catch (error) {
-			notifyWithIcon('error', error.message);
-		}
-	}, []);
-
-	const fetchUnits = useCallback(async id => {
-		try {
-			const rs = await request(
-				`${FETCH_UNITS_API}?department_id=${id}&page=1&per_page=50`
-			);
-			setUnits(rs.units);
-		} catch (error) {
-			notifyWithIcon('error', error.message);
-		}
-	}, []);
 
 	useEffect(() => {
 		if (!loaded) {
@@ -264,36 +191,30 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
-		console.log(language)
+		console.log(values)
 		try {
 			const config = {
 				method: 'POST',
 				body: {
 					...values,
-					cadre_id: values.cadre_id ? values.cadre_id : null,
-					designation_id: values.designation?.id || null,
+					category_id: values.category_id?.id || null,
+					source_id: values.source_id?.id || null,
 					gender_id: values.gender?.id || null,
-					lga_id: values.lga?.id || null,
-					rank_id: values.rank_id ? values.rank_id : null,
-					religion_id: values.religion?.id || null,
-					marital_status: values.marital_status?.name || null,
-					specialty_id: values.specialty?.id || null,
-					unit_id: values.unit_id?.id || null,
-					picture: imageUrl || null,
-					language_spoken: language,
-					cadre: undefined,
-					designation: undefined,
+					state_id: values.state_id?.id || null,
+					affiliation_id: values.affiliation?.id || null,
+					marital_status: values.marital_status?.id || null,
+					// picture: imageUrl || null,
+					// language_spoken: language,
 					gender: undefined,
-					lga: undefined,
-					rank: undefined,
-					religion: undefined,
-					specialty: undefined,
-					unit: undefined,
+					// affiliation: undefined,
+					
 				},
 			};
-			const rs = await request(CREATE_EMPLOYEE_API, config);
+			console.log(config.body);
+			const rs = await request(CREATE_POI_API, config);
+			console.log(rs);
 			notifyWithIcon('success', rs.message);
-			navigate('/employees/profiles');
+			navigate('/pois/poi');
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create employee' };
 		}
@@ -309,45 +230,45 @@ const NewPoi = () => {
 					validate={values => {
 						const errors = {};
 
-						if (!values.pf_num) {
-							errors.pf_num = 'enter pf number';
-						}
-						if (!values.first_name) {
-							errors.first_name = 'enter first name';
-						}
-						if (!values.last_name) {
-							errors.last_name = 'enter last name';
-						}
-						if (!values.dob) {
-							errors.dob = 'enter date of birth';
-						}
-						if (!values.gender) {
-							errors.gender = 'select gender';
-						}
-						if (!values.religion) {
-							errors.religion = 'select religion';
-						}
-						if (!values.state_id) {
-							errors.state_id = 'select state of origin';
-						}
-						if (!values.pf_num) {
-							errors.pf_num = 'enter pfs number';
-						}
-						if (!values.lga) {
-							errors.lga = 'select lga';
-						}
-						if (!values.rank_id) {
-							errors.rank_id = 'select rank';
-						}
-						if (!values.directorate_id) {
-							errors.directorate_id = 'select directorate';
-						}
-						if (!values.cadre_id) {
-							errors.cadre_id = 'select cadre';
-						}
-						if (!values.date_of_employment) {
-							errors.date_of_employment = 'enter date of employment';
-						}
+						// if (!values.pf_num) {
+						// 	errors.pf_num = 'enter pf number';
+						// }
+						// if (!values.first_name) {
+						// 	errors.first_name = 'enter first name';
+						// }
+						// if (!values.last_name) {
+						// 	errors.last_name = 'enter last name';
+						// }
+						// if (!values.dob) {
+						// 	errors.dob = 'enter date of birth';
+						// }
+						// if (!values.gender) {
+						// 	errors.gender = 'select gender';
+						// }
+						// if (!values.affiliation) {
+						// 	errors.affiliation = 'select affiliation';
+						// }
+						// if (!values.state_id) {
+						// 	errors.state_id = 'select state of origin';
+						// }
+						// if (!values.pf_num) {
+						// 	errors.pf_num = 'enter pfs number';
+						// }
+						// if (!values.lga) {
+						// 	errors.lga = 'select lga';
+						// }
+						// if (!values.rank_id) {
+						// 	errors.rank_id = 'select rank';
+						// }
+						// if (!values.directorate_id) {
+						// 	errors.directorate_id = 'select directorate';
+						// }
+						// if (!values.cadre_id) {
+						// 	errors.cadre_id = 'select cadre';
+						// }
+						// if (!values.date_of_employment) {
+						// 	errors.date_of_employment = 'enter date of employment';
+						// }
 
 						return errors;
 					}}
@@ -618,7 +539,7 @@ const NewPoi = () => {
 																{...input}
 																className={error(meta)}
 																placeholder="Select affiliation"
-																options={religions}
+																options={affiliations}
 																getOptionValue={option => option.id}
 																getOptionLabel={option => option.name}
 															/>
@@ -651,25 +572,13 @@ const NewPoi = () => {
 													</label>
 													<Field id="category_id" name="category_id">
 														{({ input, meta }) => (
-															<AsyncSelect
-																isClearable
+															<Select
+																{...input}
+																className={error(meta)}
+																placeholder="Select Category"
+																options={categories}
 																getOptionValue={option => option.id}
 																getOptionLabel={option => option.name}
-																defaultOptions
-																value={directorate}
-																className={error(meta)}
-																loadOptions={getDirectorates}
-																onChange={e => {
-																	setDirectorate(e);
-																	e ? input.onChange(e.id) : input.onChange('');
-																	fetchDepartments(e?.id);
-																	setDepartments([]);
-																	setDepartment(null);
-																	setUnits([]);
-																	form.change('department_id', undefined);
-																	form.change('unit', undefined);
-																}}
-																placeholder="Search Category"
 															/>
 														)}
 													</Field>
@@ -683,20 +592,11 @@ const NewPoi = () => {
 														{({ input, meta }) => (
 															<Select
 																{...input}
-																placeholder="Select source"
-																options={departments}
-																value={department}
 																className={error(meta)}
+																placeholder="Select source"
+																options={sources}
 																getOptionValue={option => option.id}
 																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setDepartment(e);
-																	if (e && e.id !== department?.id) {
-																		form.change('unit', undefined);
-																		fetchUnits(e?.id);
-																	}
-																}}
 															/>
 														)}
 													</Field>
@@ -713,14 +613,16 @@ const NewPoi = () => {
 																{...input}
 																className={error(meta)}
 																placeholder="Select country"
-																options={states}
-																value={stateOrigin}
+																options={countries}
+																value={country}
 																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																getOptionLabel={option => option.en_short_name}
 																onChange={e => {
 																	e ? input.onChange(e.id) : input.onChange('');
-																	setStateOrigin(e);
-																	fetchLgas(e?.id);
+																	setCountry(e)
+																	setStates([])
+																	fetchStates(e.id);
+																	form.change('state_id', undefined)
 																}}
 															/>
 														)}
@@ -738,7 +640,7 @@ const NewPoi = () => {
 																{...input}
 																className={error(meta)}
 																placeholder="Select state"
-																options={lgas}
+																options={states}
 																getOptionValue={option => option.id}
 																getOptionLabel={option => option.name}
 															/>

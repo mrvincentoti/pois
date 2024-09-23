@@ -29,7 +29,7 @@ from .source.models import Source
 from .poi.models import Poi
 from .poiMedia.models import PoiMedia
 from .affiliation.models import Affiliation
-from .arms.models import Arms
+from .arms.models import Arm
 from .armsRecovered.models import ArmsRecovered
 
 

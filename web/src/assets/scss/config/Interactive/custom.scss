@@ -151,3 +151,16 @@ input[type='number'] {
 .text-underline {
     text-decoration: underline !important;
 }
+
+.profile-wid-bg::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: .9;
+    background: #405189 !important;
+    background: -webkit-gradient(linear, left bottom, left top, from(#171e32), to(#405189)) !important;
+    background: linear-gradient(to top, #171e32, #405189) !important;
+}
