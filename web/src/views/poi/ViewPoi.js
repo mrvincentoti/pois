@@ -29,8 +29,7 @@ import sampleMedia5 from '../../assets/images/small/img-5.jpg';
 import sampleMedia6 from '../../assets/images/small/img-6.jpg';
 import { Button } from "antd";
 import PoiPrint from "./PoiPrint";
-// import MediaAndDocument from '../../components/MediaAndDocument';
-import EmployeePrint from "../employees/EmployeeProfilePrint";
+import MediaAndDocument from '../../components/MediaAndDocument';
 
 import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
@@ -569,9 +568,6 @@ const ViewPoi = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div style={{ display: 'none' }}>
-                <EmployeePrint employeeData={employeeData} />
             </div>
         </>
 
