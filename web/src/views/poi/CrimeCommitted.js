@@ -61,8 +61,8 @@ const CrimeCommitted = () => {
                                 </div>
                                 {/* Edit and Delete buttons */}
                                 <div className="mt-3 d-flex justify-content-end gap-2">
-                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                        <button className="btn btn-sm btn-outline-primary" onClick={() => showModal('edit')}>Edit</button>
+                                    
                                 </div>
                             </div>
                             {/* end card body */}
@@ -88,8 +88,8 @@ const CrimeCommitted = () => {
                                 </div>
                                 {/* Edit and Delete buttons */}
                                 <div className="mt-3 d-flex justify-content-end gap-2">
-                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                    <button className="btn btn-sm btn-outline-primary" onClick={() => showModal('add')}>Edit</button>
+                                    
                                 </div>
                             </div>
                             {/* end card body */}
@@ -115,8 +115,8 @@ const CrimeCommitted = () => {
                                 </div>
                                 {/* Edit and Delete buttons */}
                                 <div className="mt-3 d-flex justify-content-end gap-2">
-                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                    <button className="btn btn-sm btn-outline-primary" onClick={() => showModal('add')}>Edit</button>
+                                    
                                 </div>
                             </div>
                             {/* end card body */}
@@ -144,8 +144,8 @@ const CrimeCommitted = () => {
                                 </div>
                                 {/* Edit and Delete buttons */}
                                 <div className="mt-3 d-flex justify-content-end gap-2">
-                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
-                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                    <button className="btn btn-sm btn-outline-primary" onClick={() => showModal('add')}>Edit</button>
+                                    
                                 </div>
                             </div>
                             {/* end card body */}
