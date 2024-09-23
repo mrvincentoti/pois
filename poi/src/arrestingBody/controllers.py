@@ -149,7 +149,7 @@ def edit_arresting_body(arresting_body_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, ArrestingBody, Update",
+                "tags": "ArrestingBody, Update",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }

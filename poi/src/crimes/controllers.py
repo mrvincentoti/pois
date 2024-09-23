@@ -101,7 +101,7 @@ def get_crime(crime_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Auth, Crime, Get",
+            "tags": "Crime, Get",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
