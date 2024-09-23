@@ -31,6 +31,9 @@ from .poiMedia.models import PoiMedia
 from .affiliation.models import Affiliation
 from .arms.models import Arm
 from .armsRecovered.models import ArmsRecovered
+from .crimes.models import Crime
+from .arrestingBody.models import ArrestingBody
+from .crimesCommitted.models import CrimeCommitted
 
 
 from . import create_app, db
@@ -103,6 +106,9 @@ from .modules import urls
 from .affiliation import urls
 from .arms import urls
 from .armsRecovered import urls
+from .crimes import urls
+from .arrestingBody import urls
+from .crimesCommitted import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

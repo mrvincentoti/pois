@@ -25,12 +25,6 @@ class Poi(db.Model):
     affiliation_id = db.Column(db.Integer, db.ForeignKey('affiliations.id'), nullable=True) #captured
     address = db.Column(db.Text, nullable=True) #captured
     remark = db.Column(db.Text, nullable=True) #captured
-    crime_committed = db.Column(db.String(255), nullable=True) #captured
-    crime_date = db.Column(db.Date, nullable=True) #captured
-    casualties_recorded = db.Column(db.Integer, nullable=True) #captured
-    arresting_body = db.Column(db.String(255), nullable=True) #captured
-    place_of_detention = db.Column(db.String(255), nullable=True) #captured
-    action_taken = db.Column(db.String(255), nullable=True) #captured
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id')) #captured
     source_id = db.Column(db.Integer, db.ForeignKey('sources.id')) #captured
     country_id = db.Column(db.Integer, db.ForeignKey('country.id')) #captured
@@ -48,11 +42,9 @@ class Poi(db.Model):
     affiliation = db.relationship("Affiliation", backref="poi")
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
-                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,
-                 affiliation_id=None, address=None, remark=None, crime_committed=None, crime_date=None,
-                 casualties_recorded=None, arresting_body=None, place_of_detention=None, action_taken=None,
-                 category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
-                 created_at=None, created_by=None):
+                passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,
+                affiliation_id=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
+                created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
         self.first_name = first_name
@@ -68,12 +60,6 @@ class Poi(db.Model):
         self.affiliation_id = affiliation_id
         self.address = address
         self.remark = remark
-        self.crime_committed = crime_committed
-        self.crime_date = crime_date
-        self.casualties_recorded = casualties_recorded
-        self.arresting_body = arresting_body
-        self.place_of_detention = place_of_detention
-        self.action_taken = action_taken
         self.category_id = category_id
         self.source_id = source_id
         self.country_id = country_id
@@ -94,9 +80,8 @@ class Poi(db.Model):
         db.session.commit()
 
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
-               email=None, role=None, affiliation=None, address=None, remark=None, crime_committed=None, arresting_body=None, place_of_detention=None,
-               action_taken=None, crime_date=None, casualties_recorded=None, middle_name=None, alias=None,picture=None,
-               category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None, created_by=None):
+            email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,
+            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
         if picture:
@@ -123,18 +108,6 @@ class Poi(db.Model):
             self.address = address
         if remark:
             self.remark = remark
-        if crime_committed:
-            self.crime_committed = crime_committed
-        if arresting_body:
-            self.arresting_body = arresting_body
-        if place_of_detention:
-            self.place_of_detention = place_of_detention
-        if action_taken:
-            self.action_taken = action_taken
-        if crime_date:
-            self.crime_date = crime_date
-        if casualties_recorded:
-            self.casualties_recorded = casualties_recorded
         if middle_name:
             self.middle_name = middle_name
         if alias:
@@ -174,12 +147,6 @@ class Poi(db.Model):
             'affiliation': self.affiliation.to_dict() if self.affiliation else None,
             'address': self.address,
             'remark': self.remark,
-            'crime_committed': self.crime_committed,
-            'crime_date': self.crime_date,
-            'casualties_recorded': self.casualties_recorded,
-            'arresting_body': self.arresting_body,
-            'place_of_detention': self.place_of_detention,
-            'action_taken': self.action_taken,
             'category': self.category.to_dict() if self.category else None,
             'source': self.source.to_dict() if self.source else None,
             'country': self.country.to_dict() if self.country else None,
