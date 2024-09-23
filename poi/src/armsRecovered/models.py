@@ -15,7 +15,7 @@ class ArmsRecovered(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
     number_recovered = db.Column(db.Integer, nullable=True)
-    arm = db.relationship("Arms", backref="arms_recovered")
+    arm = db.relationship("Arm", backref="arms_recovered")
 
     def to_dict(self):
         return {
