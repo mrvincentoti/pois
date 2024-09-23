@@ -30,7 +30,6 @@ import sampleMedia6 from '../../assets/images/small/img-6.jpg';
 import { Button } from "antd";
 import PoiPrint from "./PoiPrint";
 import MediaAndDocument from '../../components/MediaAndDocument';
-import EmployeePrint from "../employees/EmployeeProfilePrint";
 
 const ViewPoi = () => {
     const employeePrintRef = useRef();
@@ -542,9 +541,6 @@ const ViewPoi = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div style={{ display: 'none' }}>
-                <EmployeePrint employeeData={employeeData} />
             </div>
         </>
 
