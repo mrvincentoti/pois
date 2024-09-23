@@ -78,12 +78,6 @@ export const CREATE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designations`;
 export const UPDATE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designation/:id`;
 export const DELETE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designation/:id`;
 
-// specialty api
-export const FETCH_SPECIALTIES_API = `${BASE_EMPLOYEE_URL}/specialties`;
-export const FETCH_ALL_SPECIALTIES_API = `${BASE_EMPLOYEE_URL}/all-specialties`;
-export const CREATE_SPECIALTY_API = `${BASE_EMPLOYEE_URL}/specialties`;
-export const UPDATE_SPECIALTY_API = `${BASE_EMPLOYEE_URL}/specialty/:id`;
-export const DELETE_SPECIALTY_API = `${BASE_EMPLOYEE_URL}/specialty/:id`;
 
 // awards api
 export const FETCH_AWARDS_API = `${BASE_EMPLOYEE_URL}/awards`;
@@ -230,6 +224,8 @@ export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
 export const FET_POIS_API = `${BASE_POI_URL}/pois`;
 export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const CREATE_POI_API = `${BASE_POI_URL}/pois`;
+export const GET_POI_API = `${BASE_POI_URL}/pois/:id`;
+export const UPDATE_POI_API = `${BASE_POI_URL}/pois/:id`;
 
 // genders api
 export const FETCH_GENDERS_API = `${BASE_POI_URL}/genders`;
