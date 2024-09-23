@@ -191,7 +191,7 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
-		console.log(values)
+		console.log(imageUrl)
 		try {
 			const config = {
 				method: 'POST',
