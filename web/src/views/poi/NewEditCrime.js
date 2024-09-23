@@ -4,7 +4,7 @@ import React from 'react';
 const NewEditCrime = ({ isModalOpen, handleOk, handleCancel, data, modalType }) => {
     return (
         <Modal
-            title={modalType === 'add' ? 'Add Item' : 'Edit Item'}
+            title={modalType === 'add' ? 'New Crime Committed' : 'Edit Crime Committed'}
             open={isModalOpen}
             onOk={handleOk}
             onCancel={handleCancel}

@@ -193,7 +193,7 @@ const ViewPoi = () => {
                             <div className="tab-content pt-4 text-muted">
                                 <div className="tab-pane active" id="overview-tab" role="tabpanel">
                                     <div className="row">
-                                        <div className="col-xxl-3">
+                                        <div className="col-xxl-12 col-lg-12">
                                             {activeTab === 'overview' && <Overview />}
                                             {activeTab === 'crime' && <CrimeCommitted />}
                                             {activeTab === 'media' && <MediaAndDocument />}

@@ -31,13 +31,12 @@ const CrimeCommitted = () => {
     };
 
     return (
-
+        <>
         <div className="card">
             <div className="card-body">
                 <div class="d-flex align-items-center mb-4">
                     <h5 class="card-title flex-grow-1 mb-0">Crime Committed</h5>
-                    <div class="flex-shrink-0">
-                        <input class="form-control d-none" type="file" id="formFile" />
+                    <div class="flex-shrink-0" onClick={() => showModal('add')}>
                         <label for="formFile" class="btn btn-success">
                             <i class="ri-add-fill me-1 align-bottom"></i> Add
                         </label>
@@ -159,6 +158,14 @@ const CrimeCommitted = () => {
             </div>
             {/* end card-body */}
         </div>
+        <NewEditCrime
+            isModalOpen={isModalOpen}
+            handleOk={handleOk}
+            handleCancel={handleCancel}
+            data={modalData}
+            modalType={modalType} // Pass the modal type to distinguish between Add/Edit
+        />
+        </>
     );
 };
 
