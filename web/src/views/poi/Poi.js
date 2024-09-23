@@ -20,14 +20,12 @@ import {
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { EditLink, ViewLink, ManagePoi } from '../../components/Buttons';
-import EmployeeFilter from '../../components/EmployeeFilter';
 import { DELETE_POI_API, FET_POIS_API } from '../../services/api';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';
 import ImportBrief from '../../modals/ManageBrief';
 import BulkUpload from '../../components/BulkUpload';
-import TemplateFilter from "../../components/TemplateFilter";
 
 const Poi = () => {
 	document.title = `POI - ${APP_SHORT_NAME}`;
@@ -326,18 +324,7 @@ const Poi = () => {
 
 
 
-			{/*<EmployeeFilter*/}
-			{/*	filters={filters}*/}
-			{/*	onFilter={handleFilter}*/}
-			{/*	show={isFilterOpen}*/}
-			{/*	onCloseClick={handleCloseFilter}*/}
-			{/*	onClearFilter={handleClearFilters}*/}
-			{/*/>*/}
-			<TemplateFilter filters={filters}
-				onFilter={handleFilter}
-				onCloseClick={handleCloseFilter}
-				onClearFilter={handleClearFilters}
-							show={isFilterOpen}/>
+			
 
 
 
