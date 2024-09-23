@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import ArmsRecovered
-from ..arms.models import Arms
+from ..arms.models import Arm
 from ..poi.models import Poi
 from ..users.models import User
 from ..util import custom_jwt_required, save_audit_data
