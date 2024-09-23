@@ -34,13 +34,14 @@ const EditPoi = () => {
 	const [loaded, setLoaded] = useState(false);
 	const [poi, setPoi] = useState(null);
 	
-	const [stateOrigin, setStateOrigin] = useState(null);
+	const [state, setState] = useState(null);
 	const [maritalStatus, setMaritalStatus] = useState(null);
 	const [passportCategory, setPassportCategory] = useState(null);
 	const [confirmation, setConfirmation] = useState(null);
 	const [category, setCategory] = useState(null);
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
+	const [source, setSource] = useState([]);
 	const [affiliations, setAffliations] = useState([]);
 	
 
@@ -128,7 +129,8 @@ const EditPoi = () => {
 				}
 
 				
-
+				setCountry(item.country)
+				setSource(item.source)
 				setPoi(item);
 				setLoaded(true);
 			});
@@ -186,6 +188,7 @@ const EditPoi = () => {
 	// };
 
 	const onSubmit = async values => {
+		console.log(values)
 
 		// if (employeeStatus.id) {
 		// 	values.employment_status = employeeStatus.id;
@@ -205,14 +208,14 @@ const EditPoi = () => {
 					state_id: values.state_id?.id || null,
 					affiliation_id: values.affiliation?.id || null,
 					marital_status: values.marital_status?.id || null,
-					// picture: imageUrl || null,
+					picture: imageUrl || null,
 					// language_spoken: language,
 					gender: undefined,
 					// affiliation: undefined,
 				},
 			};
 			const rs = await request(
-				UPDATE_POI_API.replace(':id', poi.id),
+				UPDATE_POI_API.replace(':id', param.id),
 				config
 			);
 			notifyWithIcon('success', rs.message);
@@ -227,7 +230,14 @@ const EditPoi = () => {
 			<Breadcrumbs pageTitle="New POI" parentPage="POI" />
 			<div className="row">
 				<Form
-					initialValues={{...poi}}
+					initialValues={
+						{...poi,
+						source_id:poi?.source,
+						state_id:poi?.state,
+						category_id:poi?.category,
+						affiliation_id:poi?.affiliation,
+					}
+					}
 					onSubmit={onSubmit}
 					validate={values => {
 						const errors = {};
@@ -580,7 +590,7 @@ const EditPoi = () => {
 																options={countries}
 																value={country}
 																getOptionValue={option => option.id}
-																getOptionLabel={option => option.en_short_name}
+																getOptionLabel={option => option.name}
 																onChange={e => {
 																	e ? input.onChange(e.id) : input.onChange('');
 																	setCountry(e)

@@ -203,7 +203,7 @@ const NewPoi = () => {
 					state_id: values.state_id?.id || null,
 					affiliation_id: values.affiliation?.id || null,
 					marital_status: values.marital_status?.id || null,
-					// picture: imageUrl || null,
+					picture: imageUrl || null,
 					// language_spoken: language,
 					gender: undefined,
 					// affiliation: undefined,
