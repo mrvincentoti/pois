@@ -11,161 +11,133 @@ const routes = {
 
 const CrimeCommitted = () => {
     return (
+
         <div className="card">
             <div className="card-body">
-                <div className="d-flex align-items-center mb-4">
-                    <h5 className="card-title flex-grow-1 mb-0">Overview</h5>
-                    <div className="flex-shrink-0">
-                        <input className="form-control d-none" type="file" id="formFile" />
-                        <label for="formFile" className="btn btn-danger"><i className="ri-upload-2-fill me-1 align-bottom"></i> Upload File</label>
+                <div class="d-flex align-items-center mb-4">
+                    <h5 class="card-title flex-grow-1 mb-0">Crime Committed</h5>
+                    <div class="flex-shrink-0">
+                        <input class="form-control d-none" type="file" id="formFile" />
+                        <label for="formFile" class="btn btn-success">
+                            <i class="ri-add-fill me-1 align-bottom"></i> Add
+                        </label>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-lg-12">
-                        <div className="table-responsive">
-                            <table className="table table-borderless align-middle mb-0">
-                                <thead className="table-light">
-                                    <tr>
-                                        <th scope="col">File Name</th>
-                                        <th scope="col">Type</th>
-                                        <th scope="col">Size</th>
-                                        <th scope="col">Upload Date</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-primary-subtle text-primary rounded fs-20">
-                                                        <i className="ri-file-zip-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0"><a href="javascript:void(0)">Artboard-documents.zip</a>
-                                                    </h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Zip File</td>
-                                        <td>4.57 MB</td>
-                                        <td>12 Dec 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-danger-subtle text-danger rounded fs-20">
-                                                        <i className="ri-file-pdf-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0"><a href="javascript:void(0);">Bank Management System</a></h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>PDF File</td>
-                                        <td>8.89 MB</td>
-                                        <td>24 Nov 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-secondary-subtle text-secondary rounded fs-20">
-                                                        <i className="ri-video-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0"><a href="javascript:void(0);">Tour-video.mp4</a></h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>MP4 File</td>
-                                        <td>14.62 MB</td>
-                                        <td>19 Nov 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-success-subtle text-success rounded fs-20">
-                                                        <i className="ri-file-excel-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0"><a href="javascript:void(0);">Account-statement.xsl</a></h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>XSL File</td>
-                                        <td>2.38 KB</td>
-                                        <td>14 Nov 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-info-subtle text-info rounded fs-20">
-                                                        <i className="ri-folder-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0"><a href="javascript:void(0);">Project Screenshots Collection</a></h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>Floder File</td>
-                                        <td>87.24 MB</td>
-                                        <td>08 Nov 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div className="d-flex align-items-center">
-                                                <div className="avatar-sm">
-                                                    <div className="avatar-title bg-danger-subtle text-danger rounded fs-20">
-                                                        <i className="ri-image-2-fill"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="ms-3 flex-grow-1">
-                                                    <h6 className="fs-15 mb-0">
-                                                        <a href="javascript:void(0);">Velzon-logo.png</a>
-                                                    </h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>PNG File</td>
-                                        <td>879 KB</td>
-                                        <td>02 Nov 2021</td>
-                                        <td>
-                                            <DocumentMediaDropDown routes={routes} />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div className="col-xxl-3 col-sm-4">
+                        <div className="card profile-project-card shadow-none profile-project-warning">
+                            <div className="card-body p-4">
+                                <div className="d-flex">
+                                    <div className="flex-grow-1 text-muted overflow-hidden">
+                                        <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Kidnapping Children</a></h5>
+                                        <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                        <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                        <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                        <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                        <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                    </div>
+                                    <div className="flex-shrink-0 ms-2">
+                                        <div className="badge bg-warning-subtle text-warning fs-10">Terrorism</div>
+                                    </div>
+                                </div>
+                                {/* Edit and Delete buttons */}
+                                <div className="mt-3 d-flex justify-content-end gap-2">
+                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            {/* end card body */}
                         </div>
-                        {/* <div className="text-center mt-3">
-                            <a href="javascript:void(0);" className="text-success"><i className="mdi mdi-loading mdi-spin fs-20 align-middle me-2"></i> Load more </a>
-                        </div> */}
+                        {/* end card */}
                     </div>
+                    {/* end col */}
+                    <div className="col-xxl-3 col-sm-4">
+                        <div className="card profile-project-card shadow-none profile-project-danger">
+                            <div className="card-body p-4">
+                                <div className="d-flex">
+                                    <div className="flex-grow-1 text-muted overflow-hidden">
+                                        <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Kidnapping Children</a></h5>
+                                        <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                        <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                        <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                        <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                        <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                    </div>
+                                    <div className="flex-shrink-0 ms-2">
+                                        <div className="badge bg-warning-subtle text-warning fs-10">Terrorism</div>
+                                    </div>
+                                </div>
+                                {/* Edit and Delete buttons */}
+                                <div className="mt-3 d-flex justify-content-end gap-2">
+                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            {/* end card body */}
+                        </div>
+                        {/* end card */}
+                    </div>
+                    {/* end col */}
+                    <div className="col-xxl-3 col-sm-4">
+                        <div className="card profile-project-card shadow-none profile-project-success">
+                            <div className="card-body p-4">
+                                <div className="d-flex">
+                                    <div className="flex-grow-1 text-muted overflow-hidden">
+                                        <h5 className="fs-14 text-truncate"><a href="#" className="text-body">Stealing of 2000 Create Of Eggs</a></h5>
+                                        <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                        <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                        <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                        <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                        <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                    </div>
+                                    <div className="flex-shrink-0 ms-2">
+                                        <div className="badge bg-warning-subtle text-warning fs-10">Banditry</div>
+                                    </div>
+                                </div>
+                                {/* Edit and Delete buttons */}
+                                <div className="mt-3 d-flex justify-content-end gap-2">
+                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            {/* end card body */}
+                        </div>
+                        {/* end card */}
+                    </div>
+                    {/* end col */}
+                    <div className="col-xxl-3 col-sm-4">
+                        <div className="card profile-project-card shadow-none profile-project-tertiary">
+                            <div className="card-body p-4">
+                                <div className="d-flex">
+                                    <div className="flex-grow-1 text-muted overflow-hidden">
+                                        <h5 className="fs-14 text-truncate">
+                                            <a href="#" className="text-body">Stealing of 2000 Crates Of Eggs</a>
+                                        </h5>
+                                        <p className="text-muted text-truncate mb-0">Crime Date : <span className="fw-semibold text-body">2 year Ago</span></p>
+                                        <p className="text-muted text-truncate mb-0">Casualties Recorded : <span className="fw-semibold text-body">50</span></p>
+                                        <p className="text-muted text-truncate mb-0">Arresting Body : <span className="fw-semibold text-body">APS</span></p>
+                                        <p className="text-muted text-truncate mb-0">Place Of Detention : <span className="fw-semibold text-body">San Jose</span></p>
+                                        <p className="text-muted text-truncate mb-0">Action Taken : <span className="fw-semibold text-body">2 years Ago</span></p>
+                                    </div>
+                                    <div className="flex-shrink-0 ms-2">
+                                        <div className="badge bg-warning-subtle text-warning fs-10">Banditry</div>
+                                    </div>
+                                </div>
+                                {/* Edit and Delete buttons */}
+                                <div className="mt-3 d-flex justify-content-end gap-2">
+                                    <button className="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button className="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            {/* end card body */}
+                        </div>
+                        {/* end card */}
+                    </div>
+                    {/* end col */}
                 </div>
+                {/* end row */}
             </div>
+            {/* end card-body */}
         </div>
     );
 };

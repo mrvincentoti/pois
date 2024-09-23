@@ -17,7 +17,7 @@ const MediaAndDocument = () => {
                     <h5 className="card-title flex-grow-1 mb-0">Media/Documents</h5>
                     <div className="flex-shrink-0">
                         <input className="form-control d-none" type="file" id="formFile" />
-                        <label for="formFile" className="btn btn-danger"><i className="ri-upload-2-fill me-1 align-bottom"></i> Upload File</label>
+                        <label for="formFile" className="btn btn-success"><i className="ri-upload-2-fill me-1 align-bottom"></i> Upload File</label>
                     </div>
                 </div>
                 <div className="row">
