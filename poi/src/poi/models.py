@@ -11,7 +11,7 @@ class Poi(db.Model):
 
     id = db.Column(db.Integer, primary_key=True) #captured
     ref_numb = db.Column(db.String(64), unique=False, nullable=True) #captured
-    picture = db.Column(db.Text, unique=False, nullable=True)  # captured
+    picture = db.Column(db.Text(length=200000000), unique=False, nullable=True)  # captured
     first_name = db.Column(db.String(64), nullable=False) #captured
     middle_name = db.Column(db.String(64), nullable=True) #captured
     last_name = db.Column(db.String(64), nullable=False) #captured
