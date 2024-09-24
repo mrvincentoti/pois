@@ -64,7 +64,7 @@ const ManageBrief = ({ closeModal, update }) => {
 	};
 
 	const handleUpload = async () => {
-		setUploading(true)
+		setUploading(true);
 		const formData = new FormData();
 		formData.append('file', fileList[0]);
 

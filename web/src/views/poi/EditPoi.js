@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import Breadcrumbs from '../../components/Breadcrumbs';
@@ -33,7 +33,7 @@ import {
 const EditPoi = () => {
 	const [loaded, setLoaded] = useState(false);
 	const [poi, setPoi] = useState(null);
-	
+
 	const [state, setState] = useState(null);
 	const [maritalStatus, setMaritalStatus] = useState(null);
 	const [passportCategory, setPassportCategory] = useState(null);
@@ -43,13 +43,12 @@ const EditPoi = () => {
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
 	const [affiliations, setAffliations] = useState([]);
-	
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState(null);
 	const [states, setStates] = useState([]);
-	
+
 	const [dateOfBirth, setDateOfBirth] = useState('');
 	const [imageUrl, setImageUrl] = useState();
 	const [loading, setLoading] = useState(false);
@@ -57,14 +56,9 @@ const EditPoi = () => {
 	const navigate = useNavigate();
 	const param = useParams();
 
-
-
-  	const [tags, setTags] = useState([]);
+	const [tags, setTags] = useState([]);
 	const [inputVisible, setInputVisible] = useState(false);
 	const [inputValue, setInputValue] = useState('');
-
-
-
 
 	const fetchApis = useCallback(async () => {
 		try {
@@ -87,9 +81,9 @@ const EditPoi = () => {
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
-			setCategories(rs_categories.categories)
-			setSources(rs_sources.sources)
-			setAffliations(rs_affiliations.affiliations)
+			setCategories(rs_categories.categories);
+			setSources(rs_sources.sources);
+			setAffliations(rs_affiliations.affiliations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -100,11 +94,9 @@ const EditPoi = () => {
 		setStates(rs.states);
 	}, []);
 
-
 	const fetchPoi = useCallback(async id => {
 		try {
 			const rs = await request(GET_POI_API.replace(':id', id));
-
 
 			return rs.user_data;
 		} catch (error) {
@@ -120,7 +112,7 @@ const EditPoi = () => {
 		if (!loaded) {
 			fetchApis();
 			fetchPoi(param.id).then(item => {
-				console.log(item)
+				console.log(item);
 
 				if (!item) {
 					notifyWithIcon('error', 'poi not found!');
@@ -128,9 +120,8 @@ const EditPoi = () => {
 					return;
 				}
 
-				
-				setCountry(item.country)
-				setSource(item.source)
+				setCountry(item.country);
+				setSource(item.source);
 				setPoi(item);
 				setLoaded(true);
 			});
@@ -146,8 +137,7 @@ const EditPoi = () => {
 		param.id,
 	]);
 
-
-	const handleClose = (removedTag) => {
+	const handleClose = removedTag => {
 		const newTags = tags.filter(tag => tag !== removedTag);
 		setTags(newTags);
 	};
@@ -156,7 +146,7 @@ const EditPoi = () => {
 		setInputVisible(true);
 	};
 
-	const handleInputChange = (e) => {
+	const handleInputChange = e => {
 		setInputValue(e.target.value);
 	};
 
@@ -170,10 +160,10 @@ const EditPoi = () => {
 
 	const forMap = tag => (
 		<span key={tag} style={{ display: 'inline-block' }}>
-            <Tag closable onClose={() => handleClose(tag)}>
-                {tag}
-            </Tag>
-        </span>
+			<Tag closable onClose={() => handleClose(tag)}>
+				{tag}
+			</Tag>
+		</span>
 	);
 
 	const tagChild = tags.map(forMap);
@@ -188,7 +178,7 @@ const EditPoi = () => {
 	// };
 
 	const onSubmit = async values => {
-		console.log(values)
+		console.log(values);
 
 		// if (employeeStatus.id) {
 		// 	values.employment_status = employeeStatus.id;
@@ -209,15 +199,12 @@ const EditPoi = () => {
 					affiliation_id: values.affiliation?.id || null,
 					marital_status: values.marital_status?.id || null,
 					picture: imageUrl || null,
-					// language_spoken: language,
+					country_id: values.country_id?.id || null,
 					gender: undefined,
 					// affiliation: undefined,
 				},
 			};
-			const rs = await request(
-				UPDATE_POI_API.replace(':id', param.id),
-				config
-			);
+			const rs = await request(UPDATE_POI_API.replace(':id', param.id), config);
 			notifyWithIcon('success', rs.message);
 			navigate('/pois/poi');
 		} catch (e) {
@@ -230,19 +217,17 @@ const EditPoi = () => {
 			<Breadcrumbs pageTitle="New POI" parentPage="POI" />
 			<div className="row">
 				<Form
-					initialValues={
-						{...poi,
-						source_id:poi?.source,
-						state_id:poi?.state,
-						category_id:poi?.category,
-						affiliation_id:poi?.affiliation,
-					}
-					}
+					initialValues={{
+						...poi,
+						source_id: poi?.source,
+						state_id: poi?.state,
+						category_id: poi?.category,
+						affiliation_id: poi?.affiliation,
+						country_id: poi?.country || '',
+					}}
 					onSubmit={onSubmit}
 					validate={values => {
 						const errors = {};
-
-						
 
 						return errors;
 					}}
@@ -261,7 +246,8 @@ const EditPoi = () => {
 											<div className="row">
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
-														Reference Number <span style={{ color: 'red' }}>*</span>
+														Reference Number{' '}
+														<span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="ref_numb" name="ref_numb">
 														{({ input, meta }) => (
@@ -397,8 +383,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="dob">
-														Date Of Birth{' '}
-														<span style={{ color: 'red' }}></span>
+														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="dob" name="dob">
 														{({ input, meta }) => (
@@ -464,10 +449,7 @@ const EditPoi = () => {
 													>
 														Passport Number
 													</label>
-													<Field
-														id="passport_number"
-														name="passport_number"
-													>
+													<Field id="passport_number" name="passport_number">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -487,10 +469,7 @@ const EditPoi = () => {
 													>
 														Other ID Number
 													</label>
-													<Field
-														id="other_id_number"
-														name="other_id_number"
-													>
+													<Field id="other_id_number" name="other_id_number">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -504,7 +483,10 @@ const EditPoi = () => {
 													<ErrorBlock name="other_id_number" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="affiliation_id">
+													<label
+														className="form-label"
+														htmlFor="affiliation_id"
+													>
 														Affiliation <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="affiliation_id" name="affiliation_id">
@@ -538,10 +520,7 @@ const EditPoi = () => {
 													<ErrorBlock name="role" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="category_id"
-													>
+													<label className="form-label" htmlFor="category_id">
 														Category <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="category_id" name="category_id">
@@ -578,8 +557,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
-														Country{' '}
-														<span style={{ color: 'red' }}>*</span>
+														Country <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="country_id" name="country_id">
 														{({ input, meta }) => (
@@ -590,13 +568,15 @@ const EditPoi = () => {
 																options={countries}
 																value={country}
 																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																getOptionLabel={option =>
+																	option.en_short_name || option.name
+																}
 																onChange={e => {
-																	e ? input.onChange(e.id) : input.onChange('');
-																	setCountry(e)
-																	setStates([])
+																	e ? input.onChange(e) : input.onChange('');
+																	setCountry(e);
+																	setStates([]);
 																	fetchStates(e.id);
-																	form.change('state_id', undefined)
+																	form.change('state_id', undefined);
 																}}
 															/>
 														)}
@@ -605,8 +585,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="state_id">
-														State{' '}
-														<span style={{ color: 'red' }}>*</span>
+														State <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
@@ -623,16 +602,10 @@ const EditPoi = () => {
 													<ErrorBlock name="state_id" />
 												</div>
 												<div className="col-lg-12 mb-3">
-													<label
-														className="form-label"
-														htmlFor="address"
-													>
+													<label className="form-label" htmlFor="address">
 														Address
 													</label>
-													<Field
-														id="address"
-														name="address"
-													>
+													<Field id="address" name="address">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -666,10 +639,7 @@ const EditPoi = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link
-											to="/pois/poi"
-											className="btn btn-danger w-sm me-1"
-										>
+										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
 											Cancel
 										</Link>
 										<button type="submit" className="btn btn-success w-sm">

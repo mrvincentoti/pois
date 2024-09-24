@@ -6,11 +6,10 @@ import './DateRange.css';
 const { RangePicker } = DatePicker;
 const dateFormat = 'YYYY/MM/DD';
 
-
 const DateRange = () => (
-    <Space direction="vertical" size={12}>
-        <RangePicker format={dateFormat}/>
-    </Space>
+	<Space direction="vertical" size={12}>
+		<RangePicker format={dateFormat} />
+	</Space>
 );
 
 export default DateRange;

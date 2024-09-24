@@ -15,7 +15,8 @@ import ManageEmployeesDependent from './../modals/ManageEmployeesDependent';
 import TableWrapper from '../container/TableWrapper';
 import {
 	calculateAge,
-	confirmAction, formatDateWord,
+	confirmAction,
+	formatDateWord,
 	formatEmployeeName,
 	formatFullName,
 	formatGetInitialsName,
@@ -29,7 +30,7 @@ import {
 	ViewButton,
 	ViewButtonPosting,
 	ViewPostingHistoryLink,
-	ViewListLink
+	ViewListLink,
 } from '../components/Buttons';
 import TitleSearchBar from '../components/TitleSearchBar';
 import {
@@ -38,9 +39,9 @@ import {
 } from '../services/api';
 import bulkUpload from '../components/BulkUpload';
 import BulkUpload from '../components/BulkUpload';
-import ViewLog from "../modals/ViewLog";
-import * as PropTypes from "prop-types";
-import ViewDetail from "./employees/ViewDetail";
+import ViewLog from '../modals/ViewLog';
+import * as PropTypes from 'prop-types';
+import ViewDetail from './employees/ViewDetail';
 
 function ViewDetailList(props) {
 	return null;
@@ -48,7 +49,7 @@ function ViewDetailList(props) {
 
 ViewDetailList.propTypes = {
 	update: PropTypes.func,
-	closeModal: PropTypes.func
+	closeModal: PropTypes.func,
 };
 const Dependents = () => {
 	document.title = `Dependents - ${APP_SHORT_NAME}`;
@@ -261,11 +262,11 @@ const Dependents = () => {
 														{' '}
 														<span
 															className={`badge ${
-																calculateAge(item?.date_of_birth) >18
+																calculateAge(item?.date_of_birth) > 18
 																	? 'bg-danger'
 																	: calculateAge(item?.date_of_birth) < 6
-																	  ? 'bg-secondary'
-																	  : 'bg-primary'
+																		? 'bg-secondary'
+																		: 'bg-primary'
 															}`}
 														>
 															{calculateAge(item?.date_of_birth)} years
@@ -273,7 +274,9 @@ const Dependents = () => {
 													</td>
 													<td className="text-end">
 														<div className="hstack gap-3 flex-wrap text-end">
-															<ViewListLink to={`/dependents/${item.employee.id}`} />
+															<ViewListLink
+																to={`/dependents/${item.employee.id}`}
+															/>
 														</div>
 													</td>
 												</tr>

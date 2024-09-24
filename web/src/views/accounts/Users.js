@@ -164,8 +164,8 @@ const Users = () => {
 														<div className="hstack gap-3 flex-wrap text-end">
 															<EditButton onClick={() => editUser(item)} />
 															<DeleteButton
-																onClick={() => confirmRemove(item)}/>
-															
+																onClick={() => confirmRemove(item)}
+															/>
 														</div>
 													</td>
 												</tr>

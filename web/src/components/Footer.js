@@ -11,7 +11,9 @@ const Footer = () => {
 						&copy; {new Date().getFullYear()} {APP_NAME} ({APP_SHORT_NAME}).
 					</div>
 					<div className="col-sm-6 text-end">
-						<p>App by <a className="text-primary">RIDU</a>. (End-to-End Encryption with AES) </p>
+						<p>
+							App by <a className="text-primary">RIDU</a>.
+						</p>
 					</div>
 				</div>
 			</div>

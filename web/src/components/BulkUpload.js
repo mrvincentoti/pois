@@ -76,34 +76,33 @@ const BulkUpload = ({ closeModal, update, title }) => {
 	};
 
 	const handleUpload = async () => {
-		setUploading(true)
+		setUploading(true);
 		const formData = new FormData();
 		formData.append('file', fileList[0]);
-
 
 		try {
 			const endpoint =
 				title === 'employee'
 					? BULK_UPLOAD_EMPLOYEE_API
 					: title === 'dependant'
-					  ? BULK_UPLOAD_DEPENDANT_API
-					  : title === 'next of kin'
-					    ? BULK_UPLOAD_NOK_API
-					    : title === 'deployments'
-					      ? BULK_UPLOAD_DEPLOYMENTS_API
-					      : title === 'postings'
-					        ? BULK_UPLOAD_POSTINGS_API
-					        : title === 'trainings'
-					          ? BULK_UPLOAD_TRAININGS_API
-					          : title === 'conferences'
-					            ? BULK_UPLOAD_CONFERENCES_API
-					            : title === 'awards'
-					              ? BULK_UPLOAD_AWARDS_API
-					              : title === 'sanctions'
-					                ? BULK_UPLOAD_SANCTIONS_API
-					                : title === 'promotions'
-					                  ? BULK_UPLOAD_PROMOTIONS_API
-					                  : null;
+						? BULK_UPLOAD_DEPENDANT_API
+						: title === 'next of kin'
+							? BULK_UPLOAD_NOK_API
+							: title === 'deployments'
+								? BULK_UPLOAD_DEPLOYMENTS_API
+								: title === 'postings'
+									? BULK_UPLOAD_POSTINGS_API
+									: title === 'trainings'
+										? BULK_UPLOAD_TRAININGS_API
+										: title === 'conferences'
+											? BULK_UPLOAD_CONFERENCES_API
+											: title === 'awards'
+												? BULK_UPLOAD_AWARDS_API
+												: title === 'sanctions'
+													? BULK_UPLOAD_SANCTIONS_API
+													: title === 'promotions'
+														? BULK_UPLOAD_PROMOTIONS_API
+														: null;
 
 			const headers = createHeaders(true);
 			const response = await fetch(endpoint, {
@@ -121,7 +120,6 @@ const BulkUpload = ({ closeModal, update, title }) => {
 					errorMessage += ' ' + rowNumbers;
 				}
 
-
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon(
@@ -134,7 +132,6 @@ const BulkUpload = ({ closeModal, update, title }) => {
 			closeModal();
 		} catch (e) {
 			return {
-
 				[FORM_ERROR]: e.message || 'Could not upload brief',
 			};
 		}

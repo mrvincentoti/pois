@@ -216,7 +216,8 @@ const ManageUser = ({ closeModal, update, selectedUser }) => {
 								<button
 									type="button"
 									className="btn btn-light"
-									onClick={() => closeModal()}>
+									onClick={() => closeModal()}
+								>
 									Close
 								</button>
 								<button

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import Breadcrumbs from '../../components/Breadcrumbs';
@@ -47,61 +47,59 @@ const NewPoi = () => {
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState(null);
 	const [states, setStates] = useState([]);
-	
 
 	const [dateOfBirth, setDateOfBirth] = useState('');
 	const [imageUrl, setImageUrl] = useState();
 	const [loading, setLoading] = useState(false);
 
 	const navigate = useNavigate();
-	 const { token } = theme.useToken();
+	const { token } = theme.useToken();
 
-  const [language, setLanguage] = useState(['English']);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [editInputIndex, setEditInputIndex] = useState(-1);
-  const [editInputValue, setEditInputValue] = useState('');
-  const inputRef = useRef(null);
-  const editInputRef = useRef(null);
+	const [language, setLanguage] = useState(['English']);
+	const [inputVisible, setInputVisible] = useState(false);
+	const [inputValue, setInputValue] = useState('');
+	const [editInputIndex, setEditInputIndex] = useState(-1);
+	const [editInputValue, setEditInputValue] = useState('');
+	const inputRef = useRef(null);
+	const editInputRef = useRef(null);
 
-
-	  useEffect(() => {
+	useEffect(() => {
 		if (inputVisible) {
-		  inputRef.current?.focus();
+			inputRef.current?.focus();
 		}
-	  }, [inputVisible]);
+	}, [inputVisible]);
 
-	  useEffect(() => {
+	useEffect(() => {
 		editInputRef.current?.focus();
-	  }, [editInputValue]);
-	  const handleClose = (removedTag) => {
-		const newTags = language.filter((tag) => tag !== removedTag);
+	}, [editInputValue]);
+	const handleClose = removedTag => {
+		const newTags = language.filter(tag => tag !== removedTag);
 		setLanguage(newTags);
-	  };
+	};
 
-	  const showInput = () => {
+	const showInput = () => {
 		setInputVisible(true);
-	  };
-	  const handleInputChange = (e) => {
+	};
+	const handleInputChange = e => {
 		setInputValue(e.target.value);
-	  };
-	  const handleInputConfirm = () => {
+	};
+	const handleInputConfirm = () => {
 		if (inputValue && !language.includes(inputValue)) {
-		  setLanguage([...language, inputValue]);
+			setLanguage([...language, inputValue]);
 		}
 		setInputVisible(false);
 		setInputValue('');
-	  };
-	  const handleEditInputChange = (e) => {
+	};
+	const handleEditInputChange = e => {
 		setEditInputValue(e.target.value);
-	  };
-	  const handleEditInputConfirm = () => {
+	};
+	const handleEditInputConfirm = () => {
 		const newTags = [...language];
 		newTags[editInputIndex] = editInputValue;
 		setLanguage(newTags);
 		setEditInputIndex(-1);
 		setEditInputValue('');
-	  };
+	};
 
 	const fetchApis = useCallback(async () => {
 		try {
@@ -124,9 +122,9 @@ const NewPoi = () => {
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
-			setCategories(rs_categories.categories)
-			setSources(rs_sources.sources)
-			setAffliations(rs_affiliations.affiliations)
+			setCategories(rs_categories.categories);
+			setSources(rs_sources.sources);
+			setAffliations(rs_affiliations.affiliations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -149,10 +147,10 @@ const NewPoi = () => {
 
 	const forMap = tag => (
 		<span key={tag} style={{ display: 'inline-block' }}>
-            <Tag closable onClose={() => handleClose(tag)}>
-                {tag}
-            </Tag>
-        </span>
+			<Tag closable onClose={() => handleClose(tag)}>
+				{tag}
+			</Tag>
+		</span>
 	);
 	const tagChild = language.map(forMap);
 
@@ -182,7 +180,6 @@ const NewPoi = () => {
 		return isJpgOrPng && isLt2M;
 	};
 
-
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -191,7 +188,7 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
-		console.log(imageUrl)
+		console.log(imageUrl);
 		try {
 			const config = {
 				method: 'POST',
@@ -207,7 +204,6 @@ const NewPoi = () => {
 					// language_spoken: language,
 					gender: undefined,
 					// affiliation: undefined,
-					
 				},
 			};
 			console.log(config.body);
@@ -287,7 +283,8 @@ const NewPoi = () => {
 											<div className="row">
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
-														Reference Number <span style={{ color: 'red' }}>*</span>
+														Reference Number{' '}
+														<span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="ref_numb" name="ref_numb">
 														{({ input, meta }) => (
@@ -423,8 +420,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="dob">
-														Date Of Birth{' '}
-														<span style={{ color: 'red' }}></span>
+														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="dob" name="dob">
 														{({ input, meta }) => (
@@ -490,10 +486,7 @@ const NewPoi = () => {
 													>
 														Passport Number
 													</label>
-													<Field
-														id="passport_number"
-														name="passport_number"
-													>
+													<Field id="passport_number" name="passport_number">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -513,10 +506,7 @@ const NewPoi = () => {
 													>
 														Other ID Number
 													</label>
-													<Field
-														id="other_id_number"
-														name="other_id_number"
-													>
+													<Field id="other_id_number" name="other_id_number">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -530,7 +520,10 @@ const NewPoi = () => {
 													<ErrorBlock name="other_id_number" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="affiliation_id">
+													<label
+														className="form-label"
+														htmlFor="affiliation_id"
+													>
 														Affiliation <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="affiliation_id" name="affiliation_id">
@@ -564,10 +557,7 @@ const NewPoi = () => {
 													<ErrorBlock name="role" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="category_id"
-													>
+													<label className="form-label" htmlFor="category_id">
 														Category <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="category_id" name="category_id">
@@ -604,8 +594,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
-														Country{' '}
-														<span style={{ color: 'red' }}>*</span>
+														Country <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="country_id" name="country_id">
 														{({ input, meta }) => (
@@ -619,10 +608,10 @@ const NewPoi = () => {
 																getOptionLabel={option => option.en_short_name}
 																onChange={e => {
 																	e ? input.onChange(e.id) : input.onChange('');
-																	setCountry(e)
-																	setStates([])
+																	setCountry(e);
+																	setStates([]);
 																	fetchStates(e.id);
-																	form.change('state_id', undefined)
+																	form.change('state_id', undefined);
 																}}
 															/>
 														)}
@@ -631,8 +620,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="state_id">
-														State{' '}
-														<span style={{ color: 'red' }}>*</span>
+														State <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
@@ -649,16 +637,10 @@ const NewPoi = () => {
 													<ErrorBlock name="state_id" />
 												</div>
 												<div className="col-lg-12 mb-3">
-													<label
-														className="form-label"
-														htmlFor="address"
-													>
+													<label className="form-label" htmlFor="address">
 														Address
 													</label>
-													<Field
-														id="address"
-														name="address"
-													>
+													<Field id="address" name="address">
 														{({ input, meta }) => (
 															<input
 																{...input}
@@ -692,10 +674,7 @@ const NewPoi = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link
-											to="/pois/poi"
-											className="btn btn-danger w-sm me-1"
-										>
+										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
 											Cancel
 										</Link>
 										<button type="submit" className="btn btn-success w-sm">

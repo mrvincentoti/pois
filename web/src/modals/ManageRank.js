@@ -12,7 +12,7 @@ import {
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
 import Select from 'react-select';
-import {gradeLevels, nextOfKinCategory} from '../services/constants';
+import { gradeLevels, nextOfKinCategory } from '../services/constants';
 
 const ManageRank = ({ closeModal, update, rank }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -32,13 +32,11 @@ const ManageRank = ({ closeModal, update, rank }) => {
 	useEffect(() => {
 		if (!loaded) {
 			if (rank) {
-				console.log("rank")
-				console.log(rank)
+				console.log('rank');
+				console.log(rank);
 				setCadre(rank.cadre);
 				setLevel(rank.level);
-				setLevel(
-					gradeLevels.find(grade => grade.id === rank.level)
-				);
+				setLevel(gradeLevels.find(grade => grade.id === rank.level));
 			}
 
 			loadCadres().then(_ => setLoaded(true));

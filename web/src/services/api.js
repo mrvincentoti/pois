@@ -1,4 +1,9 @@
-import { BASE_AUDIT_URL, BASE_AUTH_URL, BASE_EMPLOYEE_URL, BASE_POI_URL } from './constants';
+import {
+	BASE_AUDIT_URL,
+	BASE_AUTH_URL,
+	BASE_EMPLOYEE_URL,
+	BASE_POI_URL,
+} from './constants';
 
 // authentication apis
 export const LOGIN_API = `${BASE_AUTH_URL}/poi/user/login`;
@@ -25,7 +30,7 @@ export const FETCH_USERS_API = `${BASE_AUTH_URL}/poi/users`;
 export const CREATE_USER_API = `${BASE_AUTH_URL}/poi/users`;
 export const DELETE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
 export const UPDATE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
-export const RESTORE_USER_API= `${BASE_AUTH_URL}/poi/user/restore/:id`;
+export const RESTORE_USER_API = `${BASE_AUTH_URL}/poi/user/restore/:id`;
 
 // dashboard apis
 export const FETCH_DASHBOARD_API = `${BASE_EMPLOYEE_URL}/dashboard`;
@@ -77,7 +82,6 @@ export const FETCH_ALL_DESIGNATIONS_API = `${BASE_EMPLOYEE_URL}/all-designations
 export const CREATE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designations`;
 export const UPDATE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designation/:id`;
 export const DELETE_DESIGNATION_API = `${BASE_EMPLOYEE_URL}/designation/:id`;
-
 
 // awards api
 export const FETCH_AWARDS_API = `${BASE_EMPLOYEE_URL}/awards`;

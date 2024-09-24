@@ -1,10 +1,10 @@
-import {LoadingOutlined, SyncOutlined} from '@ant-design/icons';
+import { LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import notification from 'antd/es/notification';
-import {confirmAlert} from 'react-confirm-alert';
+import { confirmAlert } from 'react-confirm-alert';
 import LocalStorage from './storage';
-import {limit, TOKEN_COOKIE} from './constants';
+import { limit, TOKEN_COOKIE } from './constants';
 import moment from 'moment';
-import {CHECK_API} from "./api";
+import { CHECK_API } from './api';
 
 export const isUnset = o => typeof o === 'undefined' || o === null;
 
@@ -28,7 +28,7 @@ export function decodeValue(val) {
 
 const checkStatus = async response => {
 	if (!response.ok) {
-		if (response.statusText === 'UNAUTHORIZED' ) {
+		if (response.statusText === 'UNAUTHORIZED') {
 			// prettier-ignore
 			const token = (new LocalStorage()).getItem(TOKEN_COOKIE);
 			if (token) {
@@ -46,21 +46,18 @@ const checkStatus = async response => {
 	return response;
 };
 const checkKey = async () => {
-  try {
-    const response = await fetch(`${CHECK_API}`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      return { ok: false, message: errorData.message }; // Return the message from backend
-    }
-    return { ok: true };
-  } catch (error) {
-    console.error("Error making request:", error);
-    return { ok: false, message: "Network or other error" }; // Handle network or other errors
-  }
+	try {
+		const response = await fetch(`${CHECK_API}`);
+		if (!response.ok) {
+			const errorData = await response.json();
+			return { ok: false, message: errorData.message }; // Return the message from backend
+		}
+		return { ok: true };
+	} catch (error) {
+		console.error('Error making request:', error);
+		return { ok: false, message: 'Network or other error' }; // Handle network or other errors
+	}
 };
-
-
-
 
 const parseJSON = response => response.json();
 
@@ -90,20 +87,10 @@ export async function request(uri, { body, ...customConfig } = {}) {
 		config.body = customConfig.uploader ? body : JSON.stringify(body);
 	}
 
-
-
-
-	
-
-
-
 	const response = await fetch(uri, config);
-	const result = await checkStatus(response)
+	const result = await checkStatus(response);
 
 	return parseJSON(result);
-
-
-
 }
 
 export function createHeaders(uploader) {
@@ -215,7 +202,11 @@ export function formatDateTime(date, format = 'DD-MMM-YYYY HH:mm:ss') {
 }
 
 export function checkIfContainsEdit(value) {
-    return value.toLowerCase().includes('edit') || value.toLowerCase().includes('add') || value.toLowerCase().includes('bulk') ;
+	return (
+		value.toLowerCase().includes('edit') ||
+		value.toLowerCase().includes('add') ||
+		value.toLowerCase().includes('bulk')
+	);
 }
 
 export const changeLimit = (e, query, location, navigate, filters) => {
@@ -471,29 +462,31 @@ export const getHashString = obj => {
 
 // Utility function to calculate age from date of birth
 export function calculateAge(dobString) {
-    // Parse the date of birth string to a JavaScript Date object
-    const birthDate = new Date(dobString);
+	// Parse the date of birth string to a JavaScript Date object
+	const birthDate = new Date(dobString);
 
-    // Check if the date is valid
-    if (isNaN(birthDate)) {
-        throw new Error('Invalid date format provided.');
-    }
+	// Check if the date is valid
+	if (isNaN(birthDate)) {
+		throw new Error('Invalid date format provided.');
+	}
 
-    // Get today's date
-    const today = new Date();
+	// Get today's date
+	const today = new Date();
 
-    // Calculate age
-    let age = today.getFullYear() - birthDate.getFullYear();
+	// Calculate age
+	let age = today.getFullYear() - birthDate.getFullYear();
 
-    // Adjust the age if the birth date hasn't occurred yet this year
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
+	// Adjust the age if the birth date hasn't occurred yet this year
+	const monthDifference = today.getMonth() - birthDate.getMonth();
+	if (
+		monthDifference < 0 ||
+		(monthDifference === 0 && today.getDate() < birthDate.getDate())
+	) {
+		age--;
+	}
 
-    return age;
+	return age;
 }
-
 
 export const formatName = employee => {
 	if (employee) {

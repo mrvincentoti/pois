@@ -69,7 +69,7 @@ const ManageDepartment = ({ closeModal, update, selectedDepartment }) => {
 						? {
 								...selectedDepartment,
 								directorate_id: selectedDepartment.directorate_id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

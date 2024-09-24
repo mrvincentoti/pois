@@ -14,9 +14,7 @@ export const ViewLink = ({ to }) => {
 export const ViewPostingHistoryLink = ({ to }) => {
 	return (
 		<Link className="link-primary fs-15" role="button" to={to}>
-			<Tooltip title="view">
-				 View History
-			</Tooltip>
+			<Tooltip title="view">View History</Tooltip>
 		</Link>
 	);
 };
@@ -24,9 +22,7 @@ export const ViewPostingHistoryLink = ({ to }) => {
 export const ViewListLink = ({ to }) => {
 	return (
 		<Link className="link-primary fs-15" role="button" to={to}>
-			<Tooltip title="view">
-				 View History
-			</Tooltip>
+			<Tooltip title="view">View History</Tooltip>
 		</Link>
 	);
 };

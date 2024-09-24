@@ -4,7 +4,6 @@ import Select from 'react-select';
 export const error = meta => (meta.touched && meta.error ? 'is-invalid' : '');
 
 export function ErrorBlock({ name }) {
-
 	return (
 		<Field
 			name={name}

@@ -1,13 +1,11 @@
 import React from 'react';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 
-
 const routes = {
-    view: '/view/123',
-    download: '/download/123',
-    delete: '/delete/123'
+	view: '/view/123',
+	download: '/download/123',
+	delete: '/delete/123',
 };
-
 
 const Activities = () => {
     return (

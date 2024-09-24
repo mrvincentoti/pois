@@ -19,7 +19,7 @@ import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import {dependentStatus, nextOfKinCategory} from "../services/constants";
+import { dependentStatus, nextOfKinCategory } from '../services/constants';
 // import { dependentStatus, dependentTypes } from '../services/constants';
 
 const ManageEmployeeNextOfKin = ({ closeModal, update, selectedNok }) => {
@@ -39,28 +39,24 @@ const ManageEmployeeNextOfKin = ({ closeModal, update, selectedNok }) => {
 	useEffect(() => {
 		if (!loaded) {
 			if (selectedNok) {
-
-
 				setCategory(
-					nextOfKinCategory.find(category => category.id === selectedNok.category_id)
+					nextOfKinCategory.find(
+						category => category.id === selectedNok.category_id
+					)
 				);
-				console.log("employee")
+				console.log('employee');
 				setEmployee(selectedNok.employee);
-
 			}
 			setLoaded(true);
 		}
 	}, [loaded, selectedNok]);
 
 	const onSubmit = async values => {
-
-		console.log("values")
-		console.log(values)
-
+		console.log('values');
+		console.log(values);
 
 		try {
-
-			 const { employee, ...restValues } = values;
+			const { employee, ...restValues } = values;
 			const config = {
 				method: selectedNok ? 'PUT' : 'POST',
 				body: {
@@ -90,7 +86,7 @@ const ManageEmployeeNextOfKin = ({ closeModal, update, selectedNok }) => {
 						? {
 								...selectedNok,
 								employee_id: selectedNok?.employee?.id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

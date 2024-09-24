@@ -86,7 +86,7 @@ const ManageEmployeeAward = ({ closeModal, update, employeeAward }) => {
 				? UPDATE_EMPLOYEE_AWARD_API.replace(
 						':employee_id',
 						employeeAward.employee_id
-				  ).replace(':id', employeeAward.id)
+					).replace(':id', employeeAward.id)
 				: CREATE_EMPLOYEE_AWARD_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -112,7 +112,7 @@ const ManageEmployeeAward = ({ closeModal, update, employeeAward }) => {
 								employee_id: employeeAward.employee.id,
 								award_id: employeeAward.award.id,
 								implication_id: employeeAward.implication_id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

@@ -91,7 +91,7 @@ const ManageEmployeeSanction = ({ closeModal, update, employeeSanction }) => {
 				? UPDATE_EMPLOYEE_SANCTION_API.replace(
 						':employee_id',
 						employeeSanction.employee_id
-				  ).replace(':id', employeeSanction.id)
+					).replace(':id', employeeSanction.id)
 				: CREATE_EMPLOYEE_SANCTION_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -119,7 +119,7 @@ const ManageEmployeeSanction = ({ closeModal, update, employeeSanction }) => {
 								employee_id: employeeSanction.employee.id,
 								sanction_id: employeeSanction.sanction.id,
 								implication_id: employeeSanction.implication_id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

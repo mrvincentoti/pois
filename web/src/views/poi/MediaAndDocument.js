@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditMedia from './NewEditMedia';
 
-
 const routes = {
-    view: '/view/123',
-    download: '/download/123',
-    delete: '/delete/123'
+	view: '/view/123',
+	download: '/download/123',
+	delete: '/delete/123',
 };
-
 
 const MediaAndDocument = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

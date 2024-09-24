@@ -107,12 +107,11 @@ const ViewPostingInfo = ({ action, closeModal, update, selectedPosting }) => {
 			closeModal={closeModal}
 		>
 			<div style={{ background: '#f3f3f9' }}>
-
-
 				<div className="row m-4">
 					<h5 className="mb-1">{selectedPosting.region.name}</h5>
 					<p className="text-muted mb-0">
-						{selectedPosting.station.country.en_short_name} - {selectedPosting.station.name}
+						{selectedPosting.station.country.en_short_name} -{' '}
+						{selectedPosting.station.name}
 					</p>
 					<p className="text-muted mb-0">
 						{selectedPosting.designation_at_post}
@@ -164,13 +163,13 @@ const ViewPostingInfo = ({ action, closeModal, update, selectedPosting }) => {
 												{item.posting_type && item.posting_type
 													? postingTypes.find(
 															type => type.id === item.posting_type
-													  ).name
+														).name
 													: 'on-going'}
 											</p>
 										</div>
 									</div>
 								</div>
-						  ))
+							))
 						: ''}
 				</div>
 			</div>

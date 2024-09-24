@@ -15,7 +15,7 @@ import {
 	notifyWithIcon,
 	parseHashString,
 	request,
-	formatName
+	formatName,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -57,7 +57,7 @@ const Poi = () => {
 				`${FET_POIS_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
 			);
 			const { pois, ...rest } = rs;
-            console.log(rs);
+			console.log(rs);
 			setList(pois);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
@@ -278,9 +278,7 @@ const Poi = () => {
 															</div>
 														</td>
 
-														<td>
-															{item.crime_committed || 'N/A'}{' '}
-														</td>
+														<td>{item.crime_committed || 'N/A'} </td>
 														<td>{item.arresting_body || 'N/A'}</td>
 														<td>{item.role || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
@@ -321,14 +319,6 @@ const Poi = () => {
 					}}
 				/>
 			)}
-
-
-
-			
-
-
-
-
 		</>
 	);
 };

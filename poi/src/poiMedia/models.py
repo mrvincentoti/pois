@@ -20,6 +20,7 @@ class PoiMedia(db.Model):
             deleted_at=None, created_by=None, created_at=None):
         self.media_type = media_type
         self.media_url = media_url
+        self.media_caption = media_caption
         self.poi_id = poi_id
         self.deleted_at = deleted_at
         self.created_by = created_by

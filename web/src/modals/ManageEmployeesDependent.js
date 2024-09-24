@@ -56,7 +56,6 @@ const ManageEmployeeDependent = ({ closeModal, update, selectedDependent }) => {
 	}, [loaded, selectedDependent]);
 
 	const onSubmit = async values => {
-
 		try {
 			const config = {
 				method: selectedDependent ? 'PUT' : 'POST',
@@ -68,7 +67,7 @@ const ManageEmployeeDependent = ({ closeModal, update, selectedDependent }) => {
 				? UPDATE_EMPLOYEE_DEPENDENTS_API.replace(
 						':employee_dependent_id',
 						selectedDependent.id
-				  )
+					)
 				: CREATE_EMPLOYEE_DEPENDENTS_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -90,7 +89,7 @@ const ManageEmployeeDependent = ({ closeModal, update, selectedDependent }) => {
 						? {
 								...selectedDependent,
 								employee_id: selectedDependent.employee.id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

@@ -99,7 +99,6 @@ const TitleBar = ({
 					</div>
 				</div>
 			</div>
-
 		</>
 	);
 };
