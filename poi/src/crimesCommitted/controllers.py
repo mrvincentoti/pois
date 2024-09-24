@@ -376,7 +376,15 @@ def get_crimes_committed_by_poi(poi_id):
                 "arresting_body_id": crime.arresting_body_id,
                 "comments": crime.comments,
                 "created_by_id": crime.created_by,
-                "created_by_name": created_by_name
+                "created_by_name": created_by_name,
+                "crime": {
+                    "id": crime.crime.id,
+                    "name": crime.crime.name
+                } if crime.crime else None,  # Include crime details if available
+                "arresting_body": {
+                    "id": crime.arresting_body.id,
+                    "name": crime.arresting_body.name
+                } if crime.arresting_body else None  # Include arresting body details if available
             }
             crime_list.append(crime_data)
 

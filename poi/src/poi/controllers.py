@@ -191,7 +191,7 @@ def get_poi(poi_id):
                 "gender": {
                     "id": poi.gender.id,
                     "name": poi.gender.name,
-                } if poi.gender else None
+                } if poi.gender else None,
             }
 
             response = {
