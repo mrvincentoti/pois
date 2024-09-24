@@ -81,8 +81,23 @@ services:
     networks:
       - poi-network
 
+  minio-service:
+    container_name: minio-service
+    image: quay.io/minio/minio:latest
+    command: minio server /data --console-address :9001
+    env_file:
+      - ./minio/.env
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio-data:/data
+    networks:
+      - poi-network
+
 networks:
   poi-network:
 
 volumes:
   db_data:
+  minio-data:

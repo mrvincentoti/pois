@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy import func, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from .. import db
-from ..util import encrypt, decrypt
 
 
 class Poi(db.Model):
@@ -11,18 +10,18 @@ class Poi(db.Model):
 
     id = db.Column(db.Integer, primary_key=True) #captured
     ref_numb = db.Column(db.String(64), unique=False, nullable=True) #captured
-    picture = db.Column(db.Text, unique=False, nullable=True)  # captured
+    picture = db.Column(db.Text(length=200000000), unique=False, nullable=True)  # captured
     first_name = db.Column(db.String(64), nullable=False) #captured
     middle_name = db.Column(db.String(64), nullable=True) #captured
     last_name = db.Column(db.String(64), nullable=False) #captured
-    alias = db.Column(db.String(64), nullable=True) #captured
+    alias = db.Column(db.Text, unique=False, nullable=True)
     dob = db.Column(db.Date, nullable=True) #captured
     passport_number = db.Column(db.String(64), nullable=True) #captured
     other_id_number = db.Column(db.String(64), nullable=True) #captured
     phone_number = db.Column(db.String(64), nullable=True) #captured
     email = db.Column(db.String(64), nullable=True) #captured
     role = db.Column(db.String(64), nullable=True) #captured
-    affiliation_id = db.Column(db.Integer, db.ForeignKey('affiliations.id'), nullable=True) #captured
+    affiliation = db.Column(db.Text, unique=False, nullable=True)
     address = db.Column(db.Text, nullable=True) #captured
     remark = db.Column(db.Text, nullable=True) #captured
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id')) #captured
@@ -39,11 +38,10 @@ class Poi(db.Model):
     country = db.relationship("Country", backref="poi")
     state = db.relationship("State", backref="poi")
     gender = db.relationship("Gender", backref="poi")
-    affiliation = db.relationship("Affiliation", backref="poi")
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,
-                affiliation_id=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
+                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
@@ -57,7 +55,7 @@ class Poi(db.Model):
         self.phone_number = phone_number
         self.email = email
         self.role = role
-        self.affiliation_id = affiliation_id
+        self.affiliation = affiliation
         self.address = address
         self.remark = remark
         self.category_id = category_id
@@ -144,7 +142,7 @@ class Poi(db.Model):
             'phone_number': self.phone_number,
             'email': self.email,
             'role': self.role,
-            'affiliation': self.affiliation.to_dict() if self.affiliation else None,
+            'affiliation': self.affiliation,
             'address': self.address,
             'remark': self.remark,
             'category': self.category.to_dict() if self.category else None,
