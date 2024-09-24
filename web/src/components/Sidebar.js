@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
 import logoSm from '../assets/images/logo-sm.png';
-import logoLight from '../assets/images/logo-light.png';
+// import logoLight from '../assets/images/logo-light.png';
 import VerticalSidebar from './VerticalSidebar';
 
 const Sidebar = ({ layoutType }) => {
@@ -44,7 +44,7 @@ const Sidebar = ({ layoutType }) => {
 							<img src={logoSm} alt="" height="22" />
 						</span>
 						<span className="logo-lg">
-							<img src={logoLight} alt="" height="17" />
+							<img src={logoSm} alt="" height="35" />
 						</span>
 					</Link>
 
@@ -53,7 +53,7 @@ const Sidebar = ({ layoutType }) => {
 							<img src={logoSm} alt="" height="22" />
 						</span>
 						<span className="logo-lg">
-							<img src={logoLight} alt="" height="17" />
+							<img src={logoSm} alt="" height="35" />
 						</span>
 					</Link>
 					<button

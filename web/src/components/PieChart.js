@@ -1,33 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
 const PieChart = ({ statistics, categories, title, size }) => {
-  const [data, setData] = useState([]);
-  const [category, setCategory] = useState([]);
-  const [sizee, setSizee] = useState([]);
-  useEffect(() => {
+	const [data, setData] = useState([]);
+	const [category, setCategory] = useState([]);
+	const [sizee, setSizee] = useState([]);
+	useEffect(() => {
+		setData(statistics);
+		setCategory(categories);
+		setSizee(size);
+	}, []);
 
-    setData(statistics)
-    setCategory(categories)
-    setSizee(size)
-  }, []);
+	const options = {
+		chart: {
+			type: 'pie',
+		},
+		labels: categories,
+	};
 
-
-  const options = {
-    chart: {
-      type: 'pie',
-    },
-    labels: categories,
-  };
-
-
-
-  return (
-    <div className="pie-chart">
-      <Chart options={options} series={data} type="pie" width={sizee} />
-    </div>
-  );
+	return (
+		<div className="pie-chart">
+			<Chart options={options} series={data} type="pie" width={sizee} />
+		</div>
+	);
 };
 
 export default PieChart;
-

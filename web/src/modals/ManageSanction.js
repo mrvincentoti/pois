@@ -10,7 +10,6 @@ import { CREATE_SANCTION_API, UPDATE_SANCTION_API } from '../services/api';
 
 const ManageSanction = ({ closeModal, update, sanction }) => {
 	const onSubmit = async values => {
-
 		try {
 			const config = { method: sanction ? 'PUT' : 'POST', body: { ...values } };
 			const uri = sanction

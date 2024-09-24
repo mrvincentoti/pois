@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { checkPermission } from '../services/utilities';
 import { useSelector } from 'react-redux';
 
-
 const Navdata = () => {
 	const [isEntity, setIsEntity] = useState(false);
 	const [isAccounts, setIsAccounts] = useState(false);
@@ -29,11 +28,7 @@ const Navdata = () => {
 
 	useEffect(() => {
 		document.body.classList.remove('twocolumn-panel');
-		if (
-			isCurrentState === 'Dashboard' ||
-			isCurrentState === 'Audit Trail'
-			
-		) {
+		if (isCurrentState === 'Dashboard' || isCurrentState === 'Audit Trail') {
 			document.body.classList.add('twocolumn-panel');
 		}
 		if (isCurrentState !== 'Entity') {
@@ -89,7 +84,6 @@ const Navdata = () => {
 		// 	stateVariables: isEntity,
 		// 	subItems: [
 
-				
 		// 	],
 		// },
 		{
@@ -97,8 +91,8 @@ const Navdata = () => {
 			isHeader: true,
 			permission:
 				checkPermission(permissions, 'can-see-poi-link') ||
-				checkPermission(permissions, 'can-see-organisation-link')||
-				checkPermission(permissions, 'can-see-brieflink')
+				checkPermission(permissions, 'can-see-organisation-link') ||
+				checkPermission(permissions, 'can-see-brieflink'),
 		},
 		{
 			id: 'poi',
@@ -134,18 +128,14 @@ const Navdata = () => {
 			icon: 'ri-file-shred-line',
 			link: '/entity/brief',
 			parentId: 'entity',
-			permission: checkPermission(
-				permissions,
-				'can-see-brief-list'
-			),
+			permission: checkPermission(permissions, 'can-see-brief-list'),
 		},
 		{
 			label: 'AUDIT',
 			isHeader: true,
-			permission:
-				checkPermission(permissions, 'can-see-audit-trail-link') 
+			permission: checkPermission(permissions, 'can-see-audit-trail-link'),
 		},
-		
+
 		{
 			id: 'audit',
 			label: 'Audit Trail',

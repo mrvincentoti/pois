@@ -4,8 +4,10 @@ import {
 	APP_SHORT_NAME,
 	// dependentStatus,
 	// dependentTypes,
-	limit, nextOfKinCategory,
-	paginate, statusTypes,
+	limit,
+	nextOfKinCategory,
+	paginate,
+	statusTypes,
 } from './../services/constants';
 import Breadcrumbs from '../components/Breadcrumbs';
 import AppPagination from '../components/AppPagination';
@@ -21,7 +23,7 @@ import {
 	request,
 } from '../services/utilities';
 import { useQuery } from '../hooks/query';
-import {ViewButtonNok, EditButton, ViewListLink} from '../components/Buttons';
+import { ViewButtonNok, EditButton, ViewListLink } from '../components/Buttons';
 import TitleSearchBar from '../components/TitleSearchBar';
 import {
 	// DELETE_EMPLOYEE_DEPENDENTS_API,
@@ -57,7 +59,6 @@ const NextOfKin = () => {
 			);
 
 			const { next_of_kin, ...rest } = rs;
-
 
 			setList(next_of_kin);
 			setMeta({ ...rest, per_page });
@@ -209,20 +210,26 @@ const NextOfKin = () => {
 														</div>
 													</td>
 													<td>
-
-
 														{item.category_id === 1 && (
 															<span className="badge bg-success">
-																{nextOfKinCategory.find(category => category.id === item.category_id).name}
+																{
+																	nextOfKinCategory.find(
+																		category => category.id === item.category_id
+																	).name
+																}
 															</span>
 														)}
 
 														{item.category_id === 2 && (
 															<span className="badge bg-danger">
-																{nextOfKinCategory.find(category => category.id === item.category_id).name}
+																{
+																	nextOfKinCategory.find(
+																		category => category.id === item.category_id
+																	).name
+																}
 															</span>
 														)}
-															</td>
+													</td>
 													<td>{item.firstname}</td>
 													<td>{item.lastname}</td>
 													<td>{item.phone}</td>
@@ -231,9 +238,9 @@ const NextOfKin = () => {
 													<td>{item.relationship}</td>
 													<td className="text-end">
 														<div className="hstack gap-3 flex-wrap text-end">
-
-															<ViewListLink to={`/next-of-kin/${item.employee.id}`} />
-
+															<ViewListLink
+																to={`/next-of-kin/${item.employee.id}`}
+															/>
 														</div>
 													</td>
 												</tr>

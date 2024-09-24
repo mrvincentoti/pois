@@ -70,7 +70,6 @@ const ManagePostingEvent = ({
 	useEffect(() => {
 		if (!loaded) {
 			if (selectedPosting) {
-
 				setEmployee(selectedPosting.employee);
 				setRegion(selectedPosting.region);
 				setStation(selectedPosting.station);
@@ -120,7 +119,7 @@ const ManagePostingEvent = ({
 								employee_id: selectedPosting.employee.id,
 								region_id: selectedPosting.region.id,
 								station_id: selectedPosting.station.id,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

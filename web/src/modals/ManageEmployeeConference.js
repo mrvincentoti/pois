@@ -17,8 +17,8 @@ import {
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
-import Flatpickr from "react-flatpickr";
-import moment from "moment/moment";
+import Flatpickr from 'react-flatpickr';
+import moment from 'moment/moment';
 
 const ManageEmployeeConference = ({
 	closeModal,
@@ -33,8 +33,6 @@ const ManageEmployeeConference = ({
 	useEffect(() => {
 		if (!loaded) {
 			if (employeeConference) {
-
-
 				setEmployee(employeeConference.employee);
 				setConference(employeeConference.conference);
 				setDateAttended(new Date(employeeConference.date_attended));
@@ -76,7 +74,7 @@ const ManageEmployeeConference = ({
 				? UPDATE_EMPLOYEE_CONFERENCE_API.replace(
 						':employee_id',
 						employeeConference.employee_id
-				  ).replace(':id', employeeConference.id)
+					).replace(':id', employeeConference.id)
 				: CREATE_EMPLOYEE_CONFERENCE_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -97,10 +95,14 @@ const ManageEmployeeConference = ({
 			<Form
 				initialValues={
 					employeeConference
-						? { ...employeeConference, employee_id: employeeConference.employee.id, conference_id:employeeConference.conference.id, dateAttended: employeeConference.date_attended }
+						? {
+								...employeeConference,
+								employee_id: employeeConference.employee.id,
+								conference_id: employeeConference.conference.id,
+								dateAttended: employeeConference.date_attended,
+							}
 						: {}
 				}
-
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
@@ -168,17 +170,10 @@ const ManageEmployeeConference = ({
 								</div>
 
 								<div className="col-lg-12">
-
-										<label
-										htmlFor="date_attended"
-										className="form-label"
-									>
+									<label htmlFor="date_attended" className="form-label">
 										Date attended
 									</label>
-									<Field
-										id="date_attended"
-										name="date_attended"
-									>
+									<Field id="date_attended" name="date_attended">
 										{({ input, meta }) => (
 											<Flatpickr
 												className={`form-control ${error(meta)}`}
@@ -193,7 +188,6 @@ const ManageEmployeeConference = ({
 										)}
 									</Field>
 									<ErrorBlock name="date_attended" />
-
 								</div>
 							</div>
 						</div>

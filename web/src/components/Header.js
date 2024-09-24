@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 //import images
 import logoSm from '../assets/images/logo-sm.png';
-import logoDark from '../assets/images/logo-dark.png';
-import logoLight from '../assets/images/logo-light.png';
+// import logoDark from '../assets/images/logo-dark.png';
+// import logoLight from '../assets/images/logo-light.png';
 import { changeSidebarVisibility } from '../redux/slices/layout';
 import LightDark from './LightDark';
 import NotificationDropdown from './NotificationDropdown';
@@ -74,7 +74,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
 									<img src={logoSm} alt="" height="22" />
 								</span>
 								<span className="logo-lg">
-									<img src={logoDark} alt="" height="22" />
+									<img src={logoSm} alt="" height="22" />
 								</span>
 							</Link>
 
@@ -83,7 +83,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
 									<img src={logoSm} alt="" height="22" />
 								</span>
 								<span className="logo-lg">
-									<img src={logoLight} alt="" height="22" />
+									<img src={logoSm} alt="" height="22" />
 								</span>
 							</Link>
 						</div>

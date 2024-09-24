@@ -47,9 +47,7 @@ const StatEmployeeAnalysis = ({ statistics, categories, title }) => {
 	return (
 		<div className="card" style={{ height: '620px' }}>
 			<div className="card-header border-0 align-items-center d-flex">
-				<h4 className="card-title mb-0 flex-grow-1">
-					{title}
-				</h4>
+				<h4 className="card-title mb-0 flex-grow-1">{title}</h4>
 			</div>
 			<div className="card-body p-0 pb-2">
 				<div className="w-100">
@@ -59,58 +57,48 @@ const StatEmployeeAnalysis = ({ statistics, categories, title }) => {
 						className="apex-charts"
 					>
 						<Chart
-                type="bar"
-                width={'100%'}
-                height={560}
-                series={[...statistics
-
-
-                ]}
-
-                options={{
-
-                    chart:{
-                        stacked:true,
-                    },
-                    plotOptions:{
-                        bar:{
-                            horizontal:true,
-                            columnWidth:'100%'
-                          }
-                    },
-                    stroke: {
-                        width: 1,
-                    },
-                    xaxis:{
-                        categories:[...categories]
-                    },
-                    yaxis:{
-
-                    },
-                    legend:{
-                        position: 'bottom'
-                    },
-                    dataLabels:{
-                        enabled:true,
-                    },
-                    grid: {
-                        show:true,
-                        xaxis:{
-                            lines:{
-                                show:false
-                            }
-                        },
-                        yaxis:{
-                            lines:{
-                                show:false
-                            }
-                        }
-
-                    }
-
-                }}
-
-                />
+							type="bar"
+							width={'100%'}
+							height={560}
+							series={[...statistics]}
+							options={{
+								chart: {
+									stacked: true,
+								},
+								plotOptions: {
+									bar: {
+										horizontal: true,
+										columnWidth: '100%',
+									},
+								},
+								stroke: {
+									width: 1,
+								},
+								xaxis: {
+									categories: [...categories],
+								},
+								yaxis: {},
+								legend: {
+									position: 'bottom',
+								},
+								dataLabels: {
+									enabled: true,
+								},
+								grid: {
+									show: true,
+									xaxis: {
+										lines: {
+											show: false,
+										},
+									},
+									yaxis: {
+										lines: {
+											show: false,
+										},
+									},
+								},
+							}}
+						/>
 					</div>
 				</div>
 			</div>

@@ -64,7 +64,6 @@ const ManageEmployeeTraining = ({ closeModal, update, employeeTraining }) => {
 	};
 
 	const onSubmit = async values => {
-
 		try {
 			const config = {
 				method: employeeTraining ? 'PUT' : 'POST',
@@ -80,7 +79,7 @@ const ManageEmployeeTraining = ({ closeModal, update, employeeTraining }) => {
 				? UPDATE_EMPLOYEE_TRAINING_API.replace(
 						':employee_training_id',
 						employeeTraining.id
-				  )
+					)
 				: CREATE_EMPLOYEE_TRAINING_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -103,13 +102,13 @@ const ManageEmployeeTraining = ({ closeModal, update, employeeTraining }) => {
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
-					if (!values.employee_id && employee==null) {
+					if (!values.employee_id && employee == null) {
 						errors.employee_id = 'select employee';
 					}
-					if (!values.training_id && training==null) {
+					if (!values.training_id && training == null) {
 						errors.training_id = 'select training';
 					}
-					if (!values.category_id && category==null) {
+					if (!values.category_id && category == null) {
 						errors.category_id = 'select category';
 					}
 
@@ -169,17 +168,13 @@ const ManageEmployeeTraining = ({ closeModal, update, employeeTraining }) => {
 									<ErrorBlock name="training_id" />
 								</div>
 								<div className="col-lg-12">
-
-										<label
+									<label
 										htmlFor="expected_date_of_return"
 										className="form-label"
 									>
 										Date attended
 									</label>
-									<Field
-										id="date_attended"
-										name="date_attended"
-									>
+									<Field id="date_attended" name="date_attended">
 										{({ input, meta }) => (
 											<Flatpickr
 												className={`form-control ${error(meta)}`}
@@ -194,7 +189,6 @@ const ManageEmployeeTraining = ({ closeModal, update, employeeTraining }) => {
 										)}
 									</Field>
 									<ErrorBlock name="date_attended" />
-
 								</div>
 								<div className="col-lg-12">
 									<label htmlFor="category_id" className="form-label">

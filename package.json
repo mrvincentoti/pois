@@ -12,7 +12,7 @@
     "prettier": "^3.3.3"
   },
   "lint-staged": {
-    "web_service/src/**/*.{js,jsx,ts,tsx}": [
+    "web/src/**/*.{js,jsx,ts,tsx}": [
       "prettier --write"
     ]
   }

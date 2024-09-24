@@ -36,9 +36,9 @@ const Login = () => {
 	};
 
 	return (
-		<div className="p-lg-5 p-4">
+		<div className="d-flex w-100 flex-column p-4">
 			<div>
-				<h5 className="text-primary">Welcome Back!</h5>
+				<p className="text-md m-0 pt-[24px] text-center">Welcome Back!</p>
 				<p className="text-muted">Sign in to continue to {APP_NAME}.</p>
 			</div>
 

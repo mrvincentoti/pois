@@ -116,7 +116,7 @@ const ManageEmployeePosting = ({ closeModal, update, selectedPosting }) => {
 								region_id: selectedPosting.region.id,
 								station_id: selectedPosting.station.id,
 								expectedDateOfReturn: expectedDateOfReturn,
-						  }
+							}
 						: {}
 				}
 				onSubmit={onSubmit}

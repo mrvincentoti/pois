@@ -11,6 +11,13 @@ export const TOKEN_EXPIRATION = 'eims:token:expire';
 export const LOGGED_IN_UID = 'eims:uid';
 export const PREVIOUS_PATH = 'hr:path';
 
+// gsap animation
+export const COMPACT_VERTICAL_SPACE = 20;
+export const LINE_WIDTH = 1.5;
+export const TRIAL_SIZE_PERCENTAGE = '100%';
+export const GRADIENT_SUFFIXES = ['01', '02', '03', '04'];
+export const DURATION = 2;
+
 // Poi
 export const BASE_POI_URL = process.env.REACT_APP_BASE_POI_URL;
 
@@ -87,14 +94,12 @@ export const postingTypes = [
 ];
 export const dependentStatus = [
 	{ id: 1, name: 'Active' },
-	{ id: 2, name: 'Deceased' }
-
+	{ id: 2, name: 'Deceased' },
 ];
 
 export const nextOfKinCategory = [
 	{ id: 1, name: 'Primary' },
-	{ id: 2, name: 'Alternate' }
-
+	{ id: 2, name: 'Alternate' },
 ];
 export const trainingCategory = [
 	{ id: 1, name: 'GTI' },
@@ -119,5 +124,5 @@ export const stagnationList = [
 export const categoryList = [
 	{ id: 1, name: 'CITU' },
 	{ id: 2, name: 'ANALYST' },
-	{ id: 3, name: 'RIDU' }
+	{ id: 3, name: 'RIDU' },
 ];

@@ -45,7 +45,6 @@ const EntityIndex = lazy(() => import('./views/Entity/Index'));
 const AccountsIndex = lazy(() => import('./views/accounts/Index'));
 const Profile = lazy(() => import('./views/Profile'));
 
-
 // POI
 const PoiIndex = lazy(() => import('./views/poi/Index'));
 

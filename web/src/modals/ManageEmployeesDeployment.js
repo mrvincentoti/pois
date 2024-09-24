@@ -10,8 +10,10 @@ import {
 } from '../services/utilities';
 import {
 	CREATE_EMPLOYEE_DEPLOYMENTS_API,
-	FETCH_DEPARTMENTS_API, FETCH_DIRECTORATES_API,
-	FETCH_EMPLOYEES_API, FETCH_UNITS_API,
+	FETCH_DEPARTMENTS_API,
+	FETCH_DIRECTORATES_API,
+	FETCH_EMPLOYEES_API,
+	FETCH_UNITS_API,
 	UPDATE_EMPLOYEE_DEPLOYMENTS_API,
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
@@ -79,27 +81,26 @@ const ManageEmployeesDeployment = ({
 		}
 	}, []);
 
-
-
 	useEffect(() => {
 		if (!loaded) {
 			if (selectedDeployment) {
-				setUnit(selectedDeployment.unit)
+				setUnit(selectedDeployment.unit);
 				setEmployee(selectedDeployment.employee);
-				setDirectorate(selectedDeployment.directorate)
+				setDirectorate(selectedDeployment.directorate);
 				setDateOfAssumption(selectedDeployment.date_of_assumption);
 				setDateOfReturn(selectedDeployment.expected_date_of_return);
-				setType(deploymentTypes.find(type => type.name === selectedDeployment.type));
+				setType(
+					deploymentTypes.find(type => type.name === selectedDeployment.type)
+				);
 
 				setDepartment(selectedDeployment.department);
 			}
 
 			setLoaded(true);
 		}
-	}, [ loaded, selectedDeployment]);
+	}, [loaded, selectedDeployment]);
 
 	const onSubmit = async values => {
-
 		try {
 			const config = {
 				method: selectedDeployment ? 'PUT' : 'POST',
@@ -114,7 +115,7 @@ const ManageEmployeesDeployment = ({
 							...(type.id === 3 && { deployed_to: values.deployed_to }),
 							...(type.id === 2 && { department_id: values.department_id }),
 							deleted_at: undefined,
-					  }
+						}
 					: { ...values },
 			};
 			const apiURL = selectedDeployment
@@ -141,8 +142,8 @@ const ManageEmployeesDeployment = ({
 						? {
 								...selectedDeployment,
 								employee_id: selectedDeployment.employee.id,
-								type: selectedDeployment.type
-						  }
+								type: selectedDeployment.type,
+							}
 						: {}
 				}
 				onSubmit={onSubmit}
@@ -159,7 +160,7 @@ const ManageEmployeesDeployment = ({
 						errors.date_of_assumption = 'enter assumption date';
 					}
 
-					if(values.type===2 && !values.directorate_id) {
+					if (values.type === 2 && !values.directorate_id) {
 						errors.directorate_id = 'select directorate ';
 					}
 					// if (!values.expected_date_of_return) {
@@ -243,102 +244,94 @@ const ManageEmployeesDeployment = ({
 									''
 								)}
 
-
 								{type && type.id === 2 ? (
 									<>
-									<div className="col-lg-12">
-										<label className="form-label"
-											   htmlFor="directorate_id">
-											Directorate <span style={{ color: 'red' }}>*</span>
-										</label>
-										<Field id="directorate_id" name="directorate_id">
-															{({ input, meta }) => (
-																<AsyncSelect
-																	isClearable
-																	getOptionValue={option => option.id}
-																	getOptionLabel={option => option.name}
-																	defaultOptions
-																	value={directorate}
-																	className={error(meta)}
-																	loadOptions={getDirectorates}
-																	onChange={e => {
-																		setDirectorate(e);
-																		e ? input.onChange(e.id) : input.onChange('');
-																		fetchDepartments(e?.id);
-																		setDepartments([]);
-																		setDepartment(null);
-																		setUnits([]);
-																		form.change('department_id', undefined);
-																		form.change('unit', undefined);
-																	}}
-																	placeholder="Search directorate"
-																/>
-															)}
-										</Field>
-										<ErrorBlock name="directorate_id" />
-									</div>
-
-									<div className="col-lg-12">
-										<label htmlFor="department_id" className="form-label">
-											Department
-										</label>
-										<Field id="department_id" name="department_id">
-											{({ input, meta }) => (
-												<Select
-													{...input}
-													options={departments}
-													className={error(meta)}
-													placeholder="Select department"
-													getOptionValue={option => option.id}
-													getOptionLabel={option => option.name}
-													value={department}
-													onChange={e => {
-														setDepartment(e);
-														e ? input.onChange(e.id) : input.onChange('');
-														if (e && e.id !== department?.id) {
-																		form.change('unit', undefined);
-																		fetchUnits(e?.id);
-																	}
-													}}
-												/>
-											)}
-										</Field>
-										<ErrorBlock name="department_id" />
-									</div>
+										<div className="col-lg-12">
+											<label className="form-label" htmlFor="directorate_id">
+												Directorate <span style={{ color: 'red' }}>*</span>
+											</label>
+											<Field id="directorate_id" name="directorate_id">
+												{({ input, meta }) => (
+													<AsyncSelect
+														isClearable
+														getOptionValue={option => option.id}
+														getOptionLabel={option => option.name}
+														defaultOptions
+														value={directorate}
+														className={error(meta)}
+														loadOptions={getDirectorates}
+														onChange={e => {
+															setDirectorate(e);
+															e ? input.onChange(e.id) : input.onChange('');
+															fetchDepartments(e?.id);
+															setDepartments([]);
+															setDepartment(null);
+															setUnits([]);
+															form.change('department_id', undefined);
+															form.change('unit', undefined);
+														}}
+														placeholder="Search directorate"
+													/>
+												)}
+											</Field>
+											<ErrorBlock name="directorate_id" />
+										</div>
 
 										<div className="col-lg-12">
-									<label className="form-label" htmlFor="unit_id">
-										Unit
-									</label>
-									<Field id="unit_id" name="unit_id">
-											{({ input, meta }) => (
+											<label htmlFor="department_id" className="form-label">
+												Department
+											</label>
+											<Field id="department_id" name="department_id">
+												{({ input, meta }) => (
+													<Select
+														{...input}
+														options={departments}
+														className={error(meta)}
+														placeholder="Select department"
+														getOptionValue={option => option.id}
+														getOptionLabel={option => option.name}
+														value={department}
+														onChange={e => {
+															setDepartment(e);
+															e ? input.onChange(e.id) : input.onChange('');
+															if (e && e.id !== department?.id) {
+																form.change('unit', undefined);
+																fetchUnits(e?.id);
+															}
+														}}
+													/>
+												)}
+											</Field>
+											<ErrorBlock name="department_id" />
+										</div>
 
-												<Select
-													{...input}
-													options={units}
-													className={error(meta)}
-													placeholder="Select Type"
-													getOptionValue={option => option.id}
-													getOptionLabel={option => option.name}
-													value={unit}
-													onChange={e => {
-													setUnit(e);
-													e ? input.onChange(e.id) : input.onChange('');
-												}}
-											/>
-														)}
-
-
-									</Field>
-									<ErrorBlock name="unit_id" />
-
-								</div>
+										<div className="col-lg-12">
+											<label className="form-label" htmlFor="unit_id">
+												Unit
+											</label>
+											<Field id="unit_id" name="unit_id">
+												{({ input, meta }) => (
+													<Select
+														{...input}
+														options={units}
+														className={error(meta)}
+														placeholder="Select Type"
+														getOptionValue={option => option.id}
+														getOptionLabel={option => option.name}
+														value={unit}
+														onChange={e => {
+															setUnit(e);
+															e ? input.onChange(e.id) : input.onChange('');
+														}}
+													/>
+												)}
+											</Field>
+											<ErrorBlock name="unit_id" />
+										</div>
 									</>
 								) : (
 									''
 								)}
-
-
 
 								<div className="col-lg-12">
 									<label htmlFor="date_of_assumption" className="form-label">
@@ -377,9 +370,9 @@ const ManageEmployeesDeployment = ({
 												className={`form-control ${error(meta)}`}
 												placeholder="Select date of return"
 												options={{
-																dateFormat: 'd M, Y',
-																minDate: new Date(dateOfAssumption),
-															}}
+													dateFormat: 'd M, Y',
+													minDate: new Date(dateOfAssumption),
+												}}
 												value={dateOfReturn}
 												defaultValue={dateOfReturn}
 												onChange={([date]) => {

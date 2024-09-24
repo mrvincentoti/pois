@@ -19,11 +19,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../redux/slices/employee';
 import { DatePicker } from 'antd';
 
-const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
+const PromotionBriefFilter = ({
+	show,
+	onCloseClick,
+	onFilter,
+	onClearFilter,
+}) => {
 	const [loaded, setLoaded] = useState(false);
 	const [ranks, setRanks] = useState([]);
 	const [cadres, setCadres] = useState([]);
-    const [years, setYears] = useState([]);
+	const [years, setYears] = useState([]);
 
 	const [selectedRank, setSelectedRank] = useState(''); // State to track the selected option
 	const [selectedCadre, setSelectedCadre] = useState(''); // State to track the selected option
@@ -49,39 +54,33 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 		}
 	}, []);
 
-
 	const fetchCadres = useCallback(async () => {
 		try {
 			const rs = await request(`${FETCH_CADRES_API}?page=1&per_page=10`);
 			setCadres(rs.cadres);
 
-              const currentYear = (new Date()).getFullYear();
-              const startYear = 2012;
-              const yearData = Array.from(
-                  { length: currentYear - startYear + 1 },
-                  (_, index) => startYear + index
-                );
+			const currentYear = new Date().getFullYear();
+			const startYear = 2012;
+			const yearData = Array.from(
+				{ length: currentYear - startYear + 1 },
+				(_, index) => startYear + index
+			);
 
-              const formattedYears = yearData.map((year, index) => ({
-                  id: index + 4, // Adjust the starting id as needed
-                  year: `${year}`,
-                }));
-                setYears(formattedYears)
+			const formattedYears = yearData.map((year, index) => ({
+				id: index + 4, // Adjust the starting id as needed
+				year: `${year}`,
+			}));
+			setYears(formattedYears);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
 	}, []);
 
-
-
-
-
 	const clearFilterParams = useCallback(() => {
 		if (clearFilter) {
-
 			setSelectedRank('');
 			setSelectedCadre('');
-			setSelectedYear('')
+			setSelectedYear('');
 			setRanks([]);
 
 			dispatch(doClearFilter(false));
@@ -93,9 +92,7 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 		if (filters) {
 			setSelectedYear(
 				filters?.year
-					? years.find(
-							year => year.year === Number(filters.year)
-					  )
+					? years.find(year => year.year === Number(filters.year))
 					: ''
 			);
 
@@ -115,13 +112,7 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 				fetchRanks(selectedCadre.id);
 			}
 		}
-	}, [
-		cadres,
-		fetchRanks,
-		location.hash,
-		ranks,
-		selectedCadre,
-	]);
+	}, [cadres, fetchRanks, location.hash, ranks, selectedCadre]);
 
 	useEffect(() => {
 		if (!loaded) {
@@ -133,22 +124,14 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 		}
 
 		clearFilterParams();
-	}, [
-		clearFilterParams,
-		fetchCadres,
-		loaded,
-		setFilters,
-	]);
-
-
+	}, [clearFilterParams, fetchCadres, loaded, setFilters]);
 
 	const doFilter = e => {
 		e.preventDefault();
 		const filterObject = {
 			...(selectedRank?.id && { rank_id: selectedRank.id }),
 			...(selectedCadre?.id && { cadre_id: selectedCadre.id }),
-			...(selectedYear?.year && { year: selectedYear.year })
-
+			...(selectedYear?.year && { year: selectedYear.year }),
 		};
 
 		onFilter(filterObject);
@@ -168,33 +151,31 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 					Promotion Brief Filter
 				</OffcanvasHeader>
 				<div className="flex-grow-1 overflow-auto">
-					<OffcanvasBody >
-                        <div className="row g-1 mb-4">
-                            <label
-							htmlFor="datepicker-range"
-							className="form-label text-muted text-uppercase fw-semibold">
-							Year
-						</label>
-                             <Select
-										isClearable
-										value={selectedYear}
-										options={years || []}
-										isSearchable={true}
-										getOptionValue={option => option.year}
-										getOptionLabel={option => option.year}
-										placeholder="Select an option"
-										onChange={e => {
-											setSelectedYear(e);
-										}}
-									/>
-
-                        </div>
+					<OffcanvasBody>
+						<div className="row g-1 mb-4">
+							<label
+								htmlFor="datepicker-range"
+								className="form-label text-muted text-uppercase fw-semibold"
+							>
+								Year
+							</label>
+							<Select
+								isClearable
+								value={selectedYear}
+								options={years || []}
+								isSearchable={true}
+								getOptionValue={option => option.year}
+								getOptionLabel={option => option.year}
+								placeholder="Select an option"
+								onChange={e => {
+									setSelectedYear(e);
+								}}
+							/>
+						</div>
 
 						<div className="row g-2 vh-100">
-
 							<div className="col-lg-6">
 								<div className="mb-4">
-
 									<label
 										htmlFor="rank-select"
 										className="form-label text-muted text-uppercase fw-semibold mb-3"
@@ -244,11 +225,6 @@ const PromotionBriefFilter = ({ show, onCloseClick, onFilter, onClearFilter }) =
 								</div>
 							</div>
 						</div>
-
-
-
-
-
 					</OffcanvasBody>
 				</div>
 				<div className="offcanvas-footer border-top p-3 text-center hstack gap-1">

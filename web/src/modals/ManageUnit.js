@@ -11,7 +11,8 @@ import {
 } from '../services/utilities';
 import {
 	CREATE_UNIT_API,
-	FETCH_DEPARTMENTS_API, FETCH_DIRECTORATES_API,
+	FETCH_DEPARTMENTS_API,
+	FETCH_DIRECTORATES_API,
 	FETCH_EMPLOYEES_API,
 	UPDATE_UNIT_API,
 } from '../services/api';
@@ -24,13 +25,11 @@ const ManageUnit = ({ closeModal, update, selectedUnit }) => {
 	const [departments, setDepartments] = useState([]);
 	const [department, setDepartment] = useState(null);
 
-
-
 	const loadDepartments = useCallback(async () => {
 		try {
 			const rs = await request(FETCH_DEPARTMENTS_API);
-			console.log("hmm")
-			console.log(rs.departments)
+			console.log('hmm');
+			console.log(rs.departments);
 			setDepartments(rs.departments);
 		} catch (e) {
 			notifyWithIcon('error', e.message);
@@ -38,14 +37,13 @@ const ManageUnit = ({ closeModal, update, selectedUnit }) => {
 	}, []);
 
 	useEffect(() => {
-		console.log("hello")
+		console.log('hello');
 		if (!loaded) {
 			if (selectedUnit) {
 				setDepartment(selectedUnit.department);
 			}
 
 			loadDepartments().then(_ => setLoaded(true));
-
 		}
 	}, [loaded, selectedUnit, loadDepartments]);
 

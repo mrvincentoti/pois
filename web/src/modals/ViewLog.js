@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-	checkIfContainsEdit, formatDateTime,
+	checkIfContainsEdit,
+	formatDateTime,
 	formatEmployeeName,
 	notifyWithIcon,
 	request,
@@ -77,50 +78,48 @@ const ViewLog = ({ closeModal, update, selectedLog }) => {
 				<div className="row g-3">
 					<div className="col-lg-12">
 						<div className="content">
-
-							<p><span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
 									event
-								</span> {selectedLog?.event}</p>
+								</span>{' '}
+								{selectedLog?.event}
+							</p>
 
-
-							<p><span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
 									url
-								</span> {selectedLog?.url}</p>
-
-
-
+								</span>{' '}
+								{selectedLog?.url}
+							</p>
 						</div>
 
-						{checkIfContainsEdit(selectedLog?.event) ?
+						{checkIfContainsEdit(selectedLog?.event) ? (
 							<div className="content">
-							<h5>
-								New Value
-								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
-									Change
-								</span>
-							</h5>
-							<p className="text-muted mb-2">
-								{selectedLog.new_values ? selectedLog.new_values : 'None'}
-							</p>
+								<h5>
+									New Value
+									<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+										Change
+									</span>
+								</h5>
+								<p className="text-muted mb-2">
+									{selectedLog.new_values ? selectedLog.new_values : 'None'}
+								</p>
 
-							<h5>
-								Old Value
-								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
-									Old
-								</span>
-							</h5>
-							<p className="text-muted mb-2">
-								{selectedLog.old_values ? selectedLog.old_values : 'None'}
-							</p>
-						</div>
-							: ""
+								<h5>
+									Old Value
+									<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+										Old
+									</span>
+								</h5>
+								<p className="text-muted mb-2">
+									{selectedLog.old_values ? selectedLog.old_values : 'None'}
+								</p>
+							</div>
+						) : (
+							''
+						)}
 
-
-						}
-
-						<div className="content">
-
-						</div>
+						<div className="content"></div>
 					</div>
 				</div>
 			</div>
