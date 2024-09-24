@@ -8,6 +8,9 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from sqlalchemy import func 
+from ..crimesCommitted.models import CrimeCommitted
+from ..armsRecovered.models import ArmsRecovered
+from sqlalchemy.orm import joinedload
 
 # Create POI
 @custom_jwt_required
@@ -159,7 +162,7 @@ def get_poi(poi_id):
                 "middle_name": poi.middle_name,
                 "last_name": poi.last_name,
                 "alias": poi.alias,
-                "dob": poi.dob,
+                "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
                 "passport_number": poi.passport_number,
                 "other_id_number": poi.other_id_number,
                 "phone_number": poi.phone_number,
@@ -572,6 +575,117 @@ def list_pois():
         'current_page': paginated_pois.page,
         'pois': pois_list
     })
+
+
+@custom_jwt_required
+def filter_pois():
+    # Get filter parameters from the request
+    created_by = request.args.get('created_by', type=int)
+    from_date = request.args.get('from_date', type=str)
+    to_date = request.args.get('to_date', type=str)
+    affiliation = request.args.get('affiliation', type=str)
+    category_id = request.args.get('category_id', type=int)
+    source_id = request.args.get('source_id', type=int)
+    country_id = request.args.get('country_id', type=int)
+    state_id = request.args.get('state_id', type=int)
+    gender_id = request.args.get('gender_id', type=int)
+    
+    crime_id = request.args.get('crime_id', type=int) 
+    arm_id = request.args.get('arm_id', type=int)
+    arresting_body_id = request.args.get('arresting_body_id', type=int)
+
+    query = Poi.query
+
+    # Apply filters based on provided parameters
+    if created_by:
+        query = query.filter(Poi.created_by == created_by)
+
+    if from_date:
+        from_date = datetime.strptime(from_date, '%Y-%m-%d')  # Format: YYYY-MM-DD
+        query = query.filter(Poi.created_at >= from_date)
+
+    if to_date:
+        to_date = datetime.strptime(to_date, '%Y-%m-%d')  # Format: YYYY-MM-DD
+        query = query.filter(Poi.created_at <= to_date)
+
+    if affiliation:
+        query = query.filter(Poi.affiliation.ilike(f'%{affiliation}%'))
+
+    if category_id:
+        query = query.filter(Poi.category_id == category_id)
+
+    if source_id:
+        query = query.filter(Poi.source_id == source_id)
+
+    if country_id:
+        query = query.filter(Poi.country_id == country_id)
+
+    if state_id:
+        query = query.filter(Poi.state_id == state_id)
+
+    if gender_id:
+        query = query.filter(Poi.gender_id == gender_id)
+    
+    if arm_id:
+        # Join with ArmsRecovered to filter based on the selected arm
+        query = query.join(ArmsRecovered).filter(ArmsRecovered.arm_id == arm_id)
+
+    if arresting_body_id:
+        # Join with CrimeCommitted to filter based on the selected arresting body
+        query = query.join(CrimeCommitted).filter(CrimeCommitted.arresting_body_id == arresting_body_id)
+
+    if crime_id:
+        # Join with CrimeCommitted to filter based on the selected crime
+        query = query.join(CrimeCommitted).filter(CrimeCommitted.crime_id == crime_id)
+
+    # Execute the query and get results
+    pois = query.options(joinedload(Poi.category), joinedload(Poi.source), 
+                        joinedload(Poi.country), joinedload(Poi.state), 
+                        joinedload(Poi.gender)).all()
+
+    # Execute the query and get results
+    pois = query.all()
+
+    # Convert results to a serializable format
+    pois_data = [{
+                "ref_numb": poi.ref_numb,
+                "first_name": poi.first_name,
+                "middle_name": poi.middle_name,
+                "last_name": poi.last_name,
+                "alias": poi.alias,
+                "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
+                "passport_number": poi.passport_number,
+                "other_id_number": poi.other_id_number,
+                "phone_number": poi.phone_number,
+                "email": poi.email,
+                "role": poi.role,
+                "affiliation": poi.affiliation,
+                "address": poi.address,
+                "remark": poi.remark,
+                "picture": poi.picture,  # Include the picture URL
+                "category": {
+                    "id": poi.category.id,
+                    "name": poi.category.name,
+                } if poi.category else None,
+                "source": {
+                    "id": poi.source.id,
+                    "name": poi.source.name,
+                } if poi.source else None,
+                "country": {
+                    "id": poi.country.id,
+                    "name": poi.country.en_short_name,
+                } if poi.country else None,
+                "state": {
+                    "id": poi.state.id,
+                    "name": poi.state.name,
+                } if poi.state else None,
+                "gender": {
+                    "id": poi.gender.id,
+                    "name": poi.gender.name,
+                } if poi.gender else None
+    } for poi in pois]
+
+    return jsonify(pois_data), 200
 
 
 def allowed_file(filename):
