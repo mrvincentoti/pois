@@ -2,8 +2,10 @@ import os
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    # Define the upload folder path (relative to the current file's directory)
+    # Upload folder for media files
     POI_MEDIA_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "poiMedia", "storage", "media")
+    # Upload folder for poi pictures
+    POI_PICTURE_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "poi", "storage", "media")
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
