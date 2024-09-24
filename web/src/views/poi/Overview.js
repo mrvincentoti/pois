@@ -26,7 +26,7 @@ const Overview = () => {
 		try {
 			const rs = await request(GET_POI_API.replace(':id', poiId));
 
-			setPoiData(rs.user_data);
+			setPoiData(rs.poi_data);
 		} catch (error) {
 			throw error;
 		}

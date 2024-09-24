@@ -98,7 +98,7 @@ const EditPoi = () => {
 		try {
 			const rs = await request(GET_POI_API.replace(':id', id));
 
-			return rs.user_data;
+			return rs.poi_data;
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
