@@ -73,7 +73,7 @@ const CrimeCommitted = () => {
 														<div className="flex-grow-1 text-muted overflow-hidden">
 															<h5 className="fs-14 text-truncate">
 																<a href="#" className="text-body">
-																	{item.crime_id || 'N/A'}
+																	{item.crime.name || 'N/A'}
 																</a>
 															</h5>
 															<p className="text-muted text-truncate mb-0">
@@ -91,7 +91,7 @@ const CrimeCommitted = () => {
 															<p className="text-muted text-truncate mb-0">
 																Arresting Body:{' '}
 																<span className="fw-semibold text-body">
-																	{item.arresting_body_id || 'N/A'}
+																	{item.arresting_body.name || 'N/A'}
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
