@@ -1,19 +1,23 @@
-from flask import jsonify, request, g, json
+from flask import jsonify, request, g, json, current_app
 from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
 from ..util import save_audit_data, custom_jwt_required
+import os
+import uuid
+from werkzeug.utils import secure_filename
+from sqlalchemy import func 
 
 # Create POI
 @custom_jwt_required
 def create_poi():
-    data = request.json
-    ref_numb = data.get('ref_numb')
-    picture = data.get('picture')
+    data = request.form
+    #ref_numb = data.get('ref_numb')
+    ref_numb = generate_unique_ref_numb()
     first_name = data.get('first_name')
     middle_name = data.get('middle_name')
-    last_name = data['last_name']
+    last_name = data.get('last_name')
     alias = data.get('alias')
     dob = data.get('dob')
     passport_number = data.get('passport_number')
@@ -21,7 +25,7 @@ def create_poi():
     phone_number = data.get('phone_number')
     email = data.get('email')
     role = data.get('role')
-    affiliation_id = data.get('affiliation_id')
+    affiliation = data.get('affiliation')
     address = data.get('address')
     remark = data.get('remark')
     category_id = data.get('category_id')
@@ -30,6 +34,28 @@ def create_poi():
     state_id = data.get('state_id')
     gender_id = data.get('gender_id')
     created_by = g.user["id"]
+
+    # Handle the file upload
+    if 'picture' in request.files:
+        file = request.files['picture']
+        if file.filename == '':
+            return jsonify({'message': 'No selected picture file'}), 400
+
+        if allowed_file(file.filename):
+            # Generate a new filename using UUID
+            file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
+            new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
+            file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], new_filename)
+            
+            # Save the file to the POI_PICTURE_UPLOAD_FOLDER
+            file.save(file_path)
+
+            # Set the URL path for the saved file
+            picture_url = f"poi/storage/media/{new_filename}"
+        else:
+            return jsonify({'message': 'Picture file type not allowed'}), 400
+    else:
+        picture_url = None  # No picture uploaded
 
     response = {}
     try:
@@ -40,14 +66,14 @@ def create_poi():
             middle_name=middle_name,
             last_name=last_name,
             alias=alias,
-            picture=picture,
+            picture=picture_url,
             dob=dob,
             passport_number=passport_number,
             other_id_number=other_id_number,
             phone_number=phone_number,
             email=email,
             role=role,
-            affiliation_id=affiliation_id,
+            affiliation=affiliation,
             address=address,
             remark=remark,
             category_id=category_id,
@@ -61,6 +87,7 @@ def create_poi():
         db.session.add(poi)
         db.session.commit()
 
+        # Audit logging
         current_time = dt.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
@@ -83,7 +110,7 @@ def create_poi():
                 "phone_number": poi.phone_number,
                 "email": poi.email,
                 "role": poi.role,
-                "affiliation_id": poi.affiliation_id,
+                "affiliation": poi.affiliation,
                 "address": poi.address,
                 "remark": poi.remark,
                 "category_id": poi.category_id,
@@ -91,6 +118,7 @@ def create_poi():
                 "country_id": poi.country_id,
                 "state_id": poi.state_id,
                 "gender_id": poi.gender_id,
+                "picture": poi.picture,
                 "deleted_at": poi.deleted_at,  # Add new fields to audit logging if needed
             }),
             "url": request.url,
@@ -112,13 +140,16 @@ def create_poi():
         db.session.rollback()
         response["status"] = "error"
         response["status_code"] = 500
-        response["message"] = f"An error occurred while creating the poi: {str(e)}"
+        response["message"] = f"An error occurred while creating the POI: {str(e)}"
 
     return jsonify(response), response["status_code"]
 
 # Get POI by ID
 @custom_jwt_required
 def get_poi(poi_id):
+    response = {}
+    current_time = dt.utcnow()  # Get current time for logging
+
     try:
         poi = Poi.query.get(poi_id)
         if poi and not poi.deleted_at:
@@ -137,6 +168,7 @@ def get_poi(poi_id):
                 "affiliation": poi.affiliation,
                 "address": poi.address,
                 "remark": poi.remark,
+                "picture": poi.picture,  # Include the picture URL
                 "category": {
                     "id": poi.category.id,
                     "name": poi.category.name,
@@ -162,32 +194,96 @@ def get_poi(poi_id):
             response = {
                 "status": "success",
                 "status_code": 200,
-                "user_data": poi_data
+                "poi_data": poi_data 
             }
+
+            # Audit logging for access event
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "event": "get_poi",
+                "auditable_id": poi.id,
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+            save_audit_data(audit_data) 
+
         else:
             response = {
                 "status": "error",
                 "status_code": 404,
-                "message": "Poi not found",
+                "message": "POI not found",
             }
+
+            # Log failed access attempt
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "event": "get_poi_not_found",
+                "auditable_id": poi_id,
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+            save_audit_data(audit_data) 
+
     except Exception as e:
         response = {
             "status": "error",
             "status_code": 500,
-            "message": "An error occurred while retrieving the poi.",
+            "message": "An error occurred while retrieving the POI.",
+            "error": str(e)  
         }
+
+        # Log the exception during access
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "event": "get_poi_error",
+            "auditable_id": poi_id,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+            "error": str(e),
+        }
+
+        save_audit_data(audit_data)
 
     return jsonify(response), response["status_code"]
 
 # Update POI
 @custom_jwt_required
 def update_poi(poi_id):
-    data = request.json
+    data = request.form
     poi = Poi.query.get(poi_id)
+    response = {}
 
     try:
-        response = {}
         if poi:
+            # Handle the file upload
+            if 'picture' in request.files:
+                file = request.files['picture']
+                if file.filename == '':
+                    return jsonify({'message': 'No selected picture file'}), 400
+
+                if allowed_file(file.filename):
+                    # Delete the existing picture if it exists
+                    if poi.picture:
+                        # Logic to delete the old picture file (if needed)
+                        delete_picture_file(poi.picture)
+
+                    # Save the new picture file and update the URL
+                    poi.picture = save_picture_file(file)
+                else:
+                    return jsonify({'message': 'Picture file type not allowed'}), 400
+
+            # Update other fields
             poi.update(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
@@ -203,7 +299,6 @@ def update_poi(poi_id):
                 remark=data.get('remark'),
                 middle_name=data.get('middle_name'),
                 alias=data.get('alias'),
-                picture=data.get('picture'),
                 category_id=data.get('category_id'),
                 source_id=data.get('source_id'),
                 country_id=data.get('country_id'),
@@ -221,7 +316,29 @@ def update_poi(poi_id):
                 "user_email": g.user["email"] if hasattr(g, "user") else None,
                 "event": "update_poi",
                 "auditable_id": poi.id,
-                "old_values": None,
+                "old_values": json.dumps({
+                    "ref_numb": poi.ref_numb,
+                    "first_name": poi.first_name,
+                    "middle_name": poi.middle_name,
+                    "last_name": poi.last_name,
+                    "alias": poi.alias,
+                    "dob": poi.dob,
+                    "passport_number": poi.passport_number,
+                    "other_id_number": poi.other_id_number,
+                    "phone_number": poi.phone_number,
+                    "email": poi.email,
+                    "role": poi.role,
+                    "affiliation": poi.affiliation,
+                    "address": poi.address,
+                    "remark": poi.remark,
+                    "category_id": poi.category_id,
+                    "source_id": poi.source_id,
+                    "country_id": poi.country_id,
+                    "state_id": poi.state_id,
+                    "gender_id": poi.gender_id,
+                    "deleted_at": poi.deleted_at,
+                    "picture": poi.picture,
+                }),
                 "new_values": json.dumps({
                     "ref_numb": poi.ref_numb,
                     "first_name": poi.first_name,
@@ -234,7 +351,7 @@ def update_poi(poi_id):
                     "phone_number": poi.phone_number,
                     "email": poi.email,
                     "role": poi.role,
-                    "affiliation_id": poi.affiliation_id,
+                    "affiliation": poi.affiliation,
                     "address": poi.address,
                     "remark": poi.remark,
                     "category_id": poi.category_id,
@@ -242,7 +359,8 @@ def update_poi(poi_id):
                     "country_id": poi.country_id,
                     "state_id": poi.state_id,
                     "gender_id": poi.gender_id,
-                    "deleted_at": poi.deleted_at, 
+                    "deleted_at": poi.deleted_at,
+                    "picture": poi.picture,
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -255,15 +373,52 @@ def update_poi(poi_id):
             save_audit_data(audit_data)
 
             response["status"] = "success"
-            response["status_code"] = 201
+            response["status_code"] = 200 
             response["message"] = "POI updated successfully"
+        else:
+            response = {
+                "status": "error",
+                "status_code": 404,
+                "message": "POI not found",
+            }
+
+            # Log failed update attempt
+            current_time = dt.utcnow()
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "event": "update_poi_not_found",
+                "auditable_id": poi_id,
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
+
+            save_audit_data(audit_data)
+
     except KeyError as e:
         return jsonify({"error": f"Missing field: {str(e)}"}), 400
     except Exception as e:
         db.session.rollback()
         response["status"] = "error"
         response["status_code"] = 500
-        response["message"] = f"An error occurred while update the poi: {str(e)}"
+        response["message"] = f"An error occurred while updating the POI: {str(e)}"
+
+        # Log the exception during update
+        current_time = dt.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "event": "update_poi_error",
+            "auditable_id": poi_id,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+        save_audit_data(audit_data)
 
     return jsonify(response), response["status_code"]
 
@@ -417,3 +572,42 @@ def list_pois():
         'current_page': paginated_pois.page,
         'pois': pois_list
     })
+
+
+def allowed_file(filename):
+    # Define allowed file extensions
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+def save_picture_file(file):
+    # Generate a new filename using UUID
+    file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
+    new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
+    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], new_filename)
+    
+    # Save the file to the POI_PICTURE_UPLOAD_FOLDER
+    file.save(file_path)
+
+    # Return the URL path for the saved file
+    return f"poi/storage/media/{new_filename}"
+
+def delete_picture_file(picture_url):
+    # Construct the full file path from the picture URL
+    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], os.path.basename(picture_url))
+    
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)  # Delete the file
+    except Exception as e:
+        # Log the error if needed
+        print(f"Error deleting picture file {file_path}: {str(e)}")
+
+def generate_unique_ref_numb():
+    # Query to get the highest existing ref_numb
+    highest_ref_numb = db.session.query(func.max(Poi.ref_numb)).scalar()
+    if highest_ref_numb is None:
+        return "REF001"  # Starting point if no POIs exist
+    else:
+        # Extract the numeric part, increment it, and format it back to string
+        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
+        return f"REF{num_part:03}"  # Format to maintain leading zeros
