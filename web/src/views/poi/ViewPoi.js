@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { GET_EMPLOYEE_API } from '../../services/api';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { GET_POI_API } from '../../services/api';
 import {
 	antIconSync,
 	formatDate,
@@ -40,36 +40,42 @@ import Activities from './Activities';
 const ViewPoi = () => {
 	const employeePrintRef = useRef();
 	const [loaded, setLoaded] = useState(false);
-	const [employeeData, setEmployeeData] = useState(null);
+	const [poiData, setPoiData] = useState(null);
 	const [activeTab, setActiveTab] = useState('overview');
 
 	const navigate = useNavigate();
 	const params = useParams();
 
-	const fetchEmployeeDetails = useCallback(async employeeId => {
+	const fetchPoiDetails = useCallback(async Id => {
 		try {
-			const rs = await request(GET_EMPLOYEE_API.replace(':id', employeeId));
+			const rs = await request(GET_POI_API.replace(':id', Id));
 
-			setEmployeeData(rs.employee);
+			setPoiData(rs.user_data);
 		} catch (error) {
 			throw error;
 		}
 	}, []);
 
-	// useEffect(() => {
-	//     if (!loaded) {
-	//         fetchEmployeeDetails(params.id)
-	//             .then(_ => setLoaded(true))
-	//             .catch(e => {
-	//                 notifyWithIcon('error', e.message);
-	//                 navigate('/not-found');
-	//             });
-	//     }
-	// }, [fetchEmployeeDetails, loaded, navigate, params.id]);
+	const location = useLocation();
 
-	// const handlePrint = () => {
-	//     window.print();
-	// };
+	const getQueryParams = search => {
+		const params = new URLSearchParams(search);
+		return params.get('tab');
+	};
+
+	const tab = getQueryParams(location.search);
+	useEffect(() => {
+		if (!loaded) {
+			fetchPoiDetails(params.id)
+				.then(_ => setLoaded(true))
+				.catch(e => {
+					notifyWithIcon('error', e.message);
+					navigate('/not-found');
+				});
+
+			setActiveTab(tab);
+		}
+	}, [fetchPoiDetails, loaded, navigate, params.id, tab]);
 
 	const handlePrint = () => {
 		document.body.classList.add('print-mode');
@@ -79,6 +85,7 @@ const ViewPoi = () => {
 
 	const handleTabClick = tabName => {
 		setActiveTab(tabName);
+		navigate(`/pois/${params.id}/view?tab=` + tabName);
 	};
 
 	return (
@@ -105,7 +112,9 @@ const ViewPoi = () => {
 						<div className="col">
 							<div className="p-2">
 								<h3 className="text-white mb-1">Anna Adame</h3>
-								<p className="text-white text-opacity-75">Owner & Founder</p>
+								<p className="text-white text-opacity-75">
+									Owner & Founder {tab}
+								</p>
 								<div className="hstack text-white-50 gap-1">
 									<div className="me-2">
 										<i className="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>

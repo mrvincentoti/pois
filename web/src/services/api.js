@@ -242,3 +242,6 @@ export const FETCH_SOURCES_API = `${BASE_POI_URL}/sources`;
 
 // Affiliations api
 export const FETCH_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations`;
+
+//crimes commited
+export const GET_CRIMES_COMMITTED_API = `${BASE_POI_URL}/poi_crimes_committed/:id`;

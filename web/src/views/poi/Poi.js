@@ -285,7 +285,9 @@ const Poi = () => {
 														<td>{formatDate(item.date_of_employment)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
-																<ViewLink to={`/pois/${item.id}/view`} />
+																<ViewLink
+																	to={`/pois/${item.id}/view?tab=overview`}
+																/>
 																<EditLink to={`/pois/${item.id}/edit`} />
 																<ManagePoi to={`/pois/${item.id}/manage`} />
 															</div>
