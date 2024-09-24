@@ -27,7 +27,7 @@ const GuestLayout = ({ children }) => {
 				className="position-relative d-flex h-100 w-100 text-center"
 				style={{
 					background:
-						'linear-gradient(0deg, #35007F 0%, #4000BF 50%, #35007F 60.81%, #000000 93.75%)',
+						'linear-gradient(0deg, #132649 0%, #4000BF 50%, #35007F 60.81%, #000000 93.75%)',
 				}}
 			>
 				<GsapWrapper>
