@@ -47,6 +47,7 @@ const Profile = lazy(() => import('./views/Profile'));
 
 // POI
 const PoiIndex = lazy(() => import('./views/poi/Index'));
+const OrganisationIndex = lazy(() => import('./views/organisation/Index'));
 
 const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
@@ -54,6 +55,7 @@ const authProtectedRoutes = [
 	{ path: 'accounts/*', component: <AccountsIndex /> },
 	{ path: 'users/:username', component: <Profile /> },
 	{ path: 'pois/*', component: <PoiIndex /> },
+	{ path: 'org/*', component: <OrganisationIndex /> },
 ];
 
 function RequireAuth({ children }) {

@@ -77,7 +77,7 @@ def get_organisations():
         'total': paginated_org.total,
         'pages': paginated_org.pages,
         'current_page': paginated_org.page,
-        'pois': org_list
+        'orgs': org_list
     })
 
 # Get a single Organisation by ID

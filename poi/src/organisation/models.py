@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from .. import db
 from ..util import encrypt, decrypt
@@ -32,7 +32,9 @@ class Organisation(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     source_id = db.Column(db.Integer, db.ForeignKey('sources.id'))
     remark = db.Column(db.Text, nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=True)
     category = db.relationship("Category", backref="poi")
     source = db.relationship("Source", backref="poi")
 
@@ -163,4 +165,6 @@ class Organisation(db.Model):
     def __repr__(self):
         return f'<Organisation {self.name}>'
 
-
+@event.listens_for(Organisation, 'before_insert')
+def before_insert_listener(mapper, connection, target):
+    target.created_at = target.updated_at = datetime.utcnow()

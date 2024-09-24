@@ -245,3 +245,6 @@ export const FETCH_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations`;
 
 //crimes commited
 export const GET_CRIMES_COMMITTED_API = `${BASE_POI_URL}/poi_crimes_committed/:id`;
+
+// Organisation api
+export const FETCH_ORG_API = `${BASE_POI_URL}/organisations`;

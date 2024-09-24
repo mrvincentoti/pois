@@ -19,15 +19,15 @@ import {
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
-import { EditLink, ViewLink} from '../../components/Buttons';
-import { DELETE_POI_API, FET_POIS_API } from '../../services/api';
+import { EditLink, ViewLink } from '../../components/Buttons';
+import { DELETE_POI_API, FETCH_ORG_API } from '../../services/api';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';
 import ImportBrief from '../../modals/ManageBrief';
 import BulkUpload from '../../components/BulkUpload';
 
-const Poi = () => {
+const Organisation = () => {
 	document.title = `POI - ${APP_SHORT_NAME}`;
 
 	const [fetching, setFetching] = useState(true);
@@ -54,10 +54,11 @@ const Poi = () => {
 	const fetchProfiles = useCallback(async (per_page, page, q, filters = '') => {
 		try {
 			const rs = await request(
-				`${FET_POIS_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
+				`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
 			);
-			const { pois, ...rest } = rs;
-			setList(pois);
+			const { orgs, ...rest } = rs;
+			console.log(rs);
+			setList(orgs);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
 			notifyWithIcon('error', e.message || 'error, could not fetch pois');
@@ -197,23 +198,23 @@ const Poi = () => {
 	return (
 		<>
 			<div className="container-fluid">
-				<Breadcrumbs pageTitle="POI List" parentPage="POI" />
+				<Breadcrumbs pageTitle="Organisation List" parentPage="Organisation" />
 				<div className="row">
 					<div className="col-lg-12">
 						<div className="card">
 							<TitleSearchBar
-								title="POIs"
+								title="Organisation"
 								queryLimit={queryLimit}
 								search={search}
 								searchTerm={searchTerm}
 								onChangeSearch={e => setSearchTerm(e.target.value)}
-								createBtnTitle="Add POI"
+								createBtnTitle="Add"
 								onClick={() => bulkUpload()}
 								onBulkUploadClick={() => bulkUpload()}
 								hasEmployeeCreate={true}
 								hasUploadBtn={true}
 								uploadBtnTitle="Bulk Upload"
-								linkTo="/pois/new"
+								linkTo="/org/new"
 								hasFilter={true}
 								openFilter={() => setIsFilterOpen(true)}
 								filters={filters}
@@ -232,10 +233,10 @@ const Poi = () => {
 											<tr>
 												<th>S/N</th>
 												<th>NAME</th>
-												<th>CRIME COMMITTED</th>
-												<th>ARRESTING BODY</th>
-												<th>ROLE</th>
-												<th>POI SOURCE</th>
+												<th>CEO</th>
+												<th>DATE OF REGISTRATION</th>
+												<th>EMPLOYEE STRENGTH</th>
+												<th>ORG SOURCE</th>
 												<th>ADDED BY</th>
 												<th>ACTIONS</th>
 											</tr>
@@ -323,4 +324,4 @@ const Poi = () => {
 	);
 };
 
-export default Poi;
+export default Organisation;
