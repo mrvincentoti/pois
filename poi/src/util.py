@@ -11,8 +11,28 @@ from datetime import datetime as dt
 from flask import request, jsonify, g
 from functools import wraps
 
+from minio import Minio
+from minio.error import S3Error
+
 # Load environment variables from a .env file
 load_dotenv()
+
+# Get MinIO configuration from environment variables
+minio_endpoint = os.getenv("MINIO_ENDPOINT", "http://localhost:9000")
+minio_access_key = os.getenv("MINIO_ACCESS_KEY")
+minio_secret_key = os.getenv("MINIO_SECRET_KEY")
+
+# Extract the host and secure (http/https) flag from the URL
+minio_host = minio_endpoint.replace("http://", "").replace("https://", "")
+use_https = minio_endpoint.startswith("https://")
+
+# Configure the MinIO client
+minio_client = Minio(
+    minio_host,
+    access_key=minio_access_key,
+    secret_key=minio_secret_key,
+    secure=False
+)
 
 # Custom JWT decorator
 def custom_jwt_required(fn):
@@ -236,3 +256,27 @@ def save_audit_data(audit_data):
     except Exception as e:
         db.session.rollback()
         print(f"Error saving audit: {str(e)}")
+
+def upload_file_to_minio(bucket_name, file, object_name=None):
+    try:
+        found = minio_client.bucket_exists(bucket_name)
+        if not found:
+            minio_client.make_bucket(bucket_name)
+
+        if object_name is None:
+            object_name = file.filename
+
+        minio_client.put_object(
+            bucket_name,
+            object_name,
+            file.stream,
+            file.content_length,
+            content_type=file.mimetype
+        )
+
+        file_url = f"{minio_endpoint}/{bucket_name}/{object_name}"
+        return file_url
+
+    except S3Error as e:
+        print("Error occurred while uploading to MinIO:", e)
+        return None

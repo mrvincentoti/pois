@@ -3,9 +3,12 @@ import uuid
 from .. import db
 from .models import PoiMedia
 from datetime import datetime
-from ..util import custom_jwt_required, save_audit_data
+from dotenv import load_dotenv
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
+
+load_dotenv()
 
 @custom_jwt_required
 def get_all_media():
@@ -94,19 +97,17 @@ def add_poi_media(poi_id):
         new_filename = f"{uuid.uuid4()}{file_extension}"
         media_type = request.form.get('media_type')
         media_caption = request.form.get('media_caption')
-        file_path = os.path.join(current_app.config['POI_MEDIA_UPLOAD_FOLDER'], new_filename)
-        
-        # Save the file to the UPLOAD_FOLDER
-        file.save(file_path)
 
-        # Adjust media_url to reflect the static storage path
-        media_url = f"poiMedia/storage/media/{new_filename}"
+        # Upload the file to MinIO
+        minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+        if not minio_file_url:
+            return jsonify({"message": "Error uploading file to MinIO"}), 500
 
         # Insert into database
         new_media = PoiMedia(
             poi_id=poi_id,
             media_type=media_type,
-            media_url=media_url,
+            media_url=minio_file_url,
             media_caption=media_caption,
             created_by=created_by,
             created_at=datetime.utcnow()
@@ -146,7 +147,7 @@ def add_poi_media(poi_id):
         except Exception as e:
             return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
 
-        return jsonify({'message': 'File successfully uploaded', 'media_url': media_url}), 201
+        return jsonify({'message': 'File successfully uploaded', 'media_url': minio_file_url}), 201
 
     return jsonify({'message': 'File type not allowed'}), 400
 
