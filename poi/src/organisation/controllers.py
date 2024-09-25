@@ -7,6 +7,7 @@ def create_organisation():
     new_org = Organisation(
         ref_numb=data.get('ref_numb'),
         reg_numb=data.get('reg_numb'),
+        org_name=data.get('org_name'),
         date_of_registration=data.get('date_of_registration'),
         address=data.get('address'),
         hq=data.get('hq'),

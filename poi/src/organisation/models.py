@@ -12,10 +12,11 @@ class Organisation(db.Model):
     ref_numb = db.Column(db.String(64), unique=True, nullable=True)
     reg_numb = db.Column(db.String(64), nullable=True)
     org_name = db.Column(db.String(64), nullable=False)
+    picture = db.Column(db.Text(length=200000000), unique=False, nullable=True)
     date_of_registration = db.Column(db.Date, nullable=True)
     address = db.Column(db.Text, nullable=True)
     hq = db.Column(db.String(64), nullable=True)
-    nature_of_business = db.Column(db.String(64), nullable=False)
+    nature_of_business = db.Column(db.String(64), nullable=True)
     phone_number = db.Column(db.String(64), nullable=True)
     countries_operational = db.Column(db.String(64), nullable=True)
     investors = db.Column(db.Text, nullable=True)
@@ -35,8 +36,8 @@ class Organisation(db.Model):
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
-    category = db.relationship("Category", backref="poi")
-    source = db.relationship("Source", backref="poi")
+    category = db.relationship("Category", backref="organisation")
+    source = db.relationship("Source", backref="organisation")
 
 
     def __init__(self, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None, nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None, board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None, deleted_at=None):
