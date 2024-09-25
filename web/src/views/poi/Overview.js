@@ -58,8 +58,8 @@ const Overview = () => {
 					<>
 						<div className="card">
 							<div className="card-body">
-								<div class="d-flex align-items-center mb-4">
-									<h5 class="card-title flex-grow-1 mb-0">
+								<div className="d-flex align-items-center mb-4">
+									<h5 className="card-title flex-grow-1 mb-0">
 										Personal Information
 									</h5>
 									<div className="flex-shrink-0">

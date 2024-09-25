@@ -33,8 +33,8 @@ const MediaAndDocument = () => {
                 <div className="card-body">
                     <div className="d-flex align-items-center mb-4">
                         <h5 className="card-title flex-grow-1 mb-0">Media/Documents</h5>
-                        <div class="flex-shrink-0" onClick={() => showModal('add')}>
-                            <label for="formFile" class="btn btn-success">
+                        <div className="flex-shrink-0" onClick={() => showModal('add')}>
+                            <label htmlfor="formFile" className="btn btn-success">
                                 <i className=" ri-upload-cloud-2-line me-1 align-bottom"></i> Upload File
                             </label>
                         </div>

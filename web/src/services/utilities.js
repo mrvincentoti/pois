@@ -549,3 +549,11 @@ export function timeAgo(date) {
 		return `${yearsAgo} years ago`;
 	}
 }
+
+export const getActivitiesInitialLetter = data => {
+	if (data) {
+		return data.created_by_name.charAt(0).toUpperCase();
+	}
+
+	return '';
+};
