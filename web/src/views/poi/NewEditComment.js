@@ -45,46 +45,54 @@ const NewEditComment = ({ isModalOpen, handleOk, handleCancel, data, modalType }
                                                 <div className="card-body">
                                                     <div className="row">
                                                         <div className="col-lg-12 mb-3">
-                                                            <label className="form-label" htmlFor="casualties_recorded">
-                                                                Casualties Recorded <span style={{ color: 'red' }}></span>
+                                                            <label className="form-label" htmlFor="comment">
+                                                                Comment <span style={{ color: 'red' }}>*</span>
                                                             </label>
-                                                            <Field id="casualties_recorded" name="casualties_recorded">
+                                                            <Field id="comment" name="comment">
                                                                 {({ input, meta }) => (
-                                                                    <input
+                                                                    <textarea
                                                                         {...input}
-                                                                        type="text"
                                                                         className={`form-control ${error(meta)}`}
-                                                                        id="casualties_recorded"
-                                                                        placeholder="Casualties Recorded"
+                                                                        id="comment"
+                                                                        placeholder="Type your comment here"
                                                                     />
                                                                 )}
                                                             </Field>
-                                                            <ErrorBlock name="casualties_recorded" />
+                                                            <ErrorBlock name="comment" />
                                                         </div>
-                                                        <div className="col-lg-12 mb-3">
-                                                            <label className="form-label" htmlFor="place_of_detention">
-                                                                Place Of Detention <span style={{ color: 'red' }}></span>
-                                                            </label>
-                                                            <Field id="place_of_detention" name="place_of_detention">
-                                                                {({ input, meta }) => (
-                                                                    <input
-                                                                        {...input}
-                                                                        type="text"
-                                                                        className={`form-control ${error(meta)}`}
-                                                                        id="place_of_detention"
-                                                                        placeholder="Place Of Detention"
-                                                                    />
-                                                                )}
-                                                            </Field>
-                                                            <ErrorBlock name="place_of_detention" />
-                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         :
                                         <div className="col-lg-12">
-                                            
+                                            <div className="card mt-3">
+                                                <div className="card-header">
+                                                    <h5 className="card-title mb-0">{modalType === 'add' ? 'New Comment' : 'Edit Comment'}</h5>
+                                                </div>
+                                                <div className="card-body">
+                                                    <div className="row">
+                                                        <div className="col-lg-12 mb-3">
+                                                            <label className="form-label" htmlFor="comment">
+                                                                Comment <span style={{ color: 'red' }}>*</span>
+                                                            </label>
+                                                            <Field id="comment" name="comment">
+                                                                {({ input, meta }) => (
+                                                                    <textarea
+                                                                        {...input}
+                                                                        className={`form-control ${error(meta)}`}
+                                                                        id="comment"
+                                                                        placeholder="Type your comment here"
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                            <ErrorBlock name="comment" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     }
                                 </div>

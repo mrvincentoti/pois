@@ -5,6 +5,7 @@ from datetime import datetime
 from .. import db
 from .models import CrimeCommitted
 from ..users.models import User
+from ..poi.models import Poi
 from ..util import custom_jwt_required, save_audit_data
 
 def slugify(text):
@@ -118,6 +119,13 @@ def get_crime_committed(crime_committed_id):
     crime_committed = CrimeCommitted.query.filter_by(id=crime_committed_id, deleted_at=None).first()
     
     if crime_committed:
+        # Fetch the associated POI (Person of Interest) details
+        poi = Poi.query.filter_by(id=crime_committed.poi_id).first()
+        
+        if poi:
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+        
+        # Crime committed data
         crime_committed_data = {
             "id": crime_committed.id,
             "poi_id": crime_committed.poi_id,
@@ -130,7 +138,8 @@ def get_crime_committed(crime_committed_id):
             "comments": crime_committed.comments,
             "created_by": crime_committed.created_by,
             "created_at": crime_committed.created_at,
-            "deleted_at": crime_committed.deleted_at
+            "deleted_at": crime_committed.deleted_at,
+            "poi_name": poi_name
         }
 
         # Record audit event

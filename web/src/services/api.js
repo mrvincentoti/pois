@@ -253,3 +253,6 @@ export const FETCH_ARRESTING_BODY_API = `${BASE_POI_URL}/arresting_bodies`;
 
 //
 export const FETCH_CRIMES_API = `${BASE_POI_URL}/crimes`;
+
+// Organisation api
+export const FETCH_ORG_API = `${BASE_POI_URL}/organisations`;

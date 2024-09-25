@@ -112,7 +112,7 @@ const Navdata = () => {
 			id: 'organisation',
 			label: 'Organisation',
 			icon: 'ri-organization-chart',
-			link: '/entity/organisation',
+			link: '/org/organisation',
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Organisation');
