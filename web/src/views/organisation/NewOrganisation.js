@@ -101,12 +101,6 @@ const NewOrganisation = () => {
         setEditInputValueAffiliation('');
     };
 
-    const [selectedAffiliations, setSelectedAffiliations] = useState([]);
-
-    const handleChangeAff = (selectedOptions) => {
-        setSelectedAffiliations(selectedOptions);
-    };
-
     // End affiliation
 
     useEffect(() => {
@@ -292,11 +286,14 @@ const NewOrganisation = () => {
                     source_id: values.source_id?.id || null,
                     affiliations: values.affiliations?.id || null,
                     picture: imageUrl || null,
+                    board_of_directors: boardOfDirectors.join(", "),
+                    investors: investors.join(", "),
+                    affiliations: affiliations.map(item => item.id).join(", "),
+                    countries_operational: values.countries_operational.map(item => item.id).join(", ")
                 },
             };
-            console.log(config.body);
+     
             const rs = await request(CREATE_ORG_API, config);
-            console.log(rs);
             notifyWithIcon('success', rs.message);
             navigate('/org/organisation');
         } catch (e) {
@@ -557,7 +554,7 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="nature_of_business" />
                                                 </div>
 
-                                                <div className="col-lg-4 mb-3">
+                                                {/* <div className="col-lg-4 mb-3">
                                                     <label
                                                         className="form-label"
                                                         htmlFor="countries_operational"
@@ -575,6 +572,67 @@ const NewOrganisation = () => {
                                                             />
                                                         )}
                                                     </Field>
+                                                    <ErrorBlock name="countries_operational" />
+                                                </div> */}
+
+                                                <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="countries_operational">
+                                                        Country Operational <span style={{ color: 'red' }}></span>
+                                                    </label>
+
+                                                    <Field id="countries_operational" name="countries_operational">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                {...input}
+                                                                isMulti
+                                                                className={error(meta)}
+                                                                placeholder="Select Country"
+                                                                options={countries}
+                                                                getOptionValue={option => option.id}
+                                                                getOptionLabel={option => option.en_short_name}
+                                                                onChange={(value) => input.onChange(value)}
+                                                                onBlur={() => input.onBlur(input.value)}
+
+                                                                styles={{
+                                                                    control: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fff',
+                                                                        borderColor: '#ced4da',
+                                                                        '&:hover': {
+                                                                            borderColor: '#a3a3a3'
+                                                                        }
+                                                                    }),
+                                                                    option: (provided, state) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
+                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Hover background color
+                                                                            color: '#000' // Hover text color
+                                                                        }
+                                                                    }),
+                                                                    multiValue: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fafafa', // Background of selected tag
+                                                                        color: '#000' // Text color of selected tag
+                                                                    }),
+                                                                    multiValueLabel: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#000' // Text color inside the selected tag
+                                                                    }),
+                                                                    multiValueRemove: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#fff', // Remove icon color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
+                                                                            color: '#000'
+                                                                        }
+                                                                    })
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+
                                                     <ErrorBlock name="countries_operational" />
                                                 </div>
 
@@ -604,7 +662,7 @@ const NewOrganisation = () => {
                                                         Board Of Directors
                                                     </label>
 
-                                                    <Field name="board_of_directors">
+                                                    <Field id="board_of_directors" name="board_of_directors">
                                                         {({ input, meta }) => (
                                                             <div className={`form-control ${error(meta)}`}>
                                                                 {tagChild}
@@ -660,36 +718,110 @@ const NewOrganisation = () => {
                                                 </div>
                                                
 
-                                                <div className="col-lg-4 mb-3">
+                                                {/* <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="affiliations">
                                                         Affiliations
                                                     </label>
 
-                                                    <Select
-                                                        isMulti
-                                                        name="affiliations"
-                                                        options={affiliations}
-                                                        value={selectedAffiliations}
-                                                        onChange={handleChangeAff}
-                                                        className="basic-multi-select"
-                                                        classNamePrefix="select"
-                                                        placeholder="Select Affiliations"
-                                                    />
+                                                    <Field name="affiliations">
+                                                        {({ input, meta }) => (
+                                                            <div className={`form-control ${error(meta)}`} style={{ padding: 0 }}>
+                                                                <Select
+                                                                    mode="multiple"
+                                                                    value={affiliations}
+                                                                    onChange={(value) => input.onChange(value)}
+                                                                    onBlur={input.onBlur}
+                                                                    placeholder="Select Affiliations"
+                                                                    style={{ width: '100%', border: 'none' }}
+                                                                >
+                                                                    {affiliations.map((affiliation) => (
+                                                                        <Select.Option key={affiliation.id} value={affiliation.name}>
+                                                                            {affiliation.name}
+                                                                        </Select.Option>
+                                                                    ))}
+                                                                </Select>
 
-                                                    {selectedAffiliations.map((affiliation) => (
-                                                        <span key={affiliation.id} className="tag">
-                                                            {affiliation.name}
-                                                        </span>
-                                                    ))}
+                                                                <input
+                                                                    {...input}
+                                                                    type="hidden"
+                                                                    value={affiliations.join(',')}
+                                                                    onChange={() => { }}
+                                                                    onBlur={() => input.onBlur(affiliations)}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </Field>
+
+                                                    <ErrorBlock name="affiliations" />
+                                                </div> */}
+
+                                                <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="affiliations">
+                                                        Affiliation <span style={{ color: 'red' }}></span>
+                                                    </label>
+
+                                                    <Field id="affiliations" name="affiliations">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                {...input}
+                                                                isMulti
+                                                                className={error(meta)}
+                                                                placeholder="Select Affiliation"
+                                                                options={affiliations}
+                                                                getOptionValue={option => option.id}
+                                                                getOptionLabel={option => option.name}
+                                                                onChange={(value) => input.onChange(value)}
+                                                                onBlur={() => input.onBlur(input.value)}
+
+                                                                styles={{
+                                                                    control: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fff',
+                                                                        borderColor: '#ced4da',
+                                                                        '&:hover': {
+                                                                            borderColor: '#a3a3a3'
+                                                                        }
+                                                                    }),
+                                                                    option: (provided, state) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
+                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Hover background color
+                                                                            color: '#000' // Hover text color
+                                                                        }
+                                                                    }),
+                                                                    multiValue: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fafafa', // Background of selected tag
+                                                                        color: '#000' // Text color of selected tag
+                                                                    }),
+                                                                    multiValueLabel: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#000' // Text color inside the selected tag
+                                                                    }),
+                                                                    multiValueRemove: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#fff', // Remove icon color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
+                                                                            color: '#000'
+                                                                        }
+                                                                    })
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+
+                                                    <ErrorBlock name="affiliations" />
                                                 </div>
 
-                                       
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="investors">
                                                         Investors
                                                     </label>
 
-                                                    <Field name="investors">
+                                                    <Field id="investors" name="investors">
                                                         {({ input, meta }) => (
                                                             <div className={`form-control ${error(meta)}`}>
                                                                 {tagChildInvestors}

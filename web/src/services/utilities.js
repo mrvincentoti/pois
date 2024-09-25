@@ -315,6 +315,14 @@ export const formatFullName = employee => {
 	return '';
 };
 
+export const formatOrgName = org => {
+	if (org) {
+		return org.org_name.toUpperCase();
+	}
+
+	return '';
+};
+
 export const formatGetInitialsString = name => {
 	// Split the name into words
 	const words = name.split(' ');
