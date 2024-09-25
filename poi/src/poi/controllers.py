@@ -3,7 +3,7 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio
 import os
 import uuid
 from werkzeug.utils import secure_filename
@@ -48,13 +48,12 @@ def create_poi():
             # Generate a new filename using UUID
             file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
             new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
-            file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], new_filename)
-            
-            # Save the file to the POI_PICTURE_UPLOAD_FOLDER
-            file.save(file_path)
 
-            # Set the URL path for the saved file
-            picture_url = f"poi/storage/media/{new_filename}"
+            # Upload the file to MinIO
+            picture_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+        
+            if not picture_url:
+                return jsonify({'message': 'Error uploading picture to MinIO'}), 500
         else:
             return jsonify({'message': 'Picture file type not allowed'}), 400
     else:

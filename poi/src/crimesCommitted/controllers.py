@@ -366,10 +366,15 @@ def get_crimes_committed_by_poi(poi_id):
         # Check if any crimes were found for the given POI
         if not crimes_committed:
             return jsonify({"message": "No crimes found for the given POI"}), 404
-
+            
         # Prepare the list of crimes committed to return
         crime_list = []
         for crime in crimes_committed:
+            poi = Poi.query.filter_by(id=crime.poi_id).first()
+        
+            if poi:
+                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+            
             # Fetch the name of the user who created the crime record
             created_by = User.query.filter_by(id=crime.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
@@ -378,6 +383,7 @@ def get_crimes_committed_by_poi(poi_id):
             crime_data = {
                 "crime_id": crime.crime_id,
                 "poi_id": crime.poi_id,
+                "poi_name": poi_name,
                 "crime_date": crime.crime_date.isoformat() if crime.crime_date else None,
                 "action_taken": crime.action_taken,
                 "casualties_recorded": crime.casualties_recorded,

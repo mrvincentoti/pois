@@ -100,13 +100,13 @@ def get_arm_recovered(recovery_id):
     
     if arm_recovery:
         # Fetch the associated arm name
-        arm = Arms.query.filter_by(id=arm_recovery.arm_id).first()
+        arm = Arm.query.filter_by(id=arm_recovery.arm_id).first()
         arm_name = arm.name if arm else "Unknown Arm"
 
         # Fetch the associated POI details
         poi = Poi.query.filter_by(id=arm_recovery.poi_id).first()
         if poi:
-            poi_name = f"{poi.first_name} {poi.middle_name or ''} {poi.last_name} ({poi.alias or ''})".strip()
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
         else:
             poi_name = "Unknown POI"
 
@@ -331,6 +331,12 @@ def get_arms_recovered_by_poi(poi_id):
         # Prepare the list of recovered arms to return
         arm_list = []
         for arm in arms_recovered:
+            # Fetch the associated POI details
+            poi = Poi.query.filter_by(id=arm.poi_id).first()
+            if poi:
+                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+            else:
+                poi_name = "Unknown POI"
             # Fetch the name of the user who created the record
             created_by = User.query.filter_by(id=arm.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
@@ -338,6 +344,7 @@ def get_arms_recovered_by_poi(poi_id):
             arm_data = {
                 "arm_id": arm.arm_id,
                 "poi_id": arm.poi_id,
+                "poi_name": poi_name,
                 "location": arm.location,
                 "comments": arm.comments,
                 "recovery_date": arm.recovery_date.isoformat() if arm.recovery_date else None,
