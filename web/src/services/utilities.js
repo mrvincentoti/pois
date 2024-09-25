@@ -510,3 +510,42 @@ export const formatName = employee => {
 
 	return '';
 };
+
+export function formatActivitiesDate(date, format = 'DD MMM YYYY') {
+	return date ? moment(date).format(format) : '--';
+}
+
+export function timeAgo(date) {
+	const now = moment();
+	const timeDifference = moment(date);
+
+	// Check if date is valid
+	if (!timeDifference.isValid()) {
+		return '--'; // Invalid date
+	}
+
+	const minutesAgo = now.diff(timeDifference, 'minutes');
+	const hoursAgo = now.diff(timeDifference, 'hours');
+	const daysAgo = now.diff(timeDifference, 'days');
+	const yearsAgo = now.diff(timeDifference, 'years');
+	console.log(minutesAgo);
+	if (minutesAgo < 1) {
+		return 'Just now';
+	} else if (minutesAgo === 1) {
+		return '1 minute ago';
+	} else if (minutesAgo < 60) {
+		return `${minutesAgo} minutes ago`;
+	} else if (hoursAgo === 1) {
+		return '1 hour ago';
+	} else if (hoursAgo < 24) {
+		return `${hoursAgo} hours ago`;
+	} else if (daysAgo === 1) {
+		return '1 day ago';
+	} else if (daysAgo < 365) {
+		return `${daysAgo} days ago`;
+	} else if (yearsAgo === 1) {
+		return '1 year ago';
+	} else {
+		return `${yearsAgo} years ago`;
+	}
+}
