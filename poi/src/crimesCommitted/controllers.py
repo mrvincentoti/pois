@@ -5,6 +5,7 @@ from datetime import datetime
 from .. import db
 from .models import CrimeCommitted
 from ..users.models import User
+from ..poi.models import Poi
 from ..util import custom_jwt_required, save_audit_data
 
 def slugify(text):
@@ -118,6 +119,13 @@ def get_crime_committed(crime_committed_id):
     crime_committed = CrimeCommitted.query.filter_by(id=crime_committed_id, deleted_at=None).first()
     
     if crime_committed:
+        # Fetch the associated POI (Person of Interest) details
+        poi = Poi.query.filter_by(id=crime_committed.poi_id).first()
+        
+        if poi:
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+        
+        # Crime committed data
         crime_committed_data = {
             "id": crime_committed.id,
             "poi_id": crime_committed.poi_id,
@@ -130,7 +138,8 @@ def get_crime_committed(crime_committed_id):
             "comments": crime_committed.comments,
             "created_by": crime_committed.created_by,
             "created_at": crime_committed.created_at,
-            "deleted_at": crime_committed.deleted_at
+            "deleted_at": crime_committed.deleted_at,
+            "poi_name": poi_name
         }
 
         # Record audit event
@@ -357,10 +366,15 @@ def get_crimes_committed_by_poi(poi_id):
         # Check if any crimes were found for the given POI
         if not crimes_committed:
             return jsonify({"message": "No crimes found for the given POI"}), 404
-
+            
         # Prepare the list of crimes committed to return
         crime_list = []
         for crime in crimes_committed:
+            poi = Poi.query.filter_by(id=crime.poi_id).first()
+        
+            if poi:
+                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+            
             # Fetch the name of the user who created the crime record
             created_by = User.query.filter_by(id=crime.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
@@ -369,6 +383,7 @@ def get_crimes_committed_by_poi(poi_id):
             crime_data = {
                 "crime_id": crime.crime_id,
                 "poi_id": crime.poi_id,
+                "poi_name": poi_name,
                 "crime_date": crime.crime_date.isoformat() if crime.crime_date else None,
                 "action_taken": crime.action_taken,
                 "casualties_recorded": crime.casualties_recorded,

@@ -34,6 +34,7 @@ from .armsRecovered.models import ArmsRecovered
 from .crimes.models import Crime
 from .arrestingBody.models import ArrestingBody
 from .crimesCommitted.models import CrimeCommitted
+from .activities.models import Activity
 
 
 from . import create_app, db
@@ -109,6 +110,7 @@ from .armsRecovered import urls
 from .crimes import urls
 from .arrestingBody import urls
 from .crimesCommitted import urls
+from .activities import urls
 from .organisation import urls
 
 if __name__ == '__main__':

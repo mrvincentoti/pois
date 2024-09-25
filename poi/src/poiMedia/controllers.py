@@ -237,26 +237,29 @@ def edit_media(media_id):
 
         # Check if the uploaded file is allowed
         if allowed_file(file.filename):
-            # Delete the old file
-            old_file_path = os.path.join(current_app.config['POI_MEDIA_UPLOAD_FOLDER'], os.path.basename(media_record.media_url))
-            if os.path.exists(old_file_path):
-                os.remove(old_file_path)
+            # Delete the old file from MinIO (if necessary)
+            old_file_key = os.path.basename(media_record.media_url)
+            try:
+                minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_file_key)
+            except Exception as e:
+                print(f"Error deleting old file from MinIO: {e}")
 
             # Generate a new filename using UUID
             file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
             new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
             media_type = request.form.get('media_type') 
             media_caption = request.form.get('media_caption')
-            file_path = os.path.join(current_app.config['POI_MEDIA_UPLOAD_FOLDER'], new_filename)
-            
-            # Save the new file
-            file.save(file_path)
+
+            # Upload the new file to MinIO
+            minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+            if not minio_file_url:
+                return jsonify({"message": "Error uploading file to MinIO"}), 500
 
             # Update media record with new information
             media_record.media_type = media_type
-            media_record.media_url = f"poiMedia/storage/media/{new_filename}"
+            media_record.media_url = minio_file_url
             media_record.media_caption = media_caption
-            
+
             db.session.commit()
 
             # Log audit event
@@ -291,7 +294,7 @@ def edit_media(media_id):
 
             return jsonify({'message': 'Media successfully updated', 'media_url': media_record.media_url}), 200
         else:
-            return jsonify({'message': 'File type not allowed'}), 400  # Only return this if a file was provided but is invalid
+            return jsonify({'message': 'File type not allowed'}), 400
 
     # If no file was uploaded, allow updating other media details like type and caption
     media_type = request.form.get('media_type') 
