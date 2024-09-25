@@ -30,7 +30,6 @@ const CrimeCommitted = () => {
 	const fetchCrimesDetails = useCallback(async Id => {
 		try {
 			const rs = await request(GET_CRIMES_COMMITTED_API.replace(':id', Id));
-			console.log(rs.crimes_committed);
 			setCrimesData(rs.crimes_committed);
 		} catch (error) {
 			throw error;

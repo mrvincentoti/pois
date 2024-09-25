@@ -528,7 +528,6 @@ export function timeAgo(date) {
 	const hoursAgo = now.diff(timeDifference, 'hours');
 	const daysAgo = now.diff(timeDifference, 'days');
 	const yearsAgo = now.diff(timeDifference, 'years');
-	console.log(minutesAgo);
 	if (minutesAgo < 1) {
 		return 'Just now';
 	} else if (minutesAgo === 1) {

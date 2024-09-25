@@ -291,14 +291,18 @@ def get_activities_by_poi(poi_id):
         # Get search parameters from request arguments
         search_term = request.args.get('q', '')
 
+        # Query the Activity table for the given poi_id and filter by deleted_at
         query = Activity.query.filter_by(poi_id=poi_id, deleted_at=None)
 
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
             query = query.filter(
-                (Activity.comment.ilike(search_pattern))
+                Activity.comment.ilike(search_pattern)
             )
+
+        # Order by activity_date in descending order (newest first)
+        query = query.order_by(Activity.activity_date.desc())
 
         # Execute the query and get the results
         activities = query.all()

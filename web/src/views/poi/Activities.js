@@ -27,6 +27,8 @@ const routes = {
 const Activities = () => {
     const [loaded, setLoaded] = useState(false);
     const [activitiesData, setActivitiesData] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
     const [working, setWorking] = useState(false);
     const [activities, setActivities] = useState(null);
 
@@ -57,18 +59,30 @@ const Activities = () => {
         }
     }, [fetchActivitiesDetails, loaded, navigate, params.id, activitiesData]);
 
-    const showModal = (type, data = '') => {
-        setModalType(type);
-        setModalData(data);
-        setIsModalOpen(true);
+    const handleEditClick = id => {
+        navigate(`/pois/${id}/edit`);
     };
 
-    const handleOk = () => {
-        setIsModalOpen(false);
+    const addActivity = () => {
+        document.body.classList.add('modal-open');
+        setShowModal(true);
     };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
+    const editActivity = item => {
+        document.body.classList.add('modal-open');
+        setActivities(item);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setActivities(null);
+        document.body.classList.remove('modal-open');
+    };
+
+    const refreshTable = async () => {
+        setWorking(true);
+        await fetchActivitiesDetails(params.id);
     };
 
     return (
@@ -77,7 +91,7 @@ const Activities = () => {
                 <div className="card-body">
                     <div class="d-flex align-items-center mb-2">
                         <h5 class="card-title flex-grow-1 mb-0">Activities</h5>
-                        <div class="flex-shrink-0" onClick={() => showModal('add')}>
+                        <div class="flex-shrink-0" onClick={() => addActivity('add')}>
                             <label htmlFor="formFile" class="btn btn-success">
                                 <i class="ri-add-fill me-1 align-bottom"></i> Add
                             </label>
@@ -131,11 +145,10 @@ const Activities = () => {
                 </div>
             </div>
             <NewEditComment
-                isModalOpen={isModalOpen}
-                handleOk={handleOk}
-                handleCancel={handleCancel}
-                data={modalData}
-                modalType={modalType}
+                closeModal={() => closeModal()}
+                update={async () => {
+                    await refreshTable().then(_ => setWorking(false));
+                }}
             />
         </>
     );
