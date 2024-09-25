@@ -2,8 +2,6 @@ from datetime import datetime
 from sqlalchemy import func, event
 from sqlalchemy.ext.hybrid import hybrid_property
 from .. import db
-from ..util import encrypt, decrypt
-
 
 class Organisation(db.Model):
     __tablename__ = 'organisation'
@@ -36,11 +34,13 @@ class Organisation(db.Model):
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
+    
     category = db.relationship("Category", backref="organisation")
     source = db.relationship("Source", backref="organisation")
 
 
-    def __init__(self, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None, nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None, board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None, deleted_at=None):
+    def __init__(self, picture=None, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None, nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None, board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None, created_by=None, created_at=None, deleted_at=None):
+        self.picture = picture
         self.ref_numb = ref_numb
         self.reg_numb = reg_numb
         self.org_name = org_name
@@ -65,6 +65,8 @@ class Organisation(db.Model):
         self.source_id = source_id
         self.remark = remark
         self.deleted_at = deleted_at
+        self.created_by = created_by
+        self.created_at = created_at
 
     def soft_delete(self):
         self.deleted_at = datetime.now()
@@ -76,13 +78,14 @@ class Organisation(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update(self, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None,
-               nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None,
-               board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None,
-               instagram=None,
-               twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None,
-               deleted_at=None):
-
+    def update(self, picture=None, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None,
+            nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None,
+            board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None,
+            instagram=None,
+            twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None,
+            deleted_at=None):
+        if picture:
+            self.picture = picture
         if ref_numb:
             self.ref_numb = ref_numb
         if reg_numb:
@@ -137,6 +140,7 @@ class Organisation(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            'picture': self.picture,
             'ref_numb': self.ref_numb,
             'reg_numb': self.reg_numb,
             'org_name': self.org_name,
@@ -161,6 +165,8 @@ class Organisation(db.Model):
             'source_id': self.source_id,
             'remark': self.remark,
             'deleted_at': self.deleted_at,
+            'created_at': self.created_at,
+            'created_by': self.created_by
         }
 
     def __repr__(self):
