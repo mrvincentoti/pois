@@ -268,20 +268,34 @@ def update_poi(poi_id):
 
     try:
         if poi:
-            # Handle the file upload
+            # Handle the file upload for the poi's picture (if applicable) 
             if 'picture' in request.files:
                 file = request.files['picture']
+
+                # Check if a filename was provided
                 if file.filename == '':
                     return jsonify({'message': 'No selected picture file'}), 400
 
+                # Check if the uploaded file is allowed
                 if allowed_file(file.filename):
-                    # Delete the existing picture if it exists
-                    if poi.picture:
-                        # Logic to delete the old picture file (if needed)
-                        delete_picture_file(poi.picture)
+                    # Delete the old picture file from MinIO (if necessary)
+                    old_picture_key = os.path.basename(poi.picture)
+                    try:
+                        minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_picture_key)
+                    except Exception as e:
+                        print(f"Error deleting old picture from MinIO: {e}")
 
-                    # Save the new picture file and update the URL
-                    poi.picture = save_picture_file(file)
+                    # Generate a new filename using UUID
+                    file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
+                    new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
+
+                    # Upload the new picture to MinIO
+                    minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+                    if not minio_file_url:
+                        return jsonify({"message": "Error uploading picture to MinIO"}), 500
+
+                    # Save the new picture URL in the organisation's picture field
+                    poi.picture = minio_file_url
                 else:
                     return jsonify({'message': 'Picture file type not allowed'}), 400
 
@@ -541,6 +555,8 @@ def list_pois():
             (Poi.remark.ilike(search))
         )
 
+    query = query.order_by(Poi.created_at.desc()) 
+        
     # Pagination
     paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
 

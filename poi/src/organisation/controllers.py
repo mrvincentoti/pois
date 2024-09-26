@@ -178,7 +178,7 @@ def get_organisations():
                 (Organisation.ceo.ilike(search)) |
                 (Organisation.board_of_directors.ilike(search)) |
                 (Organisation.employee_strength.ilike(search)) |
-                (Organisation.affiliations.ilike(search))|
+                (Organisation.affiliations.ilike(search)) |
                 (Organisation.website.ilike(search)) |
                 (Organisation.fb.ilike(search)) |
                 (Organisation.instagram.ilike(search)) |
@@ -188,6 +188,8 @@ def get_organisations():
                 (Organisation.remark.ilike(search))
             )
 
+        query = query.order_by(Organisation.created_at.desc()) 
+
         # Pagination
         paginated_org = query.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -195,8 +197,8 @@ def get_organisations():
         org_list = []
         for org in paginated_org.items:
             org_data = org.to_dict()
-            org_data['source'] = org.source.to_dict() if org.source else None  # Add source object
-            org_data['category'] = org.category.to_dict() if org.category else None  # Add category object
+            org_data['source'] = org.source.to_dict() if org.source else None
+            org_data['category'] = org.category.to_dict() if org.category else None
             org_list.append(org_data)
 
         response = {
@@ -289,19 +291,34 @@ def update_organisation(org_id):
 
     try:
         if organisation:
-            # Handle the file upload for the organisation's picture (if applicable)
+            # Handle the file upload for the organisation's picture (if applicable) 
             if 'picture' in request.files:
                 file = request.files['picture']
+
+                # Check if a filename was provided
                 if file.filename == '':
                     return jsonify({'message': 'No selected picture file'}), 400
 
+                # Check if the uploaded file is allowed
                 if allowed_file(file.filename):
-                    # Delete the existing picture if it exists
-                    if organisation.picture:
-                        delete_picture_file(organisation.picture)
+                    # Delete the old picture file from MinIO (if necessary)
+                    old_picture_key = os.path.basename(organisation.picture)
+                    try:
+                        minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_picture_key)
+                    except Exception as e:
+                        print(f"Error deleting old picture from MinIO: {e}")
 
-                    # Save the new picture file and update the URL
-                    organisation.picture = save_picture_file(file)
+                    # Generate a new filename using UUID
+                    file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
+                    new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
+
+                    # Upload the new picture to MinIO
+                    minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+                    if not minio_file_url:
+                        return jsonify({"message": "Error uploading picture to MinIO"}), 500
+
+                    # Save the new picture URL in the organisation's picture field
+                    organisation.picture = minio_file_url
                 else:
                     return jsonify({'message': 'Picture file type not allowed'}), 400
 
@@ -530,26 +547,3 @@ def allowed_file(filename):
     # Define allowed file extensions
     allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
-
-def save_picture_file(file):
-    # Generate a new filename using UUID
-    file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
-    new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
-    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], new_filename)
-    
-    # Save the file to the POI_PICTURE_UPLOAD_FOLDER
-    file.save(file_path)
-
-    # Return the URL path for the saved file
-    return f"poi/storage/media/{new_filename}"
-
-def delete_picture_file(picture_url):
-    # Construct the full file path from the picture URL
-    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], os.path.basename(picture_url))
-    
-    try:
-        if os.path.exists(file_path):
-            os.remove(file_path)  # Delete the file
-    except Exception as e:
-        # Log the error if needed
-        print(f"Error deleting picture file {file_path}: {str(e)}")
