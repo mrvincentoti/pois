@@ -157,12 +157,20 @@ def get_organisations():
     per_page = request.args.get('per_page', default=10, type=int)
     search_term = request.args.get('q', default=None, type=str)
 
+    # New filter parameters
+    category_id = request.args.get('category_id', type=int)
+    source_id = request.args.get('source_id', type=int)
+    country_id = request.args.get('country_id', type=int)
+    affiliation = request.args.get('affiliation', type=str)
+    from_date = request.args.get('from_date', type=str)
+    to_date = request.args.get('to_date', type=str)
+
     response = {}
 
     try:
         query = Organisation.query
 
-        # Filter based on search term if supplied
+        # Apply search term filter
         if search_term:
             search = f"%{search_term}%"
             query = query.filter(
@@ -188,9 +196,32 @@ def get_organisations():
                 (Organisation.remark.ilike(search))
             )
 
-        query = query.order_by(Organisation.created_at.desc()) 
+        # Apply category filter
+        if category_id:
+            query = query.filter(Organisation.category_id == category_id)
 
-        # Pagination
+        # Apply source filter
+        if source_id:
+            query = query.filter(Organisation.source_id == source_id)
+
+        # Apply country filter
+        if country_id:
+            query = query.filter(Organisation.country_id == country_id)
+
+        # Apply affiliation filter
+        if affiliation:
+            query = query.filter(Organisation.affiliations.ilike(f"%{affiliation}%"))
+
+        # Apply date created range filter
+        if from_date:
+            from_date = datetime.strptime(from_date, '%Y-%m-%d')
+            query = query.filter(Organisation.created_at >= from_date)
+        if to_date:
+            to_date = datetime.strptime(to_date, '%Y-%m-%d')
+            query = query.filter(Organisation.created_at <= to_date)
+
+        # Sort and paginate the results
+        query = query.order_by(Organisation.created_at.desc())
         paginated_org = query.paginate(page=page, per_page=per_page, error_out=False)
 
         # Format response
@@ -220,7 +251,15 @@ def get_organisations():
             "event": "view_organisations",
             "auditable_id": None,
             "old_values": None,
-            "new_values": json.dumps({"searched_term": search_term}),
+            "new_values": json.dumps({
+                "searched_term": search_term,
+                "category_id": category_id,
+                "source_id": source_id,
+                "country_id": country_id,
+                "affiliation": affiliation,
+                "from_date": from_date,
+                "to_date": to_date
+            }),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
