@@ -267,4 +267,4 @@ export const CREATE_ORG_API = `${BASE_POI_URL}/organisation`;
 export const FETCH_ACTIVITIES_API = `${BASE_POI_URL}/poi-activities/:id`;
 
 export const CREATE_ACTIVITIES_API = `${BASE_POI_URL}/activities`;
-export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/:id`;
+export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/`;
