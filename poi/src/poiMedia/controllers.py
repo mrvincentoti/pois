@@ -80,6 +80,11 @@ def get_media(media_id):
 
 @custom_jwt_required
 def add_poi_media(poi_id):
+    poi = Poi.query.filter_by(id=poi_id, deleted_at=None).first()
+
+    if poi is None:
+        return jsonify({"message": "POI not found"}), 404
+    
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
 
