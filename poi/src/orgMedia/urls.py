@@ -26,4 +26,4 @@ def retrieve_update_destroy_org_medias(media_id):
 @app.route("/org-media/restore/<media_id>", methods=['GET'])
 def restore_single_org_media(media_id):
    if request.method == 'GET': return restore_media(media_id)
-   else: return 'Method is Not Allowed 240, 91, 227+35, 165'
+   else: return 'Method is Not Allowed'
