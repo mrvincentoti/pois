@@ -16,6 +16,7 @@ import {
 	parseHashString,
 	request,
 	formatName,
+	formatOrgName
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -270,7 +271,7 @@ const Organisation = () => {
 																		className="text-reset text-underline"
 																	>
 																		<h5 className="fs-14 my-1">
-																			{formatFullName(item)}
+																			{formatOrgName(item)}
 																		</h5>
 																		<span>{item.ref_numb}</span>
 																	</a>
@@ -278,9 +279,9 @@ const Organisation = () => {
 															</div>
 														</td>
 
-														<td>{item.crime_committed || 'N/A'} </td>
-														<td>{item.arresting_body || 'N/A'}</td>
-														<td>{item.role || 'N/A'}</td>
+														<td>{item.ceo || 'N/A'} </td>
+														<td>{item.date_of_registration || 'N/A'}</td>
+														<td>{item.employee_strength || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
 														<td>{formatDate(item.date_of_employment)}</td>
 														<td className="text-end">

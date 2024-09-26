@@ -262,3 +262,6 @@ export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
 export const FETCH_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
 export const UPDATE_MEDIA_API = `${BASE_POI_URL}/media/:id`;
 export const DELETE_MEDIA_API = `${BASE_POI_URL}/media/:id`;
+export const CREATE_ORG_API = `${BASE_POI_URL}/organisation`;
+// Activities
+export const FETCH_ACTIVITIES_API = `${BASE_POI_URL}/poi-activities/:id`;

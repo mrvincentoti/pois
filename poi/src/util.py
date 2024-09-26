@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 import psutil
 from . import db
 from datetime import datetime as dt
-from flask import request, jsonify, g
+from flask import request, jsonify, g, current_app
 from functools import wraps
+import uuid
 
 from minio import Minio
 from minio.error import S3Error
@@ -118,7 +119,6 @@ def find_key_file(search_paths):
     raise FileNotFoundError(
         f'Key file "{key_file_name}" not found in search paths.')
 
-
 def read_key():
     search_paths = os.getenv('SEARCH_PATHS', '/Volumes').split(':')
     key_file_path = find_key_file(search_paths)
@@ -126,7 +126,6 @@ def read_key():
         key = file.read().strip()
         print(f"This is the key from the util file: {key}")
     return key
-
 
 def get_app_encryption_key():
     try:
@@ -137,21 +136,17 @@ def get_app_encryption_key():
         print(f"Error loading encryption key: {e}")
         return None
 
-
 APP_ENCRYPTION_KEY = os.getenv("APP_ENCRYPTION_KEY").encode('utf-8')
-
 
 def pad(data):
     padder = padding.PKCS7(128).padder()
     padded_data = padder.update(data) + padder.finalize()
     return padded_data
 
-
 def unpad(data):
     unpadder = padding.PKCS7(128).unpadder()
     unpadded_data = unpadder.update(data) + unpadder.finalize()
     return unpadded_data
-
 
 def encrypt(text):
     if text is None:
@@ -174,7 +169,6 @@ def encrypt(text):
     encrypted_text = encryptor.update(padded_text) + encryptor.finalize()
     return hexlify(iv + encrypted_text).decode('utf-8')
 
-
 def decrypt(encrypted_text_hex):
     if encrypted_text_hex is None:
         return None
@@ -193,7 +187,6 @@ def decrypt(encrypted_text_hex):
         encrypted_data) + decryptor.finalize()
     decrypted_text = unpad(decrypted_padded_text)
     return decrypted_text.decode('utf-8')
-
 
 def calculate_age(date_string):
     # Convert the date string to a datetime object
@@ -280,3 +273,59 @@ def upload_file_to_minio(bucket_name, file, object_name=None):
     except S3Error as e:
         print("Error occurred while uploading to MinIO:", e)
         return None
+    
+def save_picture_file(file):
+    try:
+        # Generate a new filename using UUID
+        file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
+        new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
+
+        # Upload the file to the MinIO bucket
+        bucket_name = current_app.config['MINIO_BUCKET_NAME']
+        content_type = file.content_type  # Get the file's content type (e.g., image/jpeg)
+
+        # Save the file to MinIO bucket
+        minio_client.put_object(
+            bucket_name,
+            new_filename,
+            file.stream,  # Use file stream for upload
+            file.content_length,
+            content_type=content_type
+        )
+
+        # Return the URL for accessing the file (assuming you serve files directly from MinIO)
+        return f"{os.getenv['MINIO_URL']}/{bucket_name}/{new_filename}"
+
+    except S3Error as e:
+        # Log the error if needed
+        print(f"Error saving picture file to MinIO: {str(e)}")
+        raise e
+
+    except Exception as e:
+        # Log any other error
+        print(f"An unexpected error occurred while saving picture file: {str(e)}")
+        raise e
+    
+def delete_picture_file(picture_url):
+    try:
+        # Extract the bucket name and object name (the file path in MinIO)
+        bucket_name = os.getenv['MINIO_BUCKET_NAME']
+        object_name = os.path.basename(picture_url)  # This assumes the picture_url is a full path
+
+        # Check if the object exists in the bucket before attempting deletion
+        try:
+            # Try to retrieve the object to ensure it exists
+            minio_client.stat_object(bucket_name, object_name)
+
+            # Delete the file from MinIO
+            minio_client.remove_object(bucket_name, object_name)
+            print(f"Picture file {object_name} deleted successfully from MinIO.")
+        except S3Error as e:
+            if e.code == 'NoSuchKey':
+                print(f"File {object_name} does not exist in MinIO.")
+            else:
+                raise e  # Raise the error if it's something else
+
+    except Exception as e:
+        # Log the error if needed
+        print(f"Error deleting picture file {picture_url} from MinIO: {str(e)}")

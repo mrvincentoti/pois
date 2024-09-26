@@ -283,7 +283,7 @@ def restore_activity(activity_id):
         return jsonify({"message": "Error restoring recovered activity", "error": str(e)}), 500
     finally:
         db.session.close()
-        
+
 
 @custom_jwt_required
 def get_activities_by_poi(poi_id):
@@ -303,17 +303,13 @@ def get_activities_by_poi(poi_id):
         # Execute the query and get the results
         activities = query.all()
 
-        # Check if any activities
-        if not activities:
-            return jsonify({"message": "No activities found for the given POI"}), 404
-
         # Prepare the list of activities to return
         activity_list = []
         for activity in activities:
             # Fetch the name of the user who created the record
             created_by = User.query.filter_by(id=activity.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
-            
+
             activity_data = {
                 "poi_id": activity.poi_id,
                 "comment": activity.comment,

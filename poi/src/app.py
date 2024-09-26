@@ -111,6 +111,7 @@ from .crimes import urls
 from .arrestingBody import urls
 from .crimesCommitted import urls
 from .activities import urls
+from .organisation import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

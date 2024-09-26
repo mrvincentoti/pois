@@ -11,9 +11,7 @@ import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
 
 import {
-    CREATE_POI_API,
-    FETCH_GENDERS_API,
-    FETCH_STATES_API,
+    CREATE_ORG_API,
     FETCH_CATEGORIES_API,
     FETCH_SOURCES_API,
     FETCH_COUNTRIES_API,
@@ -34,6 +32,7 @@ import {
 
 const NewOrganisation = () => {
     const [loaded, setLoaded] = useState(false);
+    const [dateOfRegistration, setDateOfRegistration] = useState(null);
     const [stateOrigin, setStateOrigin] = useState(null);
     const [maritalStatus, setMaritalStatus] = useState(null);
     const [passportCategory, setPassportCategory] = useState(null);
@@ -41,27 +40,68 @@ const NewOrganisation = () => {
     const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const [sources, setSources] = useState([]);
-    const [affiliations, setAffliations] = useState([]);
 
-    const [genders, setGenders] = useState([]);
     const [countries, setCountries] = useState([]);
     const [country, setCountry] = useState(null);
-    const [states, setStates] = useState([]);
 
-    const [dateOfBirth, setDateOfBirth] = useState('');
     const [imageUrl, setImageUrl] = useState();
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const { token } = theme.useToken();
 
-    const [language, setLanguage] = useState(['English']);
+    const [boardOfDirectors, setBoardOfDirectors] = useState([]);
+    const [investors, setInvestors] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [editInputIndex, setEditInputIndex] = useState(-1);
     const [editInputValue, setEditInputValue] = useState('');
     const inputRef = useRef(null);
     const editInputRef = useRef(null);
+
+    // Investors
+    const [inputValueInvestors, setInputValueInvestors] = useState('');
+    const [editInputIndexInvestors, setEditInputIndexInvestors] = useState(-1);
+    const [editInputValueInvestors, setEditInputValueInvestors] = useState('');
+    const [inputVisibleInvestors, setInputVisibleInvestors] = useState(false);
+
+    // Affiliation
+    const [inputValueAffiliation, setInputValueAffiliation] = useState('');
+    const [editInputIndexAffiliation, setEditInputIndexAffiliation] = useState(-1);
+    const [editInputValueAffiliation, setEditInputValueAffiliation] = useState('');
+    const [inputVisibleAffiliation, setInputVisibleAffiliation] = useState(false);
+    const [affiliations, setAffliations] = useState([]);
+
+    const handleCloseAffiliation = removedTag => {
+        const newTags = affiliations.filter(tag => tag !== removedTag);
+        setAffliations(newTags);
+    };
+
+    const showInputAffiliation = () => {
+        setInputVisibleAffiliation(true);
+    };
+
+    const handleInputChangeAffiliation = e => {
+        setInputValueAffiliation(e.target.value);
+    };
+
+    const handleInputConfirmAffiliation = () => {
+        if (inputValueAffiliation && !affiliations.includes(inputValueAffiliation)) {
+            setAffliations([...affiliations, inputValueAffiliation]);
+        }
+        setInputVisibleAffiliation(false);
+        setInputValueAffiliation('');
+    };
+
+    const handleEditInputConfirmAffiliation = () => {
+        const newTags = [...affiliations];
+        newTags[editInputIndexAffiliation] = editInputValueAffiliation;
+        setAffliations(newTags);
+        setEditInputIndexAffiliation(-1);
+        setEditInputValueAffiliation('');
+    };
+
+    // End affiliation
 
     useEffect(() => {
         if (inputVisible) {
@@ -72,39 +112,72 @@ const NewOrganisation = () => {
     useEffect(() => {
         editInputRef.current?.focus();
     }, [editInputValue]);
+
     const handleClose = removedTag => {
-        const newTags = language.filter(tag => tag !== removedTag);
-        setLanguage(newTags);
+        const newTags = boardOfDirectors.filter(tag => tag !== removedTag);
+        setBoardOfDirectors(newTags);
+    };
+
+    const handleCloseInvestors = removedTag => {
+        const newTags = investors.filter(tag => tag !== removedTag);
+        setInvestors(newTags);
     };
 
     const showInput = () => {
         setInputVisible(true);
     };
+
+    const showInputInvestors = () => {
+        setInputVisibleInvestors(true);
+    };
+
     const handleInputChange = e => {
         setInputValue(e.target.value);
     };
+
+    const handleInputChangeInvestors = e => {
+        setInputValueInvestors(e.target.value);
+    };
+
     const handleInputConfirm = () => {
-        if (inputValue && !language.includes(inputValue)) {
-            setLanguage([...language, inputValue]);
+        if (inputValue && !boardOfDirectors.includes(inputValue)) {
+            setBoardOfDirectors([...boardOfDirectors, inputValue]);
         }
         setInputVisible(false);
         setInputValue('');
     };
+
+    const handleInputConfirmInvestors = () => {
+        if (inputValueInvestors && !investors.includes(inputValueInvestors)) {
+            setInvestors([...investors, inputValueInvestors]);
+        }
+        setInputVisibleInvestors(false);
+        setInputValueInvestors('');
+    };
+
     const handleEditInputChange = e => {
         setEditInputValue(e.target.value);
     };
+
     const handleEditInputConfirm = () => {
-        const newTags = [...language];
+        const newTags = [...boardOfDirectors];
         newTags[editInputIndex] = editInputValue;
-        setLanguage(newTags);
+        setBoardOfDirectors(newTags);
         setEditInputIndex(-1);
         setEditInputValue('');
+    };
+
+    const handleEditInputConfirmInvestors = () => {
+        const newTags = [...investors];
+        newTags[editInputIndexInvestors] = editInputValueInvestors;
+        setInvestors(newTags);
+        setEditInputIndexInvestors(-1);
+        setEditInputValueInvestors('');
     };
 
     const fetchApis = useCallback(async () => {
         try {
             const urls = [
-                FETCH_GENDERS_API,
                 `${FETCH_COUNTRIES_API}?per_page=300`,
                 FETCH_CATEGORIES_API,
                 FETCH_SOURCES_API,
@@ -114,13 +187,11 @@ const NewOrganisation = () => {
                 asyncFetch(url).then(response => response.json())
             );
             const [
-                rs_genders,
                 rs_countries,
                 rs_categories,
                 rs_sources,
                 rs_affiliations,
             ] = await Promise.all(requests);
-            setGenders(rs_genders.genders);
             setCountries(rs_countries.countries);
             setCategories(rs_categories.categories);
             setSources(rs_sources.sources);
@@ -130,10 +201,6 @@ const NewOrganisation = () => {
         }
     }, []);
 
-    const fetchStates = useCallback(async country_id => {
-        const rs = await request(FETCH_STATES_API.replace('/:id', ''));
-        setStates(rs.states);
-    }, []);
 
     const getBase64 = (img, callback) => {
         const reader = new FileReader();
@@ -152,7 +219,29 @@ const NewOrganisation = () => {
             </Tag>
         </span>
     );
-    const tagChild = language.map(forMap);
+    const tagChild = boardOfDirectors.map(forMap);
+
+    // Investors tag
+
+    const forMapInvestors = tag => (
+        <span key={tag} style={{ display: 'inline-block' }}>
+            <Tag closable onClose={() => handleCloseInvestors(tag)}>
+                {tag}
+            </Tag>
+        </span>
+    );
+    const tagChildInvestors = investors.map(forMapInvestors);
+
+
+    // Affiliations
+    const forMapAffiliation = tag => (
+        <span key={tag} style={{ display: 'inline-block' }}>
+            <Tag closable onClose={() => handleCloseAffiliation(tag)}>
+                {tag}
+            </Tag>
+        </span>
+    );
+    const tagChildAffiliations = investors.map(forMapAffiliation);
 
     const handleChange = info => {
         if (info.file.status === 'uploading') {
@@ -188,7 +277,6 @@ const NewOrganisation = () => {
     }, [fetchApis, loaded]);
 
     const onSubmit = async values => {
-        console.log(imageUrl);
         try {
             const config = {
                 method: 'POST',
@@ -196,21 +284,18 @@ const NewOrganisation = () => {
                     ...values,
                     category_id: values.category_id?.id || null,
                     source_id: values.source_id?.id || null,
-                    gender_id: values.gender?.id || null,
-                    state_id: values.state_id?.id || null,
-                    affiliation_id: values.affiliation?.id || null,
-                    marital_status: values.marital_status?.id || null,
+                    affiliations: values.affiliations?.id || null,
                     picture: imageUrl || null,
-                    // language_spoken: language,
-                    gender: undefined,
-                    // affiliation: undefined,
+                    board_of_directors: boardOfDirectors.join(", "),
+                    investors: investors.join(", "),
+                    affiliations: affiliations.map(item => item.id).join(", "),
+                    countries_operational: values.countries_operational.map(item => item.id).join(", ")
                 },
             };
-            console.log(config.body);
-            const rs = await request(CREATE_POI_API, config);
-            console.log(rs);
+     
+            const rs = await request(CREATE_ORG_API, config);
             notifyWithIcon('success', rs.message);
-            navigate('/pois/poi');
+            navigate('/org/organisation');
         } catch (e) {
             return { [FORM_ERROR]: e.message || 'could not create employee' };
         }
@@ -218,7 +303,7 @@ const NewOrganisation = () => {
 
     return (
         <div className="container-fluid">
-            <Breadcrumbs pageTitle="New POI" parentPage="POI" />
+            <Breadcrumbs pageTitle="New Organisation" parentPage="Organisation" />
             <div className="row">
                 <Form
                     initialValues={{}}
@@ -317,17 +402,17 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="first_name" />
                                                 </div>
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="middle_name">
+                                                    <label className="form-label" htmlFor="org_name">
                                                         Organisation Name
                                                     </label>
-                                                    <Field id="middle_name" name="middle_name">
+                                                    <Field id="org_name" name="org_name">
                                                         {({ input, meta }) => (
                                                             <input
                                                                 {...input}
                                                                 type="text"
                                                                 className={`form-control ${error(meta)}`}
-                                                                id="middle_name"
-                                                                placeholder="Enter middle name"
+                                                                id="org_name"
+                                                                placeholder="Organisation Name"
                                                             />
                                                         )}
                                                     </Field>
@@ -416,12 +501,12 @@ const NewOrganisation = () => {
                                                                     maxDate: new Date(),
                                                                 }}
                                                                 placeholder="Select date of birth"
-                                                                value={dateOfBirth}
+                                                                value={dateOfRegistration}
                                                                 onChange={([date]) => {
                                                                     input.onChange(
                                                                         moment(date).format('YYYY-MM-DD')
                                                                     );
-                                                                    setDateOfBirth(date);
+                                                                    setDateOfRegistration(date);
                                                                 }}
                                                             />
                                                         )}
@@ -469,7 +554,7 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="nature_of_business" />
                                                 </div>
 
-                                                <div className="col-lg-4 mb-3">
+                                                {/* <div className="col-lg-4 mb-3">
                                                     <label
                                                         className="form-label"
                                                         htmlFor="countries_operational"
@@ -487,6 +572,67 @@ const NewOrganisation = () => {
                                                             />
                                                         )}
                                                     </Field>
+                                                    <ErrorBlock name="countries_operational" />
+                                                </div> */}
+
+                                                <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="countries_operational">
+                                                        Country Operational <span style={{ color: 'red' }}></span>
+                                                    </label>
+
+                                                    <Field id="countries_operational" name="countries_operational">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                {...input}
+                                                                isMulti
+                                                                className={error(meta)}
+                                                                placeholder="Select Country"
+                                                                options={countries}
+                                                                getOptionValue={option => option.id}
+                                                                getOptionLabel={option => option.en_short_name}
+                                                                onChange={(value) => input.onChange(value)}
+                                                                onBlur={() => input.onBlur(input.value)}
+
+                                                                styles={{
+                                                                    control: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fff',
+                                                                        borderColor: '#ced4da',
+                                                                        '&:hover': {
+                                                                            borderColor: '#a3a3a3'
+                                                                        }
+                                                                    }),
+                                                                    option: (provided, state) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
+                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Hover background color
+                                                                            color: '#000' // Hover text color
+                                                                        }
+                                                                    }),
+                                                                    multiValue: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fafafa', // Background of selected tag
+                                                                        color: '#000' // Text color of selected tag
+                                                                    }),
+                                                                    multiValueLabel: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#000' // Text color inside the selected tag
+                                                                    }),
+                                                                    multiValueRemove: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#fff', // Remove icon color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
+                                                                            color: '#000'
+                                                                        }
+                                                                    })
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+
                                                     <ErrorBlock name="countries_operational" />
                                                 </div>
 
@@ -512,23 +658,41 @@ const NewOrganisation = () => {
                                                 </div>
 
                                                 <div className="col-lg-4 mb-3">
-                                                    <label
-                                                        className="form-label"
-                                                        htmlFor="board_of_directors"
-                                                    >
+                                                    <label className="form-label" htmlFor="board_of_directors">
                                                         Board Of Directors
                                                     </label>
+
                                                     <Field id="board_of_directors" name="board_of_directors">
                                                         {({ input, meta }) => (
-                                                            <input
-                                                                {...input}
-                                                                type="text"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="board_of_directors"
-                                                                placeholder="Board Of Directors"
-                                                            />
+                                                            <div className={`form-control ${error(meta)}`}>
+                                                                {tagChild}
+                                                                {inputVisible && (
+                                                                    <Input
+                                                                        type="text"
+                                                                        size="small"
+                                                                        value={inputValue}
+                                                                        onChange={handleInputChange}
+                                                                        onBlur={handleInputConfirm}
+                                                                        onPressEnter={handleInputConfirm}
+                                                                        style={{ width: 78, marginRight: 8, marginTop: 5 }}
+                                                                    />
+                                                                )}
+                                                                {!inputVisible && (
+                                                                    <Tag onClick={showInput} className="site-tag-plus">
+                                                                        <i className="ri-add-line" />  Add
+                                                                    </Tag>
+                                                                )}
+                                                                <input
+                                                                    {...input}
+                                                                    type="hidden"
+                                                                    value={boardOfDirectors}
+                                                                    onChange={() => { }}
+                                                                    onBlur={() => input.onBlur(boardOfDirectors)}
+                                                                />
+                                                            </div>
                                                         )}
                                                     </Field>
+
                                                     <ErrorBlock name="board_of_directors" />
                                                 </div>
 
@@ -553,41 +717,141 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="employee_strength" />
                                                 </div>
                                                
-                                                <div className="col-lg-4 mb-3">
-                                                    <label
-                                                        className="form-label"
-                                                        htmlFor="affiliations"
-                                                    >
-                                                        Affiliation <span style={{ color: 'red' }}>*</span>
+
+                                                {/* <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="affiliations">
+                                                        Affiliations
                                                     </label>
+
+                                                    <Field name="affiliations">
+                                                        {({ input, meta }) => (
+                                                            <div className={`form-control ${error(meta)}`} style={{ padding: 0 }}>
+                                                                <Select
+                                                                    mode="multiple"
+                                                                    value={affiliations}
+                                                                    onChange={(value) => input.onChange(value)}
+                                                                    onBlur={input.onBlur}
+                                                                    placeholder="Select Affiliations"
+                                                                    style={{ width: '100%', border: 'none' }}
+                                                                >
+                                                                    {affiliations.map((affiliation) => (
+                                                                        <Select.Option key={affiliation.id} value={affiliation.name}>
+                                                                            {affiliation.name}
+                                                                        </Select.Option>
+                                                                    ))}
+                                                                </Select>
+
+                                                                <input
+                                                                    {...input}
+                                                                    type="hidden"
+                                                                    value={affiliations.join(',')}
+                                                                    onChange={() => { }}
+                                                                    onBlur={() => input.onBlur(affiliations)}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </Field>
+
+                                                    <ErrorBlock name="affiliations" />
+                                                </div> */}
+
+                                                <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="affiliations">
+                                                        Affiliation <span style={{ color: 'red' }}></span>
+                                                    </label>
+
                                                     <Field id="affiliations" name="affiliations">
                                                         {({ input, meta }) => (
                                                             <Select
                                                                 {...input}
+                                                                isMulti
                                                                 className={error(meta)}
-                                                                placeholder="Select affiliation"
+                                                                placeholder="Select Affiliation"
                                                                 options={affiliations}
                                                                 getOptionValue={option => option.id}
                                                                 getOptionLabel={option => option.name}
+                                                                onChange={(value) => input.onChange(value)}
+                                                                onBlur={() => input.onBlur(input.value)}
+
+                                                                styles={{
+                                                                    control: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fff',
+                                                                        borderColor: '#ced4da',
+                                                                        '&:hover': {
+                                                                            borderColor: '#a3a3a3'
+                                                                        }
+                                                                    }),
+                                                                    option: (provided, state) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
+                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Hover background color
+                                                                            color: '#000' // Hover text color
+                                                                        }
+                                                                    }),
+                                                                    multiValue: (provided) => ({
+                                                                        ...provided,
+                                                                        backgroundColor: '#fafafa', // Background of selected tag
+                                                                        color: '#000' // Text color of selected tag
+                                                                    }),
+                                                                    multiValueLabel: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#000' // Text color inside the selected tag
+                                                                    }),
+                                                                    multiValueRemove: (provided) => ({
+                                                                        ...provided,
+                                                                        color: '#fff', // Remove icon color
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
+                                                                            color: '#000'
+                                                                        }
+                                                                    })
+                                                                }}
                                                             />
                                                         )}
                                                     </Field>
+
+                                                    <ErrorBlock name="affiliations" />
                                                 </div>
+
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="role">
+                                                    <label className="form-label" htmlFor="investors">
                                                         Investors
                                                     </label>
+
                                                     <Field id="investors" name="investors">
                                                         {({ input, meta }) => (
-                                                            <input
-                                                                {...input}
-                                                                type="text"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="investors"
-                                                                placeholder="Investors"
-                                                            />
+                                                            <div className={`form-control ${error(meta)}`}>
+                                                                {tagChildInvestors}
+                                                                {inputVisibleInvestors && (
+                                                                    <Input
+                                                                        type="text"
+                                                                        size="small"
+                                                                        value={inputValueInvestors}
+                                                                        onChange={handleInputChangeInvestors}
+                                                                        onBlur={handleInputConfirmInvestors}
+                                                                        onPressEnter={handleInputConfirmInvestors}
+                                                                        style={{ width: 78, marginRight: 8, marginTop: 5 }}
+                                                                    />
+                                                                )}
+                                                                {!inputVisibleInvestors && (
+                                                                    <Tag onClick={showInputInvestors} className="site-tag-plus">
+                                                                        <i className="ri-add-line" />  Add
+                                                                    </Tag>
+                                                                )}
+                                                                <input
+                                                                    {...input}
+                                                                    type="hidden"
+                                                                    value={investors}
+                                                                    onChange={() => { }}
+                                                                    onBlur={() => input.onBlur(investors)}
+                                                                />
+                                                            </div>
                                                         )}
                                                     </Field>
+
                                                     <ErrorBlock name="investors" />
                                                 </div>
                                                 <div className="col-lg-6 mb-3">
