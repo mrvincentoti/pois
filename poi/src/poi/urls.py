@@ -1,6 +1,6 @@
 from flask import request
 from ..app import app
-from .controllers import create_poi, get_poi, update_poi, delete_poi, restore_poi, list_pois, filter_pois
+from .controllers import create_poi, get_poi, update_poi, delete_poi, restore_poi, list_pois
 
 @app.route("/pois", methods=['GET', 'POST'])
 def poi_list_create():
@@ -20,7 +20,3 @@ def poi_detail_update_delete(poi_id):
 @app.route("/pois/<int:poi_id>/restore", methods=['GET'])
 def poi_restore(poi_id):
     return restore_poi(poi_id)
-
-@app.route("/pois/filter", methods=['GET'])
-def pois_filter():
-    return filter_pois()
