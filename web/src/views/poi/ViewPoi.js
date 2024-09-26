@@ -152,13 +152,13 @@ const ViewPoi = () => {
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												Themesbrand
+												{poiData.gender?.name || 'N/A'}
 											</div>
 										</div>
 									</div>
 								</div>
 								{/* end col */}
-								<div className="col-12 col-lg-auto order-last order-lg-0">
+								{/* <div className="col-12 col-lg-auto order-last order-lg-0">
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
@@ -173,7 +173,7 @@ const ViewPoi = () => {
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> */}
 								{/* end col */}
 							</div>
 							{/* end row */}

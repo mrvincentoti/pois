@@ -381,6 +381,7 @@ def get_crimes_committed_by_poi(poi_id):
 
             # Prepare data for each crime committed
             crime_data = {
+                "id": crime.id,
                 "crime_id": crime.crime_id,
                 "poi_id": crime.poi_id,
                 "poi_name": poi_name,
