@@ -19,7 +19,7 @@ import {
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
-import { EditLink, ViewLink} from '../../components/Buttons';
+import { EditLink, ViewLink } from '../../components/Buttons';
 import { DELETE_POI_API, FET_POIS_API } from '../../services/api';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -265,7 +265,7 @@ const Poi = () => {
 																</div>
 																<div>
 																	<a
-																		href={`/employees/${item.id}/view`}
+																		href={`/pois/${item.id}/view?tab=overview`}
 																		className="text-reset text-underline"
 																	>
 																		<h5 className="fs-14 my-1">

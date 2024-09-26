@@ -1,0 +1,164 @@
+import React, { useEffect, useState } from 'react';
+import { Form, Field } from 'react-final-form';
+import { FORM_ERROR } from 'final-form';
+import Select from 'react-select';
+import ModalWrapper from '../container/ModalWrapper';
+import FormWrapper from '../container/FormWrapper';
+import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
+import { notifyWithIcon, request, createHeaders } from '../services/utilities';
+import {
+	CREATE_MEDIA_API,
+	UPDATE_MEDIA_API,
+	FETCH_MEDIA_API,
+} from '../services/api';
+import { Button, message, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { useNavigate, useParams } from 'react-router-dom';
+
+const ManageMedia = ({ id, closeModal, update, media }) => {
+	const [file, setFile] = useState(null);
+	const [caption, setCaption] = useState(null);
+	const [fileList, setFileList] = useState([]);
+	const [uploading, setUploading] = useState(false);
+	const params = useParams();
+
+	const onSubmit = async values => {
+		try {
+			const formData = new FormData();
+			formData.append('file', fileList[0]);
+			formData.append('caption', values.caption);
+			formData.append('media_type', 'amir');
+
+			const uri = media
+				? UPDATE_MEDIA_API.replace(':id', id)
+				: CREATE_MEDIA_API.replace(':id', id);
+
+			const headers = createHeaders(true);
+			const response = await fetch(uri, {
+				method: 'POST',
+				body: formData,
+				headers: headers,
+			});
+
+			const data = await response.json();
+
+			console.log(data);
+			console.log('data');
+
+			if (data.error) {
+				let errorMessage = data.error;
+				if (data.rows && data.rows.length > 0) {
+					const rowNumbers = data.rows.map(row => row.row_number).join(', ');
+					errorMessage += ' ' + rowNumbers;
+				}
+
+				notifyWithIcon('error', errorMessage);
+			} else {
+				notifyWithIcon('success', ' uploaded successfully');
+			}
+
+			update();
+			closeModal();
+		} catch (e) {
+			console.error(e);
+			return {
+				[FORM_ERROR]: e.message || 'Could not save media',
+			};
+		}
+	};
+
+	const props = {
+		maxCount: 1,
+		onRemove: file => {
+			const index = fileList.indexOf(file);
+			const newFileList = fileList.slice();
+			newFileList.splice(index, 1);
+			setFileList(newFileList);
+		},
+		beforeUpload: file => {
+			console.log('edc');
+			setFileList([file]);
+		},
+		fileList,
+	};
+
+	return (
+		<ModalWrapper
+			title={`${media ? 'Edit' : 'Add'} Media`}
+			closeModal={closeModal}
+		>
+			<Form
+				initialValues={{ caption: media?.caption || '' }}
+				onSubmit={onSubmit}
+				validate={values => {
+					const errors = {};
+					// if (!file) {
+					//     errors.file = 'File is required';
+					// }
+					// if (!selectedMediaType) {
+					//     errors.media_type = 'Media type is required';
+					// }
+					return errors;
+				}}
+				render={({ handleSubmit, submitError, submitting }) => (
+					<FormWrapper onSubmit={handleSubmit} submitting={submitting}>
+						<div className="modal-body">
+							<FormSubmitError error={submitError} />
+							<div className="row g-3">
+								<div className="col-lg-12">
+									<label htmlFor="file" className="form-label">
+										Upload data
+									</label>
+									<br />
+									<Field id="file" name="file">
+										{({ input, meta }) => (
+											<Upload {...props}>
+												<Button icon={<UploadOutlined />}>Select File</Button>
+											</Upload>
+										)}
+									</Field>
+									<ErrorBlock name="file" />
+								</div>
+
+								<div className="col-lg-12">
+									<label htmlFor="caption" className="form-label">
+										Caption
+									</label>
+									<Field id="caption" name="caption">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												placeholder="Enter caption"
+												value={caption}
+												onChange={e => {
+													setCaption(e.target.value);
+													input.onChange(e);
+												}}
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="caption" />
+								</div>
+							</div>
+						</div>
+						<div className="modal-footer">
+							<div className="hstack gap-2 justify-content-end">
+								<button
+									type="submit"
+									className="btn btn-success"
+									disabled={submitting}
+								>
+									{`${media ? 'Update' : 'Add'} Media`}
+								</button>
+							</div>
+						</div>
+					</FormWrapper>
+				)}
+			/>
+		</ModalWrapper>
+	);
+};
+
+export default ManageMedia;

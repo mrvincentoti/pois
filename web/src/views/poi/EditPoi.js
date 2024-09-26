@@ -59,6 +59,22 @@ const EditPoi = () => {
 	const [tags, setTags] = useState([]);
 	const [inputVisible, setInputVisible] = useState(false);
 	const [inputValue, setInputValue] = useState('');
+	const [fileList, setFileList] = useState([]);
+
+	const props = {
+		maxCount: 1,
+		beforeUpload: file => {
+			console.log('jhwde');
+		},
+		onRemove: file => {
+			const index = fileList.indexOf(file);
+			const newFileList = fileList.slice();
+			newFileList.splice(index, 1);
+			setFileList(newFileList);
+		},
+
+		fileList,
+	};
 
 	const fetchApis = useCallback(async () => {
 		try {
@@ -178,7 +194,8 @@ const EditPoi = () => {
 	// };
 
 	const onSubmit = async values => {
-		console.log(values);
+		console.log(fileList);
+		return;
 
 		// if (employeeStatus.id) {
 		// 	values.employment_status = employeeStatus.id;
@@ -198,7 +215,7 @@ const EditPoi = () => {
 					state_id: values.state_id?.id || null,
 					affiliation_id: values.affiliation?.id || null,
 					marital_status: values.marital_status?.id || null,
-					picture: imageUrl || null,
+					picture: fileList || null,
 					country_id: values.country_id?.id || null,
 					gender: undefined,
 					// affiliation: undefined,
@@ -656,6 +673,7 @@ const EditPoi = () => {
 										<div className="card-body">
 											<div className="mb-3 text-center">
 												<UploadButton
+													{...props}
 													imageUrl={imageUrl}
 													changeImage={data => changeImage(data)}
 													style={{ width: '200px', height: '200px' }}

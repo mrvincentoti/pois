@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditCrime from './NewEditCrime';
+import NoResult from '../../components/NoResult';
 import ManageCrimes from '../../modals/ManageCrimes';
 import { GET_CRIMES_COMMITTED_API } from '../../services/api';
 import {
@@ -149,6 +150,11 @@ const CrimeCommitted = () => {
 								))}
 							</div>
 							{/* end row */}
+							{crimesData.length === 0 && (
+								<div className="noresult py-5">
+									<NoResult title="Media" />
+								</div>
+							)}
 						</div>
 					</div>
 				) : (

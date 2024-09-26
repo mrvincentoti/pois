@@ -51,6 +51,7 @@ const NewPoi = () => {
 	const [dateOfBirth, setDateOfBirth] = useState('');
 	const [imageUrl, setImageUrl] = useState();
 	const [loading, setLoading] = useState(false);
+	const [fileList, setFileList] = useState([]);
 
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
@@ -99,6 +100,18 @@ const NewPoi = () => {
 		setLanguage(newTags);
 		setEditInputIndex(-1);
 		setEditInputValue('');
+	};
+
+	const props = {
+		maxCount: 1,
+		onRemove: file => {
+			const index = fileList.indexOf(file);
+			const newFileList = fileList.slice();
+			newFileList.splice(index, 1);
+			setFileList(newFileList);
+		},
+
+		fileList,
 	};
 
 	const fetchApis = useCallback(async () => {
@@ -189,6 +202,7 @@ const NewPoi = () => {
 
 	const onSubmit = async values => {
 		console.log(imageUrl);
+		return;
 		try {
 			const config = {
 				method: 'POST',
@@ -691,6 +705,7 @@ const NewPoi = () => {
 										<div className="card-body">
 											<div className="mb-3 text-center">
 												<UploadButton
+													{...props}
 													imageUrl={imageUrl}
 													changeImage={data => changeImage(data)}
 													style={{ width: '200px', height: '200px' }}
