@@ -36,6 +36,7 @@ import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
 import MediaAndDocument from './MediaAndDocument';
 import Activities from './Activities';
+import ArmsRecovered from './ArmsRecovered';
 
 const ViewPoi = () => {
 	const employeePrintRef = useRef();
@@ -161,14 +162,14 @@ const ViewPoi = () => {
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">24.3K</h4>
-												<p className="fs-14 mb-0">Followers</p>
+												<h4 className="text-white mb-1">11</h4>
+												<p className="fs-14 mb-0">Crime</p>
 											</div>
 										</div>
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">1.3K</h4>
-												<p className="fs-14 mb-0">Following</p>
+												<h4 className="text-white mb-1">120</h4>
+												<p className="fs-14 mb-0">Arms</p>
 											</div>
 										</div>
 									</div>
@@ -225,6 +226,18 @@ const ViewPoi = () => {
 											</li>
 											<li className="nav-item">
 												<a
+													className={`nav-link fs-14 ${activeTab === 'recovered' ? 'active' : ''}`}
+													onClick={() => handleTabClick('recovered')}
+													role="tab"
+												>
+													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
+													<span className="d-none d-md-inline-block">
+														Arms Recovered
+													</span>
+												</a>
+											</li>
+											<li className="nav-item">
+												<a
 													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
 													onClick={() => handleTabClick('activities')}
 													role="tab"
@@ -258,6 +271,7 @@ const ViewPoi = () => {
 													{activeTab === 'crime' && <CrimeCommitted />}
 													{activeTab === 'media' && <MediaAndDocument />}
 													{activeTab === 'activities' && <Activities />}
+													{activeTab === 'recovered' && <ArmsRecovered />}
 												</div>
 											</div>
 										</div>

@@ -25,24 +25,26 @@ class ArmsRecovered(db.Model):
             'location': self.location,
             'comments': self.comments,
             'recovery_date': self.recovery_date,
+            'number_recovered': self.number_recovered,
             'created_by': self.created_by,
             'created_at': self.created_at,
             'deleted_at': self.deleted_at
         }
 
-    def __init__(self, poi_id=None, arm_id=None, location=None, comments=None, recovery_date=None, created_by=None,
+    def __init__(self, poi_id=None, arm_id=None, location=None, comments=None, recovery_date=None, created_by=None,number_recovered=None,
                 created_at=None, deleted_at=None):
         self.poi_id = poi_id
         self.arm_id = arm_id
         self.location = location
         self.comments = comments
         self.recovery_date = recovery_date
+        self.number_recovered = number_recovered
         self.created_by = created_by
         self.created_at = created_at
         self.deleted_at = deleted_at
         
 
-    def update(self, poi_id=None, arm_id=None, location=None, comments=None, recovery_date=None, created_by=None,
+    def update(self, poi_id=None, arm_id=None, location=None, comments=None, recovery_date=None, number_recovered=None, created_by=None,
                 created_at=None, deleted_at=None):
         if poi_id is not None:
             self.poi_id = poi_id
@@ -54,6 +56,8 @@ class ArmsRecovered(db.Model):
             self.comments = comments
         if recovery_date is not None:
             self.recovery_date = recovery_date
+        if number_recovered is not None:
+            self.number_recovered = number_recovered
         if created_by is not None:
             self.created_by = created_by
         if created_at is not None:
