@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 
 import logoSm from '../assets/images/logo-sm.png';
+import logoSmNew from '../assets/images/logo/manforticon.svg';
+import logoSmLarge from '../assets/images/logo/Manfort@4x.png';
 // import logoLight from '../assets/images/logo-light.png';
 import VerticalSidebar from './VerticalSidebar';
 
@@ -41,10 +43,10 @@ const Sidebar = ({ layoutType }) => {
 				<div className="navbar-brand-box">
 					<Link to="/" className="logo logo-dark">
 						<span className="logo-sm">
-							<img src={logoSm} alt="" height="22" />
+							<img src={logoSmNew} alt="" height="22" />
 						</span>
 						<span className="logo-lg">
-							<img src={logoSm} alt="" height="35" />
+							<img src={logoSmLarge} alt="" height="35" />
 						</span>
 					</Link>
 

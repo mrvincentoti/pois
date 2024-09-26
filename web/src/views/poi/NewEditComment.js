@@ -1,26 +1,32 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Modal } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import Select from 'react-select';
+import { CREATE_ACTIVITIES_API, UPDATE_ACTIVITIES_API } from '../../services/api';
+import { notifyWithIcon, request } from '../../services/utilities';
+import ModalWrapper from '../../container/ModalWrapper';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import ModalWrapper from '../../container/ModalWrapper';
-import { formatPoiName, notifyWithIcon, request } from '../../services/utilities';
 import { FORM_ERROR } from 'final-form';
 
-import { CREATE_ACTIVITIES_API, UPDATE_ACTIVITIES_API } from '../../services/api';
-
-const NewEditComment = ({ closeModal, data, update}) => {
-    const [loaded, setLoaded] = useState(false);
+const NewEditComment = ({ closeModal, data, update }) => {
     const [activityDate, setActivityDate] = useState(null);
-    const [comment, setComment] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [comment, setComment] = useState('');
     const params = useParams();
 
-    const onSubmit = async values => {
+    // Populate fields when editing an existing activity
+    useEffect(() => {
+        if (data) {
+            setActivityDate(moment(data.activity_date).toDate()); // Convert to Date object
+            setComment(data.comment);
+        } else {
+            setActivityDate(null);
+            setComment('');
+        }
+    }, [data]);
+
+    const onSubmit = async (values, form) => {
         try {
             const config = {
                 method: data ? 'PUT' : 'POST',
@@ -28,50 +34,44 @@ const NewEditComment = ({ closeModal, data, update}) => {
                     ...values,
                     poi_id: params.id,
                     comment: values.comment || null,
-                    deleted_at: undefined,
                 },
             };
-            const uri = CREATE_ACTIVITIES_API;
+            const uri = data ? `${UPDATE_ACTIVITIES_API}/${data.id}` : CREATE_ACTIVITIES_API;
             const rs = await request(uri, config);
             notifyWithIcon('success', rs.message);
-            update();
-            closeModal();
+            Object.keys(values).forEach(key => {
+                form.change(key, undefined);
+            });
+            update(); // Call parent function to update the activity list
+            closeModal(); // Close the modal after success
         } catch (e) {
-            console.error(e); // This logs the actual error object in the console
-            // Check if it's an object, then extract a meaningful message
-            const errorMessage = e.message || 'Something went wrong';
+            console.error(e);
             return {
-                [FORM_ERROR]: e.message || 'could not create crime',
+                [FORM_ERROR]: e.message || 'Something went wrong',
             };
         }
     };
 
     return (
         <ModalWrapper
-            title={`${data ? 'Add' : 'Edit'} Activity`}
+            title={`${data ? 'Edit' : 'Add'} Activity`}
             closeModal={closeModal}
         >
             <Form
-                initialValues={{ ...data, poi_id: data?.poi_id }}
+                initialValues={{
+                    activity_date: data ? moment(data.activity_date).format('YYYY-MM-DD') : '',
+                    comment: data ? data.comment : '',
+                    poi_id: params.id,
+                }}
                 onSubmit={onSubmit}
                 validate={values => {
                     const errors = {};
-                    // if (!values.employee_id) {
-                    // 	errors.employee_id = 'select employee';
-                    // }
-                    // if (!values.award_id) {
-                    // 	errors.award_id = 'select award';
-                    // }
-                    // if (values.type === 2 && !values.implication_id) {
-                    // 	errors.implication_id = 'select implication';
-                    // }
-                    // if (!values.reason) {
-                    // 	errors.reason = 'select reason';
-                    // }
-                    // if (!values.date_given) {
-                    // 	errors.date_given = 'select date_given';
-                    // }
-
+                    if (!values.activity_date) {
+                        errors.activity_date = 'Activity date is required';
+                    }
+                    if (!values.comment) {
+                        errors.comment = 'Comment is required';
+                    }
                     return errors;
                 }}
                 render={({ handleSubmit, submitError, submitting }) => (
@@ -89,7 +89,6 @@ const NewEditComment = ({ closeModal, data, update}) => {
                                                 className={`form-control ${error(meta)}`}
                                                 placeholder="Select date of activity"
                                                 value={activityDate}
-                                                defaultValue={activityDate}
                                                 onChange={([date]) => {
                                                     input.onChange(moment(date).format('YYYY-MM-DD'));
                                                     setActivityDate(date);
@@ -108,9 +107,7 @@ const NewEditComment = ({ closeModal, data, update}) => {
                                         {({ input, meta }) => (
                                             <textarea
                                                 {...input}
-                                                type="text"
                                                 className={`form-control ${error(meta)}`}
-                                                id="comment"
                                                 placeholder="Type your comment here"
                                             />
                                         )}

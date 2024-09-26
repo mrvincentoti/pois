@@ -123,7 +123,7 @@ const Activities = () => {
                                                             </div> */}
                                                             {/* Edit and Delete buttons */}
                                                             <div className="mt-3 d-flex justify-content-end gap-2">
-                                                                <button className="btn btn-sm btn-outline-success" onClick={() => showModal('edit')}>Edit</button>
+                                                                <button className="btn btn-sm btn-outline-success" onClick={() => editActivity('edit')}>Edit</button>
                                                             </div>
                                                         </div>
                                                     </div>
