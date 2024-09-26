@@ -38,8 +38,8 @@ const Users = () => {
 	const query = useQuery();
 
 	const fetchMedia = useCallback(async (per_page, page, q) => {
-		const url = `${FETCH_MEDIA_API}?per_page=${per_page}&page=${page}&q=${q}`;
 		try {
+			const url = `${FETCH_MEDIA_API}?per_page=${per_page}&page=${page}&q=${q}`;
 			const rs = await request(url.replace(':id', params.id));
 			const { media, message, ...rest } = rs;
 
@@ -103,8 +103,8 @@ const Users = () => {
 		try {
 			setWorking(true);
 			const config = { method: 'DELETE' };
-			console.log(item.id);
-			const uri = DELETE_MEDIA_API.replaceAll(':id', item.id);
+			console.log(item);
+			const uri = DELETE_MEDIA_API.replaceAll(':id', item.media_id);
 			const rs = await request(uri, config);
 			refreshTable();
 			notifyWithIcon('success', rs.message);
@@ -120,63 +120,63 @@ const Users = () => {
 	}, [meta.per_page, meta.current_page]);
 
 	return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-lg-12">
-                    <div className="card">
-                        <TitleSearchBar
-                            title="Media"
-                            onClick={() => addMedia()}
-                            queryLimit={queryLimit}
-                            search={search}
-                            searchTerm={searchTerm}
-                            onChangeSearch={e => setSearchTerm(e.target.value)}
-                            hasCreateBtn={true}
-                            createBtnTitle="Add Media"
-                        />
-                        <div className="card-body">
-                            <TableWrapper
-                                className="table-responsive table-card"
-                                fetching={fetching}
-                                working={working}
-                            >
-                                <table className="table table-borderless align-middle mb-0">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th scope="col">File Name</th>
-                                            <th scope="col">Type</th>
-                                            <th scope="col">Size</th>
-                                            <th scope="col">Upload Date</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="list">
-                                        {list?.map((item, i) => {
-                                            return (
-                                                <tr key={item.id}>
-                                                    {/* {params.id} */}
-                                                    <td>
-                                                        <div className="d-flex align-items-center">
-                                                            <div className="ms-3 flex-grow-1">
-                                                                <h6 className="fs-15 mb-0">
-                                                                    <a
-                                                                        href={item.media_url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                    >
-                                                                        {item.media_url}
-                                                                    </a>
-                                                                </h6>
-                                                            </div>
-                                                        </div>
-                                                    </td>
+		<div className="container-fluid">
+			<div className="row">
+				<div className="col-lg-12">
+					<div className="card">
+						<TitleSearchBar
+							title="Media"
+							onClick={() => addMedia()}
+							queryLimit={queryLimit}
+							search={search}
+							searchTerm={searchTerm}
+							onChangeSearch={e => setSearchTerm(e.target.value)}
+							hasCreateBtn={true}
+							createBtnTitle="Add Media"
+						/>
+						<div className="card-body">
+							<TableWrapper
+								className="table-responsive table-card"
+								fetching={fetching}
+								working={working}
+							>
+								<table className="table table-borderless align-middle mb-0">
+									<thead className="table-light">
+										<tr>
+											<th scope="col">File Name</th>
+											<th scope="col">Type</th>
+											<th scope="col">Size</th>
+											<th scope="col">Upload Date</th>
+											<th scope="col">Action</th>
+										</tr>
+									</thead>
+									<tbody className="list">
+										{list?.map((item, i) => {
+											return (
+												<tr key={i}>
+													{/* {params.id} */}
+													<td>
+														<div className="d-flex align-items-center">
+															<div className="ms-3 flex-grow-1">
+																<h6 className="fs-15 mb-0">
+																	<a
+																		href={item.media_url}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																	>
+																		{item.media_url}
+																	</a>
+																</h6>
+															</div>
+														</div>
+													</td>
 
-                                                    <td>{item.media_type}</td>
-                                                    <td>{'--'}</td>
-                                                    <td>{item.created_at || '--'}</td>
-                                                    <td>
-                                                        {/* <DocumentMediaDropDown routes={routes} /> */}
-                                                        {/* <div class="flex-shrink-0" onClick={() => showModal('edit')}>
+													<td>{item.media_type}</td>
+													<td>{'--'}</td>
+													<td>{item.created_at || '--'}</td>
+													<td>
+														{/* <DocumentMediaDropDown routes={routes} /> */}
+														{/* <div class="flex-shrink-0" onClick={() => showModal('edit')}>
                                                     <a href="javascript:void(0)">
                                                         <i className="ri-pencil-fill me-1 align-bottom" style={{ fontSize: '20px' }}></i>
                                                     </a>
@@ -187,45 +187,45 @@ const Users = () => {
                                                         <i className="ri-delete-bin-line me-2 align-middle" style={{ fontSize: '20px', color: '#f06548' }}></i>
                                                     </a>
                                                 </div> */}
-                                                        <div className="hstack gap-3 flex-wrap text-end">
-                                                            {/* <EditButton
+														<div className="hstack gap-3 flex-wrap text-end">
+															{/* <EditButton
 															onClick={() => editMedia(item)}
 														/> */}
-                                                            <DeleteButton
-                                                                onClick={() => confirmRemove(item)}
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                                {list.length === 0 && (
-                                    <div className="noresult py-5">
-                                        <NoResult title="Media" />
-                                    </div>
-                                )}
-                            </TableWrapper>
-                            <div className="d-flex justify-content-end mt-3">
-                                <AppPagination meta={meta} />
-                            </div>
-                        </div>
-                    </div>
+															<DeleteButton
+																onClick={() => confirmRemove(item)}
+															/>
+														</div>
+													</td>
+												</tr>
+											);
+										})}
+									</tbody>
+								</table>
+								{list.length === 0 && (
+									<div className="noresult py-5">
+										<NoResult title="Media" />
+									</div>
+								)}
+							</TableWrapper>
+							<div className="d-flex justify-content-end mt-3">
+								<AppPagination meta={meta} />
+							</div>
+						</div>
+					</div>
 
-                    {showModal && (
-                        <ManageMedia
-                            id={params.id}
-                            selectedMedia={selectedMedia}
-                            closeModal={() => closeModal()}
-                            update={async () => {
-                                await refreshTable().then(_ => setWorking(false));
-                            }}
-                        />
-                    )}
-                </div>
-            </div>
-        </div>
+					{showModal && (
+						<ManageMedia
+							id={params.id}
+							selectedMedia={selectedMedia}
+							closeModal={() => closeModal()}
+							update={async () => {
+								await refreshTable().then(_ => setWorking(false));
+							}}
+						/>
+					)}
+				</div>
+			</div>
+		</div>
 	);
 };
 

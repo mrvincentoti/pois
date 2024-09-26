@@ -37,7 +37,8 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 			if (crimesCommitted) {
 				setCrime(crimesCommitted.crime);
 				setArrestingBody(crimesCommitted.arresting_body);
-				setPoi(crimesCommitted.poi);
+				setPoi({ id: crimesCommitted.poi_id, name: crimesCommitted.poi_name });
+				setCrimeDate(new Date(crimesCommitted.crime_date));
 			}
 			loadCrimes();
 			loadArrestingBodies();
@@ -76,10 +77,7 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 				},
 			};
 			const uri = crimesCommitted
-				? UPDATE_CRIMES_COMMITTED_API.replace(
-						':poi_id',
-						crimesCommitted.poi_id
-					).replace(':id', crimesCommitted.id)
+				? UPDATE_CRIMES_COMMITTED_API.replace(':id', crimesCommitted.id)
 				: CREATE_CRIMES_COMMITTED_API;
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
@@ -138,7 +136,9 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 											<AsyncSelect
 												isClearable
 												getOptionValue={option => option.id}
-												getOptionLabel={option => formatPoiName(option)}
+												getOptionLabel={option =>
+													option.name || formatPoiName(option)
+												}
 												defaultOptions
 												value={poi}
 												className={error(meta)}
