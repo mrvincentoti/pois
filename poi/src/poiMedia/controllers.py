@@ -2,6 +2,7 @@ import os
 import uuid
 from .. import db
 from .models import PoiMedia
+from ..poi.models import Poi
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
@@ -155,8 +156,8 @@ def add_poi_media(poi_id):
 @custom_jwt_required
 def get_poi_media(poi_id):
     try:
-        # Query the database for media associated with the given poi_id
-        media_records = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None).all()
+        # Query the database for media associated with the given poi_id, ordered by created_at descending
+        media_records = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None).order_by(PoiMedia.created_at.desc()).all()
 
         # Check if any media records were found
         if not media_records:
@@ -165,10 +166,18 @@ def get_poi_media(poi_id):
         # Prepare the list of media to return
         media_list = []
         for media in media_records:
+            poi = Poi.query.filter_by(id=media.poi_id).first()
+        
+            if poi:
+                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
+                
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
                 "media_url": media.media_url,
+                "media_caption": media.media_caption or 'No caption',
+                "poi_id": poi.id,
+                "poi_name": poi_name,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None
             }
