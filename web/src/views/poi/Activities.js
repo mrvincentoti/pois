@@ -6,44 +6,30 @@ import NewEditComment from './NewEditComment';
 import { FETCH_ACTIVITIES_API } from '../../services/api';
 import {
     antIconSync,
-    formatDate,
-    formatDateWord,
-    formatPoiName,
-    formatGetInitialsName,
-    notifyWithIcon,
-    request,
     formatActivitiesDate,
     timeAgo,
-    getActivitiesInitialLetter
+    getActivitiesInitialLetter,
+    notifyWithIcon,
+    request
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
-
-const routes = {
-	view: '/view/123',
-	download: '/download/123',
-	delete: '/delete/123',
-};
 
 const Activities = () => {
     const [loaded, setLoaded] = useState(false);
     const [activitiesData, setActivitiesData] = useState(null);
-
     const [showModal, setShowModal] = useState(false);
-    const [working, setWorking] = useState(false);
-    const [activities, setActivities] = useState(null);
+    const [modalType, setModalType] = useState('add'); // new state for modal type
+    const [currentActivity, setCurrentActivity] = useState(null); // state to hold current activity data
 
     const navigate = useNavigate();
     const params = useParams();
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalData, setModalData] = useState('');
-    const [modalType, setModalType] = useState('');
 
     const fetchActivitiesDetails = useCallback(async Id => {
         try {
             const rs = await request(FETCH_ACTIVITIES_API.replace(':id', Id));
             setActivitiesData(rs.activities);
         } catch (error) {
+            notifyWithIcon('error', error.message);
             throw error;
         }
     }, []);
@@ -57,31 +43,31 @@ const Activities = () => {
                     navigate('/not-found');
                 });
         }
-    }, [fetchActivitiesDetails, loaded, navigate, params.id, activitiesData]);
+    }, [fetchActivitiesDetails, loaded, navigate, params.id]);
 
-    const handleEditClick = id => {
-        navigate(`/pois/${id}/edit`);
-    };
-
+    // Function to add a new activity
     const addActivity = () => {
         document.body.classList.add('modal-open');
+        setCurrentActivity(null); // No data means it's for adding
+        setModalType('add');
         setShowModal(true);
     };
 
-    const editActivity = item => {
+    // Function to edit an existing activity
+    const editActivity = (item) => {
         document.body.classList.add('modal-open');
-        setActivities(item);
+        setCurrentActivity(item); // Pass the selected activity data for editing
+        setModalType('edit');
         setShowModal(true);
     };
 
     const closeModal = () => {
         setShowModal(false);
-        setActivities(null);
+        setCurrentActivity(null); // Reset the current activity data
         document.body.classList.remove('modal-open');
     };
 
     const refreshTable = async () => {
-        setWorking(true);
         await fetchActivitiesDetails(params.id);
     };
 
@@ -89,19 +75,19 @@ const Activities = () => {
         <>
             <div className="card">
                 <div className="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <h5 class="card-title flex-grow-1 mb-0">Activities</h5>
-                        <div class="flex-shrink-0" onClick={() => addActivity('add')}>
-                            <label htmlFor="formFile" class="btn btn-success">
-                                <i class="ri-add-fill me-1 align-bottom"></i> Add
+                    <div className="d-flex align-items-center mb-2">
+                        <h5 className="card-title flex-grow-1 mb-0">Activities</h5>
+                        <div className="flex-shrink-0" onClick={addActivity}>
+                            <label htmlFor="formFile" className="btn btn-success">
+                                <i className="ri-add-fill me-1 align-bottom"></i> Add
                             </label>
                         </div>
                     </div>
 
-                    <div class="row" style={{ background: '#f3f3f9' }}>
-                        <div class="col-lg-12">
+                    <div className="row" style={{ background: '#f3f3f9' }}>
+                        <div className="col-lg-12">
                             <div>
-                                <div class="timeline">
+                                <div className="timeline">
                                     {loaded && activitiesData ? (
                                         activitiesData.map((item, i) => (
                                             <div className={`timeline-item ${i % 2 === 0 ? 'left' : 'right'}`} key={i}>
@@ -115,23 +101,19 @@ const Activities = () => {
                                                             </div>
                                                         </div>
                                                         <div className="flex-grow-1 ms-3">
-                                                            <h5 className="fs-15">{item.created_by_name} <small className="text-muted fs-13 fw-normal">- {timeAgo(item.activity_date) }</small></h5>
-                                                            <p className="text-muted mb-2">{ item.comment}</p>
-                                                            {/* <div className="hstack gap-2">
-                                                                <a className="btn btn-sm btn-light"><span className="me-1">&#128293;</span> 19</a>
-                                                                <a className="btn btn-sm btn-light"><span className="me-1">&#129321;</span> 22</a>
-                                                            </div> */}
-                                                            {/* Edit and Delete buttons */}
+                                                            <h5 className="fs-15">
+                                                                {item.created_by_name} <small className="text-muted fs-13 fw-normal">- {timeAgo(item.activity_date)}</small>
+                                                            </h5>
+                                                            <p className="text-muted mb-2">{item.comment}</p>
                                                             <div className="mt-3 d-flex justify-content-end gap-2">
-                                                                <button className="btn btn-sm btn-outline-success" onClick={() => editActivity('edit')}>Edit</button>
+                                                                <button className="btn btn-sm btn-outline-success" onClick={() => editActivity(item)}>Edit</button>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         ))
-
-                                    ): (
+                                    ) : (
                                         <div>
                                             <Spin spinning={true} indicator={antIconSync}>
                                                 <div className="fetching" />
@@ -144,11 +126,13 @@ const Activities = () => {
                     </div>
                 </div>
             </div>
+
+            {/* NewEditComment modal for both adding and editing */}
             <NewEditComment
-                closeModal={() => closeModal()}
-                update={async () => {
-                    await refreshTable().then(_ => setWorking(false));
-                }}
+                closeModal={closeModal}
+                data={currentActivity} // Pass current activity for editing
+                update={refreshTable}
+                modalType={modalType} // Pass modal type (either 'add' or 'edit')
             />
         </>
     );

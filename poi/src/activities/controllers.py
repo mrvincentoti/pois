@@ -319,7 +319,8 @@ def get_activities_by_poi(poi_id):
                 "comment": activity.comment,
                 "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
                 "created_by_id": activity.created_by,
-                "created_by_name": created_by_name
+                "created_by_name": created_by_name,
+                "id":activity.id
             }
             activity_list.append(activity_data)
 

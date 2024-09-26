@@ -42,8 +42,8 @@ const NewEditComment = ({ closeModal, data, update }) => {
             Object.keys(values).forEach(key => {
                 form.change(key, undefined);
             });
-            update(); // Call parent function to update the activity list
-            closeModal(); // Close the modal after success
+            update();
+            closeModal();
         } catch (e) {
             console.error(e);
             return {
