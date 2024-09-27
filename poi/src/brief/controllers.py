@@ -221,7 +221,7 @@ def get_brief(brief_id):
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "view_brief",
-            "auditable_id": None,
+            "auditable_id": brief_id,
             "old_values": None,
             "new_values": json.dumps({
                 "title": brief.title,
@@ -249,9 +249,9 @@ def get_brief(brief_id):
 
 
 @custom_jwt_required
-def update_brief(org_id):
+def update_brief(brief_id):
     data = request.form
-    brief = Brief.query.get(org_id)
+    brief = Brief.query.get(brief_id)
     response = {}
 
     try:
@@ -341,7 +341,7 @@ def update_brief(org_id):
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
                 "event": "update_brief_not_found",
-                "auditable_id": org_id,
+                "auditable_id": brief_id,
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
@@ -363,7 +363,7 @@ def update_brief(org_id):
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
             "event": "update_brief_error",
-            "auditable_id": org_id,
+            "auditable_id": brief_id,
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
@@ -377,10 +377,10 @@ def update_brief(org_id):
 
 
 @custom_jwt_required
-def delete_brief(org_id):
+def delete_brief(brief_id):
     response = {}
     try:
-        brief = Brief.query.get_or_404(org_id)
+        brief = Brief.query.get_or_404(brief_id)
         brief.soft_delete() 
         db.session.commit()
 
@@ -413,7 +413,7 @@ def delete_brief(org_id):
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "delete_brief",
-            "auditable_id": None,
+            "auditable_id": brief.id,
             "old_values": json.dumps(brief.to_dict(), default=str), 
             "new_values": None,
             "url": request.url,
@@ -437,10 +437,10 @@ def delete_brief(org_id):
 
 
 @custom_jwt_required
-def restore_brief(org_id):
+def restore_brief(brief_id):
     response = {}
     try:
-        brief = Brief.query.get_or_404(org_id)
+        brief = Brief.query.get_or_404(brief_id)
 
         if brief.deleted_at is None:
             return jsonify({
@@ -466,7 +466,7 @@ def restore_brief(org_id):
             "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
             "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "restore_brief",
-            "auditable_id": None,
+            "auditable_id": brief.id,
             "old_values": json.dumps(brief.to_dict(), default=str), 
             "new_values": None,
             "url": request.url,

@@ -95,14 +95,15 @@ def create_organisation():
         # Audit logging
         current_time = dt.utcnow()
         audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-            "user_email": g.user["email"] if hasattr(g, "user") else None,
-            "event": "add_organisation",
-            "auditable_id": organisation.id,
-            "old_values": None,
-            "new_values": json.dumps({
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "add_organisation",
+                "auditable_id": organisation.id,
+                "old_values": None,
+                "new_values": json.dumps({
                 "ref_numb": organisation.ref_numb,
                 "org_name": organisation.org_name,
                 "date_of_registration": date_of_registration_str,
@@ -126,14 +127,14 @@ def create_organisation():
                 "source_id": organisation.source_id,
                 "remark": organisation.remark,
                 "picture": organisation.picture,
-            }),
-            "url": request.url,
-            "ip_address": request.remote_addr,
-            "user_agent": request.user_agent.string,
-            "tags": "Organisation, Create",
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
-        }
+                }),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Organisation, Add",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
 
         save_audit_data(audit_data)
 
@@ -300,15 +301,24 @@ def get_organisation(organisation_id):
         # Audit logging
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "view_organisation",
-            "auditable_id": organisation.id,
+            "auditable_id": organisation_id,
             "old_values": None,
-            "new_values": json.dumps({"org_id": organisation.id}),
+            "new_values": json.dumps({
+                "organisation_id": organisation.id,
+                "category_id": organisation.category_id,
+                "source_id": organisation.source_id
+            }),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
             "tags": "Organisation, View",
             "created_at": dt.utcnow().isoformat(),
+            "updated_at": dt.utcnow().isoformat(),
         }
         save_audit_data(audit_data)
 
@@ -497,10 +507,14 @@ def delete_organisation(org_id):
             'status_code': 200,
             'message': 'Organisation deleted successfully'
         }
-
+        
         # Audit logging
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "delete_organisation",
             "auditable_id": organisation.id,
             "old_values": json.dumps(organisation.to_dict(), default=str), 
@@ -509,7 +523,8 @@ def delete_organisation(org_id):
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
             "tags": "Organisation, Delete",
-            "created_at": dt.utcnow().isoformat(), 
+            "created_at": dt.utcnow().isoformat(),
+            "updated_at": dt.utcnow().isoformat(),
         }
         save_audit_data(audit_data)
 
@@ -549,15 +564,20 @@ def restore_organisation(org_id):
         # Audit logging
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
             "event": "restore_organisation",
             "auditable_id": organisation.id,
-            "old_values": json.dumps({"deleted_at": dt.utcnow().isoformat()}),
-            "new_values": json.dumps(organisation.to_dict(), default=str), 
+            "old_values": json.dumps(organisation.to_dict(), default=str), 
+            "new_values": None,
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
             "tags": "Organisation, Restore",
             "created_at": dt.utcnow().isoformat(),
+            "updated_at": dt.utcnow().isoformat(),
         }
         save_audit_data(audit_data)
 
