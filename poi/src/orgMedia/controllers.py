@@ -5,7 +5,7 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -102,7 +102,7 @@ def add_org_media(org_id):
         # Generate a new filename using UUID
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
-        media_type = request.form.get('media_type')
+        media_type = get_media_type_from_extension(new_filename)
         media_caption = request.form.get('media_caption')
 
         # Upload the file to MinIO

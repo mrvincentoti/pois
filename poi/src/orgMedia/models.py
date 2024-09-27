@@ -26,7 +26,7 @@ class OrgMedia(db.Model):
         self.created_by = created_by
         self.created_at = created_at
 
-    def update(self, media=None, media_url=None, media_caption=None, org_id=None, deleted_at=None, created_by=None):
+    def update(self, media=None, media_type=None,media_url=None, media_caption=None, org_id=None, deleted_at=None, created_by=None):
         if media_type is not None:
             self.media_type = media_type
         if media_url is not None:
