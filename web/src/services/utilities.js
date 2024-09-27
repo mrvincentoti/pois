@@ -87,6 +87,13 @@ export async function request(uri, { body, ...customConfig } = {}) {
 		config.body = customConfig.uploader ? body : JSON.stringify(body);
 	}
 
+	// Do not stringify FormData
+	if (body && !(body instanceof FormData)) {
+		config.body = JSON.stringify(body);
+	} else {
+		config.body = body;
+	}
+
 	const response = await fetch(uri, config);
 	const result = await checkStatus(response);
 
