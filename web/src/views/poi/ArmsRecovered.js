@@ -89,12 +89,6 @@ const ArmsRecovered = () => {
         document.body.classList.remove('modal-open');
     };
 
-    const refreshTable = async () => {
-        setWorking(true);
-        const _limit = Number(query.get('entries_per_page') || limit);
-        await fetchArmsRecovered(_limit, 1, '');
-    };
-
     const confirmRemove = item => {
         confirmAction(doRemove, item, 'You want to delete this media');
     };
@@ -102,10 +96,9 @@ const ArmsRecovered = () => {
         try {
             setWorking(true);
             const config = { method: 'DELETE' };
-            console.log(item);
             const uri = DELETE_MEDIA_API.replaceAll(':id', item.media_id);
             const rs = await request(uri, config);
-            refreshTable();
+            setFetching(true)
             notifyWithIcon('success', rs.message);
             setWorking(false);
         } catch (e) {
@@ -199,7 +192,7 @@ const ArmsRecovered = () => {
                         <NewEditArms
                             closeModal={closeModal}
                             data={currentArm}
-                            update={refreshTable}
+                            update={() => setFetching(true)}
                             modalType={modalType}
                         />
                     )}

@@ -161,72 +161,79 @@ def add_poi_media(poi_id):
 @custom_jwt_required
 def get_poi_media(poi_id):
     try:
-        # Query the database for media associated with the given poi_id, ordered by created_at descending
-        media_records = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None).order_by(PoiMedia.created_at.desc()).all()
+        # Get pagination parameters from the request (default values: page=1, per_page=10)
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        # Query the database for media associated with the given poi_id, ordered by created_at descending, and paginate
+        media_paginated = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None)\
+            .order_by(PoiMedia.created_at.desc())\
+            .paginate(page=page, per_page=per_page, error_out=False)
 
         # Check if any media records were found
-        if not media_records:
+        if not media_paginated.items:
             return jsonify({"message": "No media found for the given POI"}), 404
 
         # Prepare the list of media to return
         media_list = []
-        for media in media_records:
+        for media in media_paginated.items:
             poi = Poi.query.filter_by(id=media.poi_id).first()
-        
-            if poi:
-                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
-                
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
+
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
                 "media_url": media.media_url,
                 "media_caption": media.media_caption or 'No caption',
-                "poi_id": poi.id,
+                "poi_id": poi.id if poi else None,
                 "poi_name": poi_name,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None
             }
             media_list.append(media_data)
 
+        # Prepare the paginated response
+        response = {
+            'total': media_paginated.total,
+            'pages': media_paginated.pages,
+            'current_page': media_paginated.page,
+            'per_page': media_paginated.per_page,
+            'media': media_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
         # Log audit event
-        try:
-            current_time = datetime.utcnow()
-            audit_data = {
-                "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-                "user_email": g.user["email"] if hasattr(g, "user") else None,
-                "event": "get_poi_media",
-                "auditable_id": poi_id,
-                "old_values": None,
-                "new_values": json.dumps({
-                    "media_records_count": len(media_list),
-                    "media_details": media_list
-                }),
-                "url": request.url,
-                "ip_address": request.remote_addr,
-                "user_agent": request.user_agent.string,
-                "tags": "Media, Retrieve",
-                "created_at": current_time.isoformat(),
-                "updated_at": current_time.isoformat(),
-            }
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "get_poi_media",
+            "auditable_id": poi_id,
+            "old_values": None,
+            "new_values": json.dumps({
+                "media_records_count": len(media_list),
+                "media_details": media_list
+            }),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "Media, Retrieve",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
 
-            save_audit_data(audit_data)
-
-        except Exception as e:
-            return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
-
-        # Return the list of media with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "media": media_list,
-        })
+        save_audit_data(audit_data)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Rollback any failed DB transaction and return error
+        db.session.rollback()
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
+    return jsonify(response), response.get('status_code', 500)
 
 @custom_jwt_required
 def edit_media(media_id):

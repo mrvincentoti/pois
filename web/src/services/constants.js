@@ -24,9 +24,9 @@ export const BASE_POI_URL = process.env.REACT_APP_BASE_POI_URL;
 export const limits = [2, 4, 8, 12, 16, 20];
 export const limit = 8;
 export const paginate = {
-	total_items: 0,
+	total: 0,
 	current_page: 1,
-	total_pages: 0,
+	pages: 0,
 	per_page: limit,
 };
 

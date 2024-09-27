@@ -16,21 +16,21 @@ const AppPagination = ({ meta, filters }) => {
 	const sizes = useMemo(() => {
 		const valPrev = meta.current_page > 1 ? meta.current_page - 1 : 1; // previous page
 		const valNext =
-			meta.current_page < meta.total_pages
+			meta.current_page < meta.pages
 				? meta.current_page + 1
-				: meta.total_pages; // next page
+				: meta.pages; // next page
 		const extraPrev = valPrev === 3 ? 2 : null;
 		const extraNext =
-			valNext === meta.total_pages - 2 ? meta.total_pages - 1 : null;
+			valNext === meta.pages - 2 ? meta.pages - 1 : null;
 		const dotsBefore = valPrev > 3 ? 2 : null;
 		const dotsAfter =
-			valNext < meta.total_pages - 2 ? meta.total_pages - 1 : null;
+			valNext < meta.pages - 2 ? meta.pages - 1 : null;
 		const output = [];
-		for (let i = 1; i <= meta.total_pages; i += 1) {
+		for (let i = 1; i <= meta.pages; i += 1) {
 			if (
 				[
 					1,
-					meta.total_pages,
+					meta.pages,
 					meta.current_page,
 					valPrev,
 					valNext,
@@ -48,29 +48,29 @@ const AppPagination = ({ meta, filters }) => {
 			}
 		}
 		return output;
-	}, [meta.current_page, meta.total_pages]);
+	}, [meta.current_page, meta.pages]);
 
 	const min = useMemo(() => {
 		return meta.per_page * (meta.current_page - 1) + 1;
 	}, [meta.per_page, meta.current_page]);
 
 	const max = useMemo(() => {
-		if (meta.current_page === meta.total_pages) {
-			return meta.total_items;
+		if (meta.current_page === meta.pages) {
+			return meta.total;
 		}
-		return meta.total_items < meta.per_page
-			? meta.total_items
+		return meta.total < meta.per_page
+			? meta.total
 			: meta.per_page * meta.current_page;
-	}, [meta.current_page, meta.total_pages, meta.total_items, meta.per_page]);
+	}, [meta.current_page, meta.pages, meta.total, meta.per_page]);
 
 	return (
-		meta.total_items > 0 && (
+		meta.total > 0 && (
 			<>
 				<div className="col-sm">
 					<div className="text-muted">
 						Showing <span className="fw-semibold ms-1">{min}</span> to{' '}
 						<span className="fw-semibold ms-1">{max}</span> of{' '}
-						<span className="fw-semibold">{meta.total_items}</span> Results
+						<span className="fw-semibold">{meta.total}</span> Results
 					</div>
 				</div>
 				<div className="col-sm-auto">
@@ -103,14 +103,14 @@ const AppPagination = ({ meta, filters }) => {
 						))}
 						<li
 							className={`page-item ${
-								meta.current_page === meta.total_pages ? 'disabled' : ''
+								meta.current_page === meta.pages ? 'disabled' : ''
 							}`}
 						>
 							<Link
 								className="page-link"
 								to={`${location.pathname}?page=${
-									meta.current_page === meta.total_pages
-										? meta.total_pages
+									meta.current_page === meta.pages
+										? meta.pages
 										: meta.current_page + 1
 								}${qs}${filterHash}`}
 							>

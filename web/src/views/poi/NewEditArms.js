@@ -72,7 +72,7 @@ const NewEditArms = ({ closeModal, data, update }) => {
                     recovery_date: data ? moment(data.activity_date).format('YYYY-MM-DD') : '',
                     number_recovered: data ? data.number_recovered : '',
                     location: data ? data.location : '',
-                    comment: data ? data.comment : '',
+                    comments: data ? data.comments : '',
                     poi_id: params.id,
                 }}
                 onSubmit={onSubmit}
@@ -183,7 +183,6 @@ const NewEditArms = ({ closeModal, data, update }) => {
                                                 {...input}
                                                 className={`form-control ${error(meta)}`}
                                                 placeholder="Type your comment here"
-                                                value={comments || ''}
                                             />
                                         )}
                                     </Field>

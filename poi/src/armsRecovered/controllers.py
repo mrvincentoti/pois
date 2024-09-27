@@ -316,8 +316,10 @@ def restore_arm_recovered(recovery_id):
 @custom_jwt_required
 def get_arms_recovered_by_poi(poi_id):
     try:
-        # Get search parameters from request arguments
+        # Get pagination and search parameters from request arguments
         search_term = request.args.get('q', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
 
         query = ArmsRecovered.query.filter_by(poi_id=poi_id, deleted_at=None)
 
@@ -329,26 +331,21 @@ def get_arms_recovered_by_poi(poi_id):
                 (ArmsRecovered.comments.ilike(search_pattern))
             )
 
-        # Execute the query and get the results
-        arms_recovered = query.all()
-
-        # Check if any arms were recovered
-        if not arms_recovered:
-            return jsonify({"message": "No recovered arms found for the given POI"}), 404
+        # Paginate the query result
+        arms_paginated = query.order_by(ArmsRecovered.recovery_date.desc())\
+                              .paginate(page=page, per_page=per_page, error_out=False)
 
         # Prepare the list of recovered arms to return
         arm_list = []
-        for arm in arms_recovered:
+        for arm in arms_paginated.items:
             # Fetch the associated POI details
             poi = Poi.query.filter_by(id=arm.poi_id).first()
-            if poi:
-                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip()
-            else:
-                poi_name = "Unknown POI"
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else "Unknown POI"
+
             # Fetch the name of the user who created the record
             created_by = User.query.filter_by(id=arm.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
-            
+
             arm_data = {
                 "id": arm.id,
                 "arm_id": arm.arm_id,
@@ -367,11 +364,20 @@ def get_arms_recovered_by_poi(poi_id):
             }
             arm_list.append(arm_data)
 
-        # Return the list of recovered arms with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "recovered_arms": arm_list,
-        })
+        # Prepare the paginated response
+        response = {
+            'total': arms_paginated.total,
+            'pages': arms_paginated.pages,
+            'current_page': arms_paginated.page,
+            'per_page': arms_paginated.per_page,
+            'recovered_arms': arm_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+        # Return the response with recovered arms data
+        return jsonify(response), 200
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Catch any errors and return a server error response
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500

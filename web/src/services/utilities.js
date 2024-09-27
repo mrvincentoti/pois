@@ -216,16 +216,20 @@ export const changeLimit = (e, query, location, navigate, filters) => {
 		queries = [...queries, `entries_per_page=${e.target.value}`];
 	}
 
+	if (query.get('tab')) {
+		queries = [...queries, `tab=${query.get('tab')}`];
+	}
+
 	if (query.get('q')) {
 		queries = [...queries, `q=${query.get('q')}`];
 	}
 
-	const _query = queries.length > 0 ? `?${queries.join('&')}` : '';
+	const querystring = queries.length > 0 ? `?${queries.join('&')}` : '';
 
 	const _filterHashString = getHashString(filters);
 	const _filterHash = _filterHashString !== '' ? `#${_filterHashString}` : '';
 
-	navigate(`${location.pathname}${_query}${_filterHash}`);
+	navigate(`${location.pathname}${querystring}${_filterHash}`);
 };
 
 export const getQueryString = query => {
@@ -233,6 +237,10 @@ export const getQueryString = query => {
 
 	if (query.get('entries_per_page')) {
 		queries = [...queries, `entries_per_page=${query.get('entries_per_page')}`];
+	}
+
+	if (query.get('tab')) {
+		queries = [...queries, `tab=${query.get('tab')}`];
 	}
 
 	if (query.get('q')) {
@@ -243,21 +251,42 @@ export const getQueryString = query => {
 };
 
 export const doSearch = (searchTerm, query, location, navigate, filters) => {
-	const _limit = query.get('entries_per_page');
-	const _limitQuery = _limit ? `entries_per_page=${_limit}&` : '';
-
 	const _filterHashString = getHashString(filters);
 	const _filterHash = _filterHashString !== '' ? `#${_filterHashString}` : '';
 
-	navigate(`${location.pathname}?${_limitQuery}q=${searchTerm}${_filterHash}`);
+	let queries = [];
+
+	if (query.get('entries_per_page')) {
+		queries = [...queries, `entries_per_page=${query.get('entries_per_page')}`];
+	}
+
+	if (query.get('tab')) {
+		queries = [...queries, `tab=${query.get('tab')}`];
+	}
+
+	if (searchTerm && searchTerm !== '') {
+		queries = [...queries, `q=${searchTerm}`]
+	}
+
+	const querystring = queries.length > 0 ? `?${queries.join('&')}` : '';
+
+	navigate(`${location.pathname}${querystring}${_filterHash}`);
 };
 
 export const doClearSearch = (query, location, navigate) => {
-	const _limit = query.get('entries_per_page');
-	const _limitQuery =
-		_limit && Number(_limit) !== limit ? `?entries_per_page=${_limit}` : '';
+	let queries = [];
 
-	navigate(`${location.pathname}${_limitQuery}`);
+	if (query.get('entries_per_page')) {
+		queries = [...queries, `entries_per_page=${query.get('entries_per_page')}`];
+	}
+
+	if (query.get('tab')) {
+		queries = [...queries, `tab=${query.get('tab')}`];
+	}
+
+	const querystring = queries.length > 0 ? `?${queries.join('&')}` : '';
+
+	navigate(`${location.pathname}${querystring}`);
 };
 
 export const formatEmployeeName = (employee, show_middlename = false) => {
