@@ -108,17 +108,28 @@ const ViewPoi = () => {
 		setShowPrintModal(false);
 	};
 
-	// Handle print action (can be triggered from within the modal)
 	const handlePrint = () => {
-		const printContent = printRef.current;
-		const printWindow = window.open('', '', 'width=800,height=600');
-		printWindow.document.write('<html><head><title>Print</title></head><body>');
-		printWindow.document.write(printContent.outerHTML);
-		printWindow.document.write('</body></html>');
-		printWindow.document.close();
-		printWindow.focus();
-		printWindow.print();
-		printWindow.close();
+		if (printRef.current) {
+			const printWindow = window.open('', '', 'width=800,height=600');
+			printWindow.document.write(`
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<title>Print POI</title>
+					<style>
+						/* Add your custom styles here */
+					</style>
+				</head>
+				<body>
+					${printRef.current.innerHTML}
+				</body>
+				</html>
+			`);
+			printWindow.document.close();
+			printWindow.print();
+			printWindow.close();
+		}
+		setShowPrintModal(false); // Close modal after printing
 	};
 
 
@@ -314,7 +325,7 @@ const ViewPoi = () => {
 
 			{/* Ant Design Modal */}
 			<Modal
-				title="Print Preview"
+				title=""
 				visible={showPrintModal}
 				onCancel={closePrintModal}
 				footer={[
@@ -325,8 +336,8 @@ const ViewPoi = () => {
 						Print
 					</Button>,
 				]}
+				width={1000}
 			>
-				{/* This is the content you want to print */}
 				<div ref={printRef}>
 					<PoiPrint poiData={poiData} />
 				</div>
