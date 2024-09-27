@@ -100,6 +100,45 @@ export async function request(uri, { body, ...customConfig } = {}) {
 	return parseJSON(result);
 }
 
+export async function requestFormData(uri, { body, ...customConfig } = {}) {
+	let headers = {
+		Accept: 'application/json',
+		'Content-Type': 'application/json',
+	};
+
+	// prettier-ignore
+	const token = (new LocalStorage()).getItem(TOKEN_COOKIE);
+
+	if (token) {
+		const jwt = `Bearer ${token}`;
+		headers = customConfig.uploader
+			? { Authorization: jwt }
+			: { ...headers, Authorization: jwt };
+	}
+
+	const config = {
+		method: body ? 'POST' : 'GET',
+		...customConfig,
+		headers: { ...headers },
+	};
+
+	if (body) {
+		config.body = customConfig.uploader ? body : JSON.stringify(body);
+	}
+
+	// Do not stringify FormData
+	if (body && !(body instanceof FormData)) {
+		config.body = JSON.stringify(body);
+	} else {
+		config.body = body;
+	}
+
+	const response = await fetch(uri, config);
+	const result = await checkStatus(response);
+
+	return parseJSON(result);
+}
+
 export function createHeaders(uploader) {
 	const headers = {
 		Accept: 'application/json',
@@ -272,7 +311,7 @@ export const doSearch = (searchTerm, query, location, navigate, filters) => {
 	}
 
 	if (searchTerm && searchTerm !== '') {
-		queries = [...queries, `q=${searchTerm}`]
+		queries = [...queries, `q=${searchTerm}`];
 	}
 
 	const querystring = queries.length > 0 ? `?${queries.join('&')}` : '';

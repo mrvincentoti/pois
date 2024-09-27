@@ -18,11 +18,14 @@ from sqlalchemy.orm import joinedload
 @custom_jwt_required
 def create_poi():
     data = request.form
-    #ref_numb = data.get('ref_numb')
+    # data = request.get_json()
+    # ref_numb = data.get('ref_numb')
     ref_numb = generate_unique_ref_numb()
     first_name = data.get('first_name')
+    # print(first_name, flush=True)
     middle_name = data.get('middle_name')
     last_name = data.get('last_name')
+    marital_status = data.get('marital_status')
     alias = data.get('alias')
     dob = data.get('dob')
     passport_number = data.get('passport_number')
@@ -85,6 +88,7 @@ def create_poi():
             country_id=country_id,
             state_id=state_id,
             gender_id=gender_id,
+            marital_status= marital_status,
             created_by=created_by
         )
 
@@ -107,6 +111,7 @@ def create_poi():
                 "first_name": poi.first_name,
                 "middle_name": poi.middle_name,
                 "last_name": poi.last_name,
+                "marital_status": poi.marital_status,
                 "alias": poi.alias,
                 "dob": poi.dob,
                 "passport_number": poi.passport_number,
@@ -165,8 +170,9 @@ def get_poi(poi_id):
                 "first_name": poi.first_name,
                 "middle_name": poi.middle_name,
                 "last_name": poi.last_name,
+                "marital_status": poi.marital_status,
                 "alias": poi.alias,
-                "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
+                "dob": poi.dob if poi.dob else None,
                 "passport_number": poi.passport_number,
                 "other_id_number": poi.other_id_number,
                 "phone_number": poi.phone_number,
@@ -310,11 +316,12 @@ def update_poi(poi_id):
             poi.update(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
+                marital_status=data.get('marital_status'),
                 ref_numb=data.get('ref_numb'),
-                dob=data.get('dob'),
+                dob=data.get('dob') or None,
                 passport_number=data.get('passport_number'),
                 other_id_number=data.get('other_id_number'),
-                phone_number=data.get('phone_number'),
+                phone_number=data.get('phone_number') ,
                 email=data.get('email'),
                 role=data.get('role'),
                 affiliation=data.get('affiliation'),
@@ -343,6 +350,7 @@ def update_poi(poi_id):
                     "ref_numb": poi.ref_numb,
                     "first_name": poi.first_name,
                     "middle_name": poi.middle_name,
+                    "marital_status": poi.marital_status,
                     "last_name": poi.last_name,
                     "alias": poi.alias,
                     "dob": poi.dob,
@@ -366,6 +374,7 @@ def update_poi(poi_id):
                     "ref_numb": poi.ref_numb,
                     "first_name": poi.first_name,
                     "middle_name": poi.middle_name,
+                    "marital_status": poi.marital_status,
                     "last_name": poi.last_name,
                     "alias": poi.alias,
                     "dob": poi.dob,
@@ -536,29 +545,15 @@ def restore_poi(poi_id):
 # List all POIs
 @custom_jwt_required
 def list_pois():
-    # Get pagination, search term, and filter parameters from request
+    # Get pagination and search term from request parameters
     page = request.args.get('page', default=1, type=int)
     per_page = request.args.get('per_page', default=10, type=int)
     search_term = request.args.get('q', default=None, type=str)
 
-    # Filter parameters
-    created_by = request.args.get('created_by', type=int)
-    from_date = request.args.get('from_date', type=str)
-    to_date = request.args.get('to_date', type=str)
-    affiliation = request.args.get('affiliation', type=str)
-    category_id = request.args.get('category_id', type=int)
-    source_id = request.args.get('source_id', type=int)
-    country_id = request.args.get('country_id', type=int)
-    state_id = request.args.get('state_id', type=int)
-    gender_id = request.args.get('gender_id', type=int)
-    crime_id = request.args.get('crime_id', type=int) 
-    arm_id = request.args.get('arm_id', type=int)
-    arresting_body_id = request.args.get('arresting_body_id', type=int)
-
     # Query base
     query = Poi.query
 
-    # Apply search term filter if supplied
+    # Filter based on search term if supplied
     if search_term:
         search = f"%{search_term}%"
         query = query.filter(
@@ -576,7 +571,63 @@ def list_pois():
             (Poi.remark.ilike(search))
         )
 
-    # Apply additional filters based on provided parameters
+    query = query.order_by(Poi.created_at.desc()) 
+        
+    # Pagination
+    paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    # Format response
+    pois_list = [poi.to_dict() for poi in paginated_pois.items]
+
+    current_time = datetime.utcnow()
+    audit_data = {
+            "user_id": g.user["id"] if hasattr(g, "user") else None,
+            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+            "user_email": g.user["email"] if hasattr(g, "user") else None,
+            "event": "list_poi",
+            "auditable_id": None,
+            "old_values": None,
+            "new_values": None,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "POI, List",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+
+    save_audit_data(audit_data)
+    
+    return jsonify({
+        'total': paginated_pois.total,
+        'pages': paginated_pois.pages,
+        'current_page': paginated_pois.page,
+        'pois': pois_list
+    })
+
+
+@custom_jwt_required
+def filter_pois():
+    # Get filter parameters from the request
+    created_by = request.args.get('created_by', type=int)
+    from_date = request.args.get('from_date', type=str)
+    to_date = request.args.get('to_date', type=str)
+    affiliation = request.args.get('affiliation', type=str)
+    category_id = request.args.get('category_id', type=int)
+    source_id = request.args.get('source_id', type=int)
+    country_id = request.args.get('country_id', type=int)
+    state_id = request.args.get('state_id', type=int)
+    gender_id = request.args.get('gender_id', type=int)
+    
+    crime_id = request.args.get('crime_id', type=int) 
+    arm_id = request.args.get('arm_id', type=int)
+    arresting_body_id = request.args.get('arresting_body_id', type=int)
+
+    query = Poi.query
+
+    # Apply filters based on provided parameters
     if created_by:
         query = query.filter(Poi.created_by == created_by)
 
@@ -605,7 +656,7 @@ def list_pois():
 
     if gender_id:
         query = query.filter(Poi.gender_id == gender_id)
-
+    
     if arm_id:
         # Join with ArmsRecovered to filter based on the selected arm
         query = query.join(ArmsRecovered).filter(ArmsRecovered.arm_id == arm_id)
@@ -618,92 +669,54 @@ def list_pois():
         # Join with CrimeCommitted to filter based on the selected crime
         query = query.join(CrimeCommitted).filter(CrimeCommitted.crime_id == crime_id)
 
-    # Apply sorting in descending order by created_at
-    query = query.order_by(Poi.created_at.desc()) 
+    # Execute the query and get results
+    pois = query.options(joinedload(Poi.category), joinedload(Poi.source), 
+                        joinedload(Poi.country), joinedload(Poi.state), 
+                        joinedload(Poi.gender)).all()
 
-    # Pagination
-    paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
+    # Execute the query and get results
+    pois = query.all()
 
-    # Format response
-    pois_list = [{
-        "id": poi.id,
-        "ref_numb": poi.ref_numb,
-        "first_name": poi.first_name,
-        "middle_name": poi.middle_name,
-        "last_name": poi.last_name,
-        "alias": poi.alias,
-        "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
-        "passport_number": poi.passport_number,
-        "other_id_number": poi.other_id_number,
-        "phone_number": poi.phone_number,
-        "email": poi.email,
-        "role": poi.role,
-        "affiliation": poi.affiliation,
-        "address": poi.address,
-        "remark": poi.remark,
-        "picture": poi.picture,  # Include the picture URL
-        "category": {
-            "id": poi.category.id,
-            "name": poi.category.name,
-        } if poi.category else None,
-        "source": {
-            "id": poi.source.id,
-            "name": poi.source.name,
-        } if poi.source else None,
-        "country": {
-            "id": poi.country.id,
-            "name": poi.country.en_short_name,
-        } if poi.country else None,
-        "state": {
-            "id": poi.state.id,
-            "name": poi.state.name,
-        } if poi.state else None,
-        "gender": {
-            "id": poi.gender.id,
-            "name": poi.gender.name,
-        } if poi.gender else None
-    } for poi in paginated_pois.items]
+    # Convert results to a serializable format
+    pois_data = [{
+                "ref_numb": poi.ref_numb,
+                "first_name": poi.first_name,
+                "middle_name": poi.middle_name,
+                "last_name": poi.last_name,
+                "alias": poi.alias,
+                "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
+                "passport_number": poi.passport_number,
+                "other_id_number": poi.other_id_number,
+                "phone_number": poi.phone_number,
+                "email": poi.email,
+                "role": poi.role,
+                "affiliation": poi.affiliation,
+                "address": poi.address,
+                "remark": poi.remark,
+                "picture": poi.picture,  # Include the picture URL
+                "category": {
+                    "id": poi.category.id,
+                    "name": poi.category.name,
+                } if poi.category else None,
+                "source": {
+                    "id": poi.source.id,
+                    "name": poi.source.name,
+                } if poi.source else None,
+                "country": {
+                    "id": poi.country.id,
+                    "name": poi.country.en_short_name,
+                } if poi.country else None,
+                "state": {
+                    "id": poi.state.id,
+                    "name": poi.state.name,
+                } if poi.state else None,
+                "gender": {
+                    "id": poi.gender.id,
+                    "name": poi.gender.name,
+                } if poi.gender else None
+    } for poi in pois]
 
-    # Audit logging
-    current_time = datetime.utcnow()
-    audit_data = {
-        "user_id": g.user["id"] if hasattr(g, "user") else None,
-        "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-        "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-        "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-        "user_email": g.user["email"] if hasattr(g, "user") else None,
-        "event": "list_poi",
-        "auditable_id": None,
-        "old_values": None,
-        "new_values": json.dumps({
-            "created_by": created_by,
-            "from_date": from_date,
-            "to_date": to_date,
-            "affiliation": affiliation,
-            "category_id": category_id,
-            "source_id": source_id,
-            "country_id": country_id,
-            "state_id": state_id,
-            "gender_id": gender_id,
-            "crime_id": crime_id,
-            "arm_id": arm_id,
-            "arresting_body_id": arresting_body_id,
-        }),
-        "url": request.url,
-        "ip_address": request.remote_addr,
-        "user_agent": request.user_agent.string,
-        "tags": "POI, List",
-        "created_at": current_time.isoformat(),
-        "updated_at": current_time.isoformat(),
-    }
-    save_audit_data(audit_data)
-
-    return jsonify({
-        'total': paginated_pois.total,
-        'pages': paginated_pois.pages,
-        'current_page': paginated_pois.page,
-        'pois': pois_list
-    })
+    return jsonify(pois_data), 200
 
 
 def allowed_file(filename):
