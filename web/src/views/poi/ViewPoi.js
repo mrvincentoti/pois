@@ -162,13 +162,13 @@ const ViewPoi = () => {
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">11</h4>
+												<h4 className="text-white mb-1">{poiData.crime_count || 0 }</h4>
 												<p className="fs-14 mb-0">Crime</p>
 											</div>
 										</div>
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">120</h4>
+												<h4 className="text-white mb-1">{poiData.arms_count || 0}</h4>
 												<p className="fs-14 mb-0">Arms</p>
 											</div>
 										</div>

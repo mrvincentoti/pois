@@ -10,6 +10,8 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import func 
 from ..crimesCommitted.models import CrimeCommitted
 from ..armsRecovered.models import ArmsRecovered
+from ..arms.models import Arm
+from ..crimesCommitted.models import CrimeCommitted
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -155,6 +157,9 @@ def get_poi(poi_id):
     try:
         poi = Poi.query.get(poi_id)
         if poi and not poi.deleted_at:
+            crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
+            arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
+
             poi_data = {
                 "ref_numb": poi.ref_numb,
                 "first_name": poi.first_name,
@@ -191,12 +196,14 @@ def get_poi(poi_id):
                     "id": poi.gender.id,
                     "name": poi.gender.name,
                 } if poi.gender else None,
+                "crime_count": crime_count,
+                "arms_count": arms_count,
             }
 
             response = {
                 "status": "success",
                 "status_code": 200,
-                "poi_data": poi_data 
+                "poi_data": poi_data
             }
 
             # Audit logging for access event
@@ -211,7 +218,7 @@ def get_poi(poi_id):
                 "updated_at": current_time.isoformat(),
             }
 
-            save_audit_data(audit_data) 
+            save_audit_data(audit_data)
 
         else:
             response = {
@@ -232,14 +239,14 @@ def get_poi(poi_id):
                 "updated_at": current_time.isoformat(),
             }
 
-            save_audit_data(audit_data) 
+            save_audit_data(audit_data)
 
     except Exception as e:
         response = {
             "status": "error",
             "status_code": 500,
             "message": "An error occurred while retrieving the POI.",
-            "error": str(e)  
+            "error": str(e)
         }
 
         # Log the exception during access
