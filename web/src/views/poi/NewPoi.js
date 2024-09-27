@@ -42,6 +42,7 @@ const NewPoi = () => {
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
 	const [affiliations, setAffliations] = useState([]);
+	const [alias, setAlias] = useState([]);
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
@@ -73,31 +74,36 @@ const NewPoi = () => {
 	useEffect(() => {
 		editInputRef.current?.focus();
 	}, [editInputValue]);
+
 	const handleClose = removedTag => {
-		const newTags = language.filter(tag => tag !== removedTag);
-		setLanguage(newTags);
+		const newTags = alias.filter(tag => tag !== removedTag);
+		setAlias(newTags);
 	};
 
 	const showInput = () => {
 		setInputVisible(true);
 	};
+
 	const handleInputChange = e => {
 		setInputValue(e.target.value);
 	};
+
 	const handleInputConfirm = () => {
-		if (inputValue && !language.includes(inputValue)) {
-			setLanguage([...language, inputValue]);
+		if (inputValue && !alias.includes(inputValue)) {
+			setAlias([...alias, inputValue]);
 		}
 		setInputVisible(false);
 		setInputValue('');
 	};
+
 	const handleEditInputChange = e => {
 		setEditInputValue(e.target.value);
 	};
+
 	const handleEditInputConfirm = () => {
-		const newTags = [...language];
+		const newTags = [...alias];
 		newTags[editInputIndex] = editInputValue;
-		setLanguage(newTags);
+		setAlias(newTags);
 		setEditInputIndex(-1);
 		setEditInputValue('');
 	};
@@ -165,7 +171,7 @@ const NewPoi = () => {
 			</Tag>
 		</span>
 	);
-	const tagChild = language.map(forMap);
+	const tagChild = alias.map(forMap);
 
 	const handleChange = info => {
 		if (info.file.status === 'uploading') {
@@ -200,33 +206,68 @@ const NewPoi = () => {
 		}
 	}, [fetchApis, loaded]);
 
+	// const onSubmit = async values => {
+	// 	console.log(imageUrl);
+
+	// 	try {
+	// 		const config = {
+	// 			method: 'POST',
+	// 			body: {
+	// 				...values,
+	// 				category_id: values.category_id?.id || null,
+	// 				source_id: values.source_id?.id || null,
+	// 				gender_id: values.gender?.id || null,
+	// 				state_id: values.state_id?.id || null,
+	// 				affiliation_id: values.affiliation?.id || null,
+	// 				marital_status: values.marital_status?.id || null,
+	// 				picture: imageUrl || null,
+	// 				// language_spoken: language,
+	// 				alias: alias.join(", "),
+	// 				gender: undefined,
+	// 				// affiliation: undefined,
+	// 			},
+	// 		};
+	// 		console.log(config.body);
+	// 		const rs = await request(CREATE_POI_API, config);
+	// 		console.log(rs);
+	// 		notifyWithIcon('success', rs.message);
+	// 		navigate('/pois/poi');
+	// 	} catch (e) {
+	// 		return { [FORM_ERROR]: e.message || 'could not create Poi' };
+	// 	}
+	// };
 	const onSubmit = async values => {
-		console.log(imageUrl);
-		return;
 		try {
+			// Create a FormData object
+			const formData = new FormData();
+			// Append your values to FormData
+			for (const key in values) {
+				formData.append(key, values[key]);
+			}
+			// Append values to formData
+			formData.append('category_id', values.category_id?.id || null);
+			formData.append('source_id', values.source_id?.id || null);
+			formData.append('gender_id', values.gender?.id || null);
+			formData.append('state_id', values.state_id?.id || null);
+			formData.append('affiliation_id', values.affiliation?.id || null);
+			formData.append('marital_status', values.marital_status?.id || null);
+			formData.append('picture', imageUrl || null); // Append image or file
+			formData.append('alias', alias.join(', '));
+
+			// You can remove undefined values by not appending them
+			// gender is omitted in the request
+
 			const config = {
 				method: 'POST',
-				body: {
-					...values,
-					category_id: values.category_id?.id || null,
-					source_id: values.source_id?.id || null,
-					gender_id: values.gender?.id || null,
-					state_id: values.state_id?.id || null,
-					affiliation_id: values.affiliation?.id || null,
-					marital_status: values.marital_status?.id || null,
-					picture: imageUrl || null,
-					// language_spoken: language,
-					gender: undefined,
-					// affiliation: undefined,
-				},
+				body: formData, // Send the FormData object
 			};
-			console.log(config.body);
-			const rs = await request(CREATE_POI_API, config);
+
+			const rs = await request(CREATE_POI_API, config); // Adjust this according to how 'request' is defined
 			console.log(rs);
 			notifyWithIcon('success', rs.message);
 			navigate('/pois/poi');
 		} catch (e) {
-			return { [FORM_ERROR]: e.message || 'could not create employee' };
+			return { [FORM_ERROR]: e.message || 'could not create Poi' };
 		}
 	};
 
@@ -369,13 +410,39 @@ const NewPoi = () => {
 													</label>
 													<Field id="alias" name="alias">
 														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="alias"
-																placeholder="Enter alias"
-															/>
+															<div className={`form-control ${error(meta)}`}>
+																{tagChild}
+																{inputVisible && (
+																	<Input
+																		type="text"
+																		size="small"
+																		value={inputValue}
+																		onChange={handleInputChange}
+																		onBlur={handleInputConfirm}
+																		onPressEnter={handleInputConfirm}
+																		style={{
+																			width: 78,
+																			marginRight: 8,
+																			marginTop: 5,
+																		}}
+																	/>
+																)}
+																{!inputVisible && (
+																	<Tag
+																		onClick={showInput}
+																		className="site-tag-plus"
+																	>
+																		<i className="ri-add-line" /> Add
+																	</Tag>
+																)}
+																<input
+																	{...input}
+																	type="hidden"
+																	value={alias}
+																	onChange={() => {}}
+																	onBlur={() => input.onBlur(alias)}
+																/>
+															</div>
 														)}
 													</Field>
 													<ErrorBlock name="alias" />

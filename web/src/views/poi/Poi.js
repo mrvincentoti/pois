@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';
 import ImportBrief from '../../modals/ManageBrief';
 import BulkUpload from '../../components/BulkUpload';
+import TemplateFilter from '../../components/TemplateFilter';
 
 const Poi = () => {
 	document.title = `POI - ${APP_SHORT_NAME}`;
@@ -319,6 +320,13 @@ const Poi = () => {
 					}}
 				/>
 			)}
+			<TemplateFilter
+				filters={filters}
+				onFilter={handleFilter}
+				onCloseClick={handleCloseFilter}
+				onClearFilter={handleClearFilters}
+				show={isFilterOpen}
+			/>
 		</>
 	);
 };

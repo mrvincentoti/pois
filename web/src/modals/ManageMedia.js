@@ -17,7 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const ManageMedia = ({ id, closeModal, update, media }) => {
 	const [file, setFile] = useState(null);
-	const [caption, setCaption] = useState(null);
+	const [caption, setCaption] = useState([]);
 	const [fileList, setFileList] = useState([]);
 	const [uploading, setUploading] = useState(false);
 	const params = useParams();
@@ -26,7 +26,7 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 		try {
 			const formData = new FormData();
 			formData.append('file', fileList[0]);
-			formData.append('caption', values.caption);
+			formData.append('media_caption', values.caption);
 			formData.append('media_type', 'amir');
 
 			const uri = media
@@ -42,15 +42,8 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 
 			const data = await response.json();
 
-			console.log(data);
-			console.log('data');
-
 			if (data.error) {
 				let errorMessage = data.error;
-				if (data.rows && data.rows.length > 0) {
-					const rowNumbers = data.rows.map(row => row.row_number).join(', ');
-					errorMessage += ' ' + rowNumbers;
-				}
 
 				notifyWithIcon('error', errorMessage);
 			} else {
