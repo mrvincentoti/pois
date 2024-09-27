@@ -18,8 +18,8 @@ import { DeleteButton, EditButton } from '../../components/Buttons';
 import { DELETE_MEDIA_API, FETCH_MEDIA_API } from '../../services/api';
 import ManageMedia from '../../modals/ManageMedia';
 
-const Users = () => {
-	document.title = `Users - ${APP_SHORT_NAME}`;
+const MediaAndDocument = () => {
+	document.title = `Media - ${APP_SHORT_NAME}`;
 
 	const [fetching, setFetching] = useState(true);
 	const [working, setWorking] = useState(false);
@@ -160,11 +160,11 @@ const Users = () => {
 															<div className="ms-3 flex-grow-1">
 																<h6 className="fs-15 mb-0">
 																	<a
-																		href={item.media_url}
+																		href={''}
 																		target="_blank"
 																		rel="noopener noreferrer"
 																	>
-																		{item.media_url}
+																		{item.media_caption}
 																	</a>
 																</h6>
 															</div>
@@ -229,4 +229,4 @@ const Users = () => {
 	);
 };
 
-export default Users;
+export default MediaAndDocument;
