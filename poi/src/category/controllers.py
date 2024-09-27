@@ -110,7 +110,7 @@ def get_category(category_id):
 
         return jsonify({"category": category_data})
     else:
-        return jsonify({"message": "Category not found"}), 404
+        return jsonify({"message": "Category not found", "category": []}), 404
 
 
 @custom_jwt_required
@@ -118,7 +118,7 @@ def edit_category(category_id):
     category = Category.query.filter_by(id=category_id, deleted_at=None).first()
 
     if category is None:
-        return jsonify({"message": "Category not found"}), 404
+        return jsonify({"message": "Category not found", "category": []}), 200
 
     data = request.get_json()
     category_name = data.get("name")
@@ -169,7 +169,7 @@ def delete_category(category_id):
     category = Category.query.filter_by(id=category_id, deleted_at=None).first()
 
     if category is None:
-        return jsonify({"message": "Category not found"}), 404
+        return jsonify({"message": "Category not found", "category": []}), 200
 
     try:
         category.soft_delete()
@@ -213,7 +213,7 @@ def restore_category(category_id):
     category = Category.query.filter_by(id=category_id).first()
 
     if category is None:
-        return jsonify({"message": "Category not found"}), 404
+        return jsonify({"message": "Category not found", "category": []}), 200
 
     try:
         # Audit - Record before restoration
