@@ -36,7 +36,7 @@ def get_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     # Prepare media data
     media_data = {
@@ -83,7 +83,7 @@ def add_poi_media(poi_id):
     poi = Poi.query.filter_by(id=poi_id, deleted_at=None).first()
 
     if poi is None:
-        return jsonify({"message": "POI not found"}), 404
+        return jsonify({"message": "POI not found", "POI": []}), 200
     
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
@@ -172,7 +172,7 @@ def get_poi_media(poi_id):
 
         # Check if any media records were found
         if not media_paginated.items:
-            return jsonify({"message": "No media found for the given POI"}), 404
+            return jsonify({"message": "No media found for the given POI", "media": []}), 200
 
         # Prepare the list of media to return
         media_list = []
@@ -240,7 +240,7 @@ def edit_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -367,7 +367,7 @@ def delete_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -419,7 +419,7 @@ def restore_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     if media_record.deleted_at is None:
         return jsonify({"message": "Media is not deleted"}), 400
