@@ -113,6 +113,7 @@ from .crimesCommitted import urls
 from .activities import urls
 from .organisation import urls
 from .orgMedia import urls
+from .brief import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
