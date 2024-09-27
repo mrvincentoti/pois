@@ -40,6 +40,7 @@ def add_arm_recovered():
         location = data.get("location")
         comments = data.get("comments")
         recovery_date = data.get("recovery_date")
+        number_recovered = data.get("number_recovered")
         created_by = g.user["id"]
 
         new_recovered_arm = ArmsRecovered(
@@ -48,7 +49,8 @@ def add_arm_recovered():
             location=location,
             comments=comments,
             recovery_date=recovery_date,
-            created_by=created_by
+            created_by=created_by,
+            number_recovered=number_recovered
         )
 
         try:
@@ -72,7 +74,8 @@ def add_arm_recovered():
                         "location":location,
                         "comments":comments,
                         "recovery_date":recovery_date,
-                        "created_by":created_by
+                        "created_by":created_by,
+                        "number_recovered":number_recovered
                     }
                 ),
                 "url": request.url,
@@ -124,7 +127,8 @@ def get_arm_recovered(recovery_id):
             "comments": arm_recovery.comments,
             "recovery_date": arm_recovery.recovery_date,
             "created_by_id": arm_recovery.created_by,
-            "created_by": created_by_name
+            "created_by": created_by_name,
+            "number_recovered": number_recovered
         }
 
         current_time = datetime.utcnow()
@@ -163,6 +167,7 @@ def edit_arm_recovered(recovery_id):
         comments = data.get("comments")
         recovery_date = data.get("recovery_date")
         updated_by = g.user["id"]
+        number_recovered = data.get("number_recovered")
 
         # Find the recovered arm entry by recovery_id
         arm_recovered = ArmsRecovered.query.filter_by(id=recovery_id, deleted_at=None).first()
@@ -177,7 +182,8 @@ def edit_arm_recovered(recovery_id):
             "location": arm_recovered.location,
             "comments": arm_recovered.comments,
             "recovery_date": arm_recovered.recovery_date,
-            "created_by": arm_recovered.created_by
+            "created_by": arm_recovered.created_by,
+            "number_recovered": number_recovered
         }
 
         # Update the recovered arm fields with the new data
@@ -186,6 +192,7 @@ def edit_arm_recovered(recovery_id):
         arm_recovered.location = location
         arm_recovered.comments = comments
         arm_recovered.recovery_date = recovery_date
+        arm_recovered.number_recovered = number_recovered
 
         try:
             db.session.commit()
@@ -198,7 +205,8 @@ def edit_arm_recovered(recovery_id):
                 "location": location,
                 "comments": comments,
                 "recovery_date": recovery_date,
-                "created_by": updated_by
+                "created_by": updated_by,
+                "number_recovered": number_recovered
             }
 
             audit_data = {
@@ -342,14 +350,20 @@ def get_arms_recovered_by_poi(poi_id):
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
             
             arm_data = {
+                "id": arm.id,
                 "arm_id": arm.arm_id,
+                "arm": {
+                    "id": arm.arm.id,
+                    "name": arm.arm.name,
+                } if arm.arm else None,
                 "poi_id": arm.poi_id,
                 "poi_name": poi_name,
                 "location": arm.location,
                 "comments": arm.comments,
                 "recovery_date": arm.recovery_date.isoformat() if arm.recovery_date else None,
                 "created_by_id": arm.created_by,
-                "created_by_name": created_by_name
+                "created_by_name": created_by_name,
+                "number_recovered": arm.number_recovered
             }
             arm_list.append(arm_data)
 

@@ -8,15 +8,14 @@ import TableWrapper from '../../container/TableWrapper';
 import {
     confirmAction,
     notifyWithIcon,
-    formatFullName,
-    formatName,
     request,
+    formatDate
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { DeleteButton, EditButton } from '../../components/Buttons';
-import { DELETE_MEDIA_API, FETCH_MEDIA_API } from '../../services/api';
-import ManageMedia from '../../modals/ManageMedia';
+import { DELETE_MEDIA_API, FETCH_MEDIA_API, FETCH_ARMS_RECOVERED_API } from '../../services/api';
+import NewEditArms from './NewEditArms';
 
 const ArmsRecovered = () => {
     document.title = `Arms Recovered - ${APP_SHORT_NAME}`;
@@ -27,6 +26,8 @@ const ArmsRecovered = () => {
     const [meta, setMeta] = useState(paginate);
     const [showModal, setShowModal] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState(null);
+    const [currentArm, setCurrentArm] = useState(null);
+    const [modalType, setModalType] = useState('add'); // new state for modal type
 
     const [page, setPage] = useState(null);
     const [search, setSearch] = useState('');
@@ -37,13 +38,12 @@ const ArmsRecovered = () => {
 
     const query = useQuery();
 
-    const fetchMedia = useCallback(async (per_page, page, q) => {
+    const fetchArmsRecovered = useCallback(async (per_page, page, q) => {
         try {
-            const url = `${FETCH_MEDIA_API}?per_page=${per_page}&page=${page}&q=${q}`;
+            const url = `${FETCH_ARMS_RECOVERED_API}?per_page=${per_page}&page=${page}&q=${q}`;
             const rs = await request(url.replace(':id', params.id));
-            const { media, message, ...rest } = rs;
-
-            setList(media);
+            const { recovered_arms, message, ...rest } = rs;
+            setList(recovered_arms);
             setMeta({ ...rest, per_page });
         } catch (error) { }
     }, []);
@@ -52,7 +52,6 @@ const ArmsRecovered = () => {
         const _page = Number(query.get('page') || 1);
         const _search = query.get('q') || '';
         const _limit = Number(query.get('entries_per_page') || limit);
-
         if (
             fetching ||
             _page !== page ||
@@ -63,7 +62,7 @@ const ArmsRecovered = () => {
                 setFetching(true);
             }
 
-            fetchMedia(_limit, _page, _search).then(_ => {
+            fetchArmsRecovered(_limit, _page, _search).then(_ => {
                 setFetching(false);
                 setPage(_page);
                 setSearch(_search);
@@ -71,29 +70,29 @@ const ArmsRecovered = () => {
                 setQueryLimit(_limit);
             });
         }
-    }, [fetchMedia, fetching, page, query, queryLimit, search]);
+    }, [fetchArmsRecovered, fetching, page, query, queryLimit, search]);
 
     const addArm = () => {
         document.body.classList.add('modal-open');
         setShowModal(true);
     };
 
-    const editMedia = item => {
+    const editArmsRecovered = item => {
         document.body.classList.add('modal-open');
-        setSelectedMedia(item);
+        setCurrentArm(item);
         setShowModal(true);
     };
 
     const closeModal = () => {
         setShowModal(false);
-        setSelectedMedia(null);
+        setCurrentArm(null);
         document.body.classList.remove('modal-open');
     };
 
     const refreshTable = async () => {
         setWorking(true);
         const _limit = Number(query.get('entries_per_page') || limit);
-        await fetchMedia(_limit, 1, '');
+        await fetchArmsRecovered(_limit, 1, '');
     };
 
     const confirmRemove = item => {
@@ -143,6 +142,7 @@ const ArmsRecovered = () => {
                                 <table className="table table-borderless align-middle mb-0">
                                     <thead className="table-light">
                                         <tr>
+                                            <th scope="col">S/N</th>
                                             <th scope="col">Arm</th>
                                             <th scope="col">Number Recovered</th>
                                             <th scope="col">Location</th>
@@ -154,42 +154,24 @@ const ArmsRecovered = () => {
                                         {list?.map((item, i) => {
                                             return (
                                                 <tr key={i}>
-                                                    {/* {params.id} */}
+                                                    <td>{i + 1}</td>
                                                     <td>
-                                                        <div className="d-flex align-items-center">
-                                                            <div className="ms-3 flex-grow-1">
+                                                        <div className="d-flex align-items-left">
+                                                            <div className="flex-grow-1">
                                                                 <h6 className="fs-15 mb-0">
-                                                                    <a
-                                                                        href={item.media_url}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                    >
-                                                                        {item.media_url}
-                                                                    </a>
+                                                                    {item.arm.name}
                                                                 </h6>
                                                             </div>
                                                         </div>
                                                     </td>
 
-                                                    <td>{item.media_type}</td>
-                                                    <td>{'--'}</td>
-                                                    <td>{item.created_at || '--'}</td>
+                                                    <td>{item.number_recovered}</td>
+                                                    <td>{item.location || '--'}</td>
+                                                    <td>{formatDate(item.recovery_date) || '--'}</td>
                                                     <td>
-                                                        {/* <DocumentMediaDropDown routes={routes} /> */}
-                                                        {/* <div class="flex-shrink-0" onClick={() => showModal('edit')}>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-pencil-fill me-1 align-bottom" style={{ fontSize: '20px' }}></i>
-                                                    </a>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-download-cloud-2-line me-2 align-middle" style={{ fontSize: '20px', color: '#0eb29c' }}></i>
-                                                    </a>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-delete-bin-line me-2 align-middle" style={{ fontSize: '20px', color: '#f06548' }}></i>
-                                                    </a>
-                                                </div> */}
                                                         <div className="hstack gap-3 flex-wrap text-end">
                                                             <EditButton
-                                                                onClick={() => editMedia(item)}
+                                                                onClick={() =>editArmsRecovered(item)}
                                                             />
                                                             <DeleteButton
                                                                 onClick={() => confirmRemove(item)}
@@ -214,13 +196,11 @@ const ArmsRecovered = () => {
                     </div>
 
                     {showModal && (
-                        <ManageMedia
-                            id={params.id}
-                            selectedMedia={selectedMedia}
-                            closeModal={() => closeModal()}
-                            update={async () => {
-                                await refreshTable().then(_ => setWorking(false));
-                            }}
+                        <NewEditArms
+                            closeModal={closeModal}
+                            data={currentArm}
+                            update={refreshTable}
+                            modalType={modalType}
                         />
                     )}
                 </div>

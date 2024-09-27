@@ -265,6 +265,10 @@ export const DELETE_MEDIA_API = `${BASE_POI_URL}/media/:id`;
 export const CREATE_ORG_API = `${BASE_POI_URL}/organisation`;
 // Activities
 export const FETCH_ACTIVITIES_API = `${BASE_POI_URL}/poi-activities/:id`;
-
 export const CREATE_ACTIVITIES_API = `${BASE_POI_URL}/activities`;
 export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/`;
+// Arms
+export const FETCH_ARMS_API = `${BASE_POI_URL}/arms`;
+export const CREATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms`;
+export const UPDATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/`;
+export const FETCH_ARMS_RECOVERED_API = `${BASE_POI_URL}/poi-recovered-arms/:id`;
