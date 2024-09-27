@@ -5,7 +5,7 @@ from .models import PoiMedia
 from ..poi.models import Poi
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -36,7 +36,7 @@ def get_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     # Prepare media data
     media_data = {
@@ -83,11 +83,14 @@ def add_poi_media(poi_id):
     poi = Poi.query.filter_by(id=poi_id, deleted_at=None).first()
 
     if poi is None:
-        return jsonify({"message": "POI not found"}), 404
-
+        return jsonify({"message": "POI not found", "POI": []}), 200
+    
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
 
+    if 'media_type' not in request.form:
+        return jsonify({'message': 'Media type is required'}), 400
+    
     file = request.files['file']
     created_by = g.user["id"]
 
@@ -101,7 +104,6 @@ def add_poi_media(poi_id):
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
         media_caption = request.form.get('media_caption')
-        media_type = get_media_type_from_extension(file.filename)
 
         # Upload the file to MinIO
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -119,7 +121,7 @@ def add_poi_media(poi_id):
             created_by=created_by,
             created_at=datetime.utcnow()
         )
-
+        
         db.session.add(new_media)
         db.session.commit()
 
@@ -158,6 +160,7 @@ def add_poi_media(poi_id):
 
     return jsonify({'message': 'File type not allowed'}), 400
 
+
 @custom_jwt_required
 def get_poi_media(poi_id):
     try:
@@ -172,7 +175,7 @@ def get_poi_media(poi_id):
 
         # Check if any media records were found
         if not media_paginated.items:
-            return jsonify({"message": "No media found for the given POI"}), 404
+            return jsonify({"message": "No media found for the given POI", "media": []}), 200
 
         # Prepare the list of media to return
         media_list = []
@@ -240,7 +243,7 @@ def edit_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -367,7 +370,7 @@ def delete_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -419,7 +422,7 @@ def restore_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     if media_record.deleted_at is None:
         return jsonify({"message": "Media is not deleted"}), 400
