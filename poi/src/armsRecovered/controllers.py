@@ -240,13 +240,17 @@ def edit_arm_recovered(recovery_id):
 @custom_jwt_required
 def delete_arm_recovered(recovery_id):
     try:
+        # Query for the arm to be soft-deleted, ensuring it's not already deleted
         arm = ArmsRecovered.query.filter_by(id=recovery_id, deleted_at=None).first()
 
         if not arm:
             return jsonify({"message": "Recovered arm not found"}), 404
 
         # Set the current timestamp to the deleted_at column for soft delete
-        arm.deleted_at = datetime.utcnow()
+        arm.soft_delete()
+
+        # Commit the soft delete change
+        db.session.commit()
 
         # Optionally save the delete action in the audit log
         current_time = datetime.utcnow()
@@ -255,7 +259,7 @@ def delete_arm_recovered(recovery_id):
             "event": "soft_delete_recovered_arm",
             "auditable_id": arm.id,
             "old_values": json.dumps({"deleted_at": None}),
-            "new_values": json.dumps({"deleted_at": arm.deleted_at}),
+            "new_values": json.dumps({"deleted_at": arm.deleted_at.isoformat()}),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
@@ -265,14 +269,14 @@ def delete_arm_recovered(recovery_id):
         }
         save_audit_data(audit_data)
 
-        db.session.commit()
         return jsonify({"message": "Recovered arm deleted successfully"}), 200
     except Exception as e:
+        # Roll back in case of an error
         db.session.rollback()
         return jsonify({"message": "Error deleting recovered arm", "error": str(e)}), 500
     finally:
+        # Close the session after the request
         db.session.close()
-
 
 @custom_jwt_required
 def restore_arm_recovered(recovery_id):

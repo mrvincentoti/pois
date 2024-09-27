@@ -14,7 +14,7 @@ import {
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { DeleteButton, EditButton } from '../../components/Buttons';
-import { DELETE_MEDIA_API, FETCH_MEDIA_API, FETCH_ARMS_RECOVERED_API } from '../../services/api';
+import { FETCH_ARMS_RECOVERED_API, DELETE_ARMS_RECOVERED_API } from '../../services/api';
 import NewEditArms from './NewEditArms';
 
 const ArmsRecovered = () => {
@@ -96,7 +96,7 @@ const ArmsRecovered = () => {
         try {
             setWorking(true);
             const config = { method: 'DELETE' };
-            const uri = DELETE_MEDIA_API.replaceAll(':id', item.media_id);
+            const uri = DELETE_ARMS_RECOVERED_API.replaceAll(':id', item.id);
             const rs = await request(uri, config);
             setFetching(true)
             notifyWithIcon('success', rs.message);

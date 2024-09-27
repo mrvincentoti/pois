@@ -273,3 +273,4 @@ export const FETCH_ARMS_API = `${BASE_POI_URL}/arms`;
 export const CREATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms`;
 export const UPDATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/`;
 export const FETCH_ARMS_RECOVERED_API = `${BASE_POI_URL}/poi-recovered-arms/:id`;
+export const DELETE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/:id`;
