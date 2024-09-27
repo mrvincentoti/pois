@@ -27,7 +27,7 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 			const formData = new FormData();
 			formData.append('file', fileList[0]);
 			formData.append('media_caption', values.caption);
-
+			
 			const uri = media
 				? UPDATE_MEDIA_API.replace(':id', id)
 				: CREATE_MEDIA_API.replace(':id', id);
@@ -40,6 +40,7 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 			});
 
 			const data = await response.json();
+
 
 			if (data.error) {
 				let errorMessage = data.error;

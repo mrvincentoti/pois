@@ -87,9 +87,6 @@ def add_poi_media(poi_id):
     
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
-
-    if 'media_type' not in request.form:
-        return jsonify({'message': 'Media type is required'}), 400
     
     file = request.files['file']
     created_by = g.user["id"]
