@@ -9,13 +9,14 @@ class Poi(db.Model):
     __tablename__ = 'poi'
 
     id = db.Column(db.Integer, primary_key=True) #captured
-    ref_numb = db.Column(db.String(64), unique=False, nullable=True) #captured
+    ref_numb = db.Column(db.String(64), unique=False, nullable=False) #captured
     picture = db.Column(db.Text(length=200000000), unique=False, nullable=True)  # captured
     first_name = db.Column(db.String(64), nullable=False) #captured
     middle_name = db.Column(db.String(64), nullable=True) #captured
     last_name = db.Column(db.String(64), nullable=False) #captured
+    marital_status = db.Column(db.String(64), nullable=True) #captured
     alias = db.Column(db.Text, unique=False, nullable=True)
-    dob = db.Column(db.Date, nullable=True) #captured
+    dob = db.Column(db.Text, nullable=True) #captured
     passport_number = db.Column(db.String(64), nullable=True) #captured
     other_id_number = db.Column(db.String(64), nullable=True) #captured
     phone_number = db.Column(db.String(64), nullable=True) #captured
@@ -24,11 +25,11 @@ class Poi(db.Model):
     affiliation = db.Column(db.Text, unique=False, nullable=True)
     address = db.Column(db.Text, nullable=True) #captured
     remark = db.Column(db.Text, nullable=True) #captured
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id')) #captured
-    source_id = db.Column(db.Integer, db.ForeignKey('sources.id')) #captured
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id')) #captured
-    state_id = db.Column(db.Integer, db.ForeignKey('state.id')) #captured
-    gender_id = db.Column(db.Integer, db.ForeignKey('genders.id')) #captured
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True) #captured
+    source_id = db.Column(db.Integer, db.ForeignKey('sources.id'), nullable=True) #captured
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=True) #captured
+    state_id = db.Column(db.Integer, db.ForeignKey('state.id'), nullable=True) #captured
+    gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True) #captured
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
@@ -40,7 +41,7 @@ class Poi(db.Model):
     gender = db.relationship("Gender", backref="poi")
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
-                passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,
+                passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,marital_status=None,
                 affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
@@ -48,6 +49,7 @@ class Poi(db.Model):
         self.first_name = first_name
         self.middle_name = middle_name
         self.last_name = last_name
+        self.marital_status= marital_status
         self.alias = alias
         self.dob = dob
         self.passport_number = passport_number
@@ -66,6 +68,7 @@ class Poi(db.Model):
         self.deleted_at = deleted_at
         self.created_at = created_at
         self.created_by = created_by
+        
 
     def soft_delete(self):
         self.deleted_at = datetime.now()
@@ -78,7 +81,7 @@ class Poi(db.Model):
         db.session.commit()
 
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
-            email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,
+            email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,marital_status= None,
             category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
@@ -120,6 +123,8 @@ class Poi(db.Model):
             self.state_id = state_id
         if gender_id:
             self.gender_id = gender_id
+        if marital_status:
+            self.marital_status = marital_status
         if deleted_at:
             self.deleted_at = deleted_at
         if created_by:
@@ -144,6 +149,7 @@ class Poi(db.Model):
             'role': self.role,
             'affiliation': self.affiliation,
             'address': self.address,
+            'marital_status': self.marital_status,
             'remark': self.remark,
             'category': self.category.to_dict() if self.category else None,
             'source': self.source.to_dict() if self.source else None,

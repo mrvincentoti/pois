@@ -5,7 +5,12 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import { Link, useNavigate } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import { asyncFetch, notifyWithIcon, request } from '../../services/utilities';
+import {
+	asyncFetch,
+	notifyWithIcon,
+	request,
+	createHeaders,
+} from '../../services/utilities';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
@@ -23,7 +28,7 @@ import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
-import UploadButton from '../../components/UploadItem';
+import UploadFilePicture from '../../components/UploadFile';
 import {
 	categoryList,
 	confirmationList,
@@ -103,6 +108,7 @@ const NewPoi = () => {
 	const handleEditInputConfirm = () => {
 		const newTags = [...alias];
 		newTags[editInputIndex] = editInputValue;
+
 		setAlias(newTags);
 		setEditInputIndex(-1);
 		setEditInputValue('');
@@ -154,12 +160,6 @@ const NewPoi = () => {
 		setStates(rs.states);
 	}, []);
 
-	const getBase64 = (img, callback) => {
-		const reader = new FileReader();
-		reader.addEventListener('load', () => callback(reader.result));
-		reader.readAsDataURL(img);
-	};
-
 	const changeImage = data => {
 		setImageUrl(data);
 	};
@@ -173,32 +173,6 @@ const NewPoi = () => {
 	);
 	const tagChild = alias.map(forMap);
 
-	const handleChange = info => {
-		if (info.file.status === 'uploading') {
-			setLoading(true);
-			return;
-		}
-		if (info.file.status === 'done') {
-			// Get this url from response in real world.
-			getBase64(info.file.originFileObj, url => {
-				setLoading(false);
-				setImageUrl(url);
-			});
-		}
-	};
-
-	const beforeUpload = file => {
-		const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-		if (!isJpgOrPng) {
-			message.error('You can only upload JPG/PNG file!');
-		}
-		const isLt2M = file.size / 1024 / 1024 < 2;
-		if (!isLt2M) {
-			message.error('Image must smaller than 2MB!');
-		}
-		return isJpgOrPng && isLt2M;
-	};
-
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -206,36 +180,6 @@ const NewPoi = () => {
 		}
 	}, [fetchApis, loaded]);
 
-	// const onSubmit = async values => {
-	// 	console.log(imageUrl);
-
-	// 	try {
-	// 		const config = {
-	// 			method: 'POST',
-	// 			body: {
-	// 				...values,
-	// 				category_id: values.category_id?.id || null,
-	// 				source_id: values.source_id?.id || null,
-	// 				gender_id: values.gender?.id || null,
-	// 				state_id: values.state_id?.id || null,
-	// 				affiliation_id: values.affiliation?.id || null,
-	// 				marital_status: values.marital_status?.id || null,
-	// 				picture: imageUrl || null,
-	// 				// language_spoken: language,
-	// 				alias: alias.join(", "),
-	// 				gender: undefined,
-	// 				// affiliation: undefined,
-	// 			},
-	// 		};
-	// 		console.log(config.body);
-	// 		const rs = await request(CREATE_POI_API, config);
-	// 		console.log(rs);
-	// 		notifyWithIcon('success', rs.message);
-	// 		navigate('/pois/poi');
-	// 	} catch (e) {
-	// 		return { [FORM_ERROR]: e.message || 'could not create Poi' };
-	// 	}
-	// };
 	const onSubmit = async values => {
 		try {
 			// Create a FormData object
@@ -244,28 +188,49 @@ const NewPoi = () => {
 			for (const key in values) {
 				formData.append(key, values[key]);
 			}
-			// Append values to formData
-			formData.append('category_id', values.category_id?.id || null);
-			formData.append('source_id', values.source_id?.id || null);
-			formData.append('gender_id', values.gender?.id || null);
-			formData.append('state_id', values.state_id?.id || null);
-			formData.append('affiliation_id', values.affiliation?.id || null);
-			formData.append('marital_status', values.marital_status?.id || null);
-			formData.append('picture', imageUrl || null); // Append image or file
-			formData.append('alias', alias.join(', '));
 
-			// You can remove undefined values by not appending them
-			// gender is omitted in the request
-
-			const config = {
-				method: 'POST',
-				body: formData, // Send the FormData object
+			// Function to append to formData if the value exists
+			const appendIfExists = (key, value) => {
+				if (value !== undefined && value !== null) {
+					formData.append(key, value);
+				}
 			};
 
-			const rs = await request(CREATE_POI_API, config); // Adjust this according to how 'request' is defined
-			console.log(rs);
-			notifyWithIcon('success', rs.message);
-			navigate('/pois/poi');
+			// Conditionally append values to FormData
+			appendIfExists('category_id', values.category?.id);
+			appendIfExists('source_id', values.source?.id);
+			appendIfExists('gender_id', values.gender?.id);
+			appendIfExists('state_id', values.state?.id);
+			appendIfExists('affiliation_id', values.affiliation?.id);
+			appendIfExists('marital_status', values.marital_status?.name);
+			appendIfExists('picture', imageUrl);
+			appendIfExists('alias', alias.length > 0 ? alias.join(', ') : null);
+
+			const uri = CREATE_POI_API;
+
+			const headers = createHeaders(true);
+			const response = await fetch(uri, {
+				method: 'POST',
+				body: formData,
+				headers: headers,
+			});
+
+			// for (let pair of formData.entries()) {
+			// 	console.log(`${pair[0]}: ${pair[1]}`);
+			// }
+
+			// return
+
+			const data = await response.json();
+
+			if (data.error) {
+				let errorMessage = data.error;
+
+				notifyWithIcon('error', errorMessage);
+			} else {
+				notifyWithIcon('success', 'POI created successfully');
+				navigate('/pois/poi');
+			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
 		}
@@ -281,45 +246,15 @@ const NewPoi = () => {
 					validate={values => {
 						const errors = {};
 
-						// if (!values.pf_num) {
-						// 	errors.pf_num = 'enter pf number';
-						// }
-						// if (!values.first_name) {
-						// 	errors.first_name = 'enter first name';
-						// }
-						// if (!values.last_name) {
-						// 	errors.last_name = 'enter last name';
-						// }
-						// if (!values.dob) {
-						// 	errors.dob = 'enter date of birth';
-						// }
-						// if (!values.gender) {
-						// 	errors.gender = 'select gender';
-						// }
-						// if (!values.affiliation) {
-						// 	errors.affiliation = 'select affiliation';
-						// }
-						// if (!values.state_id) {
-						// 	errors.state_id = 'select state of origin';
-						// }
-						// if (!values.pf_num) {
-						// 	errors.pf_num = 'enter pfs number';
-						// }
-						// if (!values.lga) {
-						// 	errors.lga = 'select lga';
-						// }
-						// if (!values.rank_id) {
-						// 	errors.rank_id = 'select rank';
-						// }
-						// if (!values.directorate_id) {
-						// 	errors.directorate_id = 'select directorate';
-						// }
-						// if (!values.cadre_id) {
-						// 	errors.cadre_id = 'select cadre';
-						// }
-						// if (!values.date_of_employment) {
-						// 	errors.date_of_employment = 'enter date of employment';
-						// }
+						if (!values.first_name) {
+							errors.first_name = 'Enter first name';
+						}
+						if (!values.last_name) {
+							errors.last_name = 'enter first name';
+						}
+						if (!values.ref_numb) {
+							errors.ref_numb = 'enter ref number';
+						}
 
 						return errors;
 					}}
@@ -638,10 +573,10 @@ const NewPoi = () => {
 													<ErrorBlock name="role" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="category_id">
+													<label className="form-label" htmlFor="category">
 														Category <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="category_id" name="category_id">
+													<Field id="category" name="category">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -653,13 +588,13 @@ const NewPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category_id" />
+													<ErrorBlock name="category" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="source_id">
+													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="source_id" name="source_id">
+													<Field id="source" name="source">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -671,7 +606,7 @@ const NewPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="source_id" />
+													<ErrorBlock name="source" />
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
@@ -692,7 +627,7 @@ const NewPoi = () => {
 																	setCountry(e);
 																	setStates([]);
 																	fetchStates(e.id);
-																	form.change('state_id', undefined);
+																	form.change('state', undefined);
 																}}
 															/>
 														)}
@@ -700,10 +635,10 @@ const NewPoi = () => {
 													<ErrorBlock name="country_id" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="state_id">
+													<label className="form-label" htmlFor="state">
 														State <span style={{ color: 'red' }}>*</span>
 													</label>
-													<Field id="state_id" name="state_id">
+													<Field id="state" name="state">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -715,7 +650,7 @@ const NewPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="state_id" />
+													<ErrorBlock name="state" />
 												</div>
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">
@@ -771,7 +706,7 @@ const NewPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="mb-3 text-center">
-												<UploadButton
+												<UploadFilePicture
 													{...props}
 													imageUrl={imageUrl}
 													changeImage={data => changeImage(data)}

@@ -5,7 +5,12 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import { asyncFetch, notifyWithIcon, request } from '../../services/utilities';
+import {
+	asyncFetch,
+	notifyWithIcon,
+	request,
+	createHeaders,
+} from '../../services/utilities';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
 import {
@@ -22,7 +27,7 @@ import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
-import UploadButton from '../../components/UploadItem';
+import UploadFilePicture from '../../components/UploadFile';
 import {
 	categoryList,
 	confirmationList,
@@ -43,6 +48,7 @@ const EditPoi = () => {
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
 	const [affiliations, setAffliations] = useState([]);
+	const [alias, setAlias] = useState([]);
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
@@ -60,21 +66,6 @@ const EditPoi = () => {
 	const [inputVisible, setInputVisible] = useState(false);
 	const [inputValue, setInputValue] = useState('');
 	const [fileList, setFileList] = useState([]);
-
-	const props = {
-		maxCount: 1,
-		beforeUpload: file => {
-			console.log('jhwde');
-		},
-		onRemove: file => {
-			const index = fileList.indexOf(file);
-			const newFileList = fileList.slice();
-			newFileList.splice(index, 1);
-			setFileList(newFileList);
-		},
-
-		fileList,
-	};
 
 	const fetchApis = useCallback(async () => {
 		try {
@@ -136,9 +127,28 @@ const EditPoi = () => {
 					return;
 				}
 
+				try {
+					const tagsArray = item.alias.split(',').map(tag => tag.trim());
+
+					setAlias(tagsArray);
+					setTags(tagsArray);
+				} catch (error) {
+					console.error('Failed to parse alias:', error);
+
+					const jsonArray = [item.alias];
+					setAlias(jsonArray);
+				}
+
+				setDateOfBirth(new Date(item.dob));
 				setCountry(item.country);
 				setSource(item.source);
 				setPoi(item);
+				if (item.marital_status)
+					setMaritalStatus(
+						maritalStatusList.find(
+							status => status.name === item.marital_status
+						)
+					);
 				setLoaded(true);
 			});
 		}
@@ -193,39 +203,96 @@ const EditPoi = () => {
 	// 	return rs?.directorates || [];
 	// };
 
+	// Function to convert null or undefined values to an empty string
+	const convertNullToEmptyString = obj => {
+		for (let key in obj) {
+			if (obj[key] === null || obj[key] === undefined) {
+				obj[key] = ''; // Convert null or undefined to an empty string
+			}
+		}
+	};
+
 	const onSubmit = async values => {
-		console.log(fileList);
-		return;
+		console.log(values);
+		console.log(tags);
 
-		// if (employeeStatus.id) {
-		// 	values.employment_status = employeeStatus.id;
-
-		// } else {
-		// 	values.employment_status = 11;
-		// }
+		convertNullToEmptyString(values);
 
 		try {
-			const config = {
-				method: 'PUT',
-				body: {
-					...values,
-					category_id: values.category_id?.id || null,
-					source_id: values.source_id?.id || null,
-					gender_id: values.gender?.id || null,
-					state_id: values.state_id?.id || null,
-					affiliation_id: values.affiliation?.id || null,
-					marital_status: values.marital_status?.id || null,
-					picture: fileList || null,
-					country_id: values.country_id?.id || null,
-					gender: undefined,
-					// affiliation: undefined,
-				},
+			// Create a FormData object
+			const formData = new FormData();
+			// Append your values to FormData
+
+			if (country) values.country_id = country.id;
+			if (maritalStatus) values.marital_status = maritalStatus.name;
+			if (dateOfBirth) values.dob = dateOfBirth;
+			if (tags) values.alias = tags;
+
+			for (const key in values) {
+				formData.append(key, values[key]);
+			}
+
+			// Function to append to formData only if the value exists
+			const appendIfExists = (key, value) => {
+				if (value !== undefined && value !== null) {
+					formData.append(key, value);
+				}
 			};
-			const rs = await request(UPDATE_POI_API.replace(':id', param.id), config);
-			notifyWithIcon('success', rs.message);
-			navigate('/pois/poi');
+
+			// Conditionally append values to FormData, with empty strings for non-existent values
+			if (values.category) {
+				formData.append('category_id', values.category.id);
+			}
+
+			if (values.source) {
+				formData.append('source_id', values.source?.id || '');
+			}
+			if (values.gender) {
+				formData.append('gender_id', values.gender?.id || '');
+			}
+			if (values.state) {
+				formData.append('state_id', values.state?.id || '');
+			}
+			if (values.affiliation) {
+				formData.append('affiliation_id', values.affiliation?.id || '');
+			}
+			if (values.marital_status) {
+				formData.append('marital_status', values.marital_status?.name || '');
+			}
+			if (imageUrl) {
+				formData.append('picture', imageUrl || ''); // Ensure imageUrl is not null
+			}
+			if (tags) {
+				formData.append('alias', tags.length > 0 ? tags.join(', ') : ''); // Ensure alias is not null
+			}
+
+			// for (let pair of formData.entries()) {
+			// 	console.log(`${pair[0]}: ${pair[1]}`);
+			// }
+
+			// return
+
+			const uri = UPDATE_POI_API.replace(':id', param.id);
+
+			const headers = createHeaders(true);
+			const response = await fetch(uri, {
+				method: 'PUT',
+				body: formData,
+				headers: headers,
+			});
+
+			const data = await response.json();
+
+			if (data.error) {
+				let errorMessage = data.error;
+
+				notifyWithIcon('error', errorMessage);
+			} else {
+				notifyWithIcon('success', 'POI updated successfully');
+				navigate('/pois/poi');
+			}
 		} catch (e) {
-			return { [FORM_ERROR]: e.message || 'could not save poi' };
+			return { [FORM_ERROR]: e.message || 'could not create Poi' };
 		}
 	};
 
@@ -236,11 +303,7 @@ const EditPoi = () => {
 				<Form
 					initialValues={{
 						...poi,
-						source_id: poi?.source,
-						state_id: poi?.state,
-						category_id: poi?.category,
 						affiliation_id: poi?.affiliation,
-						country_id: poi?.country || '',
 					}}
 					onSubmit={onSubmit}
 					validate={values => {
@@ -335,17 +398,44 @@ const EditPoi = () => {
 													</label>
 													<Field id="alias" name="alias">
 														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="alias"
-																placeholder="Enter alias"
-															/>
+															<div className={`form-control ${error(meta)}`}>
+																{tagChild}
+																{inputVisible && (
+																	<Input
+																		type="text"
+																		size="small"
+																		value={inputValue}
+																		onChange={handleInputChange}
+																		onBlur={handleInputConfirm}
+																		onPressEnter={handleInputConfirm}
+																		style={{
+																			width: 78,
+																			marginRight: 8,
+																			marginTop: 5,
+																		}}
+																	/>
+																)}
+																{!inputVisible && (
+																	<Tag
+																		onClick={showInput}
+																		className="site-tag-plus"
+																	>
+																		<i className="ri-add-line" /> Add
+																	</Tag>
+																)}
+																<input
+																	{...input}
+																	type="hidden"
+																	value={tags}
+																	onChange={() => {}}
+																	onBlur={() => input.onBlur(tags)}
+																/>
+															</div>
 														)}
 													</Field>
 													<ErrorBlock name="alias" />
 												</div>
+
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="phone_number">
 														Phone
@@ -399,10 +489,10 @@ const EditPoi = () => {
 													<ErrorBlock name="gender" />
 												</div>
 												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="dob">
+													<label className="form-label" htmlFor="dateOfBirth">
 														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="dob" name="dob">
+													<Field id="dateOfBirth" name="dateOfBirth">
 														{({ input, meta }) => (
 															<Flatpickr
 																className={`form-control ${error(meta)}`}
@@ -421,7 +511,7 @@ const EditPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="dob" />
+													<ErrorBlock name="dateOfBirth" />
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label
@@ -537,10 +627,10 @@ const EditPoi = () => {
 													<ErrorBlock name="role" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="category_id">
+													<label className="form-label" htmlFor="category">
 														Category <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="category_id" name="category_id">
+													<Field id="category" name="category">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -552,13 +642,13 @@ const EditPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category_id" />
+													<ErrorBlock name="category" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="source_id">
+													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="source_id" name="source_id">
+													<Field id="source" name="source">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -570,7 +660,7 @@ const EditPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="source_id" />
+													<ErrorBlock name="source" />
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
@@ -593,7 +683,7 @@ const EditPoi = () => {
 																	setCountry(e);
 																	setStates([]);
 																	fetchStates(e.id);
-																	form.change('state_id', undefined);
+																	form.change('state', undefined);
 																}}
 															/>
 														)}
@@ -601,10 +691,10 @@ const EditPoi = () => {
 													<ErrorBlock name="country_id" />
 												</div>
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="state_id">
+													<label className="form-label" htmlFor="state">
 														State <span style={{ color: 'red' }}>*</span>
 													</label>
-													<Field id="state_id" name="state_id">
+													<Field id="state" name="state">
 														{({ input, meta }) => (
 															<Select
 																{...input}
@@ -616,7 +706,7 @@ const EditPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="state_id" />
+													<ErrorBlock name="state" />
 												</div>
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">
@@ -672,8 +762,7 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="mb-3 text-center">
-												<UploadButton
-													{...props}
+												<UploadFilePicture
 													imageUrl={imageUrl}
 													changeImage={data => changeImage(data)}
 													style={{ width: '200px', height: '200px' }}
