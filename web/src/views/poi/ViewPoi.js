@@ -29,8 +29,9 @@ import profileBg from '../../assets/images/profile-bg.jpg';
 import samplePicture from '../../assets/images/users/avatar-1.jpg';
 import sampleMedia5 from '../../assets/images/small/img-5.jpg';
 import sampleMedia6 from '../../assets/images/small/img-6.jpg';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import PoiPrint from './PoiPrint';
+
 
 import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
@@ -39,10 +40,11 @@ import Activities from './Activities';
 import ArmsRecovered from './ArmsRecovered';
 
 const ViewPoi = () => {
-	const employeePrintRef = useRef();
+	const printRef = useRef(null);
 	const [loaded, setLoaded] = useState(false);
 	const [poiData, setPoiData] = useState(null);
 	const [activeTab, setActiveTab] = useState('overview');
+	const [showPrintModal, setShowPrintModal] = useState(false); // State for modal visibility
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -89,16 +91,36 @@ const ViewPoi = () => {
 		}
 	}, [fetchPoiDetails, loaded, navigate, params.id, tab]);
 
-	const handlePrint = () => {
-		document.body.classList.add('print-mode');
-		window.print();
-		document.body.classList.remove('print-mode');
-	};
 
 	const handleTabClick = tabName => {
 		setActiveTab(tabName);
 		navigate(`/pois/${params.id}/view?tab=` + tabName);
 	};
+
+	// Function to open the modal
+	const openPrintModal = () => {
+		console.log("i am here");
+		setShowPrintModal(true);
+	};
+
+	// Function to close the modal
+	const closePrintModal = () => {
+		setShowPrintModal(false);
+	};
+
+	// Handle print action (can be triggered from within the modal)
+	const handlePrint = () => {
+		const printContent = printRef.current;
+		const printWindow = window.open('', '', 'width=800,height=600');
+		printWindow.document.write('<html><head><title>Print</title></head><body>');
+		printWindow.document.write(printContent.outerHTML);
+		printWindow.document.write('</body></html>');
+		printWindow.document.close();
+		printWindow.focus();
+		printWindow.print();
+		printWindow.close();
+	};
+
 
 	return (
 		<>
@@ -251,8 +273,8 @@ const ViewPoi = () => {
 										</ul>
 										<div className="flex-shrink-0">
 											<a
-												href="pages-profile-settings.html"
 												className="btn btn-info"
+												onClick={() => openPrintModal()}
 											>
 												<i className="ri-edit-box-line align-bottom"></i> Print
 											</a>
@@ -279,6 +301,7 @@ const ViewPoi = () => {
 								</div>
 							</div>
 						</div>
+
 					</div>
 				</>
 			) : (
@@ -288,6 +311,26 @@ const ViewPoi = () => {
 					</Spin>
 				</div>
 			)}
+
+			{/* Ant Design Modal */}
+			<Modal
+				title="Print Preview"
+				visible={showPrintModal}
+				onCancel={closePrintModal}
+				footer={[
+					<Button key="back" onClick={closePrintModal}>
+						Cancel
+					</Button>,
+					<Button key="print" type="primary" onClick={handlePrint}>
+						Print
+					</Button>,
+				]}
+			>
+				{/* This is the content you want to print */}
+				<div ref={printRef}>
+					<PoiPrint poiData={poiData} />
+				</div>
+			</Modal>
 		</>
 	);
 };
