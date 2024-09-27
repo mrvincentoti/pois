@@ -3,7 +3,7 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, remove_object_from_minio
 import os
 import uuid
 from werkzeug.utils import secure_filename
@@ -288,7 +288,7 @@ def update_poi(poi_id):
                     # Delete the old picture file from MinIO (if necessary)
                     old_picture_key = os.path.basename(poi.picture)
                     try:
-                        minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_picture_key)
+                        remove_object_from_minio(old_picture_key)
                     except Exception as e:
                         print(f"Error deleting old picture from MinIO: {e}")
 
