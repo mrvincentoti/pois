@@ -1,8 +1,8 @@
 import os
 import uuid
 from .. import db
-from .models import PoiMedia
-from ..poi.models import Poi
+from .models import BriefMedia
+from ..brief.models import Brief
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
@@ -14,7 +14,7 @@ load_dotenv()
 @custom_jwt_required
 def get_all_media():
     try:
-        medias = PoiMedia.query.all()
+        medias = BriefMedia.query.all()
 
         media_list = []
         for media in medias:
@@ -33,7 +33,7 @@ def get_all_media():
 @custom_jwt_required
 def get_media(media_id):
     # Fetch the media record
-    media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
         return jsonify({"message": "Media not found", "media": []}), 200
@@ -41,7 +41,8 @@ def get_media(media_id):
     # Prepare media data
     media_data = {
         "id": media_record.id,
-        "poi_id": media_record.poi_id,
+        "brief_id": media_record.brief_id,
+        "media_caption": media_record.media_caption,
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "created_by": media_record.created_by,
@@ -64,7 +65,7 @@ def get_media(media_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Media, Fetch",
+            "tags": "Media, GET",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -79,11 +80,11 @@ def get_media(media_id):
 
 
 @custom_jwt_required
-def add_poi_media(poi_id):
-    poi = Poi.query.filter_by(id=poi_id, deleted_at=None).first()
+def add_brief_media(brief_id):
+    brief = Brief.query.filter_by(id=brief_id, deleted_at=None).first()
 
-    if poi is None:
-        return jsonify({"message": "POI not found", "POI": []}), 200
+    if brief is None:
+        return jsonify({"message": "Brief not found"}), 404
     
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
@@ -110,8 +111,8 @@ def add_poi_media(poi_id):
             return jsonify({"message": "Error uploading file to MinIO"}), 500
 
         # Insert into database
-        new_media = PoiMedia(
-            poi_id=poi_id,
+        new_media = BriefMedia(
+            brief_id=brief_id,
             media_type=media_type,
             media_url=minio_file_url,
             media_caption=media_caption,
@@ -131,11 +132,11 @@ def add_poi_media(poi_id):
                 "last_name": g.user["last_name"] if hasattr(g, "user") else None,
                 "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
                 "user_email": g.user["email"] if hasattr(g, "user") else None,
-                "event": "add_poi_media",
+                "event": "add_brief_media",
                 "auditable_id": new_media.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "poi_id": new_media.poi_id,
+                    "brief_id": new_media.brief_id,
                     "media_type": new_media.media_type,
                     "media_url": new_media.media_url,
                     "media_caption": new_media.media_caption
@@ -159,88 +160,96 @@ def add_poi_media(poi_id):
 
 
 @custom_jwt_required
-def get_poi_media(poi_id):
+def get_brief_media(brief_id):
     try:
-        # Get pagination parameters from the request (default values: page=1, per_page=10)
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
 
-        # Query the database for media associated with the given poi_id, ordered by created_at descending, and paginate
-        media_paginated = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None)\
-            .order_by(PoiMedia.created_at.desc())\
-            .paginate(page=page, per_page=per_page, error_out=False)
+        # Query the database for media associated with the given brief_id, ordered by created_at descending
+        query = BriefMedia.query.filter_by(brief_id=brief_id, deleted_at=None).order_by(BriefMedia.created_at.desc())
+
+        # Paginate the query
+        paginated_media = query.paginate(page=page, per_page=per_page, error_out=False)
 
         # Check if any media records were found
-        if not media_paginated.items:
-            return jsonify({"message": "No media found for the given POI", "media": []}), 200
+        if not paginated_media.items:
+            return jsonify({"message": "No media found for the given Brief"}), 404
 
         # Prepare the list of media to return
         media_list = []
-        for media in media_paginated.items:
-            poi = Poi.query.filter_by(id=media.poi_id).first()
-            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
+        for media in paginated_media.items:
+            brief = Brief.query.filter_by(id=BriefMedia.brief_id).first()
+        
+            if brief:
+                brief_title = f"{brief.title or ''}".strip()
 
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
                 "media_url": media.media_url,
                 "media_caption": media.media_caption or 'No caption',
-                "poi_id": poi.id if poi else None,
-                "poi_name": poi_name,
+                "brief_id": brief.id,
+                "brief_title": brief_title,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None
             }
             media_list.append(media_data)
 
-        # Prepare the paginated response
-        response = {
-            'total': media_paginated.total,
-            'pages': media_paginated.pages,
-            'current_page': media_paginated.page,
-            'per_page': media_paginated.per_page,
-            'media': media_list,
-            'status': 'success',
-            'status_code': 200
-        }
-
         # Log audit event
-        current_time = datetime.utcnow()
-        audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["email"] if hasattr(g, "user") else None,
-            "event": "get_poi_media",
-            "auditable_id": poi_id,
-            "old_values": None,
-            "new_values": json.dumps({
-                "media_records_count": len(media_list),
-                "media_details": media_list
-            }),
-            "url": request.url,
-            "ip_address": request.remote_addr,
-            "user_agent": request.user_agent.string,
-            "tags": "Media, Retrieve",
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
-        }
+        try:
+            current_time = datetime.utcnow()
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "get_brief_medias",
+                "auditable_id": brief_id,
+                "old_values": None,
+                "new_values": json.dumps({
+                    "media_records_count": len(media_list),
+                    "media_details": media_list
+                }),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Media, Retrieve",
+                "created_at": current_time.isoformat(),
+                "updated_at": current_time.isoformat(),
+            }
 
-        save_audit_data(audit_data)
+            save_audit_data(audit_data)
+
+        except Exception as e:
+            return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
+
+        # Return the paginated media list with pagination details
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "media": media_list,
+            "pagination": {
+                "total": paginated_media.total,
+                "pages": paginated_media.pages,
+                "current_page": paginated_media.page,
+                "per_page": paginated_media.per_page,
+                "next_page": paginated_media.next_num if paginated_media.has_next else None,
+                "prev_page": paginated_media.prev_num if paginated_media.has_prev else None
+            }
+        })
 
     except Exception as e:
-        # Rollback any failed DB transaction and return error
-        db.session.rollback()
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
-    return jsonify(response), response.get('status_code', 500)
 
 @custom_jwt_required
 def edit_media(media_id):
-    media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found", "media": []}), 200
+        return jsonify({"message": "Media not found"}), 404
 
     old_values = {
         "media_type": media_record.media_type,
@@ -303,7 +312,7 @@ def edit_media(media_id):
                     "url": request.url,
                     "ip_address": request.remote_addr,
                     "user_agent": request.user_agent.string,
-                    "tags": "Media, Edit",
+                    "tags": "Brief, Media, Edit",
                     "created_at": current_time.isoformat(),
                     "updated_at": current_time.isoformat(),
                 }
@@ -364,10 +373,10 @@ def edit_media(media_id):
 
 @custom_jwt_required
 def delete_media(media_id):
-    media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found", "media": []}), 200
+        return jsonify({"message": "Media not found"}), 404
 
     old_values = {
         "media_type": media_record.media_type,
@@ -396,7 +405,7 @@ def delete_media(media_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Media, Delete",
+                "tags": "Brief, Media, Delete",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -416,7 +425,7 @@ def delete_media(media_id):
 @custom_jwt_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
-    media_record = PoiMedia.query.filter_by(id=media_id).first()
+    media_record = BriefMedia.query.filter_by(id=media_id).first()
 
     if media_record is None:
         return jsonify({"message": "Media not found", "media": []}), 200
@@ -452,7 +461,7 @@ def restore_media(media_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Media, Restore",
+                "tags": "Brief, Media, Restore",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }

@@ -36,12 +36,13 @@ def get_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     # Prepare media data
     media_data = {
         "id": media_record.id,
         "org_id": media_record.org_id,
+        "media_caption": media_record.media_caption,
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "created_by": media_record.created_by,
@@ -83,7 +84,7 @@ def add_org_media(org_id):
     org = Organisation.query.filter_by(id=org_id, deleted_at=None).first()
 
     if org is None:
-        return jsonify({"message": "Organisation not found"}), 404
+        return jsonify({"message": "Organisation not found", "Organisation": []}), 200
     
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
@@ -161,21 +162,28 @@ def add_org_media(org_id):
 @custom_jwt_required
 def get_org_media(org_id):
     try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
         # Query the database for media associated with the given org_id, ordered by created_at descending
-        media_records = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc()).all()
+        query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc())
+
+        # Paginate the query
+        paginated_media = query.paginate(page=page, per_page=per_page, error_out=False)
 
         # Check if any media records were found
-        if not media_records:
+        if not paginated_media.items:
             return jsonify({"message": "No media found for the given organisation"}), 404
 
         # Prepare the list of media to return
         media_list = []
-        for media in media_records:
+        for media in paginated_media.items:
             org = Organisation.query.filter_by(id=OrgMedia.org_id).first()
-        
+
             if org:
                 org_name = f"{org.org_name or ''}".strip()
-                
+
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
@@ -217,11 +225,19 @@ def get_org_media(org_id):
         except Exception as e:
             return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
 
-        # Return the list of media with status success
+        # Return the paginated media list with pagination details
         return jsonify({
             "status": "success",
             "status_code": 200,
             "media": media_list,
+            "pagination": {
+                "total": paginated_media.total,
+                "pages": paginated_media.pages,
+                "current_page": paginated_media.page,
+                "per_page": paginated_media.per_page,
+                "next_page": paginated_media.next_num if paginated_media.has_next else None,
+                "prev_page": paginated_media.prev_num if paginated_media.has_prev else None
+            }
         })
 
     except Exception as e:
@@ -233,7 +249,7 @@ def edit_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -360,7 +376,7 @@ def delete_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     old_values = {
         "media_type": media_record.media_type,
@@ -412,7 +428,7 @@ def restore_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found"}), 404
+        return jsonify({"message": "Media not found", "media": []}), 200
 
     if media_record.deleted_at is None:
         return jsonify({"message": "Media is not deleted"}), 400

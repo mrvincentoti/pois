@@ -10,7 +10,7 @@ def list_org_medias():
    if request.method == 'GET': return get_all_media()
    return 'Method is Not Allowed'
 
-@app.route("/org-media/<org_id>", methods=['GET', 'POST'])
+@app.route("/org-medias/<org_id>", methods=['GET', 'POST'])
 def list_org_media(org_id):
    if request.method == 'GET': return get_org_media(org_id)
    if request.method == 'POST': return add_org_media(org_id)
