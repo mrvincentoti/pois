@@ -1,8 +1,8 @@
 import os
 import uuid
 from .. import db
-from .models import OrgMedia
-from ..organisation.models import Organisation
+from .models import BriefMedia
+from ..brief.models import Brief
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
@@ -14,7 +14,7 @@ load_dotenv()
 @custom_jwt_required
 def get_all_media():
     try:
-        medias = OrgMedia.query.all()
+        medias = BriefMedia.query.all()
 
         media_list = []
         for media in medias:
@@ -33,7 +33,7 @@ def get_all_media():
 @custom_jwt_required
 def get_media(media_id):
     # Fetch the media record
-    media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
         return jsonify({"message": "Media not found", "media": []}), 200
@@ -41,7 +41,7 @@ def get_media(media_id):
     # Prepare media data
     media_data = {
         "id": media_record.id,
-        "org_id": media_record.org_id,
+        "brief_id": media_record.brief_id,
         "media_caption": media_record.media_caption,
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
@@ -65,7 +65,7 @@ def get_media(media_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Media, Fetch",
+            "tags": "Media, GET",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -80,11 +80,11 @@ def get_media(media_id):
 
 
 @custom_jwt_required
-def add_org_media(org_id):
-    org = Organisation.query.filter_by(id=org_id, deleted_at=None).first()
+def add_brief_media(brief_id):
+    brief = Brief.query.filter_by(id=brief_id, deleted_at=None).first()
 
-    if org is None:
-        return jsonify({"message": "Organisation not found", "Organisation": []}), 200
+    if brief is None:
+        return jsonify({"message": "Brief not found"}), 404
     
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
@@ -111,8 +111,8 @@ def add_org_media(org_id):
             return jsonify({"message": "Error uploading file to MinIO"}), 500
 
         # Insert into database
-        new_media = OrgMedia(
-            org_id=org_id,
+        new_media = BriefMedia(
+            brief_id=brief_id,
             media_type=media_type,
             media_url=minio_file_url,
             media_caption=media_caption,
@@ -132,11 +132,11 @@ def add_org_media(org_id):
                 "last_name": g.user["last_name"] if hasattr(g, "user") else None,
                 "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
                 "user_email": g.user["email"] if hasattr(g, "user") else None,
-                "event": "add_org_media",
+                "event": "add_brief_media",
                 "auditable_id": new_media.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "org_id": new_media.org_id,
+                    "brief_id": new_media.brief_id,
                     "media_type": new_media.media_type,
                     "media_url": new_media.media_url,
                     "media_caption": new_media.media_caption
@@ -160,37 +160,37 @@ def add_org_media(org_id):
 
 
 @custom_jwt_required
-def get_org_media(org_id):
+def get_brief_media(brief_id):
     try:
         # Extract pagination parameters from the request
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
 
-        # Query the database for media associated with the given org_id, ordered by created_at descending
-        query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc())
+        # Query the database for media associated with the given brief_id, ordered by created_at descending
+        query = BriefMedia.query.filter_by(brief_id=brief_id, deleted_at=None).order_by(BriefMedia.created_at.desc())
 
         # Paginate the query
         paginated_media = query.paginate(page=page, per_page=per_page, error_out=False)
 
         # Check if any media records were found
         if not paginated_media.items:
-            return jsonify({"message": "No media found for the given organisation"}), 404
+            return jsonify({"message": "No media found for the given Brief"}), 404
 
         # Prepare the list of media to return
         media_list = []
         for media in paginated_media.items:
-            org = Organisation.query.filter_by(id=OrgMedia.org_id).first()
-
-            if org:
-                org_name = f"{org.org_name or ''}".strip()
+            brief = Brief.query.filter_by(id=BriefMedia.brief_id).first()
+        
+            if brief:
+                brief_title = f"{brief.title or ''}".strip()
 
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
                 "media_url": media.media_url,
                 "media_caption": media.media_caption or 'No caption',
-                "org_id": org.id,
-                "org_name": org_name,
+                "brief_id": brief.id,
+                "brief_title": brief_title,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None
             }
@@ -205,8 +205,8 @@ def get_org_media(org_id):
                 "last_name": g.user["last_name"] if hasattr(g, "user") else None,
                 "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
                 "user_email": g.user["email"] if hasattr(g, "user") else None,
-                "event": "get_org_media",
-                "auditable_id": org_id,
+                "event": "get_brief_medias",
+                "auditable_id": brief_id,
                 "old_values": None,
                 "new_values": json.dumps({
                     "media_records_count": len(media_list),
@@ -246,10 +246,10 @@ def get_org_media(org_id):
 
 @custom_jwt_required
 def edit_media(media_id):
-    media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found", "media": []}), 200
+        return jsonify({"message": "Media not found"}), 404
 
     old_values = {
         "media_type": media_record.media_type,
@@ -312,7 +312,7 @@ def edit_media(media_id):
                     "url": request.url,
                     "ip_address": request.remote_addr,
                     "user_agent": request.user_agent.string,
-                    "tags": "Media, Edit",
+                    "tags": "Brief, Media, Edit",
                     "created_at": current_time.isoformat(),
                     "updated_at": current_time.isoformat(),
                 }
@@ -373,10 +373,10 @@ def edit_media(media_id):
 
 @custom_jwt_required
 def delete_media(media_id):
-    media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
+    media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
     if media_record is None:
-        return jsonify({"message": "Media not found", "media": []}), 200
+        return jsonify({"message": "Media not found"}), 404
 
     old_values = {
         "media_type": media_record.media_type,
@@ -405,7 +405,7 @@ def delete_media(media_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Media, Delete",
+                "tags": "Brief, Media, Delete",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -425,7 +425,7 @@ def delete_media(media_id):
 @custom_jwt_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
-    media_record = OrgMedia.query.filter_by(id=media_id).first()
+    media_record = BriefMedia.query.filter_by(id=media_id).first()
 
     if media_record is None:
         return jsonify({"message": "Media not found", "media": []}), 200
@@ -461,7 +461,7 @@ def restore_media(media_id):
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Media, Restore",
+                "tags": "Brief, Media, Restore",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
