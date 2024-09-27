@@ -27,7 +27,6 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 			const formData = new FormData();
 			formData.append('file', fileList[0]);
 			formData.append('media_caption', values.caption);
-			formData.append('media_type', 'amir');
 
 			const uri = media
 				? UPDATE_MEDIA_API.replace(':id', id)
@@ -53,7 +52,6 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 			update();
 			closeModal();
 		} catch (e) {
-			console.error(e);
 			return {
 				[FORM_ERROR]: e.message || 'Could not save media',
 			};
@@ -69,7 +67,6 @@ const ManageMedia = ({ id, closeModal, update, media }) => {
 			setFileList(newFileList);
 		},
 		beforeUpload: file => {
-			console.log('edc');
 			setFileList([file]);
 		},
 		fileList,

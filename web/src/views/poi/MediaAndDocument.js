@@ -8,9 +8,10 @@ import TableWrapper from '../../container/TableWrapper';
 import {
 	confirmAction,
 	notifyWithIcon,
-	formatFullName,
-	formatName,
 	request,
+	formatCaption,
+	formatType,
+	getMediaDetails
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -103,9 +104,9 @@ const MediaAndDocument = () => {
 		try {
 			setWorking(true);
 			const config = { method: 'DELETE' };
-			console.log(item);
 			const uri = DELETE_MEDIA_API.replaceAll(':id', item.media_id);
 			const rs = await request(uri, config);
+			console.log(rs);
 			refreshTable();
 			notifyWithIcon('success', rs.message);
 			setWorking(false);
@@ -143,7 +144,7 @@ const MediaAndDocument = () => {
 								<table className="table table-borderless align-middle mb-0">
 									<thead className="table-light">
 										<tr>
-											<th scope="col">File Name</th>
+											<th scope="col">Caption</th>
 											<th scope="col">Type</th>
 											<th scope="col">Size</th>
 											<th scope="col">Upload Date</th>
@@ -154,43 +155,22 @@ const MediaAndDocument = () => {
 										{list?.map((item, i) => {
 											return (
 												<tr key={i}>
-													{/* {params.id} */}
-													<td>
-														<div className="d-flex align-items-center">
-															<div className="ms-3 flex-grow-1">
-																<h6 className="fs-15 mb-0">
-																	<a
-																		href={''}
-																		target="_blank"
-																		rel="noopener noreferrer"
-																	>
-																		{item.media_caption}
-																	</a>
-																</h6>
+													<div className="d-flex align-items-center">
+														<div className="avatar-sm">
+															<div className={`avatar-title bg-primary-subtle ${getMediaDetails(item.media_type).colorClass} rounded fs-20`}>
+																<i className={getMediaDetails(item.media_type).icon}></i>
 															</div>
 														</div>
-													</td>
-
-													<td>{item.media_type}</td>
+														<div className="ms-3 flex-grow-1">
+															<h6 className="fs-15 mb-0"><a href="javascript:void(0)" className="text-body">{ formatCaption(item.media_caption) }</a>
+															</h6>
+														</div>
+													</div>
+													<td>{formatType(item.media_type)} File</td>
 													<td>{'--'}</td>
 													<td>{item.created_at || '--'}</td>
 													<td>
-														{/* <DocumentMediaDropDown routes={routes} /> */}
-														{/* <div class="flex-shrink-0" onClick={() => showModal('edit')}>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-pencil-fill me-1 align-bottom" style={{ fontSize: '20px' }}></i>
-                                                    </a>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-download-cloud-2-line me-2 align-middle" style={{ fontSize: '20px', color: '#0eb29c' }}></i>
-                                                    </a>
-                                                    <a href="javascript:void(0)">
-                                                        <i className="ri-delete-bin-line me-2 align-middle" style={{ fontSize: '20px', color: '#f06548' }}></i>
-                                                    </a>
-                                                </div> */}
 														<div className="hstack gap-3 flex-wrap text-end">
-															{/* <EditButton
-															onClick={() => editMedia(item)}
-														/> */}
 															<DeleteButton
 																onClick={() => confirmRemove(item)}
 															/>

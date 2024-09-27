@@ -250,30 +250,39 @@ def save_audit_data(audit_data):
         db.session.rollback()
         print(f"Error saving audit: {str(e)}")
 
-def upload_file_to_minio(bucket_name, file, object_name=None):
+
+def upload_file_to_minio(bucket_name, file, new_filename):
     try:
-        found = minio_client.bucket_exists(bucket_name)
-        if not found:
-            minio_client.make_bucket(bucket_name)
+        # Ensure the file stream is at the beginning
+        file.seek(0, os.SEEK_END)  # Move the pointer to the end of the file to get the length
+        file_length = file.tell()  # Get the position of the pointer which is the file size
+        file.seek(0)  # Reset the file pointer to the beginning
 
-        if object_name is None:
-            object_name = file.filename
+        # Ensure file length is valid
+        if file_length == 0:
+            raise ValueError("The file is empty")
 
+        # Upload the file to MinIO
         minio_client.put_object(
             bucket_name,
-            object_name,
-            file.stream,
-            file.content_length,
-            content_type=file.mimetype
+            new_filename,
+            file.stream,  # Use the file stream for upload
+            file_length,  # Manually computed file size
+            content_type=file.content_type
         )
 
-        file_url = f"{minio_endpoint}/{bucket_name}/{object_name}"
-        return file_url
+        # Return the URL for accessing the file
+        return f"{os.getenv('MINIO_URL')}/{bucket_name}/{new_filename}"
 
     except S3Error as e:
-        print("Error occurred while uploading to MinIO:", e)
+        print(f"Error saving picture file to MinIO: {str(e)}")
         return None
-    
+
+    except Exception as e:
+        print(f"An unexpected error occurred while saving picture file: {str(e)}")
+        return None
+
+
 def save_picture_file(file):
     try:
         # Generate a new filename using UUID
@@ -329,3 +338,21 @@ def delete_picture_file(picture_url):
     except Exception as e:
         # Log the error if needed
         print(f"Error deleting picture file {picture_url} from MinIO: {str(e)}")
+
+
+def get_media_type_from_extension(filename):
+    extension = os.path.splitext(filename)[1].lower()
+    if extension in ['.jpg', '.jpeg', '.png', '.gif']:
+        return 'image'
+    elif extension in ['.mp4', '.mov', '.avi', '.mkv']:
+        return 'video'
+    elif extension in ['.mp3', '.wav', '.ogg']:
+        return 'audio'
+    elif extension in ['.pdf']:
+        return 'pdf'
+    elif extension in ['.csv', '.xlsx', '.xls']:
+        return 'spreadsheet'
+    elif extension in ['.zip', '.rar']:
+        return 'archive'
+    else:
+        return 'document'  # Default for other file types

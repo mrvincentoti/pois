@@ -5,7 +5,7 @@ from .models import PoiMedia
 from ..poi.models import Poi
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -84,13 +84,10 @@ def add_poi_media(poi_id):
 
     if poi is None:
         return jsonify({"message": "POI not found"}), 404
-    
+
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
 
-    if 'media_type' not in request.form:
-        return jsonify({'message': 'Media type is required'}), 400
-    
     file = request.files['file']
     created_by = g.user["id"]
 
@@ -98,14 +95,18 @@ def add_poi_media(poi_id):
         return jsonify({'message': 'No selected file'}), 400
 
     if file and allowed_file(file.filename):
+        file.seek(0)
+
         # Generate a new filename using UUID
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
-        media_type = request.form.get('media_type')
         media_caption = request.form.get('media_caption')
+        media_type = get_media_type_from_extension(file.filename)
 
         # Upload the file to MinIO
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+
+        # Check if the upload was successful
         if not minio_file_url:
             return jsonify({"message": "Error uploading file to MinIO"}), 500
 
@@ -118,7 +119,7 @@ def add_poi_media(poi_id):
             created_by=created_by,
             created_at=datetime.utcnow()
         )
-        
+
         db.session.add(new_media)
         db.session.commit()
 
@@ -156,7 +157,6 @@ def add_poi_media(poi_id):
         return jsonify({'message': 'File successfully uploaded', 'media_url': minio_file_url}), 201
 
     return jsonify({'message': 'File type not allowed'}), 400
-
 
 @custom_jwt_required
 def get_poi_media(poi_id):
@@ -470,5 +470,5 @@ def restore_media(media_id):
 
 def allowed_file(filename):
     # Define allowed file extensions
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs'}
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs','zip','docx','csv'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

@@ -547,6 +547,22 @@ export const formatName = employee => {
 	return '';
 };
 
+export const formatCaption = data => {
+	if (data) {
+		const formattedData = data.replace(/\s+/g, '-');
+		return formattedData;
+	}
+	return '';
+};
+
+export const formatType = data => {
+	if (data) {
+		const formattedData = data.toUpperCase();
+		return formattedData;
+	}
+	return '';
+};
+
 export function formatActivitiesDate(date, format = 'DD MMM YYYY') {
 	return date ? moment(date).format(format) : '--';
 }
@@ -592,3 +608,24 @@ export const getActivitiesInitialLetter = data => {
 
 	return '';
 };
+
+export const getMediaDetails = (mediaType) => {
+	switch (mediaType) {
+		case 'image':
+			return { icon: 'ri-image-fill', colorClass: 'text-success' }; // Green for images
+		case 'spreadsheet':
+			return { icon: 'ri-file-excel-fill', colorClass: 'text-success' }; // Green for images
+		case 'video':
+			return { icon: 'ri-video-fill', colorClass: 'text-danger' }; // Red for videos
+		case 'audio':
+			return { icon: 'ri-mic-fill', colorClass: 'text-warning' }; // Yellow for audio
+		case 'document':
+			return { icon: 'ri-file-fill', colorClass: 'text-info' }; // Blue for documents
+		case 'zip':
+			return { icon: 'ri-file-zip-fill', colorClass: 'text-primary' }; // Default primary for zip files
+		default:
+			return { icon: 'ri-file-fill', colorClass: 'text-secondary' }; // Grey for unknown types
+	}
+};
+
+
