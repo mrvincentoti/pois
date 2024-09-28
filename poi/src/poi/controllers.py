@@ -3,15 +3,17 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, remove_object_from_minio
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio
 import os
 import uuid
+from urllib.parse import urljoin
 from werkzeug.utils import secure_filename
 from sqlalchemy import func 
 from ..crimesCommitted.models import CrimeCommitted
 from ..armsRecovered.models import ArmsRecovered
 from ..arms.models import Arm
 from ..crimesCommitted.models import CrimeCommitted
+from ..users.models import User
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -181,7 +183,7 @@ def get_poi(poi_id):
                 "affiliation": poi.affiliation,
                 "address": poi.address,
                 "remark": poi.remark,
-                "picture": poi.picture,  # Include the picture URL
+                "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
                     "id": poi.category.id,
                     "name": poi.category.name,
@@ -292,11 +294,11 @@ def update_poi(poi_id):
                 # Check if the uploaded file is allowed
                 if allowed_file(file.filename):
                     # Delete the old picture file from MinIO (if necessary)
-                    old_picture_key = os.path.basename(poi.picture)
-                    try:
-                        remove_object_from_minio(old_picture_key)
-                    except Exception as e:
-                        print(f"Error deleting old picture from MinIO: {e}")
+                    # old_picture_key = os.path.basename(poi.picture)
+                    # try:
+                    #     remove_object_from_minio(old_picture_key)
+                    # except Exception as e:
+                    #     print(f"Error deleting old picture from MinIO: {e}")
 
                     # Generate a new filename using UUID
                     file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
@@ -542,7 +544,7 @@ def restore_poi(poi_id):
     finally:
         db.session.close()
 
-# List all POIs
+
 @custom_jwt_required
 def list_pois():
     # Get pagination and search term from request parameters
@@ -571,42 +573,120 @@ def list_pois():
             (Poi.remark.ilike(search))
         )
 
-    query = query.order_by(Poi.created_at.desc()) 
-        
+    query = query.order_by(Poi.created_at.desc())
+
     # Pagination
     paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
 
-    # Format response
-    pois_list = [poi.to_dict() for poi in paginated_pois.items]
+    pois_list = []
+
+    for poi in paginated_pois.items:
+        crime_count = len(poi.crimes) if hasattr(poi, 'crimes') else 0
+        arms_count = len(poi.arms) if hasattr(poi, 'arms') else 0
+        crimes_committed = CrimeCommitted.query.filter_by(poi_id=poi.id).first()
+        created_by = User.query.filter_by(id=poi.created_by).first()
+
+        crime_data = None
+        arresting_body_data = None
+
+        if crimes_committed:
+            # Crime data
+            if crimes_committed.crime:
+                crime_data = {
+                    "id": crimes_committed.crime.id,
+                    "name": crimes_committed.crime.name
+                }
+
+            # Arresting body data
+            if crimes_committed.arresting_body:
+                arresting_body_data = {
+                    "id": crimes_committed.arresting_body.id,
+                    "name": crimes_committed.arresting_body.name
+                }
+
+        pois_list.append({
+            "id": poi.id,
+            "ref_numb": poi.ref_numb,
+            "first_name": poi.first_name,
+            "middle_name": poi.middle_name,
+            "last_name": poi.last_name,
+            "marital_status": poi.marital_status,
+            "alias": poi.alias,
+            "dob": poi.dob if poi.dob else None,
+            "passport_number": poi.passport_number,
+            "other_id_number": poi.other_id_number,
+            "phone_number": poi.phone_number,
+            "email": poi.email,
+            "role": poi.role,
+            "affiliation": poi.affiliation,
+            "address": poi.address,
+            "remark": poi.remark,
+            "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
+            "category": {
+                "id": poi.category.id,
+                "name": poi.category.name,
+            } if poi.category else None,
+            "source": {
+                "id": poi.source.id,
+                "name": poi.source.name,
+            } if poi.source else None,
+            "country": {
+                "id": poi.country.id,
+                "name": poi.country.en_short_name,
+            } if poi.country else None,
+            "state": {
+                "id": poi.state.id,
+                "name": poi.state.name,
+            } if poi.state else None,
+            "gender": {
+                "id": poi.gender.id,
+                "name": poi.gender.name,
+            } if poi.gender else None,
+            "crimes_committed": {
+                "id": crimes_committed.id,
+                "poi_id": crimes_committed.poi_id,
+                "crime_id": crimes_committed.crime_id,
+                "crime": crime_data,  # Including the Crime details here
+                "arresting_body": arresting_body_data  # Including the ArrestingBody details here
+            } if crimes_committed else [],
+            "user": {
+                "id": created_by.id,
+                "username": created_by.username,
+                "first_name": created_by.first_name,
+                "last_name": created_by.last_name,
+                "pfs_num": created_by.pfs_num,
+            } if created_by else [],
+            "crime_count": crime_count,
+            "arms_count": arms_count,
+        })
 
     current_time = datetime.utcnow()
     audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["email"] if hasattr(g, "user") else None,
-            "event": "list_poi",
-            "auditable_id": None,
-            "old_values": None,
-            "new_values": None,
-            "url": request.url,
-            "ip_address": request.remote_addr,
-            "user_agent": request.user_agent.string,
-            "tags": "POI, List",
-            "created_at": current_time.isoformat(),
-            "updated_at": current_time.isoformat(),
-        }
+        "user_id": g.user["id"] if hasattr(g, "user") else None,
+        "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+        "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+        "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+        "user_email": g.user["email"] if hasattr(g, "user") else None,
+        "event": "list_poi",
+        "auditable_id": None,
+        "old_values": None,
+        "new_values": None,
+        "url": request.url,
+        "ip_address": request.remote_addr,
+        "user_agent": request.user_agent.string,
+        "tags": "POI, List",
+        "created_at": current_time.isoformat(),
+        "updated_at": current_time.isoformat(),
+    }
 
     save_audit_data(audit_data)
-    
+
     return jsonify({
         'total': paginated_pois.total,
         'pages': paginated_pois.pages,
         'current_page': paginated_pois.page,
         'pois': pois_list
     })
-
 
 @custom_jwt_required
 def filter_pois():

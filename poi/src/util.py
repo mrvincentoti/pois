@@ -272,7 +272,7 @@ def upload_file_to_minio(bucket_name, file, new_filename):
         )
 
         # Return the URL for accessing the file
-        return f"{os.getenv('MINIO_URL')}/{bucket_name}/{new_filename}"
+        return f"/{bucket_name}/{new_filename}"
 
     except S3Error as e:
         print(f"Error saving picture file to MinIO: {str(e)}")
@@ -282,17 +282,6 @@ def upload_file_to_minio(bucket_name, file, new_filename):
         print(f"An unexpected error occurred while saving picture file: {str(e)}")
         return None
 
-
-def remove_object_from_minio(object_key):
-    bucket_name = os.getenv("MINIO_BUCKET_NAME")
-    try:
-        minio_client.remove_object(bucket_name, object_key)
-        print(f"Object {object_key} removed from bucket {bucket_name}.")
-        return True
-
-    except S3Error as e:
-        print(f"Error occurred while removing object {object_key}: {str(e)}")
-        return False
 
 
 def save_picture_file(file):

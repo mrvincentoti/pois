@@ -586,6 +586,21 @@ export const formatName = employee => {
 	return '';
 };
 
+export const formatUserName = user => {
+	if (user) {
+		const firstNameInitial = user.first_name
+			? user.first_name
+			: '';
+		const lastNameInitial = user.last_name
+			? user.last_name
+			: '';
+
+		return `${firstNameInitial} ${lastNameInitial}`;
+	}
+
+	return '';
+};
+
 export const formatCaption = data => {
 	if (data) {
 		const formattedData = data.replace(/\s+/g, '-');
