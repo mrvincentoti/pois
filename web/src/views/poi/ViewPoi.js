@@ -110,27 +110,82 @@ const ViewPoi = () => {
 
 	const handlePrint = () => {
 		if (printRef.current) {
-			const printWindow = window.open('', '', 'width=800,height=600');
+			const printWindow = window.open('', '', 'width=1000,height=800');
 			printWindow.document.write(`
-				<!DOCTYPE html>
-				<html>
-				<head>
-					<title>Print POI</title>
-					<style>
-						/* Add your custom styles here */
-					</style>
-				</head>
-				<body>
-					${printRef.current.innerHTML}
-				</body>
-				</html>
-			`);
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Print POI</title>
+                <style>
+                    /* Add your custom styles here */
+					@media print {
+					/* Adjust the layout for printing */
+					.row {
+						display: flex;
+						flex-wrap: nowrap; /* Ensure the columns stay on the same row */
+					}
+
+					.col {
+						flex: 0 0 auto; /* Reset flex properties to default */
+						width: auto; /* Reset width to auto */
+					}
+
+					/* Optionally, you can adjust specific columns' widths if needed */
+					.col-6 {
+						width: 50%; /* Make each column take up 50% of the row */
+					}
+					}
+
+
+					.setRight{
+					text-align: right !important;
+					}
+
+					.border-right{
+					border-right: 1px dashed black;
+					}
+
+					.printme{
+					display: none !important;
+					}
+					@media print {
+						.no-printme  {
+							display: none !important;
+						}
+						.printme  {
+							display: block !important;
+						}
+
+					.folder-list {
+						height: 100vh !important;
+					}
+					}
+
+                </style>
+            </head>
+            <body>
+                ${printRef.current.innerHTML}
+            </body>
+            </html>
+        `);
+
+			// Ensure the content is loaded before printing
 			printWindow.document.close();
+			printWindow.focus();
+
+			// Trigger the print dialog
 			printWindow.print();
-			printWindow.close();
+
+			// Close the window after printing is completed
+			printWindow.onafterprint = function () {
+				printWindow.close();
+			};
 		}
-		setShowPrintModal(false); // Close modal after printing
+
+		// Close the modal after the print operation
+		setShowPrintModal(false);
 	};
+
 
 
 	return (

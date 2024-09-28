@@ -59,7 +59,6 @@ const Poi = () => {
 				`${FET_POIS_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
 			);
 			const { pois, ...rest } = rs;
-			console.log(rs);
 			setList(pois);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
