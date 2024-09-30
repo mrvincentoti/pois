@@ -58,7 +58,6 @@ const Organisation = () => {
 				`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
 			);
 			const { orgs, ...rest } = rs;
-			console.log(rs);
 			setList(orgs);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
@@ -235,8 +234,8 @@ const Organisation = () => {
 												<th>S/N</th>
 												<th>NAME</th>
 												<th>CEO</th>
-												<th>DATE OF REGISTRATION</th>
-												<th>EMPLOYEE STRENGTH</th>
+												<th>REG DATE</th>
+												<th>EMPLOYEES</th>
 												<th>ORG SOURCE</th>
 												<th>ADDED BY</th>
 												<th>ACTIONS</th>
@@ -280,16 +279,16 @@ const Organisation = () => {
 														</td>
 
 														<td>{item.ceo || 'N/A'} </td>
-														<td>{item.date_of_registration || 'N/A'}</td>
+														<td>{formatDate(item.date_of_registration) || 'N/A'}</td>
 														<td>{item.employee_strength || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
-														<td>{formatDate(item.date_of_employment)}</td>
+														<td>{"--"}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
 																<ViewLink
 																	to={`/pois/${item.id}/view?tab=overview`}
 																/>
-																<EditLink to={`/pois/${item.id}/edit`} />
+																<EditLink to={`/org/${item.id}/edit`} />
 															</div>
 														</td>
 													</tr>

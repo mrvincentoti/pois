@@ -5,8 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import { Link, useNavigate } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import { asyncFetch, notifyWithIcon, request } from '../../services/utilities';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { asyncFetch, notifyWithIcon, request, createHeaders } from '../../services/utilities';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
 
@@ -20,36 +19,18 @@ import {
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import Select from 'react-select';
-import AsyncSelect from 'react-select/async';
-import UploadButton from '../../components/UploadItem';
-import {
-    categoryList,
-    confirmationList,
-    hasImplications,
-    maritalStatusList,
-    passportCategoryList,
-} from '../../services/constants';
+import UploadFilePicture from '../../components/UploadFile';
+
 
 const NewOrganisation = () => {
     const [loaded, setLoaded] = useState(false);
     const [dateOfRegistration, setDateOfRegistration] = useState(null);
-    const [stateOrigin, setStateOrigin] = useState(null);
-    const [maritalStatus, setMaritalStatus] = useState(null);
-    const [passportCategory, setPassportCategory] = useState(null);
-    const [confirmation, setConfirmation] = useState(null);
-    const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const [sources, setSources] = useState([]);
-
     const [countries, setCountries] = useState([]);
-    const [country, setCountry] = useState(null);
-
     const [imageUrl, setImageUrl] = useState();
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
-    const { token } = theme.useToken();
-
     const [boardOfDirectors, setBoardOfDirectors] = useState([]);
     const [investors, setInvestors] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
@@ -71,6 +52,7 @@ const NewOrganisation = () => {
     const [editInputValueAffiliation, setEditInputValueAffiliation] = useState('');
     const [inputVisibleAffiliation, setInputVisibleAffiliation] = useState(false);
     const [affiliations, setAffliations] = useState([]);
+    const [fileList, setFileList] = useState([]);
 
     const handleCloseAffiliation = removedTag => {
         const newTags = affiliations.filter(tag => tag !== removedTag);
@@ -173,6 +155,18 @@ const NewOrganisation = () => {
         setInvestors(newTags);
         setEditInputIndexInvestors(-1);
         setEditInputValueInvestors('');
+    };
+
+    const props = {
+        maxCount: 1,
+        onRemove: file => {
+            const index = fileList.indexOf(file);
+            const newFileList = fileList.slice();
+            newFileList.splice(index, 1);
+            setFileList(newFileList);
+        },
+
+        fileList,
     };
 
     const fetchApis = useCallback(async () => {
@@ -278,26 +272,61 @@ const NewOrganisation = () => {
 
     const onSubmit = async values => {
         try {
-            const config = {
-                method: 'POST',
-                body: {
-                    ...values,
-                    category_id: values.category_id?.id || null,
-                    source_id: values.source_id?.id || null,
-                    affiliations: values.affiliations?.id || null,
-                    picture: imageUrl || null,
-                    board_of_directors: boardOfDirectors.join(", "),
-                    investors: investors.join(", "),
-                    affiliations: affiliations.map(item => item.id).join(", "),
-                    countries_operational: values.countries_operational.map(item => item.id).join(", ")
-                },
+            const formData = new FormData();
+            for (const key in values) {
+                if (key === 'affiliations' || key === 'countries_operational') {
+                    formData.append(key, values[key].map(item => item.id).join(", "));
+                } else if (key === 'board_of_directors' || key === 'investors') {
+                    formData.append(key, values[key].join(", "));
+                } else {
+                    formData.append(key, values[key]);
+                }
+            }
+
+            const appendIfExists = (key, value) => {
+                if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                }
             };
-     
-            const rs = await request(CREATE_ORG_API, config);
-            notifyWithIcon('success', rs.message);
-            navigate('/org/organisation');
+
+            appendIfExists('category_id', values.category?.id);
+            appendIfExists('source_id', values.source?.id);
+            appendIfExists('gender_id', values.gender?.id);
+            appendIfExists('state_id', values.state?.id);
+            appendIfExists('marital_status', values.marital_status?.name);
+            appendIfExists('picture', imageUrl);
+            // appendIfExists('board_of_directors', boardOfDirectors.join(", "));
+            // appendIfExists('investors', investors.join(", "));
+            //appendIfExists('affiliations', affiliations?.map(item => item.id).join(", "));
+            //appendIfExists('countries_operational', countries?.map(item => item.id).join(", "));
+
+            // for (let pair of formData.entries()) {
+            // 	console.log(`${pair[0]}: ${pair[1]}`);
+            // }
+
+            // return
+
+            const uri = CREATE_ORG_API;
+
+            const headers = createHeaders(true);
+            const response = await fetch(uri, {
+                method: 'POST',
+                body: formData,
+                headers: headers,
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                let errorMessage = data.error;
+
+                notifyWithIcon('error', errorMessage);
+            } else {
+                notifyWithIcon('success', 'Organisation created successfully');
+                navigate('/org/organisation');
+            }
         } catch (e) {
-            return { [FORM_ERROR]: e.message || 'could not create employee' };
+            return { [FORM_ERROR]: e.message || 'could not create Organisation' };
         }
     };
 
@@ -385,21 +414,21 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="ref_numb" />
                                                 </div>
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="first_name">
+                                                    <label className="form-label" htmlFor="reg_numb">
                                                         Registration Number <span style={{ color: 'red' }}>*</span>
                                                     </label>
-                                                    <Field id="first_name" name="first_name">
+                                                    <Field id="reg_numb" name="reg_numb">
                                                         {({ input, meta }) => (
                                                             <input
                                                                 {...input}
                                                                 type="text"
                                                                 className={`form-control ${error(meta)}`}
-                                                                id="first_name"
-                                                                placeholder="Enter first name"
+                                                                id="reg_numb"
+                                                                placeholder="Enter registration number"
                                                             />
                                                         )}
                                                     </Field>
-                                                    <ErrorBlock name="first_name" />
+                                                    <ErrorBlock name="reg_numb" />
                                                 </div>
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="org_name">
@@ -417,68 +446,6 @@ const NewOrganisation = () => {
                                                         )}
                                                     </Field>
                                                 </div>
-                                              
-                                            
-                                                {/* <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="phone_number">
-                                                        Phone
-                                                    </label>
-                                                    <Field id="phone_number" name="phone_number">
-                                                        {({ input, meta }) => (
-                                                            <input
-                                                                {...input}
-                                                                type="text"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="phone_number"
-                                                                placeholder="Enter phone number"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="phone" />
-                                                </div> */}
-                                                {/* <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="email">
-                                                        Email
-                                                    </label>
-                                                    <Field id="email" name="email">
-                                                        {({ input, meta }) => (
-                                                            <input
-                                                                {...input}
-                                                                type="email"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="email"
-                                                                placeholder="Enter email address"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="email" />
-                                                </div> */}
-{/*                                               
-                                                <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="dob">
-                                                        Date Of Birth <span style={{ color: 'red' }}></span>
-                                                    </label>
-                                                    <Field id="dob" name="dob">
-                                                        {({ input, meta }) => (
-                                                            <Flatpickr
-                                                                className={`form-control ${error(meta)}`}
-                                                                options={{
-                                                                    dateFormat: 'd M, Y',
-                                                                    maxDate: new Date(),
-                                                                }}
-                                                                placeholder="Select date of birth"
-                                                                value={dateOfBirth}
-                                                                onChange={([date]) => {
-                                                                    input.onChange(
-                                                                        moment(date).format('YYYY-MM-DD')
-                                                                    );
-                                                                    setDateOfBirth(date);
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="dob" />
-                                                </div> */}
                                             </div>
                                         </div>
                                     </div>
@@ -553,27 +520,6 @@ const NewOrganisation = () => {
                                                     </Field>
                                                     <ErrorBlock name="nature_of_business" />
                                                 </div>
-
-                                                {/* <div className="col-lg-4 mb-3">
-                                                    <label
-                                                        className="form-label"
-                                                        htmlFor="countries_operational"
-                                                    >
-                                                        Country Operational
-                                                    </label>
-                                                    <Field id="countries_operational" name="countries_operational">
-                                                        {({ input, meta }) => (
-                                                            <input
-                                                                {...input}
-                                                                type="text"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="countries_operational"
-                                                                placeholder="Country Operational"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="countries_operational" />
-                                                </div> */}
 
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="countries_operational">
@@ -716,45 +662,7 @@ const NewOrganisation = () => {
                                                     </Field>
                                                     <ErrorBlock name="employee_strength" />
                                                 </div>
-                                               
-
-                                                {/* <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="affiliations">
-                                                        Affiliations
-                                                    </label>
-
-                                                    <Field name="affiliations">
-                                                        {({ input, meta }) => (
-                                                            <div className={`form-control ${error(meta)}`} style={{ padding: 0 }}>
-                                                                <Select
-                                                                    mode="multiple"
-                                                                    value={affiliations}
-                                                                    onChange={(value) => input.onChange(value)}
-                                                                    onBlur={input.onBlur}
-                                                                    placeholder="Select Affiliations"
-                                                                    style={{ width: '100%', border: 'none' }}
-                                                                >
-                                                                    {affiliations.map((affiliation) => (
-                                                                        <Select.Option key={affiliation.id} value={affiliation.name}>
-                                                                            {affiliation.name}
-                                                                        </Select.Option>
-                                                                    ))}
-                                                                </Select>
-
-                                                                <input
-                                                                    {...input}
-                                                                    type="hidden"
-                                                                    value={affiliations.join(',')}
-                                                                    onChange={() => { }}
-                                                                    onBlur={() => input.onBlur(affiliations)}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </Field>
-
-                                                    <ErrorBlock name="affiliations" />
-                                                </div> */}
-
+                                            
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="affiliations">
                                                         Affiliation <span style={{ color: 'red' }}></span>
@@ -890,10 +798,10 @@ const NewOrganisation = () => {
                                                 </div>
 
                                                 <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="category_id">
+                                                    <label className="form-label" htmlFor="category">
                                                         Category <span style={{ color: 'red' }}></span>
                                                     </label>
-                                                    <Field id="category_id" name="category_id">
+                                                    <Field id="category" name="category">
                                                         {({ input, meta }) => (
                                                             <Select
                                                                 {...input}
@@ -905,13 +813,13 @@ const NewOrganisation = () => {
                                                             />
                                                         )}
                                                     </Field>
-                                                    <ErrorBlock name="category_id" />
+                                                    <ErrorBlock name="category" />
                                                 </div>
                                                 <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="source_id">
+                                                    <label className="form-label" htmlFor="source">
                                                         Source <span style={{ color: 'red' }}></span>
                                                     </label>
-                                                    <Field id="source_id" name="source_id">
+                                                    <Field id="source" name="source">
                                                         {({ input, meta }) => (
                                                             <Select
                                                                 {...input}
@@ -923,52 +831,8 @@ const NewOrganisation = () => {
                                                             />
                                                         )}
                                                     </Field>
-                                                    <ErrorBlock name="source_id" />
-                                                </div>
-                                                {/* <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="country_id">
-                                                        Country <span style={{ color: 'red' }}>*</span>
-                                                    </label>
-                                                    <Field id="country_id" name="country_id">
-                                                        {({ input, meta }) => (
-                                                            <Select
-                                                                {...input}
-                                                                className={error(meta)}
-                                                                placeholder="Select country"
-                                                                options={countries}
-                                                                value={country}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.en_short_name}
-                                                                onChange={e => {
-                                                                    e ? input.onChange(e.id) : input.onChange('');
-                                                                    setCountry(e);
-                                                                    setStates([]);
-                                                                    fetchStates(e.id);
-                                                                    form.change('state_id', undefined);
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="country_id" />
-                                                </div> */}
-                                                {/* <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="state_id">
-                                                        State <span style={{ color: 'red' }}>*</span>
-                                                    </label>
-                                                    <Field id="state_id" name="state_id">
-                                                        {({ input, meta }) => (
-                                                            <Select
-                                                                {...input}
-                                                                className={error(meta)}
-                                                                placeholder="Select state"
-                                                                options={states}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.name}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="state_id" />
-                                                </div> */}
+                                                    <ErrorBlock name="source" />
+                                                </div>     
                                                 <div className="col-lg-12 mb-3">
                                                     <label className="form-label" htmlFor="address">
                                                         Address
@@ -986,23 +850,6 @@ const NewOrganisation = () => {
                                                     </Field>
                                                     <ErrorBlock name="address" />
                                                 </div>
-                                                {/* <div className="col-lg-12 mb-3">
-                                                    <label className="form-label" htmlFor="remark">
-                                                        Remark
-                                                    </label>
-                                                    <Field id="remark" name="remark">
-                                                        {({ input, meta }) => (
-                                                            <textarea
-                                                                {...input}
-                                                                type="text"
-                                                                className={`form-control ${error(meta)}`}
-                                                                id="remark"
-                                                                placeholder="Enter remark"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="remark" />
-                                                </div> */}
                                             </div>
                                         </div>
                                     </div>
@@ -1155,7 +1002,8 @@ const NewOrganisation = () => {
                                         </div>
                                         <div className="card-body">
                                             <div className="mb-3 text-center">
-                                                <UploadButton
+                                                <UploadFilePicture
+                                                    {...props}
                                                     imageUrl={imageUrl}
                                                     changeImage={data => changeImage(data)}
                                                     style={{ width: '200px', height: '200px' }}
