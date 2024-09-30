@@ -203,7 +203,7 @@ const NewPoi = () => {
 			appendIfExists('state_id', values.state?.id);
 			appendIfExists('affiliation_id', values.affiliation?.id);
 			appendIfExists('marital_status', values.marital_status?.name);
-			appendIfExists('picture', imageUrl);
+			appendIfExists('picture', imageUrl?.file);
 			appendIfExists('alias', alias.length > 0 ? alias.join(', ') : null);
 
 			const uri = CREATE_POI_API;
