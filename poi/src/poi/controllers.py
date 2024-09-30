@@ -14,6 +14,8 @@ from ..armsRecovered.models import ArmsRecovered
 from ..arms.models import Arm
 from ..crimesCommitted.models import CrimeCommitted
 from ..users.models import User
+from ..arrestingBody.models import ArrestingBody
+from ..crimes.models import Crime
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -553,7 +555,50 @@ def list_pois():
     search_term = request.args.get('q', default=None, type=str)
 
     # Query base
-    query = Poi.query
+    query = Poi.query.filter_by(deleted_at=None)
+
+    # Filter by created_at
+    date_added_start_date = request.args.get('from_date')
+    date_added_end_date = request.args.get('to_date')
+
+    if date_added_start_date and date_added_end_date:
+        date_added_start_date = datetime.strptime(date_added_start_date, '%Y-%m-%d').date()
+        date_added_end_date = datetime.strptime(date_added_end_date, '%Y-%m-%d').date()
+        query = query.filter(
+            Poi.created_at.between(
+                date_added_start_date, date_added_end_date)
+        )
+    elif date_added_start_date:
+        date_added_start_date = datetime.strptime(
+            date_added_start_date, '%Y-%m-%d').date()
+        query = query.filter(Poi.created_at >=
+                                               date_added_start_date)
+    elif date_added_end_date:
+        date_added_end_date = datetime.strptime(
+            date_added_end_date, '%Y-%m-%d').date()
+        query = query.filter(Poi.created_at <=
+                                               date_added_end_date)
+    # Filter by category
+    category_id = request.args.get('category_id')
+    if category_id:
+        query = query.filter(Poi.category_id == category_id)
+
+    # Filter by source
+    source_id = request.args.get('source_id')
+    if source_id:
+        query = query.filter(Poi.source_id == source_id)
+
+    arresting_body_id = request.args.get('arrestingBody_id')
+    if arresting_body_id:
+        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
+            .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
+            .filter(ArrestingBody.id == arresting_body_id)
+
+    crime_id = request.args.get('crime_id')
+    if crime_id:
+        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
+            .join(Crime, CrimeCommitted.crime_id == Crime.id) \
+            .filter(Crime.id == crime_id)
 
     # Filter based on search term if supplied
     if search_term:

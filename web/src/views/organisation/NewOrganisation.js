@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import { Link, useNavigate } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import { asyncFetch, notifyWithIcon, request } from '../../services/utilities';
+import { asyncFetch, notifyWithIcon, request, createHeaders } from '../../services/utilities';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
@@ -22,6 +22,7 @@ import moment from 'moment';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import UploadButton from '../../components/UploadItem';
+import UploadFilePicture from '../../components/UploadFile';
 import {
     categoryList,
     confirmationList,
@@ -71,6 +72,7 @@ const NewOrganisation = () => {
     const [editInputValueAffiliation, setEditInputValueAffiliation] = useState('');
     const [inputVisibleAffiliation, setInputVisibleAffiliation] = useState(false);
     const [affiliations, setAffliations] = useState([]);
+    const [fileList, setFileList] = useState([]);
 
     const handleCloseAffiliation = removedTag => {
         const newTags = affiliations.filter(tag => tag !== removedTag);
@@ -173,6 +175,18 @@ const NewOrganisation = () => {
         setInvestors(newTags);
         setEditInputIndexInvestors(-1);
         setEditInputValueInvestors('');
+    };
+
+    const props = {
+        maxCount: 1,
+        onRemove: file => {
+            const index = fileList.indexOf(file);
+            const newFileList = fileList.slice();
+            newFileList.splice(index, 1);
+            setFileList(newFileList);
+        },
+
+        fileList,
     };
 
     const fetchApis = useCallback(async () => {
@@ -278,26 +292,61 @@ const NewOrganisation = () => {
 
     const onSubmit = async values => {
         try {
-            const config = {
-                method: 'POST',
-                body: {
-                    ...values,
-                    category_id: values.category_id?.id || null,
-                    source_id: values.source_id?.id || null,
-                    affiliations: values.affiliations?.id || null,
-                    picture: imageUrl || null,
-                    board_of_directors: boardOfDirectors.join(", "),
-                    investors: investors.join(", "),
-                    affiliations: affiliations.map(item => item.id).join(", "),
-                    countries_operational: values.countries_operational.map(item => item.id).join(", ")
-                },
+            const formData = new FormData();
+            for (const key in values) {
+                if (key === 'affiliations' || key === 'countries_operational') {
+                    formData.append(key, values[key].map(item => item.id).join(", "));
+                } else if (key === 'board_of_directors' || key === 'investors') {
+                    formData.append(key, values[key].join(", "));
+                } else {
+                    formData.append(key, values[key]);
+                }
+            }
+
+            const appendIfExists = (key, value) => {
+                if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                }
             };
-     
-            const rs = await request(CREATE_ORG_API, config);
-            notifyWithIcon('success', rs.message);
-            navigate('/org/organisation');
+
+            appendIfExists('category_id', values.category?.id);
+            appendIfExists('source_id', values.source?.id);
+            appendIfExists('gender_id', values.gender?.id);
+            appendIfExists('state_id', values.state?.id);
+            appendIfExists('marital_status', values.marital_status?.name);
+            appendIfExists('picture', imageUrl);
+            // appendIfExists('board_of_directors', boardOfDirectors.join(", "));
+            // appendIfExists('investors', investors.join(", "));
+            //appendIfExists('affiliations', affiliations?.map(item => item.id).join(", "));
+            //appendIfExists('countries_operational', countries?.map(item => item.id).join(", "));
+
+            for (let pair of formData.entries()) {
+            	console.log(`${pair[0]}: ${pair[1]}`);
+            }
+
+            return
+
+            const uri = CREATE_ORG_API;
+
+            const headers = createHeaders(true);
+            const response = await fetch(uri, {
+                method: 'POST',
+                body: formData,
+                headers: headers,
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                let errorMessage = data.error;
+
+                notifyWithIcon('error', errorMessage);
+            } else {
+                notifyWithIcon('success', 'Organisation created successfully');
+                navigate('/org/organisation');
+            }
         } catch (e) {
-            return { [FORM_ERROR]: e.message || 'could not create employee' };
+            return { [FORM_ERROR]: e.message || 'could not create Organisation' };
         }
     };
 
@@ -385,21 +434,21 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="ref_numb" />
                                                 </div>
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="first_name">
+                                                    <label className="form-label" htmlFor="reg_numb">
                                                         Registration Number <span style={{ color: 'red' }}>*</span>
                                                     </label>
-                                                    <Field id="first_name" name="first_name">
+                                                    <Field id="reg_numb" name="reg_numb">
                                                         {({ input, meta }) => (
                                                             <input
                                                                 {...input}
                                                                 type="text"
                                                                 className={`form-control ${error(meta)}`}
-                                                                id="first_name"
-                                                                placeholder="Enter first name"
+                                                                id="reg_numb"
+                                                                placeholder="Enter registration number"
                                                             />
                                                         )}
                                                     </Field>
-                                                    <ErrorBlock name="first_name" />
+                                                    <ErrorBlock name="reg_numb" />
                                                 </div>
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="org_name">
@@ -1155,7 +1204,8 @@ const NewOrganisation = () => {
                                         </div>
                                         <div className="card-body">
                                             <div className="mb-3 text-center">
-                                                <UploadButton
+                                                <UploadFilePicture
+                                                    {...props}
                                                     imageUrl={imageUrl}
                                                     changeImage={data => changeImage(data)}
                                                     style={{ width: '200px', height: '200px' }}
