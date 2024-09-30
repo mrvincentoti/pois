@@ -257,6 +257,8 @@ export const FETCH_CRIMES_API = `${BASE_POI_URL}/crimes`;
 
 // Organisation api
 export const FETCH_ORG_API = `${BASE_POI_URL}/organisations`;
+export const UPDATE_ORG_API = `${BASE_POI_URL}/organisation/:id`;
+export const GET_ORG_API = `${BASE_POI_URL}/organisation/:id`;
 
 // Media api
 export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;

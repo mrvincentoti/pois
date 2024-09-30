@@ -58,7 +58,6 @@ const Organisation = () => {
 				`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
 			);
 			const { orgs, ...rest } = rs;
-			console.log(rs);
 			setList(orgs);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
@@ -289,7 +288,7 @@ const Organisation = () => {
 																<ViewLink
 																	to={`/pois/${item.id}/view?tab=overview`}
 																/>
-																<EditLink to={`/pois/${item.id}/edit`} />
+																<EditLink to={`/org/${item.id}/edit`} />
 															</div>
 														</td>
 													</tr>
