@@ -68,24 +68,7 @@ const Navdata = () => {
 			},
 			permission: checkPermission(permissions, 'can-see-dashboard-link'),
 		},
-		// {
-		// 	id: 'entity',
-		// 	label: 'Entity',
-		// 	link: '/#',
-		// 	click: function (e) {
-		// 		e.preventDefault();
-		// 		updateIconSidebar(e);
-		// 		setIsCurrentState('Entity');
-		// 		setIsEntity(false);
-		// 		setIsAccounts(false);
-		// 		setIsSetup(false);
-		// 	},
-		// 	permission: checkPermission(permissions, 'can-see-entity-link'),
-		// 	stateVariables: isEntity,
-		// 	subItems: [
 
-		// 	],
-		// },
 		{
 			label: 'entities',
 			isHeader: true,
@@ -223,139 +206,62 @@ const Navdata = () => {
 			stateVariables: isSetup,
 			subItems: [
 				{
-					id: 'directorates',
-					label: 'Directorates',
-					link: '/setup/directorates',
+					id: 'crimes',
+					label: 'Crimes',
+					link: '/setup/crimes',
+					parentId: 'setup',
+					permission: checkPermission(permissions, 'can-see-setup-crimes-list'),
+				},
+				{
+					id: 'arresting_bodies',
+					label: 'Arresting Bodies',
+					link: '/setup/arresting_bodies',
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-directorate-list'
+						'can-see-setup-arresting_bodies-list'
 					),
 				},
 				{
-					id: 'departments',
-					label: 'Departments',
-					link: '/setup/departments',
+					id: 'arms',
+					label: 'Arms',
+					link: '/setup/arms',
+					parentId: 'setup',
+					permission: checkPermission(permissions, 'can-see-setup-arms-list'),
+				},
+
+				{
+					id: 'sources',
+					label: 'Sources',
+					link: '/setup/sources',
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-department-list'
+						'can-see-setup-sources-list'
 					),
 				},
 				{
-					id: 'cadre',
-					label: 'Cadre',
-					link: '/setup/cadre',
-					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-cadre-list'),
-				},
-				{
-					id: 'units',
-					label: 'Units',
-					link: '/setup/units',
-					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-unit-list'),
-				},
-				{
-					id: 'ranks',
-					label: 'Ranks',
-					link: '/setup/ranks',
-					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-rank-list'),
-				},
-				{
-					id: 'designations',
-					label: 'Designations',
-					link: '/setup/designations',
+					id: 'categories',
+					label: 'Categories',
+					link: '/setup/categories',
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-designation-list'
+						'can-see-setup-categories-list'
 					),
 				},
 				{
-					id: 'specialty',
-					label: 'Specialty',
-					link: '/setup/specialty',
+					id: 'affiliations',
+					label: 'Affiliations',
+					link: '/setup/affiliations',
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-specialty-list'
-					),
-				},
-				{
-					id: 'awards',
-					label: 'Awards',
-					link: 'setup/awards',
-					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-award-list'),
-				},
-				{
-					id: 'trainings',
-					label: 'Trainings',
-					icon: 'ri-projector-2-line',
-					link: 'setup/trainings',
-					permission: checkPermission(
-						permissions,
-						'can-see-setup-training-list'
-					),
-				},
-				{
-					id: 'conferences',
-					label: 'Conferences',
-					icon: 'ri-slideshow-3-line',
-					link: 'setup/conferences',
-					permission: checkPermission(
-						permissions,
-						'can-see-setup-conference-list'
-					),
-				},
-				{
-					id: 'sanctions',
-					label: 'Sanctions',
-					icon: 'ri-auction-line',
-					link: 'setup/sanctions',
-					permission: checkPermission(
-						permissions,
-						'can-see-setup-sanction-list'
+						'can-see-setup-affiliations-list'
 					),
 				},
 			],
 		},
-		// {
-		// 	label: 'User',
-		// 	isHeader: true,
-		// 	permission: checkPermission(permissions, 'can-see-dependents-link'),
-		// },
-
-		// {
-		// 	id: 'trainings',
-		// 	label: 'Trainings',
-		// 	icon: 'ri-projector-2-line',
-		// 	link: '/trainings',
-		// 	click: function (e) {
-		// 		e.preventDefault();
-		// 		setIsCurrentState('Trainings');
-		// 		setisEntity(false);
-		// 		setIsAccounts(false);
-		// 		setIsSetup(false);
-		// 	},
-		// 	permission: checkPermission(permissions, 'can-see-dependents-link'),
-		// },
-		// {
-		// 	id: 'conferences',
-		// 	label: 'Conferences',
-		// 	icon: 'ri-slideshow-3-line',
-		// 	link: '/conferences',
-		// 	click: function (e) {
-		// 		e.preventDefault();
-		// 		setIsCurrentState('Conferences');
-		// 		setisEntity(false);
-		// 		setIsAccounts(false);
-		// 		setIsSetup(false);
-		// 	},
-		// 	permission: checkPermission(permissions, 'can-see-dependents-link'),
-		// },
 	];
 	return <React.Fragment>{menuItems}</React.Fragment>;
 };
