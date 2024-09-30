@@ -57,6 +57,8 @@ const EditPoi = () => {
 
 	const [dateOfBirth, setDateOfBirth] = useState('');
 	const [imageUrl, setImageUrl] = useState();
+	const [imageString, setImageString] = useState();
+
 	const [loading, setLoading] = useState(false);
 
 	const navigate = useNavigate();
@@ -127,22 +129,26 @@ const EditPoi = () => {
 					return;
 				}
 
-				try {
-					const tagsArray = item.alias.split(',').map(tag => tag.trim());
+				if (item.alias) {
+					try {
+						const tagsArray = item.alias.split(',').map(tag => tag.trim());
 
-					setAlias(tagsArray);
-					setTags(tagsArray);
-				} catch (error) {
-					console.error('Failed to parse alias:', error);
+						setAlias(tagsArray);
+						setTags(tagsArray);
+					} catch (error) {
+						console.error('Failed to parse alias:', error);
 
-					const jsonArray = [item.alias];
-					setAlias(jsonArray);
+						const jsonArray = [item.alias];
+						setAlias(jsonArray);
+					}
 				}
 
 				setDateOfBirth(new Date(item.dob));
 				setCountry(item.country);
 				setSource(item.source);
 				setPoi(item);
+
+				setImageString(item.picture);
 				if (item.marital_status)
 					setMaritalStatus(
 						maritalStatusList.find(
@@ -194,15 +200,6 @@ const EditPoi = () => {
 
 	const tagChild = tags.map(forMap);
 
-	// const getDirectorates = async q => {
-	// 	if (!q || q.length <= 1) {
-	// 		return [];
-	// 	}
-
-	// 	const rs = await request(`${FETCH_DIRECTORATES_API}?q=${q}`);
-	// 	return rs?.directorates || [];
-	// };
-
 	// Function to convert null or undefined values to an empty string
 	const convertNullToEmptyString = obj => {
 		for (let key in obj) {
@@ -213,9 +210,6 @@ const EditPoi = () => {
 	};
 
 	const onSubmit = async values => {
-		console.log(values);
-		console.log(tags);
-
 		convertNullToEmptyString(values);
 
 		try {
@@ -260,7 +254,7 @@ const EditPoi = () => {
 				formData.append('marital_status', values.marital_status?.name || '');
 			}
 			if (imageUrl) {
-				formData.append('picture', imageUrl || ''); // Ensure imageUrl is not null
+				formData.append('picture', imageUrl?.file || ''); // Ensure imageUrl is not null
 			}
 			if (tags) {
 				formData.append('alias', tags.length > 0 ? tags.join(', ') : ''); // Ensure alias is not null
@@ -298,7 +292,7 @@ const EditPoi = () => {
 
 	return (
 		<div className="container-fluid">
-			<Breadcrumbs pageTitle="New POI" parentPage="POI" />
+			<Breadcrumbs pageTitle="EDIT POI" parentPage="POI" />
 			<div className="row">
 				<Form
 					initialValues={{
@@ -763,6 +757,7 @@ const EditPoi = () => {
 										<div className="card-body">
 											<div className="mb-3 text-center">
 												<UploadFilePicture
+													imageString={imageString}
 													imageUrl={imageUrl}
 													changeImage={data => changeImage(data)}
 													style={{ width: '200px', height: '200px' }}
