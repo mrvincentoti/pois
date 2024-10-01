@@ -18,7 +18,8 @@ import {
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import Select from 'react-select';
+//import Select from 'react-select';
+import { Select  } from "antd";
 import UploadFilePicture from '../../components/UploadFile';
 
 
@@ -186,7 +187,13 @@ const NewOrganisation = () => {
                 rs_sources,
                 rs_affiliations,
             ] = await Promise.all(requests);
-            setCountries(rs_countries.countries);
+
+            const formattedCountries = rs_countries.countries.map(country => ({
+                value: country.id, // Set the value (ID of the country)
+                label: country.en_short_name, // Set the label (Name of the country)
+            }));
+
+            setCountries(formattedCountries);
             setCategories(rs_categories.categories);
             setSources(rs_sources.sources);
             setAffliations(rs_affiliations.affiliations);
@@ -263,6 +270,11 @@ const NewOrganisation = () => {
         return isJpgOrPng && isLt2M;
     };
 
+    const handleChange2 = (value) => {
+        console.log(`selected ${value}`);
+    };
+    
+
     useEffect(() => {
         if (!loaded) {
             fetchApis();
@@ -294,17 +306,11 @@ const NewOrganisation = () => {
             appendIfExists('gender_id', values.gender?.id);
             appendIfExists('state_id', values.state?.id);
             appendIfExists('marital_status', values.marital_status?.name);
-            appendIfExists('picture', imageUrl);
+            appendIfExists('picture', imageUrl?.file);
             // appendIfExists('board_of_directors', boardOfDirectors.join(", "));
             // appendIfExists('investors', investors.join(", "));
             //appendIfExists('affiliations', affiliations?.map(item => item.id).join(", "));
             //appendIfExists('countries_operational', countries?.map(item => item.id).join(", "));
-
-            // for (let pair of formData.entries()) {
-            // 	console.log(`${pair[0]}: ${pair[1]}`);
-            // }
-
-            // return
 
             const uri = CREATE_ORG_API;
 
@@ -529,52 +535,16 @@ const NewOrganisation = () => {
                                                     <Field id="countries_operational" name="countries_operational">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                {...input}
-                                                                isMulti
-                                                                className={error(meta)}
-                                                                placeholder="Select Country"
-                                                                options={countries}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.en_short_name}
-                                                                onChange={(value) => input.onChange(value)}
-                                                                onBlur={() => input.onBlur(input.value)}
-
-                                                                styles={{
-                                                                    control: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fff',
-                                                                        borderColor: '#ced4da',
-                                                                        '&:hover': {
-                                                                            borderColor: '#a3a3a3'
-                                                                        }
-                                                                    }),
-                                                                    option: (provided, state) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
-                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Hover background color
-                                                                            color: '#000' // Hover text color
-                                                                        }
-                                                                    }),
-                                                                    multiValue: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fafafa', // Background of selected tag
-                                                                        color: '#000' // Text color of selected tag
-                                                                    }),
-                                                                    multiValueLabel: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#000' // Text color inside the selected tag
-                                                                    }),
-                                                                    multiValueRemove: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#fff', // Remove icon color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
-                                                                            color: '#000'
-                                                                        }
-                                                                    })
+                                                                mode="multiple"
+                                                                allowClear
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: '#ced4da',
                                                                 }}
+                                                                placeholder="Please Country"
+                                                                onChange={handleChange2}
+                                                                options={countries}
                                                             />
                                                         )}
                                                     </Field>
@@ -663,7 +633,7 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="employee_strength" />
                                                 </div>
                                             
-                                                <div className="col-lg-4 mb-3">
+                                                {/* <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="affiliations">
                                                         Affiliation <span style={{ color: 'red' }}></span>
                                                     </label>
@@ -722,7 +692,37 @@ const NewOrganisation = () => {
                                                     </Field>
 
                                                     <ErrorBlock name="affiliations" />
+                                                </div> */}
+
+                                                <div className="col-lg-4 mb-3">
+                                                    <label className="form-label" htmlFor="affiliations">
+                                                        Affiliation <span style={{ color: 'red' }}></span>
+                                                    </label>
+
+                                                    <Field id="affiliations" name="affiliations">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                mode="multiple"  // Enable multi-select
+                                                                allowClear
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',  // Set height
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
+                                                                }}
+                                                                placeholder="Select Affiliation"
+                                                                onChange={(value) => input.onChange(value)}  // Handle change
+                                                                options={affiliations.map(affiliation => ({
+                                                                    value: affiliation.id,  // Map the id as value
+                                                                    label: affiliation.name,  // Map the name as label
+                                                                }))}
+                                                                className="custom-affiliations-select"  // Custom class for further styling
+                                                            />
+                                                        )}
+                                                    </Field>
+
+                                                    <ErrorBlock name="affiliations" />
                                                 </div>
+
 
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="investors">
@@ -797,7 +797,7 @@ const NewOrganisation = () => {
                                                     <ErrorBlock name="email" />
                                                 </div>
 
-                                                <div className="col-lg-6 mb-3">
+                                                {/* <div className="col-lg-6 mb-3">
                                                     <label className="form-label" htmlFor="category">
                                                         Category <span style={{ color: 'red' }}></span>
                                                     </label>
@@ -814,8 +814,33 @@ const NewOrganisation = () => {
                                                         )}
                                                     </Field>
                                                     <ErrorBlock name="category" />
-                                                </div>
+                                                </div> */}
                                                 <div className="col-lg-6 mb-3">
+                                                    <label className="form-label" htmlFor="category">
+                                                        Category <span style={{ color: 'red' }}></span>
+                                                    </label>
+                                                    <Field id="category" name="category">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
+                                                                }}
+                                                                placeholder="Select Category"
+                                                                onChange={(value) => input.onChange(value)}  // Handle change event
+                                                                options={categories.map(category => ({
+                                                                    value: category.id,  // Map id to value
+                                                                    label: category.name,  // Map name to label
+                                                                }))}
+                                                                className="custom-category-select"  // Custom class for further styling
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                    <ErrorBlock name="category" />
+                                                </div>
+
+                                                {/* <div className="col-lg-6 mb-3">
                                                     <label className="form-label" htmlFor="source">
                                                         Source <span style={{ color: 'red' }}></span>
                                                     </label>
@@ -832,7 +857,32 @@ const NewOrganisation = () => {
                                                         )}
                                                     </Field>
                                                     <ErrorBlock name="source" />
-                                                </div>     
+                                                </div>      */}
+                                                <div className="col-lg-6 mb-3">
+                                                    <label className="form-label" htmlFor="source">
+                                                        Source <span style={{ color: 'red' }}></span>
+                                                    </label>
+                                                    <Field id="source" name="source">
+                                                        {({ input, meta }) => (
+                                                            <Select
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Dynamic border color based on validation
+                                                                }}
+                                                                placeholder="Select Source"
+                                                                onChange={(value) => input.onChange(value)}  // Handle change event
+                                                                options={sources.map(source => ({
+                                                                    value: source.id,  // Map id to value
+                                                                    label: source.name,  // Map name to label
+                                                                }))}
+                                                                className="custom-source-select"  // Custom class for styling
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                    <ErrorBlock name="source" />
+                                                </div>
+
                                                 <div className="col-lg-12 mb-3">
                                                     <label className="form-label" htmlFor="address">
                                                         Address
@@ -1011,153 +1061,7 @@ const NewOrganisation = () => {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* <div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Crime Information</h5>
-										</div>
-										<div className="card-body">
-											<div className="mb-3">
-												<label className="form-label" htmlFor="crime_committed">
-													Crime Committed <span style={{ color: 'red' }}>*</span>
-												</label>
-												<Field id="crime_committed" name="crime_committed">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="text"
-															className={`form-control ${error(meta)}`}
-															id="crime_committed"
-															placeholder="Enter Crime Committed"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="crime_committed" />
-											</div>
-											<div className="mb-3">
-												<label
-													className="form-label"
-													htmlFor="crime_date"
-												>
-													Crime Date{' '}
-													<span style={{ color: 'red' }}></span>
-												</label>
-												<Field
-													id="crime_date"
-													name="crime_date"
-												>
-													{({ input, meta }) => (
-														<Flatpickr
-															className={`form-control ${error(meta)}`}
-															options={{
-																dateFormat: 'd M, Y',
-															}}
-															placeholder="Select date of crime"
-															value={dateOfEmployment}
-															onChange={([date]) => {
-																input.onChange(
-																	moment(date).format('YYYY-MM-DD')
-																);
-																setDateOfEmployment(date);
-															}}
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="crime_date" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="casualties_recorded">
-													Casualties Recorded <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="casualties_recorded" name="casualties_recorded">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="casualties_recorded"
-															placeholder="Casualties Recorded"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="casualties_recorded" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="arresting_body">
-													Arresting Body <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="arresting_body" name="arresting_body">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="arresting_body"
-															placeholder="Arresting Body"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="arresting_body" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="place_of_detention">
-													Place of Detention <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="place_of_detention" name="place_of_detention">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="place_of_detention"
-															placeholder="Place of Detention"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="place_of_detention" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="action_taken">
-													Action taken <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="action_taken" name="action_taken">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="action_taken"
-															placeholder="Action taken"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="action_taken" />
-											</div>
-										</div>
-									</div> */}
-
-                                    {/* <div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Arms Recovered</h5>
-										</div>
-										<div className="card-body">
-											
-										</div>
-									</div> */}
                                 </div>
-                                {/* <div className="col-lg-12">
-									<div className="text-end mb-4">
-										<Link
-											to="/employees/profiles"
-											className="btn btn-danger w-sm me-1"
-										>
-											Cancel
-										</Link>
-										<button type="submit" className="btn btn-success w-sm">
-											Create employee
-										</button>
-									</div>
-								</div> */}
                             </div>
                         </FormWrapper>
                     )}

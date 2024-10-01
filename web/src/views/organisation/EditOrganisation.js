@@ -5,9 +5,14 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
-import { asyncFetch, notifyWithIcon, request } from '../../services/utilities';
+import {
+    asyncFetch,
+    notifyWithIcon,
+    request,
+    createHeaders,
+} from '../../services/utilities';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
-
+import { message, Upload } from 'antd';
 import {
     FETCH_GENDERS_API,
     FETCH_STATES_API,
@@ -21,32 +26,39 @@ import {
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import Select from 'react-select';
-import UploadButton from '../../components/UploadItem';
+import AsyncSelect from 'react-select/async';
+import UploadFilePicture from '../../components/UploadFile';
 import {
+    categoryList,
+    confirmationList,
+    hasImplications,
     maritalStatusList,
+    passportCategoryList,
 } from '../../services/constants';
-const EditPoi = () => {
+const EditOrganisation = () => {
     const [loaded, setLoaded] = useState(false);
-    const [poi, setPoi] = useState(null);
+    const [org, setOrg] = useState(null);
+    const [dateOfRegistration, setDateOfRegistration] = useState(null);
+    const [boardOfDirectors, setBoardOfDirectors] = useState([]);
+    const [investors, setInvestors] = useState([]);
+
+    // Investors
+    const [inputValueInvestors, setInputValueInvestors] = useState('');
+    const [editInputIndexInvestors, setEditInputIndexInvestors] = useState(-1);
+    const [editInputValueInvestors, setEditInputValueInvestors] = useState('');
+    const [inputVisibleInvestors, setInputVisibleInvestors] = useState(false);
+
 
     const [state, setState] = useState(null);
     const [maritalStatus, setMaritalStatus] = useState(null);
     const [passportCategory, setPassportCategory] = useState(null);
     const [confirmation, setConfirmation] = useState(null);
     const [category, setCategory] = useState(null);
-    const [dateOfRegistration, setDateOfRegistration] = useState(null);
-    const [boardOfDirectors, setBoardOfDirectors] = useState([]);
-    // Investors
-    const [inputValueInvestors, setInputValueInvestors] = useState('');
-    const [editInputIndexInvestors, setEditInputIndexInvestors] = useState(-1);
-    const [editInputValueInvestors, setEditInputValueInvestors] = useState('');
-    const [inputVisibleInvestors, setInputVisibleInvestors] = useState(false);
-    const [investors, setInvestors] = useState([]);
-    // End Investors section
     const [categories, setCategories] = useState([]);
     const [sources, setSources] = useState([]);
     const [source, setSource] = useState([]);
     const [affiliations, setAffliations] = useState([]);
+    const [alias, setAlias] = useState([]);
 
     const [genders, setGenders] = useState([]);
     const [countries, setCountries] = useState([]);
@@ -55,6 +67,8 @@ const EditPoi = () => {
 
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [imageUrl, setImageUrl] = useState();
+    const [imageString, setImageString] = useState();
+
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -63,6 +77,7 @@ const EditPoi = () => {
     const [tags, setTags] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const [fileList, setFileList] = useState([]);
 
     const fetchApis = useCallback(async () => {
         try {
@@ -101,6 +116,7 @@ const EditPoi = () => {
     const fetchOrg = useCallback(async id => {
         try {
             const rs = await request(GET_ORG_API.replace(':id', id));
+
             return rs.organisation;
         } catch (error) {
             notifyWithIcon('error', error.message);
@@ -111,21 +127,66 @@ const EditPoi = () => {
         setImageUrl(data);
     };
 
+    const handleCloseInvestors = removedTag => {
+        const newTags = investors.filter(tag => tag !== removedTag);
+        setInvestors(newTags);
+    };
+
+    const handleCloseAffiliation = removedTag => {
+        const newTags = affiliations.filter(tag => tag !== removedTag);
+        setAffliations(newTags);
+    };
+
+    const handleInputChangeInvestors = e => {
+        setInputValueInvestors(e.target.value);
+    };
+
+    const handleInputConfirmInvestors = () => {
+        if (inputValueInvestors && !investors.includes(inputValueInvestors)) {
+            setInvestors([...investors, inputValueInvestors]);
+        }
+        setInputVisibleInvestors(false);
+        setInputValueInvestors('');
+    };
+
     useEffect(() => {
         if (!loaded) {
             fetchApis();
             fetchOrg(param.id).then(item => {
+                console.log(item);
 
                 if (!item) {
-                    notifyWithIcon('error', 'organisation not found!');
+                    notifyWithIcon('error', 'poi not found!');
                     navigate('/org/organisation');
                     return;
                 }
 
-                setDateOfRegistration(new Date(item.date_of_registration));
+                if (item.alias) {
+                    try {
+                        const tagsArray = item.alias.split(',').map(tag => tag.trim());
+
+                        setAlias(tagsArray);
+                        setTags(tagsArray);
+                    } catch (error) {
+                        console.error('Failed to parse alias:', error);
+
+                        const jsonArray = [item.alias];
+                        setAlias(jsonArray);
+                    }
+                }
+
+                setDateOfBirth(new Date(item.dob));
                 setCountry(item.country);
                 setSource(item.source);
-                setPoi(item);
+                setOrg(item);
+
+                setImageString(item.picture);
+                if (item.marital_status)
+                    setMaritalStatus(
+                        maritalStatusList.find(
+                            status => status.name === item.marital_status
+                        )
+                    );
                 setLoaded(true);
             });
         }
@@ -147,6 +208,10 @@ const EditPoi = () => {
 
     const showInput = () => {
         setInputVisible(true);
+    };
+
+    const showInputInvestors = () => {
+        setInputVisibleInvestors(true);
     };
 
     const handleInputChange = e => {
@@ -171,7 +236,102 @@ const EditPoi = () => {
 
     const tagChild = tags.map(forMap);
 
-    // Investors
+    // Function to convert null or undefined values to an empty string
+    const convertNullToEmptyString = obj => {
+        for (let key in obj) {
+            if (obj[key] === null || obj[key] === undefined) {
+                obj[key] = ''; // Convert null or undefined to an empty string
+            }
+        }
+    };
+
+    const handleChange2 = (value) => {
+        console.log(`selected ${value}`);
+    };
+
+    const onSubmit = async values => {
+        convertNullToEmptyString(values);
+
+        try {
+            // Create a FormData object
+            const formData = new FormData();
+            // Append your values to FormData
+
+            if (country) values.country_id = country.id;
+            if (maritalStatus) values.marital_status = maritalStatus.name;
+            if (dateOfBirth) values.dob = dateOfBirth;
+            if (tags) values.alias = tags;
+
+            for (const key in values) {
+                formData.append(key, values[key]);
+            }
+
+            // Function to append to formData only if the value exists
+            const appendIfExists = (key, value) => {
+                if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                }
+            };
+
+            // Conditionally append values to FormData, with empty strings for non-existent values
+            if (values.category) {
+                formData.append('category_id', values.category.id);
+            }
+
+            if (values.source) {
+                formData.append('source_id', values.source?.id || '');
+            }
+            if (values.gender) {
+                formData.append('gender_id', values.gender?.id || '');
+            }
+            if (values.state) {
+                formData.append('state_id', values.state?.id || '');
+            }
+            if (values.affiliation) {
+                formData.append('affiliation_id', values.affiliation?.id || '');
+            }
+            if (values.marital_status) {
+                formData.append('marital_status', values.marital_status?.name || '');
+            }
+            if (imageUrl) {
+                formData.append('picture', imageUrl?.file || ''); // Ensure imageUrl is not null
+            }
+            if (tags) {
+                formData.append('alias', tags.length > 0 ? tags.join(', ') : ''); // Ensure alias is not null
+            }
+
+            // for (let pair of formData.entries()) {
+            // 	console.log(`${pair[0]}: ${pair[1]}`);
+            // }
+
+            // return
+
+            const uri = UPDATE_ORG_API.replace(':id', param.id);
+
+            const headers = createHeaders(true);
+            const response = await fetch(uri, {
+                method: 'PUT',
+                body: formData,
+                headers: headers,
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                let errorMessage = data.error;
+
+                notifyWithIcon('error', errorMessage);
+            } else {
+                notifyWithIcon('success', 'POI updated successfully');
+                navigate('/pois/poi');
+            }
+        } catch (e) {
+            return { [FORM_ERROR]: e.message || 'could not create Poi' };
+        }
+    };
+
+    // Investors tag
+
     const forMapInvestors = tag => (
         <span key={tag} style={{ display: 'inline-block' }}>
             <Tag closable onClose={() => handleCloseInvestors(tag)}>
@@ -181,76 +341,25 @@ const EditPoi = () => {
     );
     const tagChildInvestors = investors.map(forMapInvestors);
 
-    const handleCloseInvestors = removedTag => {
-        const newTags = investors.filter(tag => tag !== removedTag);
-        setInvestors(newTags);
-    };
 
-    const handleInputChangeInvestors = e => {
-        setInputValueInvestors(e.target.value);
-    };
-
-    const handleInputConfirmInvestors = () => {
-        if (inputValueInvestors && !investors.includes(inputValueInvestors)) {
-            setInvestors([...investors, inputValueInvestors]);
-        }
-        setInputVisibleInvestors(false);
-        setInputValueInvestors('');
-    };
-
-    const showInputInvestors = () => {
-        setInputVisibleInvestors(true);
-    };
-
-    // End Investors section
-
-    const onSubmit = async values => {
-        console.log(values);
-
-        // if (employeeStatus.id) {
-        // 	values.employment_status = employeeStatus.id;
-
-        // } else {
-        // 	values.employment_status = 11;
-        // }
-
-        try {
-            const config = {
-                method: 'PUT',
-                body: {
-                    ...values,
-                    category_id: values.category_id?.id || null,
-                    source_id: values.source_id?.id || null,
-                    gender_id: values.gender?.id || null,
-                    state_id: values.state_id?.id || null,
-                    affiliation_id: values.affiliation?.id || null,
-                    marital_status: values.marital_status?.id || null,
-                    picture: imageUrl || null,
-                    country_id: values.country_id?.id || null,
-                    gender: undefined,
-                    // affiliation: undefined,
-                },
-            };
-            const rs = await request(UPDATE_ORG_API.replace(':id', param.id), config);
-            notifyWithIcon('success', rs.message);
-            navigate('/pois/poi');
-        } catch (e) {
-            return { [FORM_ERROR]: e.message || 'could not save poi' };
-        }
-    };
+    // Affiliations
+    const forMapAffiliation = tag => (
+        <span key={tag} style={{ display: 'inline-block' }}>
+            <Tag closable onClose={() => handleCloseAffiliation(tag)}>
+                {tag}
+            </Tag>
+        </span>
+    );
+    const tagChildAffiliations = investors.map(forMapAffiliation);
 
     return (
         <div className="container-fluid">
-            <Breadcrumbs pageTitle="Edit Organisation" parentPage="Organisation" />
+            <Breadcrumbs pageTitle="EDIT POI" parentPage="POI" />
             <div className="row">
                 <Form
                     initialValues={{
-                        ...poi,
-                        source_id: poi?.source,
-                        state_id: poi?.state,
-                        category_id: poi?.category,
-                        affiliation_id: poi?.affiliation,
-                        country_id: poi?.country || '',
+                        ...org,
+                        affiliation_id: org?.affiliation,
                     }}
                     onSubmit={onSubmit}
                     validate={values => {
@@ -267,11 +376,11 @@ const EditPoi = () => {
                                 <div className="col-lg-8">
                                     <div className="card">
                                         <div className="card-header">
-                                            <h5 className="card-title mb-0">Organisation Information</h5>
+                                            <h5 className="card-title mb-0">Personal Information</h5>
                                         </div>
                                         <div className="card-body">
                                             <div className="row">
-                                                <div className="col-lg-4 mb-3">
+                                                <div className="col-lg-12 mb-3">
                                                     <label className="form-label" htmlFor="ref_numb">
                                                         Reference Number{' '}
                                                         <span style={{ color: 'red' }}>*</span>
@@ -343,7 +452,7 @@ const EditPoi = () => {
                                                                     dateFormat: 'd M, Y',
                                                                     maxDate: new Date(),
                                                                 }}
-                                                                placeholder="Select date of registration"
+                                                                placeholder="Select date of birth"
                                                                 value={dateOfRegistration}
                                                                 onChange={([date]) => {
                                                                     input.onChange(
@@ -404,52 +513,16 @@ const EditPoi = () => {
                                                     <Field id="countries_operational" name="countries_operational">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                {...input}
-                                                                isMulti
-                                                                className={error(meta)}
-                                                                placeholder="Select Country"
-                                                                options={countries}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.en_short_name}
-                                                                onChange={(value) => input.onChange(value)}
-                                                                onBlur={() => input.onBlur(input.value)}
-                                                                value={countries}
-                                                                styles={{
-                                                                    control: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fff',
-                                                                        borderColor: '#ced4da',
-                                                                        '&:hover': {
-                                                                            borderColor: '#a3a3a3'
-                                                                        }
-                                                                    }),
-                                                                    option: (provided, state) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
-                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Hover background color
-                                                                            color: '#000' // Hover text color
-                                                                        }
-                                                                    }),
-                                                                    multiValue: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fafafa', // Background of selected tag
-                                                                        color: '#000' // Text color of selected tag
-                                                                    }),
-                                                                    multiValueLabel: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#000' // Text color inside the selected tag
-                                                                    }),
-                                                                    multiValueRemove: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#fff', // Remove icon color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
-                                                                            color: '#000'
-                                                                        }
-                                                                    })
+                                                                mode="multiple"
+                                                                allowClear
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: '#ced4da',
                                                                 }}
+                                                                placeholder="Please Country"
+                                                                onChange={handleChange2}
+                                                                options={countries}
                                                             />
                                                         )}
                                                     </Field>
@@ -476,6 +549,7 @@ const EditPoi = () => {
                                                     </Field>
                                                     <ErrorBlock name="ceo" />
                                                 </div>
+
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="board_of_directors">
                                                         Board Of Directors
@@ -534,6 +608,7 @@ const EditPoi = () => {
                                                     </Field>
                                                     <ErrorBlock name="employee_strength" />
                                                 </div>
+
                                                 <div className="col-lg-4 mb-3">
                                                     <label className="form-label" htmlFor="affiliations">
                                                         Affiliation <span style={{ color: 'red' }}></span>
@@ -542,52 +617,20 @@ const EditPoi = () => {
                                                     <Field id="affiliations" name="affiliations">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                {...input}
-                                                                isMulti
-                                                                className={error(meta)}
-                                                                placeholder="Select Affiliation"
-                                                                options={affiliations}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.name}
-                                                                onChange={(value) => input.onChange(value)}
-                                                                onBlur={() => input.onBlur(input.value)}
-
-                                                                styles={{
-                                                                    control: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fff',
-                                                                        borderColor: '#ced4da',
-                                                                        '&:hover': {
-                                                                            borderColor: '#a3a3a3'
-                                                                        }
-                                                                    }),
-                                                                    option: (provided, state) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: state.isSelected ? '#f8f9fa' : '#fff', // Selected option background
-                                                                        color: state.isSelected ? '#000' : '#000', // Selected option text color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Hover background color
-                                                                            color: '#000' // Hover text color
-                                                                        }
-                                                                    }),
-                                                                    multiValue: (provided) => ({
-                                                                        ...provided,
-                                                                        backgroundColor: '#fafafa', // Background of selected tag
-                                                                        color: '#000' // Text color of selected tag
-                                                                    }),
-                                                                    multiValueLabel: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#000' // Text color inside the selected tag
-                                                                    }),
-                                                                    multiValueRemove: (provided) => ({
-                                                                        ...provided,
-                                                                        color: '#fff', // Remove icon color
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#fafafa', // Background color when hovering remove icon
-                                                                            color: '#000'
-                                                                        }
-                                                                    })
+                                                                mode="multiple"  // Enable multi-select
+                                                                allowClear
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',  // Set height
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
                                                                 }}
+                                                                placeholder="Select Affiliation"
+                                                                onChange={(value) => input.onChange(value)}  // Handle change
+                                                                options={affiliations.map(affiliation => ({
+                                                                    value: affiliation.id,  // Map the id as value
+                                                                    label: affiliation.name,  // Map the name as label
+                                                                }))}
+                                                                className="custom-affiliations-select"  // Custom class for further styling
                                                             />
                                                         )}
                                                     </Field>
@@ -673,12 +716,18 @@ const EditPoi = () => {
                                                     <Field id="category" name="category">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                {...input}
-                                                                className={error(meta)}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
+                                                                }}
                                                                 placeholder="Select Category"
-                                                                options={categories}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.name}
+                                                                onChange={(value) => input.onChange(value)}  // Handle change event
+                                                                options={categories.map(category => ({
+                                                                    value: category.id,  // Map id to value
+                                                                    label: category.name,  // Map name to label
+                                                                }))}
+                                                                className="custom-category-select"  // Custom class for further styling
                                                             />
                                                         )}
                                                     </Field>
@@ -691,12 +740,18 @@ const EditPoi = () => {
                                                     <Field id="source" name="source">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                {...input}
-                                                                className={error(meta)}
-                                                                placeholder="Select source"
-                                                                options={sources}
-                                                                getOptionValue={option => option.id}
-                                                                getOptionLabel={option => option.name}
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '40px',
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Dynamic border color based on validation
+                                                                }}
+                                                                placeholder="Select Source"
+                                                                onChange={(value) => input.onChange(value)}  // Handle change event
+                                                                options={sources.map(source => ({
+                                                                    value: source.id,  // Map id to value
+                                                                    label: source.name,  // Map name to label
+                                                                }))}
+                                                                className="custom-source-select"  // Custom class for styling
                                                             />
                                                         )}
                                                     </Field>
@@ -871,7 +926,8 @@ const EditPoi = () => {
                                         </div>
                                         <div className="card-body">
                                             <div className="mb-3 text-center">
-                                                <UploadButton
+                                                <UploadFilePicture
+                                                    imageString={imageString}
                                                     imageUrl={imageUrl}
                                                     changeImage={data => changeImage(data)}
                                                     style={{ width: '200px', height: '200px' }}
@@ -1035,4 +1091,4 @@ const EditPoi = () => {
     );
 };
 
-export default EditPoi;
+export default EditOrganisation;
