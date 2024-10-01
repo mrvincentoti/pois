@@ -43,6 +43,7 @@ const publicRoutes = [
 const Dashboard = lazy(() => import('./views/Dashboard'));
 const EntityIndex = lazy(() => import('./views/Entity/Index'));
 const AccountsIndex = lazy(() => import('./views/accounts/Index'));
+const Setup = lazy(() => import('./views/setup/Index'));
 const Profile = lazy(() => import('./views/Profile'));
 
 // POI
@@ -53,6 +54,7 @@ const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
 	{ path: 'entity/*', component: <EntityIndex /> },
 	{ path: 'accounts/*', component: <AccountsIndex /> },
+	{ path: 'setup/*', component: <Setup /> },
 	{ path: 'users/:username', component: <Profile /> },
 	{ path: 'pois/*', component: <PoiIndex /> },
 	{ path: 'org/*', component: <OrganisationIndex /> },
