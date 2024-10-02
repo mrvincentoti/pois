@@ -5,9 +5,11 @@ from .models import PoiMedia
 from ..poi.models import Poi
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
+from minio.error import S3Error
+from minio import Minio
 
 load_dotenv()
 
@@ -162,7 +164,7 @@ def get_poi_media(poi_id):
     try:
         # Get pagination parameters from the request (default values: page=1, per_page=10)
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
 
         # Query the database for media associated with the given poi_id, ordered by created_at descending, and paginate
         media_paginated = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None)\
@@ -179,6 +181,17 @@ def get_poi_media(poi_id):
             poi = Poi.query.filter_by(id=media.poi_id).first()
             poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
 
+            # Fetch file size from MinIO
+            file_size = None
+            try:
+                # Extract the file name from the media URL
+                file_name = media.media_url.split("/")[-1]  # Assuming the filename is the last part of the URL
+                stat_info = minio_client.stat_object(os.getenv("MINIO_BUCKET_NAME"), file_name)
+                file_size = round(stat_info.size / (1024 * 1024), 2)
+                file_size_str = f"{file_size} MB"
+            except S3Error as e:
+                print(f"Error fetching file size for {media.media_url}: {str(e)}")
+
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
@@ -187,7 +200,8 @@ def get_poi_media(poi_id):
                 "poi_id": poi.id if poi else None,
                 "poi_name": poi_name,
                 "created_by": media.created_by,
-                "created_at": media.created_at.isoformat() if media.created_at else None
+                "created_at": media.created_at.isoformat() if media.created_at else None,
+                "file_size": file_size_str
             }
             media_list.append(media_data)
 

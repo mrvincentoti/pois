@@ -39,6 +39,7 @@ class Poi(db.Model):
     country = db.relationship("Country", backref="poi")
     state = db.relationship("State", backref="poi")
     gender = db.relationship("Gender", backref="poi")
+    arms_recovered = db.relationship('ArmsRecovered', backref='poi', lazy=True)
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,marital_status=None,

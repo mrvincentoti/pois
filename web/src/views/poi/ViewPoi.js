@@ -32,7 +32,6 @@ import sampleMedia6 from '../../assets/images/small/img-6.jpg';
 import { Button, Modal } from 'antd';
 import PoiPrint from './PoiPrint';
 
-
 import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
 import MediaAndDocument from './MediaAndDocument';
@@ -91,15 +90,24 @@ const ViewPoi = () => {
 		}
 	}, [fetchPoiDetails, loaded, navigate, params.id, tab]);
 
-
 	const handleTabClick = tabName => {
 		setActiveTab(tabName);
 		navigate(`/pois/${params.id}/view?tab=` + tabName);
 	};
 
+	// function to refresh
+	const refreshPoiData = async () => {
+		try {
+			const rs = await request(GET_POI_API.replace(':id', params.id));
+			setPoiData(rs.poi_data);
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	};
+
 	// Function to open the modal
 	const openPrintModal = () => {
-		console.log("i am here");
+		console.log('i am here');
 		setShowPrintModal(true);
 	};
 
@@ -186,8 +194,6 @@ const ViewPoi = () => {
 		setShowPrintModal(false);
 	};
 
-
-
 	return (
 		<>
 			{loaded && poiData ? (
@@ -250,13 +256,17 @@ const ViewPoi = () => {
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">{poiData.crime_count || 0 }</h4>
+												<h4 className="text-white mb-1">
+													{poiData.crime_count || 0}
+												</h4>
 												<p className="fs-14 mb-0">Crime</p>
 											</div>
 										</div>
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
-												<h4 className="text-white mb-1">{poiData.arms_count || 0}</h4>
+												<h4 className="text-white mb-1">
+													{poiData.arms_count || 0}
+												</h4>
 												<p className="fs-14 mb-0">Arms</p>
 											</div>
 										</div>
@@ -355,11 +365,21 @@ const ViewPoi = () => {
 										>
 											<div className="row">
 												<div className="col-xxl-12 col-lg-12">
-													{activeTab === 'overview' && <Overview />}
-													{activeTab === 'crime' && <CrimeCommitted />}
-													{activeTab === 'media' && <MediaAndDocument />}
-													{activeTab === 'activities' && <Activities />}
-													{activeTab === 'recovered' && <ArmsRecovered />}
+													{activeTab === 'overview' && (
+														<Overview refreshPoiData={refreshPoiData} />
+													)}
+													{activeTab === 'crime' && (
+														<CrimeCommitted refreshPoiData={refreshPoiData} />
+													)}
+													{activeTab === 'media' && (
+														<MediaAndDocument refreshPoiData={refreshPoiData} />
+													)}
+													{activeTab === 'activities' && (
+														<Activities refreshPoiData={refreshPoiData} />
+													)}
+													{activeTab === 'recovered' && (
+														<ArmsRecovered refreshPoiData={refreshPoiData} />
+													)}
 												</div>
 											</div>
 										</div>
@@ -367,7 +387,6 @@ const ViewPoi = () => {
 								</div>
 							</div>
 						</div>
-
 					</div>
 				</>
 			) : (
