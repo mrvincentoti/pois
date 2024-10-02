@@ -206,7 +206,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			id="theme-settings-offcanvas"
 		>
 			<div className="d-flex align-items-center bg-dark p-3 offcanvas-header">
-				<h5 className="m-0 me-2 text-white">Poi Filters</h5>
+				<h5 className="m-0 me-2 text-white"> Filter POI</h5>
 
 				<button
 					type="button"
