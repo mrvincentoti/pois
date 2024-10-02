@@ -274,6 +274,13 @@ export const UPDATE_CRIMES_API = `${BASE_POI_URL}/crimes/:id`;
 export const FETCH_ORG_API = `${BASE_POI_URL}/organisations`;
 export const UPDATE_ORG_API = `${BASE_POI_URL}/organisation/:id`;
 export const GET_ORG_API = `${BASE_POI_URL}/organisation/:id`;
+export const DELETE_ORG_MEDIA_API = `${BASE_POI_URL}/org-media/:id`;
+export const FETCH_ORG_MEDIA_API = `${BASE_POI_URL}/org-medias/:id`;
+export const CREATE_ORG_MEDIA_API = `${BASE_POI_URL}/org-medias/:id`;
+export const UPDATE_ORG_MEDIA_API = `${BASE_POI_URL}/org-media/:id`;
+export const FETCH_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org-activities/:id`;
+export const CREATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities`;
+export const UPDATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities/`;
 
 // Media api
 export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;

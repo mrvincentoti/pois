@@ -115,6 +115,7 @@ from .organisation import urls
 from .orgMedia import urls
 from .brief import urls
 from .briefMedia import urls
+from .OrgActivities import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

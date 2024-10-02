@@ -286,7 +286,7 @@ const Organisation = () => {
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
 																<ViewLink
-																	to={`/pois/${item.id}/view?tab=overview`}
+																	to={`/org/${item.id}/view?tab=overview`}
 																/>
 																<EditLink to={`/org/${item.id}/edit`} />
 															</div>

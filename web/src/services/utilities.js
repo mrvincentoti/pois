@@ -372,6 +372,17 @@ export const formatGetInitialsName = employee => {
 	return '';
 };
 
+export const formatGetInitialsNameOrg = employee => {
+	if (employee) {
+		const firstNameInitial = employee.org_name
+			? employee.first_name.charAt(0)
+			: '';
+		return `${firstNameInitial}`;
+	}
+
+	return '';
+};
+
 export const formatFullName = employee => {
 	if (employee) {
 		const firstNameInitial = employee.first_name

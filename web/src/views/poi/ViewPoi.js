@@ -107,7 +107,6 @@ const ViewPoi = () => {
 
 	// Function to open the modal
 	const openPrintModal = () => {
-		console.log('i am here');
 		setShowPrintModal(true);
 	};
 

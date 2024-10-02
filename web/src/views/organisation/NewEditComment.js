@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import { CREATE_ACTIVITIES_API, UPDATE_ACTIVITIES_API } from '../../services/api';
+import { CREATE_ORG_ACTIVITIES_API, UPDATE_ORG_ACTIVITIES_API } from '../../services/api';
 import { notifyWithIcon, request } from '../../services/utilities';
 import ModalWrapper from '../../container/ModalWrapper';
 import FormWrapper from '../../container/FormWrapper';
@@ -32,11 +32,11 @@ const NewEditComment = ({ closeModal, data, update }) => {
                 method: data ? 'PUT' : 'POST',
                 body: {
                     ...values,
-                    poi_id: params.id,
+                    org_id: params.id,
                     comment: values.comment || null,
                 },
             };
-            const uri = data ? `${UPDATE_ACTIVITIES_API}/${data.id}` : CREATE_ACTIVITIES_API;
+            const uri = data ? `${UPDATE_ORG_ACTIVITIES_API}/${data.id}` : CREATE_ORG_ACTIVITIES_API;
             const rs = await request(uri, config);
             notifyWithIcon('success', rs.message);
             Object.keys(values).forEach(key => {
@@ -104,7 +104,6 @@ const NewEditComment = ({ closeModal, data, update }) => {
                                     </Field>
                                     <ErrorBlock name="activity_date" />
                                 </div>
-
                                 <div className="col-lg-12">
                                     <label htmlFor="comment" className="form-label">
                                         Comment
