@@ -291,6 +291,7 @@ def get_organisation(organisation_id):
 
         # Prepare the organisation data including source and category
         org_data = organisation.to_dict()
+        org_data['picture'] = urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), organisation.picture) if organisation.picture else None
         org_data['source'] = organisation.source.to_dict() if organisation.source else None
         org_data['category'] = organisation.category.to_dict() if organisation.category else None
 

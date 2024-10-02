@@ -29,6 +29,7 @@ const NewOrganisation = () => {
     const [categories, setCategories] = useState([]);
     const [sources, setSources] = useState([]);
     const [countries, setCountries] = useState([]);
+    const [country, setCountry] = useState([]);
     const [imageUrl, setImageUrl] = useState();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -36,55 +37,24 @@ const NewOrganisation = () => {
     const [investors, setInvestors] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const [editInputIndex, setEditInputIndex] = useState(-1);
     const [editInputValue, setEditInputValue] = useState('');
     const inputRef = useRef(null);
     const editInputRef = useRef(null);
 
     // Investors
     const [inputValueInvestors, setInputValueInvestors] = useState('');
-    const [editInputIndexInvestors, setEditInputIndexInvestors] = useState(-1);
-    const [editInputValueInvestors, setEditInputValueInvestors] = useState('');
     const [inputVisibleInvestors, setInputVisibleInvestors] = useState(false);
 
     // Affiliation
-    const [inputValueAffiliation, setInputValueAffiliation] = useState('');
-    const [editInputIndexAffiliation, setEditInputIndexAffiliation] = useState(-1);
-    const [editInputValueAffiliation, setEditInputValueAffiliation] = useState('');
-    const [inputVisibleAffiliation, setInputVisibleAffiliation] = useState(false);
     const [affiliations, setAffliations] = useState([]);
+    const [affiliation, setAffliation] = useState([]);
     const [fileList, setFileList] = useState([]);
+    const [selectedAffiliations, setSelectedAffiliations] = useState([]);
 
     const handleCloseAffiliation = removedTag => {
         const newTags = affiliations.filter(tag => tag !== removedTag);
         setAffliations(newTags);
     };
-
-    const showInputAffiliation = () => {
-        setInputVisibleAffiliation(true);
-    };
-
-    const handleInputChangeAffiliation = e => {
-        setInputValueAffiliation(e.target.value);
-    };
-
-    const handleInputConfirmAffiliation = () => {
-        if (inputValueAffiliation && !affiliations.includes(inputValueAffiliation)) {
-            setAffliations([...affiliations, inputValueAffiliation]);
-        }
-        setInputVisibleAffiliation(false);
-        setInputValueAffiliation('');
-    };
-
-    const handleEditInputConfirmAffiliation = () => {
-        const newTags = [...affiliations];
-        newTags[editInputIndexAffiliation] = editInputValueAffiliation;
-        setAffliations(newTags);
-        setEditInputIndexAffiliation(-1);
-        setEditInputValueAffiliation('');
-    };
-
-    // End affiliation
 
     useEffect(() => {
         if (inputVisible) {
@@ -138,25 +108,6 @@ const NewOrganisation = () => {
         setInputValueInvestors('');
     };
 
-    const handleEditInputChange = e => {
-        setEditInputValue(e.target.value);
-    };
-
-    const handleEditInputConfirm = () => {
-        const newTags = [...boardOfDirectors];
-        newTags[editInputIndex] = editInputValue;
-        setBoardOfDirectors(newTags);
-        setEditInputIndex(-1);
-        setEditInputValue('');
-    };
-
-    const handleEditInputConfirmInvestors = () => {
-        const newTags = [...investors];
-        newTags[editInputIndexInvestors] = editInputValueInvestors;
-        setInvestors(newTags);
-        setEditInputIndexInvestors(-1);
-        setEditInputValueInvestors('');
-    };
 
     const props = {
         maxCount: 1,
@@ -193,14 +144,25 @@ const NewOrganisation = () => {
                 label: country.en_short_name, // Set the label (Name of the country)
             }));
 
+            const formattedAffiliations = rs_affiliations.affiliations.map(affiliation => ({
+                value: affiliation.id, // Set the value (ID of the country)
+                label: affiliation.name, // Set the label (Name of the country)
+            }));
+
             setCountries(formattedCountries);
             setCategories(rs_categories.categories);
             setSources(rs_sources.sources);
-            setAffliations(rs_affiliations.affiliations);
+            setAffliations(formattedAffiliations);
         } catch (error) {
             notifyWithIcon('error', error.message);
         }
     }, []);
+
+    const handleAffiliationChange = (value) => {
+        console.log(value);
+        setAffliation(value);
+        setSelectedAffiliations(value);
+    };
 
 
     const getBase64 = (img, callback) => {
@@ -244,34 +206,12 @@ const NewOrganisation = () => {
     );
     const tagChildAffiliations = investors.map(forMapAffiliation);
 
-    const handleChange = info => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj, url => {
-                setLoading(false);
-                setImageUrl(url);
-            });
-        }
-    };
 
-    const beforeUpload = file => {
-        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-        if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!');
-        }
-        const isLt2M = file.size / 1024 / 1024 < 2;
-        if (!isLt2M) {
-            message.error('Image must smaller than 2MB!');
-        }
-        return isJpgOrPng && isLt2M;
-    };
+
 
     const handleChange2 = (value) => {
         console.log(`selected ${value}`);
+        setCountry(value);
     };
     
 
@@ -285,14 +225,18 @@ const NewOrganisation = () => {
     const onSubmit = async values => {
         try {
             const formData = new FormData();
+            // for (const key in values) {
+            //     if (key === 'affiliations' || key === 'countries_operational') {
+            //         formData.append(key, values[key].map(item => item.id).join(", "));
+            //     } else if (key === 'board_of_directors' || key === 'investors') {
+            //         formData.append(key, values[key].join(", "));
+            //     } else {
+            //         formData.append(key, values[key]);
+            //     }
+            // }
+            // Append your values to FormData
             for (const key in values) {
-                if (key === 'affiliations' || key === 'countries_operational') {
-                    formData.append(key, values[key].map(item => item.id).join(", "));
-                } else if (key === 'board_of_directors' || key === 'investors') {
-                    formData.append(key, values[key].join(", "));
-                } else {
-                    formData.append(key, values[key]);
-                }
+                formData.append(key, values[key]);
             }
 
             const appendIfExists = (key, value) => {
@@ -300,17 +244,23 @@ const NewOrganisation = () => {
                     formData.append(key, value);
                 }
             };
-
-            appendIfExists('category_id', values.category?.id);
-            appendIfExists('source_id', values.source?.id);
+            //console.log(affiliations); return;
+            appendIfExists('category_id', values.category);
+            appendIfExists('source_id', values.source);
             appendIfExists('gender_id', values.gender?.id);
             appendIfExists('state_id', values.state?.id);
             appendIfExists('marital_status', values.marital_status?.name);
             appendIfExists('picture', imageUrl?.file);
-            // appendIfExists('board_of_directors', boardOfDirectors.join(", "));
-            // appendIfExists('investors', investors.join(", "));
-            //appendIfExists('affiliations', affiliations?.map(item => item.id).join(", "));
-            //appendIfExists('countries_operational', countries?.map(item => item.id).join(", "));
+            appendIfExists('board_of_directors', boardOfDirectors?.join(", "));
+            appendIfExists('investors', investors?.join(", "));
+            appendIfExists('affiliations', affiliation?.join(", "));
+            appendIfExists('countries_operational', country?.join(", "));
+
+            // for (let pair of formData.entries()) {
+            // 	console.log(`${pair[0]}: ${pair[1]}`);
+            // }
+
+            // return
 
             const uri = CREATE_ORG_API;
 
@@ -528,11 +478,11 @@ const NewOrganisation = () => {
                                                 </div>
 
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="countries_operational">
+                                                    <label className="form-label" htmlFor="country">
                                                         Country Operational <span style={{ color: 'red' }}></span>
                                                     </label>
 
-                                                    <Field id="countries_operational" name="countries_operational">
+                                                    <Field id="country" name="country">
                                                         {({ input, meta }) => (
                                                             <Select
                                                                 mode="multiple"
@@ -549,7 +499,7 @@ const NewOrganisation = () => {
                                                         )}
                                                     </Field>
 
-                                                    <ErrorBlock name="countries_operational" />
+                                                    <ErrorBlock name="country" />
                                                 </div>
 
                                                 <div className="col-lg-4 mb-3">
@@ -693,35 +643,31 @@ const NewOrganisation = () => {
 
                                                     <ErrorBlock name="affiliations" />
                                                 </div> */}
-
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="affiliations">
+                                                    <label className="form-label" htmlFor="affiliation">
                                                         Affiliation <span style={{ color: 'red' }}></span>
                                                     </label>
 
-                                                    <Field id="affiliations" name="affiliations">
+                                                    <Field id="affiliation" name="affiliation">
                                                         {({ input, meta }) => (
                                                             <Select
-                                                                mode="multiple"  // Enable multi-select
+                                                                mode="multiple"
                                                                 allowClear
                                                                 style={{
                                                                     width: '100%',
-                                                                    height: '40px',  // Set height
-                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
+                                                                    height: '40px',
+                                                                    borderColor: '#ced4da',
                                                                 }}
-                                                                placeholder="Select Affiliation"
-                                                                onChange={(value) => input.onChange(value)}  // Handle change
-                                                                options={affiliations.map(affiliation => ({
-                                                                    value: affiliation.id,  // Map the id as value
-                                                                    label: affiliation.name,  // Map the name as label
-                                                                }))}
-                                                                className="custom-affiliations-select"  // Custom class for further styling
+                                                                placeholder="Please Affiliation"
+                                                                onChange={handleAffiliationChange}
+                                                                options={affiliations}
                                                             />
                                                         )}
                                                     </Field>
 
-                                                    <ErrorBlock name="affiliations" />
+                                                    <ErrorBlock name="affiliation" />
                                                 </div>
+
 
 
                                                 <div className="col-lg-4 mb-3">
