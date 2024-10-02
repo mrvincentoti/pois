@@ -1,6 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
 import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditCrime from './NewEditCrime';
@@ -18,7 +17,7 @@ import {
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
 
-const CrimeCommitted = () => {
+const CrimeCommitted = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimesData, setCrimesData] = useState([]);
 	const [showModal, setShowModal] = useState(false);
@@ -29,9 +28,9 @@ const CrimeCommitted = () => {
 	const navigate = useNavigate();
 	const params = useParams();
 
-	const fetchCrimesDetails = useCallback(async Id => {
+	const fetchCrimesDetails = useCallback(async id => {
 		try {
-			const rs = await request(GET_CRIMES_COMMITTED_API.replace(':id', Id));
+			const rs = await request(GET_CRIMES_COMMITTED_API.replace(':id', id));
 			setCrimesData(rs.crimes_committed);
 		} catch (error) {
 			setLoadError(error.message);
@@ -43,7 +42,7 @@ const CrimeCommitted = () => {
 			fetchCrimesDetails(params.id);
 			setLoaded(true);
 		}
-	}, [fetchCrimesDetails, loaded, navigate, params.id, crimesData]);
+	}, [fetchCrimesDetails, loaded, params.id]);
 
 	const handleEditClick = id => {
 		navigate(`/pois/${id}/edit`);
@@ -68,8 +67,8 @@ const CrimeCommitted = () => {
 
 	const refreshTable = async () => {
 		setWorking(true);
-
 		await fetchCrimesDetails(params.id);
+		setWorking(false);
 	};
 
 	return (
@@ -80,15 +79,14 @@ const CrimeCommitted = () => {
 						<div className="card-body">
 							<div className="d-flex align-items-center mb-4">
 								<h5 className="card-title flex-grow-1 mb-0">Crime Committed</h5>
-								<div onClick={() => addCrimes()}>
+								<div onClick={addCrimes}>
 									<label htmlFor="formFile" className="btn btn-success">
 										<i className="ri-add-fill me-1 align-bottom"></i> Add
 									</label>
 								</div>
 							</div>
-							{crimesData.length > 0 && (
+							{crimesData.length > 0 ? (
 								<div className="row">
-									{/* Generate columns dynamically based on crimesData */}
 									{crimesData.map((item, i) => (
 										<div key={i} className="col-xxl-4 col-sm-4">
 											<div className="card profile-project-card shadow-none profile-project-warning">
@@ -132,7 +130,6 @@ const CrimeCommitted = () => {
 															</p>
 														</div>
 													</div>
-													{/* Edit button */}
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-primary"
@@ -146,13 +143,12 @@ const CrimeCommitted = () => {
 										</div>
 									))}
 								</div>
+							) : (
+								// Show NoResult component only once based on conditions
+								<NoResult
+									title={loadError ? 'Error Loading Crimes' : 'No Crimes Found'}
+								/>
 							)}
-							{loadError !== '' && (
-								<div className="noresult py-5">
-									<NoResult title="Crimes" />
-								</div>
-							)}
-							{/* end row */}
 						</div>
 					</div>
 				) : (
@@ -165,10 +161,11 @@ const CrimeCommitted = () => {
 			</div>
 			{showModal && (
 				<ManageCrimes
-					closeModal={() => closeModal()}
+					closeModal={closeModal}
 					crimesCommitted={crimes}
 					update={async () => {
-						await refreshTable().then(_ => setWorking(false));
+						await refreshTable();
+						refreshPoiData(); // Refresh POI data after updating crimes
 					}}
 				/>
 			)}
