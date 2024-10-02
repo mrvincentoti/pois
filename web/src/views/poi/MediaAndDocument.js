@@ -236,7 +236,7 @@ const MediaAndDocument = () => {
 													</div>
 												</td>
 												<td>{formatType(item.media_type)} File</td>
-												<td>{'--'}</td>
+												<td>{item.file_size || '--'}</td>
 												<td>{item.created_at || '--'}</td>
 												<td>
 													<div className="hstack gap-3 flex-wrap text-end">
