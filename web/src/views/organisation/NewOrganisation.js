@@ -240,7 +240,7 @@ const NewOrganisation = () => {
             }
 
             const appendIfExists = (key, value) => {
-                if (value !== undefined && value !== null) {
+                if (value !== undefined && value !== null ) {
                     formData.append(key, value);
                 }
             };
@@ -255,6 +255,7 @@ const NewOrganisation = () => {
             appendIfExists('investors', investors?.join(", "));
             appendIfExists('affiliations', affiliation?.join(", "));
             appendIfExists('countries_operational', country?.join(", "));
+            
 
             // for (let pair of formData.entries()) {
             // 	console.log(`${pair[0]}: ${pair[1]}`);

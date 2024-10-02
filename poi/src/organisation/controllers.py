@@ -343,7 +343,8 @@ def update_organisation(org_id):
 
     try:
         if organisation:
-            # Handle the file upload for the organisation's picture (if applicable) 
+            # Handle the file upload for the organisation's picture (if applicable)
+            picture_url = None
             if 'picture' in request.files:
                 file = request.files['picture']
 
@@ -353,27 +354,19 @@ def update_organisation(org_id):
 
                 # Check if the uploaded file is allowed
                 if allowed_file(file.filename):
-                    # Delete the old picture file from MinIO (if necessary)
-                    old_picture_key = os.path.basename(organisation.picture)
-                    try:
-                        minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_picture_key)
-                    except Exception as e:
-                        print(f"Error deleting old picture from MinIO: {e}")
-
                     # Generate a new filename using UUID
-                    file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
-                    new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
+                    file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
+                    new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
 
-                    # Upload the new picture to MinIO
-                    minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
-                    if not minio_file_url:
-                        return jsonify({"message": "Error uploading picture to MinIO"}), 500
+                    # Upload the file to MinIO
+                    picture_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
 
-                    # Save the new picture URL in the organisation's picture field
-                    organisation.picture = minio_file_url
+                    if not picture_url:
+                        return jsonify({'message': 'Error uploading picture to MinIO'}), 500
                 else:
                     return jsonify({'message': 'Picture file type not allowed'}), 400
-
+            else:
+                picture_url = organisation.picture
             # Update other fields of the organisation
             organisation.update(
                 ref_numb=data.get('ref_numb'),
@@ -398,6 +391,7 @@ def update_organisation(org_id):
                 remark=data.get('remark'),
                 category_id=data.get('category_id'),
                 source_id=data.get('source_id'),
+                picture=picture_url,
                 deleted_at=data.get('deleted_at') 
             )
 

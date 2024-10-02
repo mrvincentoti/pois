@@ -121,8 +121,6 @@ const EditPoi = () => {
 		if (!loaded) {
 			fetchApis();
 			fetchPoi(param.id).then(item => {
-				console.log(item);
-
 				if (!item) {
 					notifyWithIcon('error', 'poi not found!');
 					navigate('/pois/poi');

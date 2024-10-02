@@ -29,11 +29,7 @@ import { Select } from "antd";
 import UploadFilePicture from '../../components/UploadFile';
 
 import {
-    categoryList,
-    confirmationList,
-    hasImplications,
     maritalStatusList,
-    passportCategoryList,
 } from '../../services/constants';
 const EditOrganisation = () => {
     const [loaded, setLoaded] = useState(false);
@@ -46,15 +42,8 @@ const EditOrganisation = () => {
     
     // Investors
     const [inputValueInvestors, setInputValueInvestors] = useState('');
-    const [editInputIndexInvestors, setEditInputIndexInvestors] = useState(-1);
-    const [editInputValueInvestors, setEditInputValueInvestors] = useState('');
     const [inputVisibleInvestors, setInputVisibleInvestors] = useState(false);
-
-
-    const [state, setState] = useState(null);
     const [maritalStatus, setMaritalStatus] = useState(null);
-    const [passportCategory, setPassportCategory] = useState(null);
-    const [confirmation, setConfirmation] = useState(null);
     const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
     const [sources, setSources] = useState([]);
@@ -80,7 +69,8 @@ const EditOrganisation = () => {
     const [tags, setTags] = useState([]);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const [fileList, setFileList] = useState([]);
+    const [inputVisibleBOD, setInputVisibleBOD] = useState(false);
+    const [inputValueBOD, setInputValueBOD] = useState('');
 
     // Board of directors edit
     const [initialValues, setInitialValues] = useState({ affiliation: [] });
@@ -133,10 +123,7 @@ const EditOrganisation = () => {
         }
     }, []);
 
-    const fetchStates = useCallback(async country_id => {
-        const rs = await request(FETCH_STATES_API.replace('/:id', ''));
-        setStates(rs.states);
-    }, []);
+
 
     const fetchOrg = useCallback(async id => {
         try {
@@ -157,10 +144,6 @@ const EditOrganisation = () => {
         setInvestors(newTags);
     };
 
-    // const handleCloseAffiliation = removedTag => {
-    //     const newTags = affiliations.filter(tag => tag !== removedTag);
-    //     setAffliations(newTags);
-    // };
 
     const handleInputChangeInvestors = e => {
         setInputValueInvestors(e.target.value);
@@ -177,72 +160,66 @@ const EditOrganisation = () => {
     useEffect(() => {
         if (!loaded) {
             fetchApis();
-            fetchOrg(param.id).then(item => {
-                console.log(item);
-
-                if (!item) {
-                    notifyWithIcon('error', 'poi not found!');
-                    navigate('/org/organisation');
-                    return;
-                }
-
-                if (item.alias) {
-                    try {
-                        const tagsArray = item.alias.split(',').map(tag => tag.trim());
-
-                        setAlias(tagsArray);
-                        setTags(tagsArray);
-                    } catch (error) {
-                        console.error('Failed to parse alias:', error);
-
-                        const jsonArray = [item.alias];
-                        setAlias(jsonArray);
+            if (countries.length > 0 && allAffiliations.length > 0) {
+                fetchOrg(param.id).then(item => {
+                    if (!item) {
+                        notifyWithIcon('error', 'poi not found!');
+                        navigate('/org/organisation');
+                        return;
                     }
-                }
 
-                setDateOfRegistration(new Date(item.date_of_registration));
-                setCountry(item.country);
-                setSource(item.source);
-                setOrg(item);
+                    if (item.alias) {
+                        try {
+                            const tagsArray = item.alias.split(',').map(tag => tag.trim());
 
-                // setInitialValues({
-                //     affiliation: item.affiliations.split(',').map(Number),
-                //     source: item?.source ? { label: item?.source.name, value: item?.source.id } : '',
-                //     country: item?.countries_operational ? item?.countries_operational.split(',').map(item => parseInt(item.trim())) : ''
-                // });
+                            setAlias(tagsArray);
+                            setTags(tagsArray);
+                        } catch (error) {
+                            console.error('Failed to parse alias:', error);
 
-                const operational_list = item?.countries_operational.split(',').map(o => {
-                    const country = countries.find(c => c.id === Number(o))
-                    return { value: Number(o), label: country?.en_short_name || '' }
-                })
-                setOperationals(operational_list)
+                            const jsonArray = [item.alias];
+                            setAlias(jsonArray);
+                        }
+                    }
 
-                const affiliations_list = item?.affiliations.split(',').map(a => {
-                    const affiliation = allAffiliations.find(item => item.id === Number(a))
-                    return { label: affiliation?.name || '', value: Number(a) }
-                })
-                setAffiliations(affiliations_list)
+                    setDateOfRegistration(new Date(item.date_of_registration));
+                    setCountry(item.country);
+                    setSource(item.source.id);
+                   
+                    
+                    setCategory(item.category.id);
+                    setOrg(item);
 
-                setBoardOfDirectors(item.board_of_directors.split(',').map(name => name.trim()));
-                setInvestors(item.investors.split(',').map(name => name.trim()));
-                
+                    const operational_list = item?.countries_operational.split(',').map(o => {
+                        const country = countries.find(c => c.id === Number(o))
+                        return { value: Number(o), label: country?.en_short_name || '' }
+                    })
+                    setOperationals(operational_list)
 
-                setImageString(item.picture);
-                if (item.marital_status)
-                    setMaritalStatus(
-                        maritalStatusList.find(
-                            status => status.name === item.marital_status
-                        )
-                    );
-                setLoaded(true);
-            });
+                    const affiliations_list = item?.affiliations.split(',').map(a => {
+                        const affiliation = allAffiliations.find(item => item.id === Number(a))
+                        return { label: affiliation?.name || '', value: Number(a) }
+                    })
+                    setAffiliations(affiliations_list)
+
+                    setBoardOfDirectors(item.board_of_directors.split(',').map(name => name.trim()));
+                    setInvestors(item.investors.split(',').map(name => name.trim()));
+
+
+                    setImageString(item.picture);
+                    if (item.marital_status)
+                        setMaritalStatus(
+                            maritalStatusList.find(
+                                status => status.name === item.marital_status
+                            )
+                        );
+                    setLoaded(true);
+                });
+            }
         }
     }, [
         fetchApis,
-        // fetchDepartments,
         fetchOrg,
-        // fetchLgas,
-        // fetchUnits,
         loaded,
         navigate,
         countries,
@@ -264,26 +241,28 @@ const EditOrganisation = () => {
     };
 
     const handleInputChange = e => {
-        setInputValue(e.target.value);
+        setBoardOfDirectors(e.target.value);
     };
 
     const handleInputConfirm = () => {
-        if (inputValue && tags.indexOf(inputValue) === -1) {
-            setTags([...tags, inputValue]);
+        if (boardOfDirectors && tags.indexOf(boardOfDirectors) === -1) {
+            setTags([...tags, boardOfDirectors]);
         }
         setInputVisible(false);
-        setInputValue('');
+        setBoardOfDirectors('');
     };
 
-    const forMap = tag => (
-        <span key={tag} style={{ display: 'inline-block' }}>
-            <Tag closable onClose={() => handleClose(tag)}>
-                {tag}
-            </Tag>
-        </span>
-    );
+    const handleChangeCat = (value) => {
+        setCategory(value)
+    }
 
-    const tagChild = tags.map(forMap);
+    const handleChangeSource = (value) => {
+        setSource(value)
+    }
+
+
+
+  
 
     // Function to convert null or undefined values to an empty string
     const convertNullToEmptyString = obj => {
@@ -295,17 +274,11 @@ const EditOrganisation = () => {
     };
 
 
-    const onSubmit = async values => {
-        console.log(values)
-        console.log(operationals)
+    const onSubmit = async values => {        
         convertNullToEmptyString(values);
 
         try {
-            // Create a FormData object
             const formData = new FormData();
-            // Append your values to FormData
-
-            // if (country) values.country_id = country.id;
             if (maritalStatus) values.marital_status = maritalStatus.name;
             if (dateOfBirth) values.dob = dateOfBirth;
             if (tags) values.alias = tags;
@@ -314,22 +287,31 @@ const EditOrganisation = () => {
                 formData.append(key, values[key]);
             }
 
-            // Function to append to formData only if the value exists
             const appendIfExists = (key, value) => {
                 if (value !== undefined && value !== null) {
                     formData.append(key, value);
                 }
             };
 
-            if (operationals.length>0){
-                formData.append('countries_operational', operationals.map(o => o.value).join(','))
+            if (operationals.length > 0) {                
+                formData.set('countries_operational', operationals.map(o => o.value).join(','))
             }
 
-            // Conditionally append values to FormData, with empty strings for non-existent values
-            if (values.category) {
-                formData.append('category_id', values.category.id);
+            if (category) {
+                formData.set('category_id', category);
             }
-
+            if (source) {
+                formData.set('source_id', source);
+            }
+            // if (values.org_name) {
+            //     formData.append('org_name', values.org_name);
+            // }
+            // if (values.reg_numb) {
+            //     formData.append('reg_numb', values.reg_numb);
+            // }
+            if (values.email) {
+                formData.append('email', values.email);
+            }
             if (values.source) {
                 formData.append('source_id', values.source?.id || '');
             }
@@ -340,7 +322,7 @@ const EditOrganisation = () => {
                 formData.append('state_id', values.state?.id || '');
             }
             if (values.affiliation) {
-                formData.append('affiliations', affiliations.map(o => o.value).join(','));
+                formData.set('affiliations', affiliations.map(o => o.value).join(','));
             }
             if (values.marital_status) {
                 formData.append('marital_status', values.marital_status?.name || '');
@@ -351,16 +333,22 @@ const EditOrganisation = () => {
             if (tags) {
                 formData.append('alias', tags.length > 0 ? tags.join(', ') : ''); // Ensure alias is not null
             }
-
-            formData.set('country', undefined)
-            formData.set('affiliation', undefined)
-            formData.set('source', undefined)
-
-            for (let pair of formData.entries()) {
-            	console.log(`${pair[0]}: ${pair[1]}`);
+            if (boardOfDirectors) {
+                formData.set('board_of_directors', boardOfDirectors.length > 0 ? boardOfDirectors.join(', ') : ''); // Ensure alias is not null
             }
+            if (investors) {
+                formData.set('investors', investors.length > 0 ? investors.join(', ') : ''); // Ensure alias is not null
+            }
+      
+            formData.set('affiliation', undefined);
+            formData.set('country', undefined);
+            formData.set('category', undefined);
 
-            return
+            // for (let pair of formData.entries()) {
+            // 	console.log(`${pair[0]}: ${pair[1]}`);
+            // }
+
+            // return
 
             const uri = UPDATE_ORG_API.replace(':id', param.id);
 
@@ -378,8 +366,8 @@ const EditOrganisation = () => {
 
                 notifyWithIcon('error', errorMessage);
             } else {
-                notifyWithIcon('success', 'POI updated successfully');
-                navigate('/pois/poi');
+                notifyWithIcon('success', 'Organisation updated successfully');
+                navigate('/org/organisation');
             }
         } catch (e) {
             return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -397,16 +385,36 @@ const EditOrganisation = () => {
     );
     const tagChildInvestors = investors.map(forMapInvestors);
 
+    // BoD tag
+    const handleCloseBOD = removedTag => {
+        const newTags = boardOfDirectors.filter(tag => tag !== removedTag);
+        setBoardOfDirectors(newTags);
+    };
 
-    // Affiliations
-    // const forMapAffiliation = tag => (
-    //     <span key={tag} style={{ display: 'inline-block' }}>
-    //         <Tag closable onClose={() => handleCloseAffiliation(tag)}>
-    //             {tag}
-    //         </Tag>
-    //     </span>
-    // );
-    // const tagChildAffiliations = investors.map(forMapAffiliation);
+    const forMapBOD = tag => (
+        <span key={tag} style={{ display: 'inline-block' }}>
+            <Tag closable onClose={() => handleCloseBOD(tag)}>
+                {tag}
+            </Tag>
+        </span>
+    );
+    const tagChildBOD = boardOfDirectors.map(forMapBOD);
+
+    const handleInputConfirmBOD = () => {
+        if (inputValueBOD && !boardOfDirectors.includes(inputValueBOD)) {
+            setBoardOfDirectors([...boardOfDirectors, inputValueBOD]);
+        }
+        setInputVisibleBOD(false);
+        setInputValueBOD('');
+    };
+
+    const handleInputChangeBOD = e => {
+        setInputValueBOD(e.target.value);
+    };
+
+    const showInputBOD = () => {
+        setInputVisibleBOD(true);
+    };
 
     return (
         <div className="container-fluid">
@@ -419,18 +427,15 @@ const EditOrganisation = () => {
                             const affiliation = allAffiliations.find(item => item.id === Number(a))
                             return { label: affiliation?.name || '', value: Number(a) }
                         }) || '',
-                        source: org?.source ? { label: org?.source.name, value: org?.source.id } : '',
                         country: org?.countries_operational.split(',')?.map(o => {
                             const country = countries.find(c => c.id === Number(o))
                             return { value: Number(o), label: country?.en_short_name || '' }
                         }) || ''
+                        
                     }}
                     onSubmit={onSubmit}
-                    validate={values => {
-                        // console.log(initialValues);
-                        
+                    validate={values => {                        
                         const errors = {};
-
                         return errors;
                     }}
                     render={({ handleSubmit, submitError, submitting, form }) => (
@@ -622,49 +627,38 @@ const EditOrganisation = () => {
                                                     </Field>
                                                     <ErrorBlock name="ceo" />
                                                 </div>
+                                                
                                                 <div className="col-lg-4 mb-3">
-                                                    <label className="form-label" htmlFor="board_of_directors">
+                                                    <label className="form-label" htmlFor="investors">
                                                         Board Of Directors
                                                     </label>
 
                                                     <Field id="board_of_directors" name="board_of_directors">
                                                         {({ input, meta }) => (
                                                             <div className={`form-control ${error(meta)}`}>
-                                                                {boardOfDirectors.map((director, index) => (
-                                                                    <Tag
-                                                                        key={index}
-                                                                        closable
-                                                                        onClose={() => handleRemoveTag2(director)}
-                                                                    >
-                                                                        {director}
-                                                                    </Tag>
-                                                                ))}
-
-                                                                {inputVisible && (
+                                                                {tagChildBOD}
+                                                                {inputVisibleBOD && (
                                                                     <Input
                                                                         type="text"
                                                                         size="small"
-                                                                        value={inputValue}
-                                                                        onChange={handleInputChange}
-                                                                        onBlur={handleInputConfirm}
-                                                                        onPressEnter={handleInputConfirm}
+                                                                        value={inputValueBOD}
+                                                                        onChange={handleInputChangeBOD}
+                                                                        onBlur={handleInputConfirmBOD}
+                                                                        onPressEnter={handleInputConfirmBOD}
                                                                         style={{ width: 78, marginRight: 8, marginTop: 5 }}
                                                                     />
                                                                 )}
-
-                                                                {!inputVisible && (
-                                                                    <Tag onClick={showInput} className="site-tag-plus">
-                                                                        <i className="ri-add-line" /> Add
+                                                                {!inputVisibleBOD && (
+                                                                    <Tag onClick={showInputBOD} className="site-tag-plus">
+                                                                        <i className="ri-add-line" />  Add
                                                                     </Tag>
                                                                 )}
-
-                                                                {/* Hidden input for form submission */}
                                                                 <input
                                                                     {...input}
                                                                     type="hidden"
-                                                                    value={boardOfDirectors.join(', ')} // Convert array to comma-separated string
+                                                                    value={boardOfDirectors}
                                                                     onChange={() => { }}
-                                                                    onBlur={() => input.onBlur(boardOfDirectors.join(', '))}
+                                                                    onBlur={() => input.onBlur(boardOfDirectors)}
                                                                 />
                                                             </div>
                                                         )}
@@ -672,6 +666,7 @@ const EditOrganisation = () => {
 
                                                     <ErrorBlock name="board_of_directors" />
                                                 </div>
+
                                                 <div className="col-lg-4 mb-3">
                                                     <label
                                                         className="form-label"
@@ -806,15 +801,13 @@ const EditOrganisation = () => {
                                                                 style={{
                                                                     width: '100%',
                                                                     height: '40px',
-                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
+                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',
                                                                 }}
                                                                 placeholder="Select Category"
-                                                                onChange={(value) => input.onChange(value)}  // Handle change event
-                                                                options={categories.map(category => ({
-                                                                    value: category.id,  // Map id to value
-                                                                    label: category.name,  // Map name to label
-                                                                }))}
-                                                                className="custom-category-select"  // Custom class for further styling
+                                                                onChange={handleChangeCat}
+                                                                value={category}
+                                                                options={categories.map(c => ({ label: c.name, value: c.id }))}
+                                                                className="custom-category-select"
                                                             />
                                                         )}
                                                     </Field>
@@ -833,9 +826,9 @@ const EditOrganisation = () => {
                                                                     height: '40px',
                                                                     borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Dynamic border color based on validation
                                                                 }}
-                                                                value={input.value || ''}
+                                                                value={source}
                                                                 placeholder="Select Source"
-                                                                onChange={(value) => input.onChange(value)}  // Handle change event
+                                                                onChange={handleChangeSource}  // Handle change event
                                                                 options={sources.map(s => ({ label:s.name, value:s.id }))}
                                                             />
                                                         )}
@@ -999,7 +992,7 @@ const EditOrganisation = () => {
                                             Cancel
                                         </Link>
                                         <button type="submit" className="btn btn-success w-sm">
-                                            Update POI
+                                            Update
                                         </button>
                                     </div>
                                 </div>
