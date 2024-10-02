@@ -23,6 +23,7 @@ class Organisation(db.Model):
     employee_strength = db.Column(db.Integer, nullable=True)
     affiliations = db.Column(db.Text, nullable=True)
     website = db.Column(db.String(64), nullable=True)
+    email = db.Column(db.String(64), nullable=True)
     fb = db.Column(db.String(64), nullable=True)
     instagram = db.Column(db.String(64), nullable=True)
     twitter = db.Column(db.String(64), nullable=True)
@@ -39,7 +40,7 @@ class Organisation(db.Model):
     source = db.relationship("Source", backref="organisation")
 
 
-    def __init__(self, picture=None, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None, nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None, board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None, created_by=None, created_at=None, deleted_at=None):
+    def __init__(self, picture=None, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None, nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None, board_of_directors=None, employee_strength=None, affiliations=None, website=None, email=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None, created_by=None, created_at=None, deleted_at=None):
         self.picture = picture
         self.ref_numb = ref_numb
         self.reg_numb = reg_numb
@@ -56,6 +57,7 @@ class Organisation(db.Model):
         self.employee_strength = employee_strength
         self.affiliations = affiliations
         self.website = website
+        self.email = email
         self.fb = fb
         self.instagram = instagram
         self.twitter = twitter
@@ -80,7 +82,7 @@ class Organisation(db.Model):
 
     def update(self, picture=None, ref_numb=None, reg_numb=None, org_name=None, date_of_registration=None, address=None, hq=None,
             nature_of_business=None, phone_number=None, countries_operational=None, investors=None, ceo=None,
-            board_of_directors=None, employee_strength=None, affiliations=None, website=None, fb=None,
+            board_of_directors=None, employee_strength=None, affiliations=None, website=None, email=None, fb=None,
             instagram=None,
             twitter=None, telegram=None, tiktok=None, category_id=None, source_id=None, remark=None,
             deleted_at=None):
@@ -116,6 +118,8 @@ class Organisation(db.Model):
             self.affiliations = affiliations
         if website:
             self.website = website
+        if email:
+            self.email = email
         if fb:
             self.fb = fb
         if instagram:
@@ -156,6 +160,7 @@ class Organisation(db.Model):
             'employee_strength': self.employee_strength,
             'affiliations': self.affiliations,
             'website': self.website,
+            'email': self.email,
             'fb': self.fb,
             'instagram': self.instagram,
             'twitter': self.twitter,

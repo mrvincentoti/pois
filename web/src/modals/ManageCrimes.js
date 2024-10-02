@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
-import AsyncSelect from 'react-select/async';
 import Select from 'react-select';
 import ModalWrapper from '../container/ModalWrapper';
-import { formatPoiName, notifyWithIcon, request } from '../services/utilities';
+import { notifyWithIcon, request } from '../services/utilities';
 import {
 	CREATE_CRIMES_COMMITTED_API,
-	FET_POIS_API,
 	FETCH_CRIMES_API,
 	FETCH_ARRESTING_BODY_API,
 	UPDATE_CRIMES_COMMITTED_API,
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
-
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-// import { hasImplications } from '../services/constants';
 
 const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 	const [loaded, setLoaded] = useState(false);
-	const [poi, setPoi] = useState(null);
 	const [crime, setCrime] = useState(null);
 	const [crimesOptions, setCrimesOptions] = useState([]);
 	const [arrestingBody, setArrestingBody] = useState(null);
@@ -30,21 +26,20 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 	const [casualties, setCasualties] = useState(null);
 	const [detention, setDetention] = useState(null);
 	const [actionTaken, setActionTaken] = useState(null);
-	const [poiList, setPoiList] = useState(null);
+	const params = useParams();
 
 	useEffect(() => {
 		if (!loaded) {
 			if (crimesCommitted) {
 				setCrime(crimesCommitted.crime);
 				setArrestingBody(crimesCommitted.arresting_body);
-				setPoi({ id: crimesCommitted.poi_id, name: crimesCommitted.poi_name });
 				setCrimeDate(new Date(crimesCommitted.crime_date));
 			}
 			loadCrimes();
 			loadArrestingBodies();
 			setLoaded(true);
 		}
-	}, [crimesCommitted, loaded, poiList]);
+	}, [crimesCommitted, loaded]);
 
 	const loadCrimes = async () => {
 		const rs = await request(FETCH_CRIMES_API);
@@ -55,23 +50,13 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 		setArrestingBodyOptions(rs?.arresting_bodies || []);
 	};
 
-	const getPoi = async q => {
-		if (!q || q.length <= 1) {
-			return [];
-		}
-
-		const rs = await request(`${FET_POIS_API}?q=${q}`);
-
-		return rs?.pois || [];
-	};
-
 	const onSubmit = async values => {
 		try {
 			const config = {
 				method: crimesCommitted ? 'PUT' : 'POST',
 				body: {
 					...values,
-					poi: undefined,
+					poi_id: params.id,
 					crime: undefined,
 					deleted_at: undefined,
 				},
@@ -84,12 +69,10 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 			update();
 			closeModal();
 		} catch (e) {
-			console.error(e); // This logs the actual error object in the console
-			// Check if it's an object, then extract a meaningful message
+			console.error(e);
 			const errorMessage = e.message || 'Something went wrong';
-
 			return {
-				[FORM_ERROR]: e.message || 'could not create crime',
+				[FORM_ERROR]: errorMessage,
 			};
 		}
 	};
@@ -100,26 +83,10 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 			closeModal={closeModal}
 		>
 			<Form
-				initialValues={{ ...crimesCommitted, poi_id: crimesCommitted?.poi_id }}
+				initialValues={crimesCommitted}
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
-					// if (!values.employee_id) {
-					// 	errors.employee_id = 'select employee';
-					// }
-					// if (!values.award_id) {
-					// 	errors.award_id = 'select award';
-					// }
-					// if (values.type === 2 && !values.implication_id) {
-					// 	errors.implication_id = 'select implication';
-					// }
-					// if (!values.reason) {
-					// 	errors.reason = 'select reason';
-					// }
-					// if (!values.date_given) {
-					// 	errors.date_given = 'select date_given';
-					// }
-
 					return errors;
 				}}
 				render={({ handleSubmit, submitError, submitting }) => (
@@ -127,32 +94,6 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 						<div className="modal-body">
 							<FormSubmitError error={submitError} />
 							<div className="row g-3">
-								<div className="col-lg-12">
-									<label htmlFor="poi_id" className="form-label">
-										POI
-									</label>
-									<Field id="poi_id" name="poi_id">
-										{({ input, meta }) => (
-											<AsyncSelect
-												isClearable
-												getOptionValue={option => option.id}
-												getOptionLabel={option =>
-													option.name || formatPoiName(option)
-												}
-												defaultOptions
-												value={poi}
-												className={error(meta)}
-												loadOptions={getPoi}
-												onChange={e => {
-													setPoi(e);
-													e ? input.onChange(e.id) : input.onChange('');
-												}}
-												placeholder="Search poi"
-											/>
-										)}
-									</Field>
-									<ErrorBlock name="poi_id" />
-								</div>
 								<div className="col-lg-12">
 									<label htmlFor="crime_id" className="form-label">
 										Crime

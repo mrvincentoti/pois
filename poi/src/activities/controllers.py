@@ -32,6 +32,13 @@ def get_activities():
 
 @custom_jwt_required
 def add_activity():
+    data = request.get_json()
+
+    poi = Poi.query.filter_by(id=data.get("poi_id")).first()
+
+    if not poi:
+        return jsonify({"message": "POI not found"}), 201
+            
     if request.method == "POST":
         data = request.get_json()
         poi_id = data.get("poi_id")

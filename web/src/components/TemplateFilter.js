@@ -206,7 +206,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			id="theme-settings-offcanvas"
 		>
 			<div className="d-flex align-items-center bg-dark p-3 offcanvas-header">
-				<h5 className="m-0 me-2 text-white">Poi Filters</h5>
+				<h5 className="m-0 me-2 text-white"> Filter POI</h5>
 
 				<button
 					type="button"
@@ -285,7 +285,8 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								}}
 							/>
 						</div>
-
+					</div>
+					<div className="col-lg-6">
 						<div className="mb-4">
 							<label
 								htmlFor="affiliation-select"
@@ -309,7 +310,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							></Select>
 						</div>
 					</div>
-					<div className="col-lg-6"></div>
 				</div>
 
 				<div className="row g-2">
@@ -337,8 +337,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							></Select>
 						</div>
 					</div>
-				</div>
-				<div className="row g-2">
 					<div className="col-lg-6">
 						<div className="mb-4">
 							<label
@@ -363,6 +361,9 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							></Select>
 						</div>
 					</div>
+				</div>
+
+				<div className="row g-2">
 					<div className="col-lg-6">
 						<div className="mb-4">
 							<label

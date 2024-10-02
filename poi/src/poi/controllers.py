@@ -571,13 +571,12 @@ def list_pois():
     elif date_added_start_date:
         date_added_start_date = datetime.strptime(
             date_added_start_date, '%Y-%m-%d').date()
-        query = query.filter(Poi.created_at >=
-                                               date_added_start_date)
+        query = query.filter(Poi.created_at >= date_added_start_date)
     elif date_added_end_date:
         date_added_end_date = datetime.strptime(
             date_added_end_date, '%Y-%m-%d').date()
-        query = query.filter(Poi.created_at <=
-                                               date_added_end_date)
+        query = query.filter(Poi.created_at <= date_added_end_date)
+
     # Filter by category
     category_id = request.args.get('category_id')
     if category_id:
@@ -588,18 +587,25 @@ def list_pois():
     if source_id:
         query = query.filter(Poi.source_id == source_id)
 
+    # Filter by arresting body
     arresting_body_id = request.args.get('arrestingBody_id')
     if arresting_body_id:
         query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
             .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
             .filter(ArrestingBody.id == arresting_body_id)
 
+    # Filter by crimes committed
     crime_id = request.args.get('crime_id')
     if crime_id:
         query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
             .join(Crime, CrimeCommitted.crime_id == Crime.id) \
             .filter(Crime.id == crime_id)
 
+    # Filter by arms recovered
+    arm_id = request.args.get('arm_id')
+    if arm_id:
+        query = query.join(ArmsRecovered, Poi.id == ArmsRecovered.poi_id)
+        
     # Filter based on search term if supplied
     if search_term:
         search = f"%{search_term}%"
@@ -734,114 +740,203 @@ def list_pois():
     })
 
 @custom_jwt_required
-def filter_pois():
-    # Get filter parameters from the request
-    created_by = request.args.get('created_by', type=int)
-    from_date = request.args.get('from_date', type=str)
-    to_date = request.args.get('to_date', type=str)
-    affiliation = request.args.get('affiliation', type=str)
-    category_id = request.args.get('category_id', type=int)
-    source_id = request.args.get('source_id', type=int)
-    country_id = request.args.get('country_id', type=int)
-    state_id = request.args.get('state_id', type=int)
-    gender_id = request.args.get('gender_id', type=int)
-    
-    crime_id = request.args.get('crime_id', type=int) 
-    arm_id = request.args.get('arm_id', type=int)
-    arresting_body_id = request.args.get('arresting_body_id', type=int)
+def list_pois():
+    # Get pagination and search term from request parameters
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=10, type=int)
+    search_term = request.args.get('q', default=None, type=str)
 
-    query = Poi.query
+    # Query base
+    query = Poi.query.filter_by(deleted_at=None)
 
-    # Apply filters based on provided parameters
-    if created_by:
-        query = query.filter(Poi.created_by == created_by)
+    # Filter by created_at
+    date_added_start_date = request.args.get('from_date')
+    date_added_end_date = request.args.get('to_date')
 
-    if from_date:
-        from_date = datetime.strptime(from_date, '%Y-%m-%d')  # Format: YYYY-MM-DD
-        query = query.filter(Poi.created_at >= from_date)
+    if date_added_start_date and date_added_end_date:
+        date_added_start_date = datetime.strptime(date_added_start_date, '%Y-%m-%d').date()
+        date_added_end_date = datetime.strptime(date_added_end_date, '%Y-%m-%d').date()
+        query = query.filter(Poi.created_at.between(date_added_start_date, date_added_end_date))
+    elif date_added_start_date:
+        date_added_start_date = datetime.strptime(date_added_start_date, '%Y-%m-%d').date()
+        query = query.filter(Poi.created_at >= date_added_start_date)
+    elif date_added_end_date:
+        date_added_end_date = datetime.strptime(date_added_end_date, '%Y-%m-%d').date()
+        query = query.filter(Poi.created_at <= date_added_end_date)
 
-    if to_date:
-        to_date = datetime.strptime(to_date, '%Y-%m-%d')  # Format: YYYY-MM-DD
-        query = query.filter(Poi.created_at <= to_date)
-
-    if affiliation:
-        query = query.filter(Poi.affiliation.ilike(f'%{affiliation}%'))
-
+    # Filter by category
+    category_id = request.args.get('category_id')
     if category_id:
         query = query.filter(Poi.category_id == category_id)
 
+    # Filter by source
+    source_id = request.args.get('source_id')
     if source_id:
         query = query.filter(Poi.source_id == source_id)
 
-    if country_id:
-        query = query.filter(Poi.country_id == country_id)
-
-    if state_id:
-        query = query.filter(Poi.state_id == state_id)
-
-    if gender_id:
-        query = query.filter(Poi.gender_id == gender_id)
-    
-    if arm_id:
-        # Join with ArmsRecovered to filter based on the selected arm
-        query = query.join(ArmsRecovered).filter(ArmsRecovered.arm_id == arm_id)
-
+    # Filter by arresting body
+    arresting_body_id = request.args.get('arrestingBody_id')
     if arresting_body_id:
-        # Join with CrimeCommitted to filter based on the selected arresting body
-        query = query.join(CrimeCommitted).filter(CrimeCommitted.arresting_body_id == arresting_body_id)
+        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
+            .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
+            .filter(ArrestingBody.id == arresting_body_id)
 
+    # Filter by crimes committed
+    crime_id = request.args.get('crime_id')
     if crime_id:
-        # Join with CrimeCommitted to filter based on the selected crime
-        query = query.join(CrimeCommitted).filter(CrimeCommitted.crime_id == crime_id)
+        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
+            .join(Crime, CrimeCommitted.crime_id == Crime.id) \
+            .filter(Crime.id == crime_id)
 
-    # Execute the query and get results
-    pois = query.options(joinedload(Poi.category), joinedload(Poi.source), 
-                        joinedload(Poi.country), joinedload(Poi.state), 
-                        joinedload(Poi.gender)).all()
+    # Filter by arms recovered
+    arm_id = request.args.get('arm_id')
+    if arm_id:
+        query = query.join(ArmsRecovered, Poi.id == ArmsRecovered.poi_id) \
+            .filter(ArmsRecovered.arm_id == arm_id)
 
-    # Execute the query and get results
-    pois = query.all()
+    # Filter based on search term if supplied
+    if search_term:
+        search = f"%{search_term}%"
+        query = query.filter(
+            (Poi.ref_numb.ilike(search)) |
+            (Poi.first_name.ilike(search)) |
+            (Poi.middle_name.ilike(search)) |
+            (Poi.last_name.ilike(search)) |
+            (Poi.alias.ilike(search)) |
+            (Poi.passport_number.ilike(search)) |
+            (Poi.other_id_number.ilike(search)) |
+            (Poi.phone_number.ilike(search)) |
+            (Poi.email.ilike(search)) |
+            (Poi.role.ilike(search)) |
+            (Poi.address.ilike(search)) |
+            (Poi.remark.ilike(search))
+        )
 
-    # Convert results to a serializable format
-    pois_data = [{
-                "ref_numb": poi.ref_numb,
-                "first_name": poi.first_name,
-                "middle_name": poi.middle_name,
-                "last_name": poi.last_name,
-                "alias": poi.alias,
-                "dob": poi.dob.strftime('%d/%m/%Y') if poi.dob else None,
-                "passport_number": poi.passport_number,
-                "other_id_number": poi.other_id_number,
-                "phone_number": poi.phone_number,
-                "email": poi.email,
-                "role": poi.role,
-                "affiliation": poi.affiliation,
-                "address": poi.address,
-                "remark": poi.remark,
-                "picture": poi.picture,  # Include the picture URL
-                "category": {
-                    "id": poi.category.id,
-                    "name": poi.category.name,
-                } if poi.category else None,
-                "source": {
-                    "id": poi.source.id,
-                    "name": poi.source.name,
-                } if poi.source else None,
-                "country": {
-                    "id": poi.country.id,
-                    "name": poi.country.en_short_name,
-                } if poi.country else None,
-                "state": {
-                    "id": poi.state.id,
-                    "name": poi.state.name,
-                } if poi.state else None,
-                "gender": {
-                    "id": poi.gender.id,
-                    "name": poi.gender.name,
-                } if poi.gender else None
-    } for poi in pois]
+    query = query.order_by(Poi.created_at.desc())
 
-    return jsonify(pois_data), 200
+    # Pagination
+    paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    pois_list = []
+
+    for poi in paginated_pois.items:
+        crime_count = len(poi.crimes) if hasattr(poi, 'crimes') else 0
+        arms_count = len(poi.arms_recovered) if hasattr(poi, 'arms_recovered') else 0
+        crimes_committed = CrimeCommitted.query.filter_by(poi_id=poi.id).first()
+        created_by = User.query.filter_by(id=poi.created_by).first()
+
+        crime_data = None
+        arresting_body_data = None
+
+        if crimes_committed:
+            # Crime data
+            if crimes_committed.crime:
+                crime_data = {
+                    "id": crimes_committed.crime.id,
+                    "name": crimes_committed.crime.name
+                }
+
+            # Arresting body data
+            if crimes_committed.arresting_body:
+                arresting_body_data = {
+                    "id": crimes_committed.arresting_body.id,
+                    "name": crimes_committed.arresting_body.name
+                }
+                
+        # List arms recovered
+        arms_data = []
+        if poi.arms_recovered:
+            for arm in poi.arms_recovered:
+                arms_data.append({
+                    "id": arm.arm_id,
+                    "name": arm.arm.name,  
+                    "number_recovered": arm.number_recovered
+                })
+
+        pois_list.append({
+            "id": poi.id,
+            "ref_numb": poi.ref_numb,
+            "first_name": poi.first_name,
+            "middle_name": poi.middle_name,
+            "last_name": poi.last_name,
+            "marital_status": poi.marital_status,
+            "alias": poi.alias,
+            "dob": poi.dob if poi.dob else None,
+            "passport_number": poi.passport_number,
+            "other_id_number": poi.other_id_number,
+            "phone_number": poi.phone_number,
+            "email": poi.email,
+            "role": poi.role,
+            "affiliation": poi.affiliation,
+            "address": poi.address,
+            "remark": poi.remark,
+            "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
+            "category": {
+                "id": poi.category.id,
+                "name": poi.category.name,
+            } if poi.category else None,
+            "source": {
+                "id": poi.source.id,
+                "name": poi.source.name,
+            } if poi.source else None,
+            "country": {
+                "id": poi.country.id,
+                "name": poi.country.en_short_name,
+            } if poi.country else None,
+            "state": {
+                "id": poi.state.id,
+                "name": poi.state.name,
+            } if poi.state else None,
+            "gender": {
+                "id": poi.gender.id,
+                "name": poi.gender.name,
+            } if poi.gender else None,
+            "crimes_committed": {
+                "id": crimes_committed.id,
+                "poi_id": crimes_committed.poi_id,
+                "crime_id": crimes_committed.crime_id,
+                "crime": crime_data,  # Including the Crime details here
+                "arresting_body": arresting_body_data  # Including the ArrestingBody details here
+            } if crimes_committed else [],
+            "user": {
+                "id": created_by.id,
+                "username": created_by.username,
+                "first_name": created_by.first_name,
+                "last_name": created_by.last_name,
+                "pfs_num": created_by.pfs_num,
+            } if created_by else [],
+            "crime_count": crime_count,
+            "arms_count": arms_count,
+            "arms_recovered": arms_data  # List of arms recovered
+        })
+
+    current_time = datetime.utcnow()
+    audit_data = {
+        "user_id": g.user["id"] if hasattr(g, "user") else None,
+        "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+        "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+        "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+        "user_email": g.user["email"] if hasattr(g, "user") else None,
+        "event": "list_poi",
+        "auditable_id": None,
+        "old_values": None,
+        "new_values": None,
+        "url": request.url,
+        "ip_address": request.remote_addr,
+        "user_agent": request.user_agent.string,
+        "tags": "POI, List",
+        "created_at": current_time.isoformat(),
+        "updated_at": current_time.isoformat(),
+    }
+
+    save_audit_data(audit_data)
+
+    return jsonify({
+        'total': paginated_pois.total,
+        'pages': paginated_pois.pages,
+        'current_page': paginated_pois.page,
+        'pois': pois_list
+    })
 
 
 def allowed_file(filename):

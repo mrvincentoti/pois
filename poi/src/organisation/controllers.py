@@ -26,6 +26,7 @@ def create_organisation():
     employee_strength = data.get('employee_strength')
     affiliations = data.get('affiliations')
     website = data.get('website')
+    email = data.get('email')
     fb = data.get('fb')
     instagram = data.get('instagram')
     twitter = data.get('twitter')
@@ -76,6 +77,7 @@ def create_organisation():
             employee_strength=employee_strength,
             affiliations=affiliations,
             website=website,
+            email=email,
             fb=fb,
             instagram=instagram,
             twitter=twitter,
@@ -119,6 +121,7 @@ def create_organisation():
                 "employee_strength": organisation.employee_strength,
                 "affiliations": organisation.affiliations,
                 "website": organisation.website,
+                "email": organisation.email,
                 "fb": organisation.fb,
                 "instagram": organisation.instagram,
                 "twitter": organisation.twitter,
@@ -190,6 +193,7 @@ def get_organisations():
                 (Organisation.employee_strength.ilike(search)) |
                 (Organisation.affiliations.ilike(search)) |
                 (Organisation.website.ilike(search)) |
+                (Organisation.email.ilike(search)) |
                 (Organisation.fb.ilike(search)) |
                 (Organisation.instagram.ilike(search)) |
                 (Organisation.twitter.ilike(search)) |
@@ -291,6 +295,7 @@ def get_organisation(organisation_id):
 
         # Prepare the organisation data including source and category
         org_data = organisation.to_dict()
+        org_data['picture'] = urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), organisation.picture) if organisation.picture else None
         org_data['source'] = organisation.source.to_dict() if organisation.source else None
         org_data['category'] = organisation.category.to_dict() if organisation.category else None
 
@@ -389,6 +394,7 @@ def update_organisation(org_id):
                 employee_strength=data.get('employee_strength'),
                 affiliations=data.get('affiliations'),
                 website=data.get('website'),
+                email=data.get('email'),
                 fb=data.get('fb'),
                 instagram=data.get('instagram'),
                 twitter=data.get('twitter'),

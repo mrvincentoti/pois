@@ -11,7 +11,7 @@ import {
 	request,
 	formatCaption,
 	formatType,
-	getMediaDetails
+	getMediaDetails,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -19,6 +19,53 @@ import { DeleteButton, EditButton } from '../../components/Buttons';
 import { DELETE_MEDIA_API, FETCH_MEDIA_API } from '../../services/api';
 import ManageMedia from '../../modals/ManageMedia';
 
+// PreviewModal Component
+const PreviewModal = ({ media, onClose }) => {
+	return (
+		<div className="modal show" tabIndex="-1" style={{ display: 'block' }}>
+			<div className="modal-dialog modal-lg">
+				<div className="modal-content">
+					<div className="modal-header">
+						<h5 className="modal-title">Media Preview</h5>
+						<button
+							type="button"
+							className="btn-close"
+							onClick={onClose}
+						></button>
+					</div>
+					<div className="modal-body">
+						{media?.media_type === 'image' && (
+							<img
+								src={media.media_url}
+								alt={media.media_caption}
+								style={{ width: '100%' }}
+							/>
+						)}
+						{media?.media_type === 'pdf' && (
+							<iframe
+								src={media.media_url}
+								title={media.media_caption}
+								style={{ width: '100%', height: '500px' }}
+							/>
+						)}
+						{media?.media_type === 'excel' && (
+							<a
+								href={media.media_url}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Download Excel File
+							</a>
+						)}
+						{/* Handle other media types as needed */}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+// Main MediaAndDocument Component
 const MediaAndDocument = () => {
 	document.title = `Media - ${APP_SHORT_NAME}`;
 
@@ -29,13 +76,15 @@ const MediaAndDocument = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [selectedMedia, setSelectedMedia] = useState(null);
 
+	const [showPreview, setShowPreview] = useState(false);
+	const [mediaForPreview, setMediaForPreview] = useState(null);
+
 	const [page, setPage] = useState(null);
 	const [search, setSearch] = useState('');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [queryLimit, setQueryLimit] = useState(limit);
 
 	const params = useParams();
-
 	const query = useQuery();
 
 	const fetchMedia = useCallback(async (per_page, page, q) => {
@@ -46,7 +95,9 @@ const MediaAndDocument = () => {
 
 			setList(media);
 			setMeta({ ...rest, per_page });
-		} catch (error) {}
+		} catch (error) {
+			console.error('Error fetching media:', error);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -64,7 +115,7 @@ const MediaAndDocument = () => {
 				setFetching(true);
 			}
 
-			fetchMedia(_limit, _page, _search).then(_ => {
+			fetchMedia(_limit, _page, _search).then(() => {
 				setFetching(false);
 				setPage(_page);
 				setSearch(_search);
@@ -100,18 +151,18 @@ const MediaAndDocument = () => {
 	const confirmRemove = item => {
 		confirmAction(doRemove, item, 'You want to delete this media');
 	};
+
 	const doRemove = async item => {
 		try {
 			setWorking(true);
 			const config = { method: 'DELETE' };
 			const uri = DELETE_MEDIA_API.replaceAll(':id', item.media_id);
 			const rs = await request(uri, config);
-			console.log(rs);
 			refreshTable();
 			notifyWithIcon('success', rs.message);
 			setWorking(false);
 		} catch (e) {
-			notifyWithIcon('error', e.message || 'error, could not delete media');
+			notifyWithIcon('error', e.message || 'Error: Could not delete media');
 			setWorking(false);
 		}
 	};
@@ -152,33 +203,48 @@ const MediaAndDocument = () => {
 										</tr>
 									</thead>
 									<tbody className="list">
-										{list?.map((item, i) => {
-											return (
-												<tr key={i}>
+										{list?.map((item, i) => (
+											<tr key={i}>
+												<td>
 													<div className="d-flex align-items-center">
 														<div className="avatar-sm">
-															<div className={`avatar-title bg-primary-subtle ${getMediaDetails(item.media_type).colorClass} rounded fs-20`}>
-																<i className={getMediaDetails(item.media_type).icon}></i>
+															<div
+																className={`avatar-title bg-primary-subtle ${getMediaDetails(item.media_type).colorClass} rounded fs-20`}
+															>
+																<i
+																	className={
+																		getMediaDetails(item.media_type).icon
+																	}
+																></i>
 															</div>
 														</div>
 														<div className="ms-3 flex-grow-1">
-															<h6 className="fs-15 mb-0"><a href="javascript:void(0)" className="text-body">{ formatCaption(item.media_caption) }</a>
+															<h6 className="fs-15 mb-0">
+																<a
+																	href="javascript:void(0)"
+																	className="text-body"
+																	onClick={() => {
+																		console.log(item);
+																		setMediaForPreview(item);
+																		setShowPreview(true);
+																	}}
+																>
+																	{formatCaption(item.media_caption)}
+																</a>
 															</h6>
 														</div>
 													</div>
-													<td>{formatType(item.media_type)} File</td>
-													<td>{'--'}</td>
-													<td>{item.created_at || '--'}</td>
-													<td>
-														<div className="hstack gap-3 flex-wrap text-end">
-															<DeleteButton
-																onClick={() => confirmRemove(item)}
-															/>
-														</div>
-													</td>
-												</tr>
-											);
-										})}
+												</td>
+												<td>{formatType(item.media_type)} File</td>
+												<td>{item.file_size || '--'}</td>
+												<td>{item.created_at || '--'}</td>
+												<td>
+													<div className="hstack gap-3 flex-wrap text-end">
+														<DeleteButton onClick={() => confirmRemove(item)} />
+													</div>
+												</td>
+											</tr>
+										))}
 									</tbody>
 								</table>
 								{list.length === 0 && (
@@ -199,7 +265,17 @@ const MediaAndDocument = () => {
 							selectedMedia={selectedMedia}
 							closeModal={() => closeModal()}
 							update={async () => {
-								await refreshTable().then(_ => setWorking(false));
+								await refreshTable().then(() => setWorking(false));
+							}}
+						/>
+					)}
+
+					{showPreview && (
+						<PreviewModal
+							media={mediaForPreview}
+							onClose={() => {
+								setShowPreview(false);
+								setMediaForPreview(null);
 							}}
 						/>
 					)}
