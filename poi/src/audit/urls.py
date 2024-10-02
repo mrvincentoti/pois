@@ -1,6 +1,6 @@
 from flask import request
 
-from .controllers import get_audit, get_all_audits, filter_audit
+from .controllers import get_audit, get_all_audits
 from ..app import app
 
 
@@ -15,12 +15,5 @@ def list_create_audit():
 def retrieve_update_destroy_audits(audit_id):
     if request.method == 'GET':
         return get_audit(audit_id)
-    else:
-        return 'Method is Not Allowed'
-    
-@app.route("/audits/filter", methods=['GET'])
-def filter_audit_trial():
-    if request.method == 'GET':
-        return filter_audit()
     else:
         return 'Method is Not Allowed'
