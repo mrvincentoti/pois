@@ -12,20 +12,47 @@ def slugify(text):
 @custom_jwt_required
 def get_sources():
     try:
-        sources = Source.query.all()
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
 
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Source.query.order_by(Source.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Source.name.ilike(search))
+
+        # Paginate the query
+        paginated_sources = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of sources to return
         source_list = []
-        for source in sources:
+        for source in paginated_sources.items:
             source_data = source.to_dict()
             source_list.append(source_data)
 
+        # Return the paginated and filtered sources with status success
         return jsonify({
             "status": "success",
             "status_code": 200,
-            'sources': source_list,
+            "sources": source_list,
+            "pagination": {
+                "total": paginated_sources.total,
+                "pages": paginated_sources.pages,
+                "current_page": paginated_sources.page,
+                "per_page": paginated_sources.per_page,
+                "next_page": paginated_sources.next_num if paginated_sources.has_next else None,
+                "prev_page": paginated_sources.prev_num if paginated_sources.has_prev else None
+            }
         })
+
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @custom_jwt_required
@@ -33,12 +60,14 @@ def add_source():
     if request.method == "POST":
         data = request.get_json()
         source_name = data.get("name")
+        description = data.get("description")
 
         if not source_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_source = Source(
-            name=source_name
+            name=source_name,
+            description=description
         )
 
         try:
@@ -57,13 +86,14 @@ def add_source():
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "source_name": source_name
+                        "source_name": source_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Source, Create",
+                "tags": "Setup, Source, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -84,7 +114,8 @@ def get_source(source_id):
     if source:
         source_data = {
             "id": source.id,
-            "name": source.name
+            "name": source.name,
+            "description": source.description
         }
 
         current_time = datetime.utcnow()
@@ -101,7 +132,7 @@ def get_source(source_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Auth, Source, Get",
+            "tags": "Setup, Source, Get",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -122,11 +153,13 @@ def edit_source(source_id):
 
     data = request.get_json()
     source_name = data.get("name")
+    description = data.get("description")
 
     if not source_name:
         return jsonify({"message": "Name is required"}), 400
 
     source.name = source_name
+    source.description = description
 
     try:
         db.session.commit()
@@ -143,13 +176,14 @@ def edit_source(source_id):
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "source_name": source_name
+                        "source_name": source_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Source, Update",
+                "tags": "Setup, Source, Update",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -188,12 +222,13 @@ def delete_source(source_id):
                 "new_values": json.dumps(
                     {
                         "source_name": source.name,
+                        "description": source.description
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Source, Delete",
+                "tags": "Setup, Source, Delete",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -230,6 +265,7 @@ def restore_source(source_id):
             "new_values": json.dumps(
                 {
                     "name": source.name,
+                    "description": source.description
                 }
             ),
             "url": request.url,
