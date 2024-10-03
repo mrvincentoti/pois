@@ -12,20 +12,47 @@ def slugify(text):
 @custom_jwt_required
 def get_categories():
     try:
-        categories = Category.query.all()
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
 
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Category.query.order_by(Category.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Category.name.ilike(search))
+
+        # Paginate the query
+        paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of categories to return
         category_list = []
-        for category in categories:
+        for category in paginated_categories.items:
             category_data = category.to_dict()
             category_list.append(category_data)
 
+        # Return the paginated and filtered categories with status success
         return jsonify({
             "status": "success",
             "status_code": 200,
-            'categories': category_list,
+            "categories": category_list,
+            "pagination": {
+                "total": paginated_categories.total,
+                "pages": paginated_categories.pages,
+                "current_page": paginated_categories.page,
+                "per_page": paginated_categories.per_page,
+                "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
+                "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
+            }
         })
+
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @custom_jwt_required
@@ -33,12 +60,14 @@ def add_category():
     if request.method == "POST":
         data = request.get_json()
         category_name = data.get("name")
+        description = data.get("description")
 
         if not category_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_category = Category(
-            name=category_name
+            name=category_name,
+            description=description
         )
 
         try:
@@ -57,7 +86,8 @@ def add_category():
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "category_name": category_name
+                        "category_name": category_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -84,7 +114,8 @@ def get_category(category_id):
     if category:
         category_data = {
             "id": category.id,
-            "name": category.name
+            "name": category.name,
+            "description": category.description
         }
 
         current_time = datetime.utcnow()
@@ -122,11 +153,13 @@ def edit_category(category_id):
 
     data = request.get_json()
     category_name = data.get("name")
+    description = data.get("description")
 
     if not category_name:
         return jsonify({"message": "Name is required"}), 400
 
     category.name = category_name
+    category.description = description
 
     try:
         db.session.commit()
@@ -143,7 +176,8 @@ def edit_category(category_id):
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "category_name": category_name
+                        "category_name": category_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -188,6 +222,7 @@ def delete_category(category_id):
                 "new_values": json.dumps(
                     {
                         "category_name": category.name,
+                        "description": category.description
                     }
                 ),
                 "url": request.url,
@@ -230,6 +265,7 @@ def restore_category(category_id):
             "new_values": json.dumps(
                 {
                     "name": category.name,
+                    "description": category.description
                 }
             ),
             "url": request.url,
