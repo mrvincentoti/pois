@@ -165,9 +165,9 @@ const ArrestingBodies = () => {
 															<EditButton
 																onClick={() => editArrestingBody(item)}
 															/>
-															<DeleteButton
+															{/* <DeleteButton
 																onClick={() => confirmRemove(item)}
-															/>
+															/> */}
 														</div>
 													</td>
 												</tr>

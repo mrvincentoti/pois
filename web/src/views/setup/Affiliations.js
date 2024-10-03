@@ -165,9 +165,9 @@ const Affiliations = () => {
 															<EditButton
 																onClick={() => editAffiliation(item)}
 															/>
-															<DeleteButton
+															{/* <DeleteButton
 																onClick={() => confirmRemove(item)}
-															/>
+															/> */}
 														</div>
 													</td>
 												</tr>

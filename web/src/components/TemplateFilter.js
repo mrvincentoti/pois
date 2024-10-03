@@ -15,6 +15,7 @@ import {
 	FETCH_SOURCES_API,
 	FETCH_AFFILIATIONS_API,
 	FETCH_ARRESTING_BODY_API,
+	FETCH_ARMS_API,
 } from '../services/api';
 import { doClearFilter } from '../redux/slices/employee';
 
@@ -22,6 +23,8 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimes, setCrimes] = useState([]);
 	const [selectedCrime, setSelectedCrime] = useState(null);
+	const [arms, setArms] = useState([]);
+	const [selectedArm, setSelectedArm] = useState(null);
 	const [affiliations, setAffliation] = useState([]);
 	const [selectedAffiliation, setSelectedAffiliation] = useState('');
 	const [arrestingBodies, setArrestingBody] = useState([]);
@@ -52,6 +55,15 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		try {
 			const rs = await request(`${FETCH_CRIMES_API}`);
 			setCrimes(rs.crimes);
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	}, []);
+
+	const fetchArms = useCallback(async () => {
+		try {
+			const rs = await request(`${FETCH_ARMS_API}`);
+			setArms(rs.arms);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -89,6 +101,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setStartDate(null);
 			setEndDate(null);
 			setSelectedCrime('');
+			setSelectedArm('');
 			setSelectedSource('');
 			setSelectedAffiliation('');
 			setSelectedArrestingBody('');
@@ -107,6 +120,12 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setSelectedCrime(
 				filters?.crime_id
 					? crimes.find(crime => crime.id === Number(filters.crime_id))
+					: ''
+			);
+
+			setSelectedArm(
+				filters?.arm_id
+					? arms.find(arm => arm.id === Number(filters.arm_id))
 					: ''
 			);
 			setSelectedSource(
@@ -148,6 +167,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		location.hash,
 		selectedCategory,
 		crimes,
+		arms,
 		sources,
 		affiliations,
 		arrestingBodies,
@@ -157,6 +177,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		if (!loaded) {
 			fetchCategories();
 			fetchCrimes();
+			fetchArms();
 			fetchSources();
 			fetchAffiliations();
 			fetchArrestingBodies();
@@ -171,6 +192,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		clearFilterParams,
 		fetchCategories,
 		fetchCrimes,
+		fetchArms,
 		fetchSources,
 		fetchAffiliations,
 		fetchArrestingBodies,
@@ -185,6 +207,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			...(endDate ? { to_date: endDate } : ''),
 			...(selectedCategory?.id && { category_id: selectedCategory.id }),
 			...(selectedCrime?.id && { crime_id: selectedCrime.id }),
+			...(selectedArm?.id && { arm_id: selectedArm.id }),
 			...(selectedSource?.id && { source_id: selectedSource.id }),
 			...(selectedAffiliation?.id && {
 				affiliation_id: selectedAffiliation.id,
@@ -385,6 +408,30 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedSource(e);
 								}}
 								id="source-select"
+							></Select>
+						</div>
+					</div>
+					<div className="col-lg-6">
+						<div className="mb-4">
+							<label
+								htmlFor="arm-select"
+								className="form-label text-muted text-uppercase fw-semibold mb-3"
+							>
+								Arms Recovered
+							</label>
+
+							<Select
+								isClearable
+								className="mb-0"
+								value={selectedArm}
+								getOptionValue={option => option.id}
+								getOptionLabel={option => option.name}
+								options={arms || []}
+								isSearchable={true}
+								onChange={e => {
+									setSelectedArm(e);
+								}}
+								id="arm-select"
 							></Select>
 						</div>
 					</div>
