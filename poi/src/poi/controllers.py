@@ -14,6 +14,7 @@ from ..armsRecovered.models import ArmsRecovered
 from ..arms.models import Arm
 from ..crimesCommitted.models import CrimeCommitted
 from ..users.models import User
+from ..address.models import Address
 from ..arrestingBody.models import ArrestingBody
 from ..crimes.models import Crime
 from sqlalchemy.orm import joinedload
@@ -22,11 +23,8 @@ from sqlalchemy.orm import joinedload
 @custom_jwt_required
 def create_poi():
     data = request.form
-    # data = request.get_json()
-    # ref_numb = data.get('ref_numb')
     ref_numb = generate_unique_ref_numb()
     first_name = data.get('first_name')
-    # print(first_name, flush=True)
     middle_name = data.get('middle_name')
     last_name = data.get('last_name')
     marital_status = data.get('marital_status')
@@ -38,7 +36,6 @@ def create_poi():
     email = data.get('email')
     role = data.get('role')
     affiliation = data.get('affiliation')
-    address = data.get('address')
     remark = data.get('remark')
     category_id = data.get('category_id')
     source_id = data.get('source_id')
@@ -47,6 +44,19 @@ def create_poi():
     gender_id = data.get('gender_id')
     created_by = g.user["id"]
 
+    # Address fields
+    social_address = data.get('social_address')
+    social_latitude = data.get('social_latitude')
+    social_longitude = data.get('social_longitude')
+
+    work_address = data.get('work_address')
+    work_latitude = data.get('work_latitude')
+    work_longitude = data.get('work_longitude')
+
+    residential_address = data.get('residential_address')
+    residential_latitude = data.get('residential_latitude')
+    residential_longitude = data.get('residential_longitude')
+
     # Handle the file upload
     if 'picture' in request.files:
         file = request.files['picture']
@@ -54,19 +64,16 @@ def create_poi():
             return jsonify({'message': 'No selected picture file'}), 400
 
         if allowed_file(file.filename):
-            # Generate a new filename using UUID
-            file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
-            new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
-
-            # Upload the file to MinIO
+            file_extension = os.path.splitext(file.filename)[1]
+            new_filename = f"{uuid.uuid4()}{file_extension}"
             picture_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
-        
+
             if not picture_url:
                 return jsonify({'message': 'Error uploading picture to MinIO'}), 500
         else:
             return jsonify({'message': 'Picture file type not allowed'}), 400
     else:
-        picture_url = None  # No picture uploaded
+        picture_url = None
 
     response = {}
     try:
@@ -85,19 +92,59 @@ def create_poi():
             email=email,
             role=role,
             affiliation=affiliation,
-            address=address,
             remark=remark,
             category_id=category_id,
             source_id=source_id,
             country_id=country_id,
             state_id=state_id,
             gender_id=gender_id,
-            marital_status= marital_status,
+            marital_status=marital_status,
             created_by=created_by
         )
 
         db.session.add(poi)
         db.session.commit()
+
+        # Prepare to save addresses if the fields are provided
+        addresses = []
+
+        if social_address:
+            addresses.append(
+                Address(
+                    poi_id=poi.id,
+                    address_type='social',
+                    address=social_address,
+                    latitude=social_latitude,
+                    longitude=social_longitude
+                )
+            )
+
+        if work_address:
+            addresses.append(
+                Address(
+                    poi_id=poi.id,
+                    address_type='work',
+                    address=work_address,
+                    latitude=work_latitude,
+                    longitude=work_longitude
+                )
+            )
+
+        if residential_address:
+            addresses.append(
+                Address(
+                    poi_id=poi.id,
+                    address_type='residential',
+                    address=residential_address,
+                    latitude=residential_latitude,
+                    longitude=residential_longitude
+                )
+            )
+
+        # Only save addresses if any complete address was provided
+        if addresses:
+            db.session.add_all(addresses)
+            db.session.commit()
 
         # Audit logging
         current_time = dt.utcnow()
@@ -124,7 +171,6 @@ def create_poi():
                 "email": poi.email,
                 "role": poi.role,
                 "affiliation": poi.affiliation,
-                "address": poi.address,
                 "remark": poi.remark,
                 "category_id": poi.category_id,
                 "source_id": poi.source_id,
@@ -132,12 +178,21 @@ def create_poi():
                 "state_id": poi.state_id,
                 "gender_id": poi.gender_id,
                 "picture": poi.picture,
-                "deleted_at": poi.deleted_at,  # Add new fields to audit logging if needed
+                "social_address": social_address,
+                "social_latitude": social_latitude,
+                "social_longitude": social_longitude,
+                "work_address": work_address,
+                "work_latitude": work_latitude,
+                "work_longitude": work_longitude,
+                "residential_address": residential_address,
+                "residential_latitude": residential_latitude,
+                "residential_longitude": residential_longitude,
+                "deleted_at": poi.deleted_at,
             }),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "POI, Poi, Create",
+            "tags": "POI, Create",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -166,6 +221,25 @@ def get_poi(poi_id):
     try:
         poi = Poi.query.get(poi_id)
         if poi and not poi.deleted_at:
+            # Retrieve address information and structure by address type
+            addresses = Address.query.filter_by(poi_id=poi_id).all()
+            address_data = {
+                "work": None,
+                "social": None,
+                "residential": None
+            }
+
+            for address in addresses:
+                if address.address_type in address_data:
+                    if address.address:
+                        address_data[address.address_type] = {
+                            "address": address.address,
+                            "latitude": address.latitude,
+                            "longitude": address.longitude,
+                            "created_at": address.created_at,
+                            "updated_at": address.updated_at
+                        }
+
             crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
             arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
 
@@ -183,7 +257,6 @@ def get_poi(poi_id):
                 "email": poi.email,
                 "role": poi.role,
                 "affiliation": poi.affiliation,
-                "address": poi.address,
                 "remark": poi.remark,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
@@ -206,6 +279,7 @@ def get_poi(poi_id):
                     "id": poi.gender.id,
                     "name": poi.gender.name,
                 } if poi.gender else None,
+                "addresses": address_data,  # Include structured address data
                 "crime_count": crime_count,
                 "arms_count": arms_count,
             }
@@ -285,7 +359,7 @@ def update_poi(poi_id):
 
     try:
         if poi:
-            # Handle the file upload for the poi's picture (if applicable) 
+            # Handle the file upload for the poi's picture (if applicable)
             if 'picture' in request.files:
                 file = request.files['picture']
 
@@ -295,13 +369,6 @@ def update_poi(poi_id):
 
                 # Check if the uploaded file is allowed
                 if allowed_file(file.filename):
-                    # Delete the old picture file from MinIO (if necessary)
-                    # old_picture_key = os.path.basename(poi.picture)
-                    # try:
-                    #     remove_object_from_minio(old_picture_key)
-                    # except Exception as e:
-                    #     print(f"Error deleting old picture from MinIO: {e}")
-
                     # Generate a new filename using UUID
                     file_extension = os.path.splitext(file.filename)[1]  # Get the original file extension
                     new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
@@ -311,12 +378,12 @@ def update_poi(poi_id):
                     if not minio_file_url:
                         return jsonify({"message": "Error uploading picture to MinIO"}), 500
 
-                    # Save the new picture URL in the organisation's picture field
+                    # Save the new picture URL in the poi's picture field
                     poi.picture = minio_file_url
                 else:
                     return jsonify({'message': 'Picture file type not allowed'}), 400
 
-            # Update other fields
+            # Update POI fields
             poi.update(
                 first_name=data.get('first_name'),
                 last_name=data.get('last_name'),
@@ -325,11 +392,10 @@ def update_poi(poi_id):
                 dob=data.get('dob') or None,
                 passport_number=data.get('passport_number'),
                 other_id_number=data.get('other_id_number'),
-                phone_number=data.get('phone_number') ,
+                phone_number=data.get('phone_number'),
                 email=data.get('email'),
                 role=data.get('role'),
                 affiliation=data.get('affiliation'),
-                address=data.get('address'),
                 remark=data.get('remark'),
                 middle_name=data.get('middle_name'),
                 alias=data.get('alias'),
@@ -341,6 +407,39 @@ def update_poi(poi_id):
                 deleted_at=data.get('deleted_at')
             )
 
+            # Update addresses
+            address_types = ["work", "social", "residential"]
+            for address_type in address_types:
+                address_data = {
+                    "address": data.get(f"{address_type}_address"),
+                    "latitude": data.get(f"{address_type}_latitude"),
+                    "longitude": data.get(f"{address_type}_longitude")
+                }
+                
+                # Retrieve the existing address of the specific type
+                existing_address = Address.query.filter_by(poi_id=poi_id, address_type=address_type).first()
+
+                if existing_address:
+                    # Update the existing address
+                    existing_address.update(
+                        address=address_data["address"],
+                        latitude=address_data["latitude"],
+                        longitude=address_data["longitude"]
+                    )
+                elif address_data["address"] or address_data["latitude"] or address_data["longitude"]:
+                    # Create a new address if none exists for this type and there is valid input
+                    new_address = Address(
+                        poi_id=poi_id,
+                        address_type=address_type,
+                        address=address_data["address"],
+                        latitude=address_data["latitude"],
+                        longitude=address_data["longitude"]
+                    )
+                    db.session.add(new_address)
+
+            db.session.commit()
+
+            # Audit log
             current_time = dt.utcnow()
             audit_data = {
                 "user_id": g.user["id"] if hasattr(g, "user") else None,
@@ -364,7 +463,6 @@ def update_poi(poi_id):
                     "email": poi.email,
                     "role": poi.role,
                     "affiliation": poi.affiliation,
-                    "address": poi.address,
                     "remark": poi.remark,
                     "category_id": poi.category_id,
                     "source_id": poi.source_id,
@@ -388,7 +486,6 @@ def update_poi(poi_id):
                     "email": poi.email,
                     "role": poi.role,
                     "affiliation": poi.affiliation,
-                    "address": poi.address,
                     "remark": poi.remark,
                     "category_id": poi.category_id,
                     "source_id": poi.source_id,
@@ -409,7 +506,7 @@ def update_poi(poi_id):
             save_audit_data(audit_data)
 
             response["status"] = "success"
-            response["status_code"] = 200 
+            response["status_code"] = 200
             response["message"] = "POI updated successfully"
         else:
             response = {
@@ -546,199 +643,7 @@ def restore_poi(poi_id):
     finally:
         db.session.close()
 
-
-@custom_jwt_required
-def list_pois():
-    # Get pagination and search term from request parameters
-    page = request.args.get('page', default=1, type=int)
-    per_page = request.args.get('per_page', default=10, type=int)
-    search_term = request.args.get('q', default=None, type=str)
-
-    # Query base
-    query = Poi.query.filter_by(deleted_at=None)
-
-    # Filter by created_at
-    date_added_start_date = request.args.get('from_date')
-    date_added_end_date = request.args.get('to_date')
-
-    if date_added_start_date and date_added_end_date:
-        date_added_start_date = datetime.strptime(date_added_start_date, '%Y-%m-%d').date()
-        date_added_end_date = datetime.strptime(date_added_end_date, '%Y-%m-%d').date()
-        query = query.filter(
-            Poi.created_at.between(
-                date_added_start_date, date_added_end_date)
-        )
-    elif date_added_start_date:
-        date_added_start_date = datetime.strptime(
-            date_added_start_date, '%Y-%m-%d').date()
-        query = query.filter(Poi.created_at >= date_added_start_date)
-    elif date_added_end_date:
-        date_added_end_date = datetime.strptime(
-            date_added_end_date, '%Y-%m-%d').date()
-        query = query.filter(Poi.created_at <= date_added_end_date)
-
-    # Filter by category
-    category_id = request.args.get('category_id')
-    if category_id:
-        query = query.filter(Poi.category_id == category_id)
-
-    # Filter by source
-    source_id = request.args.get('source_id')
-    if source_id:
-        query = query.filter(Poi.source_id == source_id)
-
-    # Filter by arresting body
-    arresting_body_id = request.args.get('arrestingBody_id')
-    if arresting_body_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
-            .filter(ArrestingBody.id == arresting_body_id)
-
-    # Filter by crimes committed
-    crime_id = request.args.get('crime_id')
-    if crime_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(Crime, CrimeCommitted.crime_id == Crime.id) \
-            .filter(Crime.id == crime_id)
-
-    # Filter by arms recovered
-    arm_id = request.args.get('arm_id')
-    if arm_id:
-        query = query.join(ArmsRecovered, Poi.id == ArmsRecovered.poi_id)
-        
-    # Filter based on search term if supplied
-    if search_term:
-        search = f"%{search_term}%"
-        query = query.filter(
-            (Poi.ref_numb.ilike(search)) |
-            (Poi.first_name.ilike(search)) |
-            (Poi.middle_name.ilike(search)) |
-            (Poi.last_name.ilike(search)) |
-            (Poi.alias.ilike(search)) |
-            (Poi.passport_number.ilike(search)) |
-            (Poi.other_id_number.ilike(search)) |
-            (Poi.phone_number.ilike(search)) |
-            (Poi.email.ilike(search)) |
-            (Poi.role.ilike(search)) |
-            (Poi.address.ilike(search)) |
-            (Poi.remark.ilike(search))
-        )
-
-    query = query.order_by(Poi.created_at.desc())
-
-    # Pagination
-    paginated_pois = query.paginate(page=page, per_page=per_page, error_out=False)
-
-    pois_list = []
-
-    for poi in paginated_pois.items:
-        crime_count = len(poi.crimes) if hasattr(poi, 'crimes') else 0
-        arms_count = len(poi.arms) if hasattr(poi, 'arms') else 0
-        crimes_committed = CrimeCommitted.query.filter_by(poi_id=poi.id).first()
-        created_by = User.query.filter_by(id=poi.created_by).first()
-
-        crime_data = None
-        arresting_body_data = None
-
-        if crimes_committed:
-            # Crime data
-            if crimes_committed.crime:
-                crime_data = {
-                    "id": crimes_committed.crime.id,
-                    "name": crimes_committed.crime.name
-                }
-
-            # Arresting body data
-            if crimes_committed.arresting_body:
-                arresting_body_data = {
-                    "id": crimes_committed.arresting_body.id,
-                    "name": crimes_committed.arresting_body.name
-                }
-
-        pois_list.append({
-            "id": poi.id,
-            "ref_numb": poi.ref_numb,
-            "first_name": poi.first_name,
-            "middle_name": poi.middle_name,
-            "last_name": poi.last_name,
-            "marital_status": poi.marital_status,
-            "alias": poi.alias,
-            "dob": poi.dob if poi.dob else None,
-            "passport_number": poi.passport_number,
-            "other_id_number": poi.other_id_number,
-            "phone_number": poi.phone_number,
-            "email": poi.email,
-            "role": poi.role,
-            "affiliation": poi.affiliation,
-            "address": poi.address,
-            "remark": poi.remark,
-            "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
-            "category": {
-                "id": poi.category.id,
-                "name": poi.category.name,
-            } if poi.category else None,
-            "source": {
-                "id": poi.source.id,
-                "name": poi.source.name,
-            } if poi.source else None,
-            "country": {
-                "id": poi.country.id,
-                "name": poi.country.en_short_name,
-            } if poi.country else None,
-            "state": {
-                "id": poi.state.id,
-                "name": poi.state.name,
-            } if poi.state else None,
-            "gender": {
-                "id": poi.gender.id,
-                "name": poi.gender.name,
-            } if poi.gender else None,
-            "crimes_committed": {
-                "id": crimes_committed.id,
-                "poi_id": crimes_committed.poi_id,
-                "crime_id": crimes_committed.crime_id,
-                "crime": crime_data,  # Including the Crime details here
-                "arresting_body": arresting_body_data  # Including the ArrestingBody details here
-            } if crimes_committed else [],
-            "user": {
-                "id": created_by.id,
-                "username": created_by.username,
-                "first_name": created_by.first_name,
-                "last_name": created_by.last_name,
-                "pfs_num": created_by.pfs_num,
-            } if created_by else [],
-            "crime_count": crime_count,
-            "arms_count": arms_count,
-        })
-
-    current_time = datetime.utcnow()
-    audit_data = {
-        "user_id": g.user["id"] if hasattr(g, "user") else None,
-        "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-        "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-        "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-        "user_email": g.user["email"] if hasattr(g, "user") else None,
-        "event": "list_poi",
-        "auditable_id": None,
-        "old_values": None,
-        "new_values": None,
-        "url": request.url,
-        "ip_address": request.remote_addr,
-        "user_agent": request.user_agent.string,
-        "tags": "POI, List",
-        "created_at": current_time.isoformat(),
-        "updated_at": current_time.isoformat(),
-    }
-
-    save_audit_data(audit_data)
-
-    return jsonify({
-        'total': paginated_pois.total,
-        'pages': paginated_pois.pages,
-        'current_page': paginated_pois.page,
-        'pois': pois_list
-    })
-
+# List, Search and Filter POIs
 @custom_jwt_required
 def list_pois():
     # Get pagination and search term from request parameters
