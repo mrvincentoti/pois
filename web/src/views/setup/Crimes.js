@@ -154,9 +154,9 @@ const Crimes = () => {
 													<td className="text-end">
 														<div className="hstack gap-3 flex-wrap text-end">
 															<EditButton onClick={() => editCrime(item)} />
-															<DeleteButton
+															{/* <DeleteButton
 																onClick={() => confirmRemove(item)}
-															/>
+															/> */}
 														</div>
 													</td>
 												</tr>

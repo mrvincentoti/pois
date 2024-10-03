@@ -154,9 +154,9 @@ const Sources = () => {
 													<td className="text-end">
 														<div className="hstack gap-3 flex-wrap text-end">
 															<EditButton onClick={() => editSource(item)} />
-															<DeleteButton
+															{/* <DeleteButton
 																onClick={() => confirmRemove(item)}
-															/>
+															/> */}
 														</div>
 													</td>
 												</tr>
