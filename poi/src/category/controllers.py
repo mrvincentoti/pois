@@ -146,7 +146,7 @@ def get_category(category_id):
 
 @custom_jwt_required
 def edit_category(category_id):
-    category = Category.query.filter_by(id=category_id, deleted_at=None).first()
+    category = Category.query.filter_by(id=category_id).first()
 
     if category is None:
         return jsonify({"message": "Category not found", "category": []}), 200

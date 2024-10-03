@@ -146,7 +146,7 @@ def get_arm(arm_id):
 
 @custom_jwt_required
 def edit_arm(arm_id):
-    arm = Arm.query.filter_by(id=arm_id, deleted_at=None).first()
+    arm = Arm.query.filter_by(id=arm_id).first()
 
     if arm is None:
         return jsonify({"message": "Arm not found"}), 404

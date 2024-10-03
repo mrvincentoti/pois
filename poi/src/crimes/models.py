@@ -5,6 +5,7 @@ class Crime(db.Model):
     __tablename__ = 'crimes'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    description = db.Column(db.Text, nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):

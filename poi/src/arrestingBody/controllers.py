@@ -146,7 +146,7 @@ def get_arresting_body(arresting_body_id):
 
 @custom_jwt_required
 def edit_arresting_body(arresting_body_id):
-    arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
+    arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 
     if arresting_body is None:
         return jsonify({"message": "Arresting body not found"}), 404
