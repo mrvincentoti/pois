@@ -766,7 +766,7 @@ def list_pois():
             "last_name": poi.last_name,
             "marital_status": poi.marital_status,
             "alias": poi.alias,
-            "dob": poi.dob if poi.dob else None,
+            "dob": datetime.strptime((poi.dob), '%Y-%m-%d').strftime('%d/%m/%Y') if poi.dob else None,
             "passport_number": poi.passport_number,
             "other_id_number": poi.other_id_number,
             "phone_number": poi.phone_number,

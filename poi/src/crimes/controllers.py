@@ -177,7 +177,7 @@ def edit_crime(crime_id):
                 "new_values": json.dumps(
                     {
                         "crime_name": crime_name,
-                        "description" = description
+                        "description": description
                     }
                 ),
                 "url": request.url,
