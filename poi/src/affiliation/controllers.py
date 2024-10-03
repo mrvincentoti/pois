@@ -20,7 +20,7 @@ def get_affiliations():
         search_term = request.args.get('q', default=None, type=str)
 
         # Query the database, applying search and ordering by name
-        query = Affiliation.query.filter_by(deleted_at=None).order_by(Affiliation.name.asc())
+        query = Affiliation.query.order_by(Affiliation.name.asc())
 
         # Apply search if search term is provided
         if search_term:
