@@ -16,7 +16,6 @@ class PoiMedia(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     poi = db.relationship('Poi', backref='poi_media')
-    crime = db.relationship('CrimeCommitted', backref='poi_media')
 
     def __init__(self, media_type=None, media_url=None, media_caption=None, poi_id=None, crime_id=None,
             deleted_at=None, created_by=None, created_at=None):

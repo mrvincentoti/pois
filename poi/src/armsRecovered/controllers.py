@@ -8,6 +8,8 @@ from ..arms.models import Arm
 from ..poi.models import Poi
 from ..users.models import User
 from ..util import custom_jwt_required, save_audit_data
+from ..crimesCommitted.models import CrimeCommitted
+from ..crimes.models import Crime
 
 def slugify(text):
     return text.replace(' ', '-').lower()
@@ -37,6 +39,7 @@ def add_arm_recovered():
         data = request.get_json()
         arm_id = data.get("arm_id")
         poi_id = data.get("poi_id")
+        crime_id = request.form.get('crime_id')
         location = data.get("location")
         comments = data.get("comments")
         recovery_date = data.get("recovery_date")
@@ -46,6 +49,7 @@ def add_arm_recovered():
         new_recovered_arm = ArmsRecovered(
             arm_id=arm_id,
             poi_id=poi_id,
+            crime_id=crime_id,
             location=location,
             comments=comments,
             recovery_date=recovery_date,
@@ -71,6 +75,7 @@ def add_arm_recovered():
                     {
                         "arm_id": arm_id,
                         "poi_id":poi_id,
+                        "crime_id":crime_id,
                         "location":location,
                         "comments":comments,
                         "recovery_date":recovery_date,
@@ -123,6 +128,7 @@ def get_arm_recovered(recovery_id):
             "arm_name": arm_name,
             "poi_id": poi.id,
             "poi_name": poi_name,
+            "crime_id": arm_recovery.crime_id,
             "location": arm_recovery.location,
             "comments": arm_recovery.comments,
             "recovery_date": arm_recovery.recovery_date,
@@ -163,6 +169,7 @@ def edit_arm_recovered(recovery_id):
         data = request.get_json()
         arm_id = data.get("arm_id")
         poi_id = data.get("poi_id")
+        crime_id = data.get("crime_id")
         location = data.get("location")
         comments = data.get("comments")
         recovery_date = data.get("recovery_date")
@@ -179,6 +186,7 @@ def edit_arm_recovered(recovery_id):
         old_values = {
             "arm_id": arm_recovered.arm_id,
             "poi_id": arm_recovered.poi_id,
+            "crime_id": arm_recovered.crime_id,
             "location": arm_recovered.location,
             "comments": arm_recovered.comments,
             "recovery_date": arm_recovered.recovery_date,
@@ -189,6 +197,7 @@ def edit_arm_recovered(recovery_id):
         # Update the recovered arm fields with the new data
         arm_recovered.arm_id = arm_id
         arm_recovered.poi_id = poi_id
+        arm_recovered.crime_id = crime_id
         arm_recovered.location = location
         arm_recovered.comments = comments
         arm_recovered.recovery_date = recovery_date
@@ -202,6 +211,7 @@ def edit_arm_recovered(recovery_id):
             new_values = {
                 "arm_id": arm_id,
                 "poi_id": poi_id,
+                "crime_id": crime_id,
                 "location": location,
                 "comments": comments,
                 "recovery_date": recovery_date,
@@ -278,6 +288,7 @@ def delete_arm_recovered(recovery_id):
         # Close the session after the request
         db.session.close()
 
+
 @custom_jwt_required
 def restore_arm_recovered(recovery_id):
     try:
@@ -317,6 +328,7 @@ def restore_arm_recovered(recovery_id):
     finally:
         db.session.close()
         
+
 @custom_jwt_required
 def get_arms_recovered_by_poi(poi_id):
     try:
@@ -337,7 +349,7 @@ def get_arms_recovered_by_poi(poi_id):
 
         # Paginate the query result
         arms_paginated = query.order_by(ArmsRecovered.recovery_date.desc())\
-                              .paginate(page=page, per_page=per_page, error_out=False)
+                            .paginate(page=page, per_page=per_page, error_out=False)
 
         # Prepare the list of recovered arms to return
         arm_list = []
@@ -349,7 +361,18 @@ def get_arms_recovered_by_poi(poi_id):
             # Fetch the name of the user who created the record
             created_by = User.query.filter_by(id=arm.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
+            
+            # Fetch the CrimeCommitted record
+            crime_committed = CrimeCommitted.query.filter_by(id=arm.crime_id).first()
 
+            # Initialize crime_name as None
+            crime_name = None
+
+            # Proceed only if crime_committed is found
+            if crime_committed:
+                crime = Crime.query.filter_by(id=crime_committed.crime_id).first()
+                crime_name = f"{crime.name or ''}".strip() if crime else None
+                
             arm_data = {
                 "id": arm.id,
                 "arm_id": arm.arm_id,
@@ -359,6 +382,8 @@ def get_arms_recovered_by_poi(poi_id):
                 } if arm.arm else None,
                 "poi_id": arm.poi_id,
                 "poi_name": poi_name,
+                "crime_id": arm.crime_id,
+                "crime_committed": crime_name,
                 "location": arm.location,
                 "comments": arm.comments,
                 "recovery_date": arm.recovery_date.isoformat() if arm.recovery_date else None,
