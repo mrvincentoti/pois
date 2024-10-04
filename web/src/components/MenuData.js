@@ -109,8 +109,14 @@ const Navdata = () => {
 			id: 'brief',
 			label: 'Brief',
 			icon: 'ri-file-shred-line',
-			link: '/entity/brief',
-			parentId: 'entity',
+			link: '/brief',
+			click: function (e) {
+				e.preventDefault();
+				setIsCurrentState('Brief');
+				setIsEntity(false);
+				setIsAccounts(false);
+				setIsSetup(false);
+			},
 			permission: checkPermission(permissions, 'can-see-brief-list'),
 		},
 		{
@@ -219,7 +225,7 @@ const Navdata = () => {
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-arresting_bodies-list'
+						'can-see-setup-arresting-bodies-list'
 					),
 				},
 				{

@@ -184,9 +184,7 @@ const EditOrganisation = () => {
 
                     setDateOfRegistration(new Date(item.date_of_registration));
                     setCountry(item.country);
-                    setSource(item.source.id);
-                   
-                    
+                    setSource(item.source.id); 
                     setCategory(item.category.id);
                     setOrg(item);
 
