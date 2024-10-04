@@ -10,13 +10,13 @@ class PoiMedia(db.Model):
     media_type = db.Column(db.String(255), nullable=True)
     media_url = db.Column(db.String(255), nullable=True)
     media_caption = db.Column(db.String(255), nullable=True)
-    crime_id = db.Column(db.Integer, db.ForeignKey('crimes.id'), nullable=True)
+    crime_id = db.Column(db.Integer, db.ForeignKey('crime_committed.id'), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     poi = db.relationship('Poi', backref='poi_media')
-    crime = db.relationship('Crime', backref='poi_media')
+    crime = db.relationship('CrimeCommitted', backref='poi_media')
 
     def __init__(self, media_type=None, media_url=None, media_caption=None, poi_id=None, crime_id=None,
             deleted_at=None, created_by=None, created_at=None):
