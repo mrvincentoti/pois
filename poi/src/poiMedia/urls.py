@@ -1,7 +1,7 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_poi_media, get_all_media, get_poi_media, get_media, edit_media, delete_media, restore_media
+from .controllers import add_poi_media, get_all_media, get_poi_media, get_media, edit_media, delete_media, restore_media, get_crime_media
 from .models import PoiMedia
 
 
@@ -14,6 +14,11 @@ def list_medias():
 def list_poi_medias(poi_id):
    if request.method == 'GET': return get_poi_media(poi_id)
    if request.method == 'POST': return add_poi_media(poi_id)
+   else: return 'Method is Not Allowed'
+   
+@app.route("/crime-media/<crime_id>", methods=['GET'])
+def list_crime_medias(crime_id):
+   if request.method == 'GET': return get_crime_media(crime_id)
    else: return 'Method is Not Allowed'
 
 @app.route("/poi-media/<media_id>", methods=['GET', 'PUT', 'DELETE'])
