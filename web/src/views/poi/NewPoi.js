@@ -74,6 +74,11 @@ const NewPoi = () => {
 	const inputRef = useRef(null);
 	const editInputRef = useRef(null);
 
+	const handleCloseAffiliation = removedTag => {
+		const newTags = affiliations.filter(tag => tag !== removedTag);
+		setAffliations(newTags);
+	};
+
 	useEffect(() => {
 		if (inputVisible) {
 			inputRef.current?.focus();
@@ -194,6 +199,16 @@ const NewPoi = () => {
 		console.log(`selected ${value}`);
 		setAffliation(value);
 	};
+
+	//  // Affiliations
+	//  const forMapAffiliation = tag => (
+	//     <span key={tag} style={{ display: 'inline-block' }}>
+	//         <Tag closable onClose={() => handleCloseAffiliation(tag)}>
+	//             {tag}
+	//         </Tag>
+	//     </span>
+	// );
+	// const tagChildAffiliations = investors.map(forMapAffiliation);
 
 	useEffect(() => {
 		if (!loaded) {
