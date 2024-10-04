@@ -1,7 +1,7 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_crime_committed, get_crimes_committed, get_crime_committed, edit_crime_committed, delete_crime_committed, restore_crime_committed, get_crimes_committed_by_poi, get_crime_media
+from .controllers import add_crime_committed, get_crimes_committed, get_crime_committed, edit_crime_committed, delete_crime_committed, restore_crime_committed, get_crimes_committed_by_poi, get_crime_medias, get_crime_arms
 from .models import CrimeCommitted
 
 
@@ -30,5 +30,10 @@ def poi_crimes_committed(poi_id):
     
 @app.route("/crime-medias/<crime_id>", methods=['GET'])
 def list_crime_medias(crime_id):
-    if request.method == 'GET': return get_crime_media(crime_id)
+    if request.method == 'GET': return get_crime_medias(crime_id)
+    else: return 'Method is Not Allowed'
+    
+@app.route("/crime-arms/<crime_id>", methods=['GET'])
+def list_crime_arms(crime_id):
+    if request.method == 'GET': return get_crime_arms(crime_id)
     else: return 'Method is Not Allowed'

@@ -14,6 +14,7 @@ from ..crimes.models import Crime
 from minio.error import S3Error
 from minio import Minio
 import os
+from ..armsRecovered.models import ArmsRecovered
 
 def slugify(text):
     return text.replace(' ', '-').lower()
@@ -422,7 +423,7 @@ def get_crimes_committed_by_poi(poi_id):
 
 
 @custom_jwt_required
-def get_crime_media(crime_id):
+def get_crime_medias(crime_id):
     try:
         # Get pagination parameters from the request (default values: page=1, per_page=10)
         page = request.args.get('page', 1, type=int)
@@ -522,3 +523,86 @@ def get_crime_media(crime_id):
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
     return jsonify(response), response.get('status_code', 500)
+
+
+@custom_jwt_required
+def get_crime_arms(crime_id):
+    try:
+        # Get pagination and search parameters from request arguments
+        search_term = request.args.get('q', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        query = ArmsRecovered.query.filter_by(crime_id=crime_id, deleted_at=None)
+
+        # Apply search filters if a search term is provided
+        if search_term:
+            search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
+            query = query.filter(
+                (ArmsRecovered.location.ilike(search_pattern)) |
+                (ArmsRecovered.comments.ilike(search_pattern))
+            )
+
+        # Paginate the query result
+        arms_paginated = query.order_by(ArmsRecovered.recovery_date.desc())\
+                            .paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of recovered arms to return
+        arm_list = []
+        for arm in arms_paginated.items:
+            # Fetch the associated POI details
+            poi = Poi.query.filter_by(id=arm.poi_id).first()
+            poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else "Unknown POI"
+
+            # Fetch the name of the user who created the record
+            created_by = User.query.filter_by(id=arm.created_by, deleted_at=None).first()
+            created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
+            
+            # Fetch the CrimeCommitted record
+            crime_committed = CrimeCommitted.query.filter_by(id=arm.crime_id).first()
+
+            # Initialize crime_name as None
+            crime_name = None
+
+            # Proceed only if crime_committed is found
+            if crime_committed:
+                crime = Crime.query.filter_by(id=crime_committed.crime_id).first()
+                crime_name = f"{crime.name or ''}".strip() if crime else None
+                
+            arm_data = {
+                "id": arm.id,
+                "arm_id": arm.arm_id,
+                "arm": {
+                    "id": arm.arm.id,
+                    "name": arm.arm.name,
+                } if arm.arm else None,
+                "poi_id": arm.poi_id,
+                "poi_name": poi_name,
+                "crime_id": arm.crime_id,
+                "crime_committed": crime_name,
+                "location": arm.location,
+                "comments": arm.comments,
+                "recovery_date": arm.recovery_date.isoformat() if arm.recovery_date else None,
+                "created_by_id": arm.created_by,
+                "created_by_name": created_by_name,
+                "number_recovered": arm.number_recovered
+            }
+            arm_list.append(arm_data)
+
+        # Prepare the paginated response
+        response = {
+            'total': arms_paginated.total,
+            'pages': arms_paginated.pages,
+            'current_page': arms_paginated.page,
+            'per_page': arms_paginated.per_page,
+            'recovered_arms': arm_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+        # Return the response with recovered arms data
+        return jsonify(response), 200
+
+    except Exception as e:
+        # Catch any errors and return a server error response
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
