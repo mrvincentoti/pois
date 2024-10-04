@@ -167,13 +167,25 @@ def get_organisations():
     source_id = request.args.get('source_id', type=int)
     country_id = request.args.get('country_id', type=int)
     affiliation = request.args.get('affiliation', type=str)
-    from_date = request.args.get('from_date', type=str)
-    to_date = request.args.get('to_date', type=str)
 
-    response = {}
+    query = Organisation.query
+
+    # Filter by created_at
+    date_added_start_date = request.args.get('from_date')
+    date_added_end_date = request.args.get('to_date')
 
     try:
-        query = Organisation.query
+        # Handle date filtering (convert to date and apply filter)
+        if date_added_start_date and date_added_end_date:
+            date_added_start_date = dt.strptime(date_added_start_date, '%Y-%m-%d').date()
+            date_added_end_date = dt.strptime(date_added_end_date, '%Y-%m-%d').date()
+            query = query.filter(Organisation.created_at.between(date_added_start_date, date_added_end_date))
+        elif date_added_start_date:
+            date_added_start_date = dt.strptime(date_added_start_date, '%Y-%m-%d').date()
+            query = query.filter(Organisation.created_at >= date_added_start_date)
+        elif date_added_end_date:
+            date_added_end_date = dt.strptime(date_added_end_date, '%Y-%m-%d').date()
+            query = query.filter(Organisation.created_at <= date_added_end_date)
 
         # Apply search term filter
         if search_term:
@@ -202,29 +214,15 @@ def get_organisations():
                 (Organisation.remark.ilike(search))
             )
 
-        # Apply category filter
+        # Apply category, source, country, and affiliation filters
         if category_id:
             query = query.filter(Organisation.category_id == category_id)
-
-        # Apply source filter
         if source_id:
             query = query.filter(Organisation.source_id == source_id)
-
-        # Apply country filter
         if country_id:
             query = query.filter(Organisation.country_id == country_id)
-
-        # Apply affiliation filter
         if affiliation:
             query = query.filter(Organisation.affiliations.ilike(f"%{affiliation}%"))
-
-        # Apply date created range filter
-        if from_date:
-            from_date = datetime.strptime(from_date, '%Y-%m-%d')
-            query = query.filter(Organisation.created_at >= from_date)
-        if to_date:
-            to_date = datetime.strptime(to_date, '%Y-%m-%d')
-            query = query.filter(Organisation.created_at <= to_date)
 
         # Sort and paginate the results
         query = query.order_by(Organisation.created_at.desc())
@@ -234,6 +232,8 @@ def get_organisations():
         org_list = []
         for org in paginated_org.items:
             org_data = org.to_dict()
+            # Convert dates to a serializable format (YYYY-MM-DD)
+            org_data['created_at'] = org.created_at.strftime('%Y-%m-%d') if org.created_at else None
             org_data['picture'] = urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), org.picture) if org.picture else None
             org_data['source'] = org.source.to_dict() if org.source else None
             org_data['category'] = org.category.to_dict() if org.category else None
@@ -264,13 +264,13 @@ def get_organisations():
                 "source_id": source_id,
                 "country_id": country_id,
                 "affiliation": affiliation,
-                "from_date": from_date,
-                "to_date": to_date
+                "from_date": date_added_start_date.strftime('%Y-%m-%d') if date_added_start_date else None,
+                "to_date": date_added_end_date.strftime('%Y-%m-%d') if date_added_end_date else None
             }),
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Organisation, View",
+            "tags": "Organisation, List",
             "created_at": dt.utcnow().isoformat(),
             "updated_at": dt.utcnow().isoformat(),
         }
@@ -285,6 +285,7 @@ def get_organisations():
         }
 
     return jsonify(response), response.get('status_code', 500)
+
 
 
 @custom_jwt_required

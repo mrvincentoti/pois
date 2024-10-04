@@ -3,6 +3,8 @@ import uuid
 from .. import db
 from .models import PoiMedia
 from ..poi.models import Poi
+from ..crimesCommitted.models import CrimeCommitted
+from ..crimes.models import Crime
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
@@ -39,11 +41,16 @@ def get_media(media_id):
 
     if media_record is None:
         return jsonify({"message": "Media not found", "media": []}), 200
+    
+    poi = Poi.query.filter_by(id=media_record.poi_id).first()
+    poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
 
     # Prepare media data
     media_data = {
         "id": media_record.id,
         "poi_id": media_record.poi_id,
+        "poi_id": poi.id if poi else None,
+        "poi_name": poi_name,
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "created_by": media_record.created_by,
@@ -103,6 +110,7 @@ def add_poi_media(poi_id):
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
         media_caption = request.form.get('media_caption')
+        crime_id = request.form.get('crime_id')
         media_type = get_media_type_from_extension(new_filename)
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
 
@@ -116,6 +124,7 @@ def add_poi_media(poi_id):
             media_type=media_type,
             media_url=minio_file_url,
             media_caption=media_caption,
+            crime_id=crime_id,
             created_by=created_by,
             created_at=datetime.utcnow()
         )
@@ -139,7 +148,8 @@ def add_poi_media(poi_id):
                     "poi_id": new_media.poi_id,
                     "media_type": new_media.media_type,
                     "media_url": new_media.media_url,
-                    "media_caption": new_media.media_caption
+                    "media_caption": new_media.media_caption,
+                    "crime_id": new_media.crime_id
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -178,9 +188,21 @@ def get_poi_media(poi_id):
         # Prepare the list of media to return
         media_list = []
         for media in media_paginated.items:
+            # Fetch the POI and construct the POI name
             poi = Poi.query.filter_by(id=media.poi_id).first()
             poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
 
+            # Fetch the CrimeCommitted record
+            crime_committed = CrimeCommitted.query.filter_by(id=media.crime_id).first()
+
+            # Initialize crime_name as None
+            crime_name = None
+
+            # Proceed only if crime_committed is found
+            if crime_committed:
+                crime = Crime.query.filter_by(id=crime_committed.crime_id).first()
+                crime_name = f"{crime.name or ''}".strip() if crime else None
+                
             # Fetch file size from MinIO
             file_size = None
             try:
@@ -199,6 +221,8 @@ def get_poi_media(poi_id):
                 "media_caption": media.media_caption or 'No caption',
                 "poi_id": poi.id if poi else None,
                 "poi_name": poi_name,
+                "crime_id": media.crime_id,
+                "crime_committed": crime_name,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None,
                 "file_size": file_size_str
@@ -248,6 +272,7 @@ def get_poi_media(poi_id):
 
     return jsonify(response), response.get('status_code', 500)
 
+
 @custom_jwt_required
 def edit_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -259,6 +284,7 @@ def edit_media(media_id):
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "media_caption": media_record.media_caption,
+        "crime_id": media_record.crime_id
     }
 
     # Check if a file is in the request
@@ -283,6 +309,7 @@ def edit_media(media_id):
             new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
             media_type = request.form.get('media_type') 
             media_caption = request.form.get('media_caption')
+            crime_id = request.form.get('crime_id')
 
             # Upload the new file to MinIO
             minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -293,6 +320,7 @@ def edit_media(media_id):
             media_record.media_type = media_type
             media_record.media_url = minio_file_url
             media_record.media_caption = media_caption
+            media_record.crime_id = crime_id
 
             db.session.commit()
 
@@ -311,7 +339,8 @@ def edit_media(media_id):
                     "new_values": json.dumps({
                         "media_type": media_record.media_type,
                         "media_url": media_record.media_url,
-                        "media_caption": media_record.media_caption
+                        "media_caption": media_record.media_caption,
+                        "crime_id": media_record.crime_id
                     }),
                     "url": request.url,
                     "ip_address": request.remote_addr,
@@ -333,12 +362,16 @@ def edit_media(media_id):
     # If no file was uploaded, allow updating other media details like type and caption
     media_type = request.form.get('media_type') 
     media_caption = request.form.get('media_caption')
+    crime_id = request.form.get('crime_id')
 
     if media_type:
         media_record.media_type = media_type
     
     if media_caption:
         media_record.media_caption = media_caption
+    
+    if crime_id:
+        media_record.crime_id = crime_id
 
     db.session.commit()
 
@@ -357,7 +390,8 @@ def edit_media(media_id):
             "new_values": json.dumps({
                 "media_type": media_record.media_type,
                 "media_url": media_record.media_url,
-                "media_caption": media_record.media_caption
+                "media_caption": media_record.media_caption,
+                "crime_id": media_record.crime_id
             }),
             "url": request.url,
             "ip_address": request.remote_addr,
@@ -386,6 +420,7 @@ def delete_media(media_id):
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "media_caption": media_record.media_caption,
+        "crime_id": media_record.crime_id
     }
 
     try:

@@ -12,20 +12,47 @@ def slugify(text):
 @custom_jwt_required
 def get_crimes():
     try:
-        crimes = Crime.query.all()
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
 
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Crime.query.order_by(Crime.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Crime.name.ilike(search))
+
+        # Paginate the query
+        paginated_crimes = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of crimes to return
         crime_list = []
-        for crime in crimes:
+        for crime in paginated_crimes.items:
             crime_data = crime.to_dict()
             crime_list.append(crime_data)
 
+        # Return the paginated and filtered crimes with status success
         return jsonify({
             "status": "success",
             "status_code": 200,
-            'crimes': crime_list,
+            "crimes": crime_list,
+            "pagination": {
+                "total": paginated_crimes.total,
+                "pages": paginated_crimes.pages,
+                "current_page": paginated_crimes.page,
+                "per_page": paginated_crimes.per_page,
+                "next_page": paginated_crimes.next_num if paginated_crimes.has_next else None,
+                "prev_page": paginated_crimes.prev_num if paginated_crimes.has_prev else None
+            }
         })
+
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @custom_jwt_required
@@ -33,12 +60,14 @@ def add_crime():
     if request.method == "POST":
         data = request.get_json()
         crime_name = data.get("name")
+        description = data.get("description")
 
         if not crime_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_crime = Crime(
-            name=crime_name
+            name=crime_name,
+            description=description
         )
 
         try:
@@ -57,7 +86,8 @@ def add_crime():
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "crime_name": crime_name
+                        "crime_name": crime_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -84,7 +114,8 @@ def get_crime(crime_id):
     if crime:
         crime_data = {
             "id": crime.id,
-            "name": crime.name
+            "name": crime.name,
+            "description": crime.description
         }
 
         current_time = datetime.utcnow()
@@ -115,18 +146,20 @@ def get_crime(crime_id):
 
 @custom_jwt_required
 def edit_crime(crime_id):
-    crime = Crime.query.filter_by(id=crime_id, deleted_at=None).first()
+    crime = Crime.query.filter_by(id=crime_id).first()
 
     if crime is None:
         return jsonify({"message": "Crime not found"}), 404
 
     data = request.get_json()
     crime_name = data.get("name")
+    description = data.get("description")
 
     if not crime_name:
         return jsonify({"message": "Name is required"}), 400
 
     crime.name = crime_name
+    crime.description = description
 
     try:
         db.session.commit()
@@ -143,7 +176,8 @@ def edit_crime(crime_id):
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "crime_name": crime_name
+                        "crime_name": crime_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -188,6 +222,7 @@ def delete_crime(crime_id):
                 "new_values": json.dumps(
                     {
                         "crime_name": crime.name,
+                        "description": crime.description
                     }
                 ),
                 "url": request.url,
@@ -230,6 +265,7 @@ def restore_crime(crime_id):
             "new_values": json.dumps(
                 {
                     "name": crime.name,
+                    "description": crime.description
                 }
             ),
             "url": request.url,

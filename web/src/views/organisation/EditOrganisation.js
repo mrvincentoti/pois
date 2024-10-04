@@ -6,31 +6,29 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import FormWrapper from '../../container/FormWrapper';
 import { ErrorBlock, FormSubmitError, error } from '../../components/FormBlock';
 import {
-    asyncFetch,
-    notifyWithIcon,
-    request,
-    createHeaders,
+	asyncFetch,
+	notifyWithIcon,
+	request,
+	createHeaders,
 } from '../../services/utilities';
 import { Flex, Input, Tag, theme, Tooltip } from 'antd';
 import { message, Upload } from 'antd';
 import {
-    FETCH_GENDERS_API,
-    FETCH_STATES_API,
-    FETCH_CATEGORIES_API,
-    FETCH_SOURCES_API,
-    FETCH_COUNTRIES_API,
-    FETCH_AFFILIATIONS_API,
-    GET_ORG_API,
-    UPDATE_ORG_API,
+	FETCH_GENDERS_API,
+	FETCH_STATES_API,
+	FETCH_CATEGORIES_API,
+	FETCH_SOURCES_API,
+	FETCH_COUNTRIES_API,
+	FETCH_AFFILIATIONS_API,
+	GET_ORG_API,
+	UPDATE_ORG_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import { Select } from "antd";
+import { Select } from 'antd';
 import UploadFilePicture from '../../components/UploadFile';
 
-import {
-    maritalStatusList,
-} from '../../services/constants';
+import { maritalStatusList } from '../../services/constants';
 const EditOrganisation = () => {
     const [loaded, setLoaded] = useState(false);
     const [org, setOrg] = useState(null);
@@ -182,11 +180,12 @@ const EditOrganisation = () => {
                         }
                     }
 
-                    setDateOfRegistration(new Date(item.date_of_registration));
-                    setCountry(item.country);
-                    setSource(item.source.id); 
-                    setCategory(item.category.id);
-                    setOrg(item);
+					setDateOfRegistration(new Date(item.date_of_registration));
+					setCountry(item.country);
+					setSource(item.source?.id);
+
+					setCategory(item.category?.id);
+					setOrg(item);
 
                     const operational_list = item?.countries_operational.split(',').map(o => {
                         const country = countries.find(c => c.id === Number(o))

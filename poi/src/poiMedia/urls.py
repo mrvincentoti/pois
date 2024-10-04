@@ -10,7 +10,7 @@ def list_medias():
    if request.method == 'GET': return get_all_media()
    return 'Method is Not Allowed'
 
-@app.route("/poi-media/<poi_id>", methods=['GET', 'POST'])
+@app.route("/poi-medias/<poi_id>", methods=['GET', 'POST'])
 def list_poi_medias(poi_id):
    if request.method == 'GET': return get_poi_media(poi_id)
    if request.method == 'POST': return add_poi_media(poi_id)

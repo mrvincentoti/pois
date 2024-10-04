@@ -16,7 +16,7 @@ import {
 	parseHashString,
 	request,
 	formatName,
-	formatOrgName
+	formatOrgName,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';
 import ImportBrief from '../../modals/ManageBrief';
 import BulkUpload from '../../components/BulkUpload';
+import OrgTemplateFilter from '../../components/OrgTemplateFilter';
 
 const Organisation = () => {
 	document.title = `POI - ${APP_SHORT_NAME}`;
@@ -279,10 +280,12 @@ const Organisation = () => {
 														</td>
 
 														<td>{item.ceo || 'N/A'} </td>
-														<td>{formatDate(item.date_of_registration) || 'N/A'}</td>
+														<td>
+															{formatDate(item.date_of_registration) || 'N/A'}
+														</td>
 														<td>{item.employee_strength || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
-														<td>{"--"}</td>
+														<td>{'--'}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
 																<ViewLink
@@ -320,6 +323,13 @@ const Organisation = () => {
 					}}
 				/>
 			)}
+			<OrgTemplateFilter
+				filters={filters}
+				onFilter={handleFilter}
+				onCloseClick={handleCloseFilter}
+				onClearFilter={handleClearFilters}
+				show={isFilterOpen}
+			/>
 		</>
 	);
 };

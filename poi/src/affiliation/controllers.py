@@ -20,7 +20,7 @@ def get_affiliations():
         search_term = request.args.get('q', default=None, type=str)
 
         # Query the database, applying search and ordering by name
-        query = Affiliation.query.filter_by(deleted_at=None).order_by(Affiliation.name.asc())
+        query = Affiliation.query.order_by(Affiliation.name.asc())
 
         # Apply search if search term is provided
         if search_term:
@@ -60,12 +60,14 @@ def add_affiliation():
     if request.method == "POST":
         data = request.get_json()
         affiliation_name = data.get("name")
+        description = data.get("description")
 
         if not affiliation_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_affiliation = Affiliation(
-            name=affiliation_name
+            name=affiliation_name,
+            description=description
         )
 
         try:
@@ -111,7 +113,8 @@ def get_affiliation(affiliation_id):
     if affiliation:
         affiliation_data = {
             "id": affiliation.id,
-            "name": affiliation.name
+            "name": affiliation.name,
+            "description": affiliation.description
         }
 
         current_time = datetime.utcnow()
@@ -142,18 +145,20 @@ def get_affiliation(affiliation_id):
 
 @custom_jwt_required
 def edit_affiliation(affiliation_id):
-    affiliation = Affiliation.query.filter_by(id=affiliation_id, deleted_at=None).first()
+    affiliation = Affiliation.query.filter_by(id=affiliation_id).first()
 
     if affiliation is None:
         return jsonify({"message": "Affiliation not found", "affiliation": []}), 200
 
     data = request.get_json()
     affiliation_name = data.get("name")
+    description = data.get("description")
 
     if not affiliation_name:
         return jsonify({"message": "Name is required"}), 400
 
     affiliation.name = affiliation_name
+    affiliation.description = description
 
     try:
         db.session.commit()
@@ -170,7 +175,8 @@ def edit_affiliation(affiliation_id):
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "affiliation_name": affiliation_name
+                        "affiliation_name": affiliation_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,

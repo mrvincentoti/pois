@@ -12,20 +12,47 @@ def slugify(text):
 @custom_jwt_required
 def get_arresting_bodies():
     try:
-        arresting_bodies = ArrestingBody.query.all()
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
 
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = ArrestingBody.query.order_by(ArrestingBody.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(ArrestingBody.name.ilike(search))
+
+        # Paginate the query
+        paginated_arresting_bodies = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of arresting bodies to return
         arresting_body_list = []
-        for arresting_body in arresting_bodies:
+        for arresting_body in paginated_arresting_bodies.items:
             arresting_body_data = arresting_body.to_dict()
             arresting_body_list.append(arresting_body_data)
 
+        # Return the paginated and filtered arresting bodies with status success
         return jsonify({
             "status": "success",
             "status_code": 200,
-            'arresting_bodies': arresting_body_list,
+            "arresting_bodies": arresting_body_list,
+            "pagination": {
+                "total": paginated_arresting_bodies.total,
+                "pages": paginated_arresting_bodies.pages,
+                "current_page": paginated_arresting_bodies.page,
+                "per_page": paginated_arresting_bodies.per_page,
+                "next_page": paginated_arresting_bodies.next_num if paginated_arresting_bodies.has_next else None,
+                "prev_page": paginated_arresting_bodies.prev_num if paginated_arresting_bodies.has_prev else None
+            }
         })
+
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 
 @custom_jwt_required
@@ -33,12 +60,14 @@ def add_arresting_body():
     if request.method == "POST":
         data = request.get_json()
         arresting_body_name = data.get("name")
+        description = data.get("description")
 
         if not arresting_body_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_arresting_body = ArrestingBody(
-            name=arresting_body_name
+            name=arresting_body_name,
+            description=description
         )
 
         try:
@@ -57,7 +86,8 @@ def add_arresting_body():
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "arresting_body_name": arresting_body_name
+                        "arresting_body_name": arresting_body_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -84,7 +114,8 @@ def get_arresting_body(arresting_body_id):
     if arresting_body:
         arresting_body_data = {
             "id": arresting_body.id,
-            "name": arresting_body.name
+            "name": arresting_body.name,
+            "description": arresting_body.description
         }
 
         current_time = datetime.utcnow()
@@ -115,18 +146,20 @@ def get_arresting_body(arresting_body_id):
 
 @custom_jwt_required
 def edit_arresting_body(arresting_body_id):
-    arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
+    arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 
     if arresting_body is None:
         return jsonify({"message": "Arresting body not found"}), 404
 
     data = request.get_json()
     arresting_body_name = data.get("name")
+    description = data.get("description")
 
     if not arresting_body_name:
         return jsonify({"message": "Name is required"}), 400
 
     arresting_body.name = arresting_body_name
+    arresting_body.description = description
 
     try:
         db.session.commit()
@@ -143,7 +176,8 @@ def edit_arresting_body(arresting_body_id):
                 "old_values": None,
                 "new_values": json.dumps(
                     {
-                        "arresting_body_name": arresting_body_name
+                        "arresting_body_name": arresting_body_name,
+                        "description": description
                     }
                 ),
                 "url": request.url,
@@ -188,6 +222,7 @@ def delete_arresting_body(arresting_body_id):
                 "new_values": json.dumps(
                     {
                         "arresting_body_name": arresting_body.name,
+                        "description": arresting_body.description
                     }
                 ),
                 "url": request.url,
@@ -230,6 +265,7 @@ def restore_arresting_body(arresting_body_id):
             "new_values": json.dumps(
                 {
                     "name": arresting_body.name,
+                    "description": arresting_body.description
                 }
             ),
             "url": request.url,
