@@ -25,7 +25,7 @@ import {
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
-import Select from 'react-select';
+import { Select } from 'antd';
 import AsyncSelect from 'react-select/async';
 import UploadFilePicture from '../../components/UploadFile';
 import {
@@ -47,8 +47,9 @@ const EditPoi = () => {
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
-	const [affiliations, setAffliations] = useState([]);
+	const [affiliations, setAffiliations] = useState([]);
 	const [alias, setAlias] = useState([]);
+	const [allAffiliations, setAllAffiliations] = useState([]);
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
@@ -92,7 +93,7 @@ const EditPoi = () => {
 			setCountries(rs_countries.countries);
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
-			setAffliations(rs_affiliations.affiliations);
+			setAllAffiliations(rs_affiliations.affiliations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -120,50 +121,65 @@ const EditPoi = () => {
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
-			fetchPoi(param.id).then(item => {
-				if (!item) {
-					notifyWithIcon('error', 'poi not found!');
-					navigate('/pois/poi');
-					return;
-				}
-
-				if (item.alias) {
-					try {
-						const tagsArray = item.alias.split(',').map(tag => tag.trim());
-
-						setAlias(tagsArray);
-						setTags(tagsArray);
-					} catch (error) {
-						console.error('Failed to parse alias:', error);
-
-						const jsonArray = [item.alias];
-						setAlias(jsonArray);
+			if (countries.length > 0 && allAffiliations.length > 0) {
+				fetchPoi(param.id).then(item => {
+					if (!item) {
+						notifyWithIcon('error', 'poi not found!');
+						navigate('/pois/poi');
+						return;
 					}
-				}
 
-				setDateOfBirth(new Date(item.dob));
-				setCountry(item.country);
-				setSource(item.source);
-				setPoi(item);
+					if (item.alias) {
+						try {
+							const tagsArray = item.alias.split(',').map(tag => tag.trim());
 
-				setImageString(item.picture);
-				if (item.marital_status)
-					setMaritalStatus(
-						maritalStatusList.find(
-							status => status.name === item.marital_status
-						)
-					);
-				setLoaded(true);
-			});
+							setAlias(tagsArray);
+							setTags(tagsArray);
+						} catch (error) {
+							console.error('Failed to parse alias:', error);
+
+							const jsonArray = [item.alias];
+							setAlias(jsonArray);
+						}
+					}
+
+					setDateOfBirth(new Date(item.dob));
+					setState(item.state?.id);
+					setCountry(item.country?.id);
+					setSource(item.source?.id);
+					setPoi(item);
+					setCategory(item.category?.id);
+
+					const affiliations_list =
+						item.affiliation?.split(',').map(a => {
+							const affiliation = allAffiliations.find(
+								item => item.id === Number(a)
+							);
+							console.log(affiliation);
+							return { label: affiliation?.name || '', value: Number(a) };
+						}) || [];
+					// console.log(affiliations_list);
+
+					setAffiliations(affiliations_list);
+
+					setImageString(item.picture);
+					if (item.marital_status)
+						setMaritalStatus(
+							maritalStatusList.find(
+								status => status.name === item.marital_status
+							)
+						);
+					setLoaded(true);
+				});
+			}
 		}
 	}, [
 		fetchApis,
-		// fetchDepartments,
 		fetchPoi,
-		// fetchLgas,
-		// fetchUnits,
 		loaded,
 		navigate,
+		countries,
+		allAffiliations,
 		param.id,
 	]);
 
@@ -208,6 +224,11 @@ const EditPoi = () => {
 	};
 
 	const onSubmit = async values => {
+		console.log(values);
+		console.log(state);
+		console.log(country);
+
+		return;
 		convertNullToEmptyString(values);
 
 		try {
@@ -215,7 +236,6 @@ const EditPoi = () => {
 			const formData = new FormData();
 			// Append your values to FormData
 
-			if (country) values.country_id = country.id;
 			if (maritalStatus) values.marital_status = maritalStatus.name;
 			if (dateOfBirth) values.dob = dateOfBirth;
 			if (tags) values.alias = tags;
@@ -236,17 +256,29 @@ const EditPoi = () => {
 				formData.append('category_id', values.category.id);
 			}
 
+			// Conditionally append values to FormData, with empty strings for non-existent values
+			if (country) {
+				formData.append('country_id', country);
+			}
+
 			if (values.source) {
-				formData.append('source_id', values.source?.id || '');
+				formData.append('source_id', source || '');
 			}
 			if (values.gender) {
 				formData.append('gender_id', values.gender?.id || '');
 			}
+
 			if (values.state) {
-				formData.append('state_id', values.state?.id || '');
+				formData.append('state_id', state || '');
 			}
 			if (values.affiliation) {
-				formData.append('affiliation_id', values.affiliation?.id || '');
+				formData.append(
+					'affiliation_id',
+					affiliations.map(o => o.value).join(',')
+				);
+			}
+			if (values.affiliation) {
+				formData.set('affiliations', affiliations.map(o => o.value).join(','));
 			}
 			if (values.marital_status) {
 				formData.append('marital_status', values.marital_status?.name || '');
@@ -258,11 +290,12 @@ const EditPoi = () => {
 				formData.append('alias', tags.length > 0 ? tags.join(', ') : ''); // Ensure alias is not null
 			}
 
-			// for (let pair of formData.entries()) {
-			// 	console.log(`${pair[0]}: ${pair[1]}`);
-			// }
+			if (values.affiliation) {
+				formData.set('affiliation', affiliations.map(o => o.value).join(','));
+			}
 
-			// return
+			formData.set('country', undefined);
+			formData.set('category', undefined);
 
 			const uri = UPDATE_POI_API.replace(':id', param.id);
 
@@ -287,6 +320,21 @@ const EditPoi = () => {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
 		}
 	};
+	const handleChangeSource = value => {
+		setSource(value);
+	};
+	const handleChangeCat = value => {
+		setCategory(value);
+	};
+	const handleChangeState = value => {
+		setState(value);
+	};
+
+	const handleCountryChange = value => {
+		setCountry(value);
+		setStates([]); // Clear the states when a new country is selected
+		fetchStates(value); // Fetch the states for the selected country
+	};
 
 	return (
 		<div className="container-fluid">
@@ -295,7 +343,26 @@ const EditPoi = () => {
 				<Form
 					initialValues={{
 						...poi,
-						affiliation_id: poi?.affiliation,
+						gender_id: poi?.gender?.id || '',
+						category: poi?.category,
+						country: poi?.country,
+						state: poi?.state,
+						affiliation:
+							poi?.affiliation.split(',').map(a => {
+								const affiliation = allAffiliations.find(
+									item => item.id === Number(a)
+								);
+								return { label: affiliation?.name || '', value: Number(a) };
+							}) || '',
+
+						// country:
+						// 	poi?.countries_operational.split(',')?.map(o => {
+						// 		const country = countries.find(c => c.id === Number(o));
+						// 		return {
+						// 			value: Number(o),
+						// 			label: country?.en_short_name || '',
+						// 		};
+						// 	}) || '',
 					}}
 					onSubmit={onSubmit}
 					validate={values => {
@@ -463,23 +530,38 @@ const EditPoi = () => {
 													<ErrorBlock name="email" />
 												</div>
 												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="gender">
+													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
 													</label>
-													<Field id="gender" name="gender">
+													<Field id="gender_id" name="gender_id">
 														{({ input, meta }) => (
 															<Select
 																{...input}
-																className={error(meta)}
+																className={
+																	meta.touched && meta.error ? 'error' : ''
+																}
 																placeholder="Select gender"
-																options={genders}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																options={genders.map(gender => ({
+																	value: gender.id, // Set the ID as value
+																	label: gender.name, // Set the name as label
+																}))}
+																onChange={(value, option) =>
+																	input.onChange(value)
+																} // Handle change
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="gender" />
+													<ErrorBlock name="gender_id" />
 												</div>
+
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="dateOfBirth">
 														Date Of Birth <span style={{ color: 'red' }}></span>
@@ -518,14 +600,27 @@ const EditPoi = () => {
 															<Select
 																{...input}
 																placeholder="Select marital status"
-																options={maritalStatusList}
-																value={maritalStatus}
-																className={error(meta)}
-																getOptionValue={option => option.name}
-																getOptionLabel={option => option.name}
-																onChange={e => {
-																	e ? input.onChange(e) : input.onChange('');
-																	setMaritalStatus(e);
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																options={maritalStatusList.map(status => ({
+																	value: status.id, // Set the ID as value
+																	label: status.name, // Set the name as label
+																}))}
+																value={maritalStatus} // Bind the selected value
+																className={
+																	meta.touched && meta.error ? 'error' : ''
+																}
+																onChange={value => {
+																	value
+																		? input.onChange(value)
+																		: input.onChange(''); // Update
+																	setMaritalStatus(value); // Update local state
 																}}
 															/>
 														)}
@@ -581,25 +676,40 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="other_id_number" />
 												</div>
-												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="affiliation_id"
-													>
-														Affiliation <span style={{ color: 'red' }}>*</span>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="affiliation">
+														Affiliation <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="affiliation_id" name="affiliation_id">
+
+													<Field name="affiliation">
 														{({ input, meta }) => (
 															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select affiliation"
-																options={affiliations}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																mode="multiple"
+																allowClear
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Conditional styling
+																}}
+																placeholder="Please select affiliation"
+																onChange={(value, options) => {
+																	input.onChange(value); // Update form state
+																	setAffiliations(options); // Handle additional logic if
+																}}
+																options={allAffiliations.map(affiliation => ({
+																	value: affiliation.id, // Set the ID as value
+																	label: affiliation.name, // Set the name as label
+																}))}
+																value={affiliations} // Bind the selected values
 															/>
 														)}
 													</Field>
+
+													<ErrorBlock name="affiliation" />
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="role">
@@ -625,35 +735,57 @@ const EditPoi = () => {
 													<Field id="category" name="category">
 														{({ input, meta }) => (
 															<Select
-																{...input}
-																className={error(meta)}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
 																placeholder="Select Category"
-																options={categories}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																onChange={handleChangeCat}
+																value={category}
+																options={categories.map(c => ({
+																	label: c.name,
+																	value: c.id,
+																}))}
+																className="custom-category-select"
 															/>
 														)}
 													</Field>
 													<ErrorBlock name="category" />
 												</div>
+
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
+
 													<Field id="source" name="source">
 														{({ input, meta }) => (
 															<Select
-																{...input}
-																className={error(meta)}
-																placeholder="Select source"
-																options={sources}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Dynamic border color based on validation
+																}}
+																value={source}
+																placeholder="Select Source"
+																onChange={handleChangeSource} // Handle change event
+																options={sources.map(s => ({
+																	label: s.name,
+																	value: s.id,
+																}))}
 															/>
 														)}
 													</Field>
 													<ErrorBlock name="source" />
 												</div>
+
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
 														Country <span style={{ color: 'red' }}>*</span>
@@ -662,44 +794,80 @@ const EditPoi = () => {
 														{({ input, meta }) => (
 															<Select
 																{...input}
-																className={error(meta)}
-																placeholder="Select country"
-																options={countries}
-																value={country}
-																getOptionValue={option => option.id}
-																getOptionLabel={option =>
-																	option.en_short_name || option.name
-																}
-																onChange={e => {
-																	e ? input.onChange(e) : input.onChange('');
-																	setCountry(e);
-																	setStates([]);
-																	fetchStates(e.id);
-																	form.change('state', undefined);
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
 																}}
+																placeholder="Select Country"
+																onChange={handleCountryChange}
+																value={country}
+																options={countries.map(country => ({
+																	value: country.id, // Set the ID as value
+																	label: country.en_short_name || country.name, // Use either en_short_name or name
+																}))}
+																className="custom-country-select"
 															/>
+															// <Select
+															// 	{...input}
+															// 	placeholder="Select country"
+															// 	style={{
+															// 	width: '100%',
+															// 	height: '40px',
+															// 	borderColor: meta.touched && meta.error ? 'red' : '#ced4da',
+															// 	}}
+															// 	options={countries.map((country) => ({
+															// 	value: country.id, // Set the ID as value
+															// 	label: country.en_short_name || country.name, // Use either en_short_name or name
+															// 	}))}
+															// 	value={country} // Bind the selected value
+															// 		className={meta.touched && meta.error ? 'error' : ''}
+															// 	onChange={(value) => {
+															// 	value ? input.onChange(value) : input.onChange(''); // Update form state
+															// 	setCountry(value.id); // Update local state
+															// 	setStates([]); // Clear the states when a new country is selected
+															// 	fetchStates(value.id); // Fetch the states for the selected country
+															// 	form.change('state', undefined); // Reset the state field
+															// 	}}
+															// />
 														)}
 													</Field>
 													<ErrorBlock name="country_id" />
 												</div>
+
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="state">
+													<label className="form-label" htmlFor="state_id">
 														State <span style={{ color: 'red' }}>*</span>
 													</label>
-													<Field id="state" name="state">
+													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
 															<Select
 																{...input}
-																className={error(meta)}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																onChange={handleChangeState}
 																placeholder="Select state"
-																options={states}
-																getOptionValue={option => option.id}
-																getOptionLabel={option => option.name}
+																value={state}
+																options={states.map(state => ({
+																	value: state.id, // Set the ID as value
+																	label: state.name, // Set the name as label
+																}))}
+																className="custom-state-select"
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="state" />
+													<ErrorBlock name="state_id" />
 												</div>
+
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">
 														Address
