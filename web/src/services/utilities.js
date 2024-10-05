@@ -214,7 +214,7 @@ export function confirmAction(
 			return (
 				<div className="custom-ui p-5 text-center">
 					<lord-icon
-						src={`https://cdn.lordicon.com/${icons[type]}.json`}
+						//src={`https://cdn.lordicon.com/${icons[type]}.json`}
 						trigger="loop"
 						colors="primary:#405189,secondary:#f06548"
 						style={{ width: '90px', height: '90px' }}

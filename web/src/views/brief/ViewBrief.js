@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { GET_BRIEF_API, GET_BRIEF_MEDIAS_API } from '../../services/api';
-import { notifyWithIcon, request, formatDate, } from '../../services/utilities';
+import { GET_BRIEF_API, GET_BRIEF_MEDIAS_API, DELETE_BRIEF_MEDIAS_API } from '../../services/api';
+import { notifyWithIcon, request, formatDate, confirmAction } from '../../services/utilities';
 import { APP_SHORT_NAME, limit, paginate } from '../../services/constants';
 import { useQuery } from '../../hooks/query';
 import AppPagination from '../../components/AppPagination';
 import AddMedia from './AddMedia';
+import PreviewMedia from './PreviewMedia';
+
 
 
 function ViewBrief() {
@@ -14,6 +16,7 @@ function ViewBrief() {
     const [briefData, setBriefData] = useState(null);
     const [briefMedia, setBriefMedia] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState(null);
     const [working, setWorking] = useState(false);
     const [page, setPage] = useState(null);
@@ -88,6 +91,12 @@ function ViewBrief() {
         setShowModal(true);
     };
 
+    const previewMedia = (item) => {
+        document.body.classList.add('modal-open');
+        setSelectedMedia(item);
+        setShowPreviewModal(true);
+    };
+
     const editMedia = item => {
         document.body.classList.add('modal-open');
         setSelectedMedia(item);
@@ -103,6 +112,25 @@ function ViewBrief() {
     const refreshTable = async () => {
         const _limit = Number(query.get('entries_per_page') || limit);       
         await fetchBriefMedia(params.id);
+    };
+
+    const confirmRemove = item => {
+        confirmAction(doRemove, item, 'You want to delete this crime');
+    };
+
+    const doRemove = async item => {
+        try {            
+            setWorking(true);
+            const config = { method: 'DELETE' };
+            const uri = DELETE_BRIEF_MEDIAS_API.replaceAll(':id', item.media_id);
+            const rs = await request(uri, config);           
+            refreshTable();
+            notifyWithIcon('success', rs.message);
+            setWorking(false);
+        } catch (e) {
+            notifyWithIcon('error', e.message || 'error, could not delete crime');
+            setWorking(false);
+        }
     };
 
   return (
@@ -211,11 +239,22 @@ function ViewBrief() {
                                                                   <div className="flex-shrink-0 ms-2">
                                                                       <div className="d-flex gap-1">
                                                                           <button
+                                                                              onClick={() => previewMedia(item)}
                                                                               type="button"
                                                                               className="btn btn-icon text-muted btn-sm fs-18"
                                                                           >
-                                                                              <i className="ri-download-2-line" />
+                                                                              <i className="ri-eye-2-line" style={{ color: '#11d1b7' }} />
                                                                           </button>
+                                                                          <div className="dropdown">
+                                                                              <button className="btn btn-icon text-muted btn-sm fs-18 dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                  <i className="ri-download-2-line" style={{ color: '#ffc061'}}></i>
+                                                                              </button>
+                                                                          </div>
+                                                                          <div className="dropdown">
+                                                                              <button onClick={() => confirmRemove(item)} className="btn btn-icon text-muted btn-sm fs-18 dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                  <i className="ri-delete-bin-line" style={{ color: '#ff7f41'}}></i>
+                                                                              </button>
+                                                                          </div>
                                                                       </div>
                                                                   </div>
                                                               </div>
@@ -244,6 +283,17 @@ function ViewBrief() {
                             update={async () => {
                                 await refreshTable().then(() => setWorking(false));
                             }}
+                          />
+                      )}
+
+                      {showPreviewModal && (
+                          <PreviewMedia
+                              id={params.id}
+                              selectedMedia={selectedMedia}
+                              closeModal={() => closeModal()}
+                              update={async () => {
+                                  await refreshTable().then(() => setWorking(false));
+                              }}
                           />
                       )}
                   </div>

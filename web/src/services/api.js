@@ -312,4 +312,5 @@ export const UPDATE_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
 export const GET_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
 export const GET_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const CREATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-medias/:id`;
-export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`;
+export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`; 
+export const DELETE_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-media/:id`;
