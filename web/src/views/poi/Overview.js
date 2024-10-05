@@ -188,7 +188,7 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Affiliation :</p>
 												<h6 className="fw-semibold">
-													{poiData.affiliation_id || 'N/A'}
+													{poiData.affiliation || 'N/A'}
 												</h6>
 											</div>
 										</div>

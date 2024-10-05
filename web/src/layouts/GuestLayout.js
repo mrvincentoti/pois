@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { APP_NAME, APP_SHORT_NAME } from '../services/constants';
 import GsapWrapper from '../container/GsapWrapper';
 // import logo from '../assets/images/image.svg';
-import logo from '../assets/images/logo-sm.png';
+import logo from '../assets/images/logo/manforticon.svg';
 
 const GuestLayout = ({ children }) => {
 	const layoutModeType = useSelector(state => state.layout.layoutModeType);

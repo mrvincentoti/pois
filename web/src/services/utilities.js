@@ -597,6 +597,21 @@ export const formatName = employee => {
 	return '';
 };
 
+export const formatBriefInitials = brief => {
+	if (brief) {
+		const firstNameInitial = brief.title
+			? brief.title.charAt(0)
+			: '';
+		const lastNameInitial = brief.title
+			? brief.title.charAt(1)
+			: '';
+
+		return `${firstNameInitial}${lastNameInitial}`;
+	}
+
+	return '';
+};
+
 export const formatUserName = user => {
 	if (user) {
 		const firstNameInitial = user.first_name

@@ -283,8 +283,8 @@ export const CREATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities`;
 export const UPDATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities/`;
 
 // Media api
-export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
-export const FETCH_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
+export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-medias/:id`;
+export const FETCH_MEDIA_API = `${BASE_POI_URL}/poi-medias/:id`;
 export const UPDATE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
 export const DELETE_MEDIA_API = `${BASE_POI_URL}/poi-media/:id`;
 export const CREATE_ORG_API = `${BASE_POI_URL}/organisations`;
@@ -303,3 +303,13 @@ export const DELETE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/:id`;
 export const DELETE_ARMS_API = `${BASE_POI_URL}/arms/:id`;
 export const CREATE_ARMS_API = `${BASE_POI_URL}/arms`;
 export const UPDATE_ARMS_API = `${BASE_POI_URL}/arms/:id`;
+
+//Briefs
+export const FETCH_BRIEF_API = `${BASE_POI_URL}/briefs`;
+export const DELETE_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
+export const CREATE_BRIEF_API = `${BASE_POI_URL}/briefs`;
+export const UPDATE_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
+export const GET_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
+export const GET_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-medias/:id`;
+export const CREATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-medias/:id`;
+export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`;

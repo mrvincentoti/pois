@@ -5,7 +5,7 @@ from .models import BriefMedia
 from ..brief.models import Brief
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -89,8 +89,8 @@ def add_brief_media(brief_id):
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request'}), 400
 
-    if 'media_type' not in request.form:
-        return jsonify({'message': 'Media type is required'}), 400
+    # if 'media_type' not in request.form:
+    #     return jsonify({'message': 'Media type is required'}), 400
     
     file = request.files['file']
     created_by = g.user["id"]
@@ -102,8 +102,9 @@ def add_brief_media(brief_id):
         # Generate a new filename using UUID
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
-        media_type = request.form.get('media_type')
+        # media_type = request.form.get('media_type')
         media_caption = request.form.get('media_caption')
+        media_type = get_media_type_from_extension(new_filename)
 
         # Upload the file to MinIO
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -174,7 +175,11 @@ def get_brief_media(brief_id):
 
         # Check if any media records were found
         if not paginated_media.items:
-            return jsonify({"message": "No media found for the given Brief"}), 404
+            return jsonify({
+                "status": "success",
+                "status_code": 200,
+                "media": [],
+            })
 
         # Prepare the list of media to return
         media_list = []
@@ -223,7 +228,11 @@ def get_brief_media(brief_id):
             save_audit_data(audit_data)
 
         except Exception as e:
-            return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
+            return jsonify({
+                "status": "success",
+                "status_code": 200,
+                "media": [],
+            })
 
         # Return the paginated media list with pagination details
         return jsonify({
