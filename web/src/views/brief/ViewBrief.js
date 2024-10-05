@@ -18,6 +18,7 @@ function ViewBrief() {
     const [showModal, setShowModal] = useState(false);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState(null);
+    const [selectedMediaFile, setSelectedMediaFile] = useState(null);
     const [working, setWorking] = useState(false);
     const [page, setPage] = useState(null);
     const [search, setSearch] = useState('');
@@ -87,13 +88,14 @@ function ViewBrief() {
     }, [fetchBriefMedia, fetching, page, query, queryLimit, search]);
 
     const addMedia = () => {
+        setShowModal(false);
         document.body.classList.add('modal-open');
         setShowModal(true);
     };
 
     const previewMedia = (item) => {
         document.body.classList.add('modal-open');
-        setSelectedMedia(item);
+        setSelectedMediaFile(item);
         setShowPreviewModal(true);
     };
 
@@ -106,6 +108,14 @@ function ViewBrief() {
     const closeModal = () => {
         setShowModal(false);
         setSelectedMedia(null);
+        refreshTable();
+        document.body.classList.remove('modal-open');
+    };
+
+    const closeModalMedia = () => {
+        setShowPreviewModal(false);
+        setSelectedMediaFile(null);
+        refreshTable();
         document.body.classList.remove('modal-open');
     };
 
@@ -289,8 +299,8 @@ function ViewBrief() {
                       {showPreviewModal && (
                           <PreviewMedia
                               id={params.id}
-                              selectedMedia={selectedMedia}
-                              closeModal={() => closeModal()}
+                              selectedMediaFile={selectedMediaFile}
+                              closeModalMedia={() => closeModalMedia()}
                               update={async () => {
                                   await refreshTable().then(() => setWorking(false));
                               }}
