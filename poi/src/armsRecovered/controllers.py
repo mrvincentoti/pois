@@ -39,7 +39,7 @@ def add_arm_recovered():
         data = request.get_json()
         arm_id = data.get("arm_id")
         poi_id = data.get("poi_id")
-        crime_id = request.form.get('crime_id')
+        crime_id = data.get('crime_id')
         location = data.get("location")
         comments = data.get("comments")
         recovery_date = data.get("recovery_date")
