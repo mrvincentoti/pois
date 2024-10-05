@@ -221,7 +221,7 @@ export const DECLINE_SINGLE_BRIEF_API = `${BASE_EMPLOYEE_URL}/brief/:id/2`;
 export const DELETE_SINGLE_BRIEF_API = `${BASE_EMPLOYEE_URL}/brief/:id`;
 
 //Audit api
-export const FETCH_AUDITS_API = `${BASE_AUDIT_URL}/audits`;
+export const FETCH_AUDITS_API = `${BASE_POI_URL}/audits`;
 export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
 
 // Poi api

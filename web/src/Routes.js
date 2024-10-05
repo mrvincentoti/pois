@@ -50,6 +50,7 @@ const Profile = lazy(() => import('./views/Profile'));
 const PoiIndex = lazy(() => import('./views/poi/Index'));
 const OrganisationIndex = lazy(() => import('./views/organisation/Index'));
 const BriefIndex = lazy(() => import('./views/brief/Index'));
+const AuditIndex = lazy(() => import('./views/audit/Index'));
 
 const authProtectedRoutes = [
 	{ path: '/', component: <Dashboard /> },
@@ -60,6 +61,7 @@ const authProtectedRoutes = [
 	{ path: 'pois/*', component: <PoiIndex /> },
 	{ path: 'org/*', component: <OrganisationIndex /> },
 	{ path: 'brief/*', component: <BriefIndex /> },
+	{ path: 'audit/*', component: <AuditIndex /> },
 ];
 
 function RequireAuth({ children }) {

@@ -106,9 +106,9 @@ def get_all_audits():
             "status": "success",
             "status_code": 200,
             "audit": audit_list,
-            "total_pages": audits.pages,
+            "pages": audits.pages,
             "current_page": audits.page,
-            "total_items": audits.total,
+            "total": audits.total,
         }
     
     except SQLAlchemyError as e:

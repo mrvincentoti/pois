@@ -129,7 +129,7 @@ const Navdata = () => {
 			id: 'audit',
 			label: 'Audit Trail',
 			icon: 'ri-history-line',
-			link: '/audit-trail',
+			link: '/audit',
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Audit Trail');
