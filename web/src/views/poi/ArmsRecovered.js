@@ -130,13 +130,13 @@ const ArmsRecovered = ({ refreshPoiData }) => {
 					<div className="card">
 						<TitleSearchBar
 							title="Arms Recovered"
-							onClick={addArm}
+							// onClick={addArm}
 							queryLimit={queryLimit}
 							search={search}
 							searchTerm={searchTerm}
 							onChangeSearch={e => setSearchTerm(e.target.value)}
-							hasCreateBtn={true}
-							createBtnTitle="Add"
+							// hasCreateBtn={true}
+							// createBtnTitle="Add"
 						/>
 						<div className="card-body">
 							<TableWrapper
@@ -148,6 +148,7 @@ const ArmsRecovered = ({ refreshPoiData }) => {
 									<thead className="table-light">
 										<tr>
 											<th scope="col">S/N</th>
+											{/* <th scope="col">Crime Committed</th> */}
 											<th scope="col">Arm</th>
 											<th scope="col">Number Recovered</th>
 											<th scope="col">Location</th>
@@ -159,6 +160,13 @@ const ArmsRecovered = ({ refreshPoiData }) => {
 										{list?.map((item, i) => (
 											<tr key={i}>
 												<td>{i + 1}</td>
+												{/* <td>
+													<div className="d-flex align-items-left">
+														<div className="flex-grow-1">
+															<h6 className="fs-15 mb-0">{item.crime_id}</h6>
+														</div>
+													</div>
+												</td> */}
 												<td>
 													<div className="d-flex align-items-left">
 														<div className="flex-grow-1">
@@ -166,6 +174,7 @@ const ArmsRecovered = ({ refreshPoiData }) => {
 														</div>
 													</div>
 												</td>
+												{/* <td>{item.arm.name}</td> */}
 												<td>{item.number_recovered}</td>
 												<td>{item.location || '--'}</td>
 												<td>{formatDate(item.recovery_date) || '--'}</td>
