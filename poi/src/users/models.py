@@ -60,6 +60,26 @@ class User(db.Model):
             self.email = email
         db.session.commit()
 
+    def to_dict(self):
+        """
+        Returns a dictionary representation of the User instance.
+        """
+        return {
+            'id': self.id,
+            'email': self.email,
+            'username': self.username,
+            'is_active': self.is_active,
+            'is_first_time': self.is_first_time,
+            'last_login_time': self.last_login_time.strftime('%Y-%m-%d %H:%M:%S') if self.last_login_time else None,
+            'role_id': self.role_id,
+            'employee_id': self.employee_id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'pfs_num': self.pfs_num,
+            'deleted_at': self.deleted_at.strftime('%Y-%m-%d %H:%M:%S') if self.deleted_at else None,
+            'role': self.role.name if self.role else None  # Assuming 'role' has a 'name' field
+        }
+
     def __repr__(self):
         return f"<User {self.username}>"
 

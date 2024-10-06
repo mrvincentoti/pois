@@ -5,7 +5,8 @@ from datetime import datetime
 import json, os, uuid
 from urllib.parse import urljoin
 from .. import db
-from sqlalchemy import func 
+from sqlalchemy import func
+from ..users.models import User
 from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, delete_picture_file, save_picture_file
 
 @custom_jwt_required
@@ -232,11 +233,16 @@ def get_organisations():
         org_list = []
         for org in paginated_org.items:
             org_data = org.to_dict()
+            created_by = User.query.filter_by(id=org.created_by).first()
             # Convert dates to a serializable format (YYYY-MM-DD)
             org_data['created_at'] = org.created_at.strftime('%Y-%m-%d') if org.created_at else None
             org_data['picture'] = urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), org.picture) if org.picture else None
             org_data['source'] = org.source.to_dict() if org.source else None
             org_data['category'] = org.category.to_dict() if org.category else None
+            if created_by:
+                org_data['user'] = created_by.to_dict()
+            else:
+                org_data['user'] = None
             org_list.append(org_data)
 
         response = {

@@ -17,6 +17,7 @@ import {
 	request,
 	formatName,
 	formatOrgName,
+	formatUserName
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -285,7 +286,7 @@ const Organisation = () => {
 														</td>
 														<td>{item.employee_strength || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
-														<td>{'--'}</td>
+														<td>{formatUserName(item.user)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">
 																<ViewLink

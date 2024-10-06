@@ -1,10 +1,11 @@
 import React from 'react';
+import noresult from '../assets/json/msoeawqm.json';
 
 const NoResult = ({ title }) => {
 	return (
 		<div className="text-center">
 			<lord-icon
-				src="https://cdn.lordicon.com/msoeawqm.json"
+				src={noresult}
 				trigger="loop"
 				colors="primary:#121331,secondary:#08a88a"
 				style={{

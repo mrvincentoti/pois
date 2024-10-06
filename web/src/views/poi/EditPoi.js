@@ -224,11 +224,6 @@ const EditPoi = () => {
 	};
 
 	const onSubmit = async values => {
-		console.log(values);
-		console.log(state);
-		console.log(country);
-
-		return;
 		convertNullToEmptyString(values);
 
 		try {
