@@ -5,6 +5,8 @@ import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditCrime from './NewEditCrime';
 import NoResult from '../../components/NoResult';
 import ManageCrimes from '../../modals/ManageCrimes';
+import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms
+import ManageCrimesMedia from '../../modals/ManageCrimesMedia'; // Import the new modal for managing media
 import { GET_CRIMES_COMMITTED_API } from '../../services/api';
 import {
 	antIconSync,
@@ -21,8 +23,11 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimesData, setCrimesData] = useState([]);
 	const [showModal, setShowModal] = useState(false);
+	const [showArmsModal, setShowArmsModal] = useState(false); // State for Arms modal
+	const [showMediaModal, setShowMediaModal] = useState(false); // State for Media modal
 	const [working, setWorking] = useState(false);
 	const [crimes, setCrimes] = useState(null);
+	const [arms, setArms] = useState(null);
 	const [loadError, setLoadError] = useState('');
 
 	const navigate = useNavigate();
@@ -53,6 +58,16 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setShowModal(true);
 	};
 
+	const addArms = () => {
+		document.body.classList.add('modal-open');
+		setShowArmsModal(true); // Open Arms modal
+	};
+
+	const addMedia = () => {
+		document.body.classList.add('modal-open');
+		setShowMediaModal(true); // Open Media modal
+	};
+
 	const editCrimes = item => {
 		document.body.classList.add('modal-open');
 		setCrimes(item);
@@ -62,6 +77,16 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 	const closeModal = () => {
 		setShowModal(false);
 		setCrimes(null);
+		document.body.classList.remove('modal-open');
+	};
+
+	const closeArmsModal = () => {
+		setShowArmsModal(false); // Close Arms modal
+		document.body.classList.remove('modal-open');
+	};
+
+	const closeMediaModal = () => {
+		setShowMediaModal(false); // Close Media modal
 		document.body.classList.remove('modal-open');
 	};
 
@@ -79,10 +104,28 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 						<div className="card-body">
 							<div className="d-flex align-items-center mb-4">
 								<h5 className="card-title flex-grow-1 mb-0">Crime Committed</h5>
-								<div onClick={addCrimes}>
-									<label htmlFor="formFile" className="btn btn-success">
-										<i className="ri-add-fill me-1 align-bottom"></i> Add
-									</label>
+								<div className="d-flex gap-2">
+									<div onClick={addCrimes}>
+										<label htmlFor="formFile" className="btn btn-success">
+											<i className="ri-add-fill me-1 align-bottom"></i> Add
+											Crime
+										</label>
+									</div>
+									<div onClick={addArms}>
+										{' '}
+										{/* Add Arms Button */}
+										<label htmlFor="formFile" className="btn btn-success">
+											<i className="ri-add-fill me-1 align-bottom"></i> Add Arms
+										</label>
+									</div>
+									<div onClick={addMedia}>
+										{' '}
+										{/* Add Media Button */}
+										<label htmlFor="formFile" className="btn btn-success">
+											<i className="ri-add-fill me-1 align-bottom"></i> Add
+											Media
+										</label>
+									</div>
 								</div>
 							</div>
 							{crimesData.length > 0 ? (
@@ -113,7 +156,7 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 															<p className="text-muted text-truncate mb-0">
 																Arresting Body:
 																<span className="fw-semibold text-body">
-																	{item.arresting_body.name || 'N/A'}
+																	{item.arresting_body?.name || 'N/A'}
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
@@ -144,7 +187,6 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 									))}
 								</div>
 							) : (
-								// Show NoResult component only once based on conditions
 								<NoResult
 									title={loadError ? 'Error Loading Crimes' : 'No Crimes Found'}
 								/>
@@ -166,6 +208,26 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 					update={async () => {
 						await refreshTable();
 						refreshPoiData(); // Refresh POI data after updating crimes
+					}}
+				/>
+			)}
+			{showArmsModal && (
+				<ManageArmsRecovered
+					closeModal={closeArmsModal}
+					armsRecovered={arms} // Close Arms modal
+					update={async () => {
+						await refreshTable();
+						refreshPoiData(); // Refresh POI data after updating arms
+					}}
+				/>
+			)}
+			{showMediaModal && ( // Render Media Modal
+				<ManageCrimesMedia
+					id={params.id}
+					closeModal={closeMediaModal} // Pass any required data for media if necessary
+					update={async () => {
+						await refreshTable();
+						refreshPoiData(); // Refresh POI data after updating media
 					}}
 				/>
 			)}
