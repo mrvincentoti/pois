@@ -110,7 +110,7 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered, crimeCommitted
 						<div className="modal-body">
 							<FormSubmitError error={submitError} />
 							<div className="row g-3">
-								<div className="col-lg-12">
+								{/* <div className="col-lg-12">
 									<label htmlFor="crime_id" className="form-label">
 										Crime
 									</label>
@@ -132,7 +132,7 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered, crimeCommitted
 										)}
 									</Field>
 									<ErrorBlock name="crime_id" />
-								</div>
+								</div> */}
 								<div className="col-lg-12">
 									<label htmlFor="arm_id" className="form-label">
 										Arms
