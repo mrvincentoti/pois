@@ -61,6 +61,7 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 					deleted_at: undefined,
 				},
 			};
+			
 			const uri = crimesCommitted
 				? UPDATE_CRIMES_COMMITTED_API.replace(':id', crimesCommitted.id)
 				: CREATE_CRIMES_COMMITTED_API;

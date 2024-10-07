@@ -16,7 +16,7 @@ import { Button, message, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const ManageCrimesMedia = ({ id, closeModal, update, media }) => {
+const ManageCrimesMedia = ({ id, closeModal, update, media, crimeCommitted }) => {
 	const [file, setFile] = useState(null);
 	const [caption, setCaption] = useState([]);
 	const [fileList, setFileList] = useState([]);
@@ -36,10 +36,18 @@ const ManageCrimesMedia = ({ id, closeModal, update, media }) => {
 
 	const onSubmit = async values => {
 		try {
+			
+			const crime_committed_id = crimeCommitted?.id;
 			const formData = new FormData();
 			formData.append('file', fileList[0]);
 			formData.append('media_caption', values.caption);
-			formData.append('crime_id', values.crime_id); // Add the crime_id to form submission
+			formData.append('crime_id', crime_committed_id);
+
+			// for (let pair of formData.entries()) {
+			// 	console.log(`${pair[0]}: ${pair[1]}`);
+			// }
+
+			// return
 
 			const uri = media
 				? UPDATE_MEDIA_API.replace(':id', id)
@@ -142,7 +150,7 @@ const ManageCrimesMedia = ({ id, closeModal, update, media }) => {
 									<ErrorBlock name="caption" />
 								</div>
 
-								<div className="col-lg-12">
+								{/* <div className="col-lg-12">
 									<label htmlFor="crime_id" className="form-label">
 										Crime
 									</label>
@@ -164,7 +172,7 @@ const ManageCrimesMedia = ({ id, closeModal, update, media }) => {
 										)}
 									</Field>
 									<ErrorBlock name="crime_id" />
-								</div>
+								</div> */}
 							</div>
 						</div>
 						<div className="modal-footer">

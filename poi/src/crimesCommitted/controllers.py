@@ -1,5 +1,5 @@
 from flask import request, jsonify,json, g
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
@@ -387,6 +387,10 @@ def get_crimes_committed_by_poi(poi_id):
             created_by = User.query.filter_by(id=crime.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
 
+            total_media = PoiMedia.query.filter_by(crime_id=crime.id, deleted_at=None).count()
+            total_arms = db.session.query(func.sum(ArmsRecovered.number_recovered)).filter_by(
+                crime_id=crime.id).scalar()
+
             # Prepare data for each crime committed
             crime_data = {
                 "id": crime.id,
@@ -401,6 +405,8 @@ def get_crimes_committed_by_poi(poi_id):
                 "comments": crime.comments,
                 "created_by_id": crime.created_by,
                 "created_by_name": created_by_name,
+                "total_media": total_media,
+                "total_arms_recovered": total_arms,
                 "crime": {
                     "id": crime.crime.id,
                     "name": crime.crime.name

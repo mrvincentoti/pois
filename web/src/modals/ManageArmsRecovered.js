@@ -18,7 +18,7 @@ import FormWrapper from '../container/FormWrapper';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 
-const ManageArmsRecovered = ({ closeModal, update, armsRecovered }) => {
+const ManageArmsRecovered = ({ closeModal, update, armsRecovered, crimeCommitted }) => {	
 	const [loaded, setLoaded] = useState(false);
 	const [crime, setCrime] = useState(null);
 	const [crimesOptions, setCrimesOptions] = useState([]);
@@ -32,7 +32,7 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered }) => {
 	const [comments, setComments] = useState(null);
 	const params = useParams();
 
-	useEffect(() => {
+	useEffect(() => {		
 		if (!loaded) {
 			if (armsRecovered) {
 				setCrime(armsRecovered.crime);
@@ -45,9 +45,9 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered }) => {
 			}
 			loadCrimes();
 			loadArms();
-			setLoaded(true);
+			setLoaded(true);		
 		}
-	}, [armsRecovered, loaded]);
+	}, [armsRecovered, loaded, crimeCommitted]);
 
 	const loadCrimes = async () => {
 		const rs = await request(FETCH_CRIMES_API);
@@ -60,19 +60,25 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered }) => {
 
 	const onSubmit = async values => {
 		try {
+			const crime_id = crimeCommitted?.id;
+			const poi_id = crime_id ? undefined : parseInt(params?.id, 10);
+
 			const config = {
 				method: armsRecovered ? 'PUT' : 'POST',
 				body: {
 					...values,
-					poi_id: params.id,
+					poi_id: params?.id,
+					crime_id: crimeCommitted?.id,
 					crime: undefined,
 					deleted_at: undefined,
 					comment: values.comment ? values.comment.trim() : null,
 				},
 			};
+
 			const uri = armsRecovered
 				? UPDATE_ARMS_RECOVERED_API.replace(':id', armsRecovered.id)
 				: CREATE_ARMS_RECOVERED_API;
+
 			const rs = await request(uri, config);
 			notifyWithIcon('success', rs.message);
 			update();
@@ -85,6 +91,7 @@ const ManageArmsRecovered = ({ closeModal, update, armsRecovered }) => {
 			};
 		}
 	};
+
 
 	return (
 		<ModalWrapper

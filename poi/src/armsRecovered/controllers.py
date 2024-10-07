@@ -134,7 +134,7 @@ def get_arm_recovered(recovery_id):
             "recovery_date": arm_recovery.recovery_date,
             "created_by_id": arm_recovery.created_by,
             "created_by": created_by_name,
-            "number_recovered": number_recovered
+            "number_recovered": arm_recovery.number_recovered
         }
 
         current_time = datetime.utcnow()
@@ -389,7 +389,7 @@ def get_arms_recovered_by_poi(poi_id):
                 "recovery_date": arm.recovery_date.isoformat() if arm.recovery_date else None,
                 "created_by_id": arm.created_by,
                 "created_by_name": created_by_name,
-                "number_recovered": arm.number_recovered
+                "number_recovered": arm.number_recovered,
             }
             arm_list.append(arm_data)
 
@@ -406,7 +406,6 @@ def get_arms_recovered_by_poi(poi_id):
 
         # Return the response with recovered arms data
         return jsonify(response), 200
-
     except Exception as e:
         # Catch any errors and return a server error response
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500

@@ -83,7 +83,6 @@ const NewEditArms = ({ closeModal, data, update }) => {
 			update();
 			closeModal();
 		} catch (e) {
-			console.error(e);
 			return {
 				[FORM_ERROR]: e.message || 'Something went wrong',
 			};

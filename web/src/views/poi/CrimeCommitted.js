@@ -29,6 +29,7 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 	const [crimes, setCrimes] = useState(null);
 	const [arms, setArms] = useState(null);
 	const [loadError, setLoadError] = useState('');
+	const [crimeCommitted, setCrimeCommitted] = useState(null);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -58,12 +59,22 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setShowModal(true);
 	};
 
-	const addArms = () => {
+	const addArms = (item) => {
+		if (item) {
+			setCrimeCommitted(item);
+		} else {
+			setCrimeCommitted(null);
+		}
 		document.body.classList.add('modal-open');
 		setShowArmsModal(true); // Open Arms modal
 	};
 
-	const addMedia = () => {
+	const addMedia = (item) => {		
+		if (item) {
+			setCrimeCommitted(item);
+		} else {
+			setCrimeCommitted(null);
+		}
 		document.body.classList.add('modal-open');
 		setShowMediaModal(true); // Open Media modal
 	};
@@ -111,21 +122,17 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 											Crime
 										</label>
 									</div>
-									<div onClick={addArms}>
-										{' '}
-										{/* Add Arms Button */}
+									{/* <div onClick={addArms}>
 										<label htmlFor="formFile" className="btn btn-success">
 											<i className="ri-add-fill me-1 align-bottom"></i> Add Arms
 										</label>
-									</div>
-									<div onClick={addMedia}>
-										{' '}
-										{/* Add Media Button */}
+									</div> */}
+									{/* <div onClick={addMedia}>
 										<label htmlFor="formFile" className="btn btn-success">
 											<i className="ri-add-fill me-1 align-bottom"></i> Add
 											Media
 										</label>
-									</div>
+									</div> */}
 								</div>
 							</div>
 							{crimesData.length > 0 ? (
@@ -171,14 +178,44 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 																	{item.action_taken || 'N/A'}
 																</span>
 															</p>
+															<p className="text-muted text-truncate mb-0">
+																Arms Recovered:
+																<span className="fw-semibold text-body">
+																	{item.total_arms_recovered || 'N/A'}
+																</span>
+															</p>
+															<p className="text-muted text-truncate mb-0">
+																Media:
+																<span className="fw-semibold text-body">
+																	{item.total_media || 'N/A'}
+																</span>
+															</p>
 														</div>
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
-															className="btn btn-sm btn-outline-primary"
+															className="btn btn-sm btn-outline-secondary"
 															onClick={() => editCrimes(item)}
 														>
 															Edit
+														</button>
+														<button
+															className="btn btn-sm btn-outline-success"
+															onClick={() => addArms(item)}
+														>
+															Add Arms Recovered
+														</button>
+														<button
+															className="btn btn-sm btn-outline-warning"
+															onClick={() => addMedia(item)}
+														>
+															Add Media
+														</button>
+														<button
+															className="btn btn-sm btn-outline-primary"
+															onClick={() => addMedia(item)}
+														>
+															Details
 														</button>
 													</div>
 												</div>
@@ -214,7 +251,8 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 			{showArmsModal && (
 				<ManageArmsRecovered
 					closeModal={closeArmsModal}
-					armsRecovered={arms} // Close Arms modal
+					armsRecovered={arms}
+					crimeCommitted={crimeCommitted}
 					update={async () => {
 						await refreshTable();
 						refreshPoiData(); // Refresh POI data after updating arms
@@ -224,10 +262,11 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 			{showMediaModal && ( // Render Media Modal
 				<ManageCrimesMedia
 					id={params.id}
-					closeModal={closeMediaModal} // Pass any required data for media if necessary
+					closeModal={closeMediaModal}
+					crimeCommitted={crimeCommitted}
 					update={async () => {
 						await refreshTable();
-						refreshPoiData(); // Refresh POI data after updating media
+						refreshPoiData();
 					}}
 				/>
 			)}

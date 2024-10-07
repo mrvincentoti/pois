@@ -6,7 +6,7 @@ class PoiMedia(db.Model):
     __tablename__ = 'poi_media'
 
     id = db.Column(db.Integer, primary_key=True)
-    poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'), nullable=False)
+    poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'), nullable=True)
     media_type = db.Column(db.String(255), nullable=True)
     media_url = db.Column(db.String(255), nullable=True)
     media_caption = db.Column(db.String(255), nullable=True)

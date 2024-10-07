@@ -124,7 +124,7 @@ const Overview = () => {
 													<th className="ps-0" scope="row">
 														DOB :
 													</th>
-													<td className="text-muted">{poiData.dob || 'N/A'}</td>
+													<td className="text-muted">{formatDate(poiData.dob) || 'N/A'}</td>
 												</tr>
 												<tr>
 													<th className="ps-0" scope="row">

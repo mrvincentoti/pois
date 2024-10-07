@@ -184,7 +184,7 @@ const MediaAndDocument = () => {
 							searchTerm={searchTerm}
 							onChangeSearch={e => setSearchTerm(e.target.value)}
 							hasCreateBtn={true}
-							createBtnTitle="Add Media"
+							createBtnTitle="Add POI Media"
 						/>
 						<div className="card-body">
 							<TableWrapper
@@ -196,6 +196,7 @@ const MediaAndDocument = () => {
 									<thead className="table-light">
 										<tr>
 											<th scope="col">Caption</th>
+											<th scope="col"></th>
 											<th scope="col">Type</th>
 											<th scope="col">Size</th>
 											<th scope="col">Upload Date</th>
@@ -224,7 +225,6 @@ const MediaAndDocument = () => {
 																	href="javascript:void(0)"
 																	className="text-body"
 																	onClick={() => {
-																		console.log(item);
 																		setMediaForPreview(item);
 																		setShowPreview(true);
 																	}}
@@ -234,6 +234,11 @@ const MediaAndDocument = () => {
 															</h6>
 														</div>
 													</div>
+												</td>
+												<td>
+													{
+														item.crime_id ? <span className="badge border border-warning text-warning">Crime</span> : <span className="badge border border-success text-success">POI</span>
+													}
 												</td>
 												<td>{formatType(item.media_type)} File</td>
 												<td>{item.file_size || '--'}</td>

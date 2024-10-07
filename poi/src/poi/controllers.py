@@ -17,6 +17,7 @@ from ..users.models import User
 from ..address.models import Address
 from ..arrestingBody.models import ArrestingBody
 from ..crimes.models import Crime
+from ..affiliation.models import Affiliation
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -243,6 +244,11 @@ def get_poi(poi_id):
             crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
             arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
 
+            affiliation_ids = [int(aff_id) for aff_id in poi.affiliation.split(",") if aff_id]
+            affiliations = Affiliation.query.filter(Affiliation.id.in_(affiliation_ids)).all()
+            affiliation_names = [affiliation.name for affiliation in affiliations]
+            affiliation_names_str = ", ".join(affiliation_names)
+
             poi_data = {
                 "ref_numb": poi.ref_numb,
                 "first_name": poi.first_name,
@@ -256,7 +262,7 @@ def get_poi(poi_id):
                 "phone_number": poi.phone_number,
                 "email": poi.email,
                 "role": poi.role,
-                "affiliation": poi.affiliation,
+                "affiliation": affiliation_names_str,
                 "remark": poi.remark,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
