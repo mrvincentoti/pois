@@ -23,6 +23,7 @@ import {
 	FETCH_SOURCES_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
+	FETCH_POI_STATUSES_API
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -45,8 +46,9 @@ const NewPoi = () => {
 	const [confirmation, setConfirmation] = useState(null);
 	const [category, setCategory] = useState(null);
 	const [categories, setCategories] = useState([]);
+	const [poiStatuses, setPoiStatuses] = useState(null);
+	const [poiStatus, setPoiStatus] = useState(null);
 	const [sources, setSources] = useState([]);
-	// const [affiliations, setAffliations] = useState([]);
 	const [alias, setAlias] = useState([]);
 
 	const [affiliations, setAffliations] = useState([]);
@@ -143,6 +145,7 @@ const NewPoi = () => {
 				FETCH_CATEGORIES_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
+				FETCH_POI_STATUSES_API
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -153,6 +156,7 @@ const NewPoi = () => {
 				rs_categories,
 				rs_sources,
 				rs_affiliations,
+				rs_statuses
 			] = await Promise.all(requests);
 
 			const formattedAffiliations = rs_affiliations.affiliations.map(
@@ -167,6 +171,7 @@ const NewPoi = () => {
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
 			setAffliations(formattedAffiliations);
+			setPoiStatuses(rs_statuses.statuses)
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -200,16 +205,6 @@ const NewPoi = () => {
 		setAffliation(value);
 	};
 
-	//  // Affiliations
-	//  const forMapAffiliation = tag => (
-	//     <span key={tag} style={{ display: 'inline-block' }}>
-	//         <Tag closable onClose={() => handleCloseAffiliation(tag)}>
-	//             {tag}
-	//         </Tag>
-	//     </span>
-	// );
-	// const tagChildAffiliations = investors.map(forMapAffiliation);
-
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -218,10 +213,6 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
-		console.log(values);
-		console.log(affiliation);
-		console.log(country);
-
 		try {
 			// Create a FormData object
 			const formData = new FormData();
@@ -303,7 +294,7 @@ const NewPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
 														<span style={{ color: 'red' }}>*</span>
@@ -431,7 +422,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												{/* <div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -447,7 +438,7 @@ const NewPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="email" />
-												</div>
+												</div> */}
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
@@ -544,7 +535,7 @@ const NewPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label
 														className="form-label"
 														htmlFor="passport_number"
@@ -564,7 +555,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="passport_number" />
 												</div>
-												<div className="col-lg-6 mb-3">
+												{/* <div className="col-lg-6 mb-3">
 													<label
 														className="form-label"
 														htmlFor="other_id_number"
@@ -583,7 +574,7 @@ const NewPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="other_id_number" />
-												</div>
+												</div> */}
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="affiliation">
 														Affiliation <span style={{ color: 'red' }}></span>
@@ -608,7 +599,7 @@ const NewPoi = () => {
 
 													<ErrorBlock name="affiliation" />
 												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="role">
 														Role
 													</label>
@@ -624,60 +615,6 @@ const NewPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="role" />
-												</div>
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="category_id">
-														Category <span style={{ color: 'red' }}></span>
-													</label>
-													<Field id="category_id" name="category_id">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da', // Border color based on validation
-																}}
-																placeholder="Select Category"
-																onChange={value => input.onChange(value)} // Handle change event
-																options={categories.map(category => ({
-																	value: category.id, // Map id to value
-																	label: category.name, // Map name to label
-																}))}
-																className="custom-category-select" // Custom class for further styling
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="category_id" />
-												</div>
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="source_id">
-														Source <span style={{ color: 'red' }}></span>
-													</label>
-													<Field id="source_id" name="source_id">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da', // Dynamic border color based on validation
-																}}
-																placeholder="Select Source"
-																onChange={value => input.onChange(value)} // Handle change event
-																options={sources.map(source => ({
-																	value: source.id, // Map id to value
-																	label: source.name, // Map name to label
-																}))}
-																className="custom-source-select" // Custom class for styling
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="source_id" />
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
@@ -741,6 +678,87 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="state_id" />
 												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="category_id">
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category_id" name="category_id">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Border color based on validation
+																}}
+																placeholder="Select Category"
+																onChange={value => input.onChange(value)} // Handle change event
+																options={categories.map(category => ({
+																	value: category.id, // Map id to value
+																	label: category.name, // Map name to label
+																}))}
+																className="custom-category-select" // Custom class for further styling
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category_id" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="source_id">
+														Source <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="source_id" name="source_id">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Dynamic border color based on validation
+																}}
+																placeholder="Select Source"
+																onChange={value => input.onChange(value)} // Handle change event
+																options={sources.map(source => ({
+																	value: source.id, // Map id to value
+																	label: source.name, // Map name to label
+																}))}
+																className="custom-source-select" // Custom class for styling
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="source_id" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="status_id">
+														Status <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="status_id" name="status_id">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Status"
+																onChange={value => input.onChange(value)}
+																options={poiStatuses?.map(source => ({
+																	value: source.id,
+																	label: source.name,
+																}))}
+																className="custom-source-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="status_id" />
+												</div>
 
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">
@@ -748,7 +766,7 @@ const NewPoi = () => {
 													</label>
 													<Field id="address" name="address">
 														{({ input, meta }) => (
-															<input
+															<textarea
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}
@@ -765,7 +783,7 @@ const NewPoi = () => {
 													</label>
 													<Field id="remark" name="remark">
 														{({ input, meta }) => (
-															<input
+															<textarea
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}

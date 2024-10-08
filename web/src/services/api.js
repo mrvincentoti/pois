@@ -231,6 +231,8 @@ export const CREATE_POI_API = `${BASE_POI_URL}/pois`;
 export const GET_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const UPDATE_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const FILTER_POI_API = `${BASE_POI_URL}/pois`;
+export const FETCH_POI_STATUSES_API = `${BASE_POI_URL}/poi_statuses`;
+
 
 // genders api
 export const FETCH_GENDERS_API = `${BASE_POI_URL}/genders`;

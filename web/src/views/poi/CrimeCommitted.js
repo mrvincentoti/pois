@@ -7,6 +7,7 @@ import NoResult from '../../components/NoResult';
 import ManageCrimes from '../../modals/ManageCrimes';
 import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms
 import ManageCrimesMedia from '../../modals/ManageCrimesMedia'; // Import the new modal for managing media
+import CrimeDetailsModal from './CrimeDetailsModal';
 import { GET_CRIMES_COMMITTED_API } from '../../services/api';
 import {
 	antIconSync,
@@ -30,6 +31,7 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 	const [arms, setArms] = useState(null);
 	const [loadError, setLoadError] = useState('');
 	const [crimeCommitted, setCrimeCommitted] = useState(null);
+	const [showDetailsModal, setShowDetailsModal] = useState(false);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -107,6 +109,17 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setWorking(false);
 	};
 
+	const showDetails = (item) => {
+		setCrimeCommitted(item);
+		setShowDetailsModal(true);
+		document.body.classList.add('modal-open');
+	}
+
+	const closeDetailsModal = () => {
+		setShowDetailsModal(false);
+		document.body.classList.remove('modal-open');
+	};
+
 	return (
 		<>
 			<div className="container-fluid no-printme mb-5">
@@ -122,17 +135,6 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 											Crime
 										</label>
 									</div>
-									{/* <div onClick={addArms}>
-										<label htmlFor="formFile" className="btn btn-success">
-											<i className="ri-add-fill me-1 align-bottom"></i> Add Arms
-										</label>
-									</div> */}
-									{/* <div onClick={addMedia}>
-										<label htmlFor="formFile" className="btn btn-success">
-											<i className="ri-add-fill me-1 align-bottom"></i> Add
-											Media
-										</label>
-									</div> */}
 								</div>
 							</div>
 							{crimesData.length > 0 ? (
@@ -213,7 +215,7 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 														</button>
 														<button
 															className="btn btn-sm btn-outline-primary"
-															onClick={() => addMedia(item)}
+															onClick={() => showDetails(item)}
 														>
 															Details
 														</button>
@@ -263,6 +265,17 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 				<ManageCrimesMedia
 					id={params.id}
 					closeModal={closeMediaModal}
+					crimeCommitted={crimeCommitted}
+					update={async () => {
+						await refreshTable();
+						refreshPoiData();
+					}}
+				/>
+			)}
+			{showDetailsModal && (
+				<CrimeDetailsModal
+					id={params.id}
+					closeModal={closeDetailsModal}
 					crimeCommitted={crimeCommitted}
 					update={async () => {
 						await refreshTable();

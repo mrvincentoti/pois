@@ -31,6 +31,7 @@ class Poi(db.Model):
     state_id = db.Column(db.Integer, db.ForeignKey('state.id'), nullable=True) #captured
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True) #captured
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    status_id = db.Column(db.Integer, db.ForeignKey('poi_status.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True)
 
@@ -40,10 +41,11 @@ class Poi(db.Model):
     state = db.relationship("State", backref="poi")
     gender = db.relationship("Gender", backref="poi")
     arms_recovered = db.relationship('ArmsRecovered', backref='poi', lazy=True)
+    poi_status = db.relationship("PoiStatus", backref="poi")
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,marital_status=None,
-                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None,
+                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, status_id=None, deleted_at=None,
                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
@@ -66,6 +68,7 @@ class Poi(db.Model):
         self.country_id = country_id
         self.state_id = state_id
         self.gender_id = gender_id
+        self.status_id = status_id
         self.deleted_at = deleted_at
         self.created_at = created_at
         self.created_by = created_by
@@ -83,7 +86,7 @@ class Poi(db.Model):
 
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
             email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,marital_status= None,
-            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, deleted_at=None, created_by=None):
+            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, status_id=None,deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
         if picture:
@@ -126,6 +129,8 @@ class Poi(db.Model):
             self.gender_id = gender_id
         if marital_status:
             self.marital_status = marital_status
+        if status_id:
+            self.status_id = status_id
         if deleted_at:
             self.deleted_at = deleted_at
         if created_by:
@@ -157,6 +162,7 @@ class Poi(db.Model):
             'country': self.country.to_dict() if self.country else None,
             'state': self.state.to_dict() if self.state else None,
             'gender': self.gender.to_dict() if self.gender else None,
+            'poi_status': self.poi_status.to_dict() if self.poi_status else None,
             'deleted_at': self.deleted_at,
             'created_at': self.created_at,
             'created_by': self.created_by

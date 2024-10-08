@@ -35,6 +35,7 @@ from .crimes.models import Crime
 from .arrestingBody.models import ArrestingBody
 from .crimesCommitted.models import CrimeCommitted
 from .activities.models import Activity
+from .poiStatus.models import PoiStatus
 
 
 from . import create_app, db
@@ -64,6 +65,7 @@ def seed_users_data():
         User.create_seed_data()
         Module.create_seed_data()
         Permission.create_seed_data(permissions_file_path)
+        PoiStatus.create_seed_data()
         db.session.commit()
         return jsonify({'message': 'Data seeded successfully'}), 200
     else:
@@ -116,6 +118,7 @@ from .orgMedia import urls
 from .brief import urls
 from .briefMedia import urls
 from .OrgActivities import urls
+from .poiStatus import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

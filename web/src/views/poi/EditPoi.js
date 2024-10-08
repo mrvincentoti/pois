@@ -22,6 +22,7 @@ import {
 	FETCH_AFFILIATIONS_API,
 	GET_POI_API,
 	UPDATE_POI_API,
+	FETCH_POI_STATUSES_API
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -47,6 +48,8 @@ const EditPoi = () => {
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
+	const [poiStatuses, setPoiStatuses] = useState(null);
+	const [poiStatus, setPoiStatus] = useState(null);
 	const [affiliations, setAffiliations] = useState([]);
 	const [alias, setAlias] = useState([]);
 	const [allAffiliations, setAllAffiliations] = useState([]);
@@ -78,6 +81,7 @@ const EditPoi = () => {
 				FETCH_CATEGORIES_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
+				FETCH_POI_STATUSES_API
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -88,12 +92,14 @@ const EditPoi = () => {
 				rs_categories,
 				rs_sources,
 				rs_affiliations,
+				rs_statuses
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
 			setAllAffiliations(rs_affiliations.affiliations);
+			setPoiStatuses(rs_statuses.statuses);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -149,6 +155,7 @@ const EditPoi = () => {
 					setSource(item.source?.id);
 					setPoi(item);
 					setCategory(item.category?.id);
+					setPoiStatus(item.poi_status?.id);
 
 					const affiliations_list =
 						item.affiliation?.split(',').map(a => {
@@ -223,7 +230,7 @@ const EditPoi = () => {
 		}
 	};
 
-	const onSubmit = async values => {
+	const onSubmit = async values => {	
 		convertNullToEmptyString(values);
 
 		try {
@@ -289,8 +296,18 @@ const EditPoi = () => {
 				formData.set('affiliation', affiliations.map(o => o.value).join(','));
 			}
 
+			if (poiStatus) {
+				formData.append('status_id', poiStatus);
+			}
+
 			formData.set('country', undefined);
 			formData.set('category', undefined);
+
+			// for (let pair of formData.entries()) {
+			// 	console.log(`${pair[0]}: ${pair[1]}`);
+			// }
+
+			// return
 
 			const uri = UPDATE_POI_API.replace(':id', param.id);
 
@@ -317,6 +334,9 @@ const EditPoi = () => {
 	};
 	const handleChangeSource = value => {
 		setSource(value);
+	};
+	const handleChangeStatus = value => {		
+		setPoiStatus(value);
 	};
 	const handleChangeCat = value => {
 		setCategory(value);
@@ -349,15 +369,6 @@ const EditPoi = () => {
 								);
 								return { label: affiliation?.name || '', value: Number(a) };
 							}) || '',
-
-						// country:
-						// 	poi?.countries_operational.split(',')?.map(o => {
-						// 		const country = countries.find(c => c.id === Number(o));
-						// 		return {
-						// 			value: Number(o),
-						// 			label: country?.en_short_name || '',
-						// 		};
-						// 	}) || '',
 					}}
 					onSubmit={onSubmit}
 					validate={values => {
@@ -378,7 +389,7 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
 														<span style={{ color: 'red' }}>*</span>
@@ -507,23 +518,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="email">
-														Email
-													</label>
-													<Field id="email" name="email">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="email"
-																className={`form-control ${error(meta)}`}
-																id="email"
-																placeholder="Enter email address"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="email" />
-												</div>
+											
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
@@ -631,7 +626,7 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label
 														className="form-label"
 														htmlFor="passport_number"
@@ -651,27 +646,6 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="passport_number" />
 												</div>
-												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="other_id_number"
-													>
-														Other ID Number
-													</label>
-													<Field id="other_id_number" name="other_id_number">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="other_id_number"
-																placeholder="Enter passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="other_id_number" />
-												</div>
-
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="affiliation">
 														Affiliation <span style={{ color: 'red' }}></span>
@@ -706,7 +680,7 @@ const EditPoi = () => {
 
 													<ErrorBlock name="affiliation" />
 												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="role">
 														Role
 													</label>
@@ -723,64 +697,6 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="role" />
 												</div>
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="category">
-														Category <span style={{ color: 'red' }}></span>
-													</label>
-													<Field id="category" name="category">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																placeholder="Select Category"
-																onChange={handleChangeCat}
-																value={category}
-																options={categories.map(c => ({
-																	label: c.name,
-																	value: c.id,
-																}))}
-																className="custom-category-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="category" />
-												</div>
-
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="source">
-														Source <span style={{ color: 'red' }}></span>
-													</label>
-
-													<Field id="source" name="source">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da', // Dynamic border color based on validation
-																}}
-																value={source}
-																placeholder="Select Source"
-																onChange={handleChangeSource} // Handle change event
-																options={sources.map(s => ({
-																	label: s.name,
-																	value: s.id,
-																}))}
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="source" />
-												</div>
-
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
 														Country <span style={{ color: 'red' }}>*</span>
@@ -806,28 +722,6 @@ const EditPoi = () => {
 																}))}
 																className="custom-country-select"
 															/>
-															// <Select
-															// 	{...input}
-															// 	placeholder="Select country"
-															// 	style={{
-															// 	width: '100%',
-															// 	height: '40px',
-															// 	borderColor: meta.touched && meta.error ? 'red' : '#ced4da',
-															// 	}}
-															// 	options={countries.map((country) => ({
-															// 	value: country.id, // Set the ID as value
-															// 	label: country.en_short_name || country.name, // Use either en_short_name or name
-															// 	}))}
-															// 	value={country} // Bind the selected value
-															// 		className={meta.touched && meta.error ? 'error' : ''}
-															// 	onChange={(value) => {
-															// 	value ? input.onChange(value) : input.onChange(''); // Update form state
-															// 	setCountry(value.id); // Update local state
-															// 	setStates([]); // Clear the states when a new country is selected
-															// 	fetchStates(value.id); // Fetch the states for the selected country
-															// 	form.change('state', undefined); // Reset the state field
-															// 	}}
-															// />
 														)}
 													</Field>
 													<ErrorBlock name="country_id" />
@@ -862,6 +756,93 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="state_id" />
 												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="category">
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category" name="category">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Category"
+																onChange={handleChangeCat}
+																value={category}
+																options={categories.map(c => ({
+																	label: c.name,
+																	value: c.id,
+																}))}
+																className="custom-category-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="source">
+														Source <span style={{ color: 'red' }}></span>
+													</label>
+
+													<Field id="source" name="source">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Dynamic border color based on validation
+																}}
+																value={source}
+																placeholder="Select Source"
+																onChange={handleChangeSource} // Handle change event
+																options={sources.map(s => ({
+																	label: s.name,
+																	value: s.id,
+																}))}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="source" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="poiStatus">
+														Status <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="poiStatus" name="poiStatus">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Status"
+																onChange={handleChangeStatus}
+																value={poiStatus}
+																options={poiStatuses?.map(source => ({
+																	value: source.id,
+																	label: source.name,
+																}))}
+																className="custom-source-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="poiStatus" />
+												</div>
+
+											
 
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">
@@ -869,7 +850,7 @@ const EditPoi = () => {
 													</label>
 													<Field id="address" name="address">
 														{({ input, meta }) => (
-															<input
+															<textarea
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}
@@ -886,7 +867,7 @@ const EditPoi = () => {
 													</label>
 													<Field id="remark" name="remark">
 														{({ input, meta }) => (
-															<input
+															<textarea
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}
@@ -926,153 +907,7 @@ const EditPoi = () => {
 											</div>
 										</div>
 									</div>
-
-									{/* <div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Crime Information</h5>
-										</div>
-										<div className="card-body">
-											<div className="mb-3">
-												<label className="form-label" htmlFor="crime_committed">
-													Crime Committed <span style={{ color: 'red' }}>*</span>
-												</label>
-												<Field id="crime_committed" name="crime_committed">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="text"
-															className={`form-control ${error(meta)}`}
-															id="crime_committed"
-															placeholder="Enter Crime Committed"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="crime_committed" />
-											</div>
-											<div className="mb-3">
-												<label
-													className="form-label"
-													htmlFor="crime_date"
-												>
-													Crime Date{' '}
-													<span style={{ color: 'red' }}></span>
-												</label>
-												<Field
-													id="crime_date"
-													name="crime_date"
-												>
-													{({ input, meta }) => (
-														<Flatpickr
-															className={`form-control ${error(meta)}`}
-															options={{
-																dateFormat: 'd M, Y',
-															}}
-															placeholder="Select date of crime"
-															value={dateOfEmployment}
-															onChange={([date]) => {
-																input.onChange(
-																	moment(date).format('YYYY-MM-DD')
-																);
-																setDateOfEmployment(date);
-															}}
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="crime_date" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="casualties_recorded">
-													Casualties Recorded <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="casualties_recorded" name="casualties_recorded">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="casualties_recorded"
-															placeholder="Casualties Recorded"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="casualties_recorded" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="arresting_body">
-													Arresting Body <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="arresting_body" name="arresting_body">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="arresting_body"
-															placeholder="Arresting Body"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="arresting_body" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="place_of_detention">
-													Place of Detention <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="place_of_detention" name="place_of_detention">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="place_of_detention"
-															placeholder="Place of Detention"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="place_of_detention" />
-											</div>
-											<div className="mb-3">
-												<label className="form-label" htmlFor="action_taken">
-													Action taken <span style={{ color: 'red' }}></span>
-												</label>
-												<Field id="action_taken" name="action_taken">
-													{({ input, meta }) => (
-														<input
-															{...input}
-															type="number"
-															className={`form-control ${error(meta)}`}
-															id="action_taken"
-															placeholder="Action taken"
-														/>
-													)}
-												</Field>
-												<ErrorBlock name="action_taken" />
-											</div>
-										</div>
-									</div> */}
-
-									{/* <div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Arms Recovered</h5>
-										</div>
-										<div className="card-body">
-											
-										</div>
-									</div> */}
 								</div>
-								{/* <div className="col-lg-12">
-									<div className="text-end mb-4">
-										<Link
-											to="/employees/profiles"
-											className="btn btn-danger w-sm me-1"
-										>
-											Cancel
-										</Link>
-										<button type="submit" className="btn btn-success w-sm">
-											Create employee
-										</button>
-									</div>
-								</div> */}
 							</div>
 						</FormWrapper>
 					)}

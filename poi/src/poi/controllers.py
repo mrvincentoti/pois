@@ -3,7 +3,7 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age
 import os
 import uuid
 from urllib.parse import urljoin
@@ -43,6 +43,7 @@ def create_poi():
     country_id = data.get('country_id')
     state_id = data.get('state_id')
     gender_id = data.get('gender_id')
+    status_id = data.get('status_id')
     created_by = g.user["id"]
 
     # Address fields
@@ -100,6 +101,7 @@ def create_poi():
             state_id=state_id,
             gender_id=gender_id,
             marital_status=marital_status,
+            status_id=status_id,
             created_by=created_by
         )
 
@@ -188,6 +190,7 @@ def create_poi():
                 "residential_address": residential_address,
                 "residential_latitude": residential_latitude,
                 "residential_longitude": residential_longitude,
+                "status_id": status_id,
                 "deleted_at": poi.deleted_at,
             }),
             "url": request.url,
@@ -288,6 +291,11 @@ def get_poi(poi_id):
                 "addresses": address_data,  # Include structured address data
                 "crime_count": crime_count,
                 "arms_count": arms_count,
+                "poi_status": {
+                    "id": poi.poi_status.id,
+                    "name": poi.poi_status.name,
+                } if poi.poi_status else None,
+                "age": calculate_poi_age(poi.dob)
             }
 
             response = {
@@ -410,6 +418,7 @@ def update_poi(poi_id):
                 country_id=data.get('country_id'),
                 state_id=data.get('state_id'),
                 gender_id=data.get('gender_id'),
+                status_id=data.get('status_id'),
                 deleted_at=data.get('deleted_at')
             )
 
@@ -475,8 +484,9 @@ def update_poi(poi_id):
                     "country_id": poi.country_id,
                     "state_id": poi.state_id,
                     "gender_id": poi.gender_id,
+                    "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
-                    "picture": poi.picture,
+                    "picture": poi.picture
                 }),
                 "new_values": json.dumps({
                     "ref_numb": poi.ref_numb,
@@ -498,8 +508,9 @@ def update_poi(poi_id):
                     "country_id": poi.country_id,
                     "state_id": poi.state_id,
                     "gender_id": poi.gender_id,
+                    "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
-                    "picture": poi.picture,
+                    "picture": poi.picture
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -816,6 +827,10 @@ def list_pois():
                 "last_name": created_by.last_name,
                 "pfs_num": created_by.pfs_num,
             } if created_by else [],
+            "poi_status": {
+                "id": poi.poi_status.id,
+                "name": poi.poi_status.name,
+            } if poi.poi_status else None,
             "crime_count": crime_count,
             "arms_count": arms_count,
             "arms_recovered": arms_data  # List of arms recovered

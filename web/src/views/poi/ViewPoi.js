@@ -233,10 +233,14 @@ const ViewPoi = () => {
 								<div className="col">
 									<div className="p-2">
 										<h3 className="text-white mb-1">
-											{formatPoiName(poiData, true)}
+											{formatPoiName(poiData, true)} ({poiData.poi_status?.name})
 										</h3>
 										<p className="text-white text-opacity-75">
-											Alias : {poiData.alias || 'N/A'}
+											{poiData.role || 'N/A'}
+											{/* <br/>
+											<b>Role :</b> {poiData.role || 'N/A'}
+											<br />
+											<b>Age :</b> {poiData.role || 'N/A'} */}
 										</p>
 										<div className="hstack text-white-50 gap-1">
 											<div className="me-2">
@@ -246,6 +250,10 @@ const ViewPoi = () => {
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
 												{poiData.gender?.name || 'N/A'}
+											</div>
+											<div>
+												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
+												{poiData.age+' Years' || 'N/A'}
 											</div>
 										</div>
 									</div>

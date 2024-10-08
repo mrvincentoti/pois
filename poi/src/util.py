@@ -357,3 +357,19 @@ def get_media_type_from_extension(filename):
         return 'archive'
     else:
         return 'document'  # Default for other file types
+
+
+def calculate_poi_age(date_string):
+    # Define the date format
+    date_format = "%a %b %d %Y %H:%M:%S GMT%z"
+
+    # Parse the date string
+    birth_date = datetime.strptime(date_string.split(" (")[0], date_format)
+
+    # Get the current date
+    current_date = datetime.now()
+
+    # Calculate age
+    age = current_date.year - birth_date.year - (
+                (current_date.month, current_date.day) < (birth_date.month, birth_date.day))
+    return age
