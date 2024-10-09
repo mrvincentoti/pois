@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import { GET_POI_API } from '../../services/api';
 import {
 	antIconSync,
@@ -12,25 +12,10 @@ import {
 	request,
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
-import { Link } from 'react-router-dom';
-import { useRef } from 'react';
-import {
-	categoryList,
-	dependentStatus,
-	deploymentTypes,
-	employeeStatusList,
-	hasImplications,
-	postingTypes,
-	statusTypes,
-	trainingCategory,
-} from '../../services/constants';
 import '../../assets/scss/profile.css';
 import profileBg from '../../assets/images/profile-bg.jpg';
 import samplePicture from '../../assets/images/users/avatar-1.jpg';
-import sampleMedia5 from '../../assets/images/small/img-5.jpg';
-import sampleMedia6 from '../../assets/images/small/img-6.jpg';
-import { Button, Modal } from 'antd';
-import PoiPrint from './PoiPrint';
+import { Button } from 'antd';
 
 import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
@@ -39,11 +24,9 @@ import Activities from './Activities';
 import ArmsRecovered from './ArmsRecovered';
 
 const ViewPoi = () => {
-	const printRef = useRef(null);
 	const [loaded, setLoaded] = useState(false);
 	const [poiData, setPoiData] = useState(null);
 	const [activeTab, setActiveTab] = useState('overview');
-	const [showPrintModal, setShowPrintModal] = useState(false); // State for modal visibility
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -51,7 +34,6 @@ const ViewPoi = () => {
 	const fetchPoiDetails = useCallback(async Id => {
 		try {
 			const rs = await request(GET_POI_API.replace(':id', Id));
-
 			setPoiData(rs.poi_data);
 		} catch (error) {
 			throw error;
@@ -61,7 +43,7 @@ const ViewPoi = () => {
 	useEffect(() => {
 		if (!loaded) {
 			fetchPoiDetails(params.id)
-				.then(_ => setLoaded(true))
+				.then(() => setLoaded(true))
 				.catch(e => {
 					notifyWithIcon('error', e.message);
 					navigate('/not-found');
@@ -80,12 +62,11 @@ const ViewPoi = () => {
 	useEffect(() => {
 		if (!loaded) {
 			fetchPoiDetails(params.id)
-				.then(_ => setLoaded(true))
+				.then(() => setLoaded(true))
 				.catch(e => {
 					notifyWithIcon('error', e.message);
 					navigate('/not-found');
 				});
-
 			setActiveTab(tab);
 		}
 	}, [fetchPoiDetails, loaded, navigate, params.id, tab]);
@@ -105,92 +86,9 @@ const ViewPoi = () => {
 		}
 	};
 
-	// Function to open the modal
-	const openPrintModal = () => {
-		setShowPrintModal(true);
-	};
-
-	// Function to close the modal
-	const closePrintModal = () => {
-		setShowPrintModal(false);
-	};
-
-	const handlePrint = () => {
-		if (printRef.current) {
-			const printWindow = window.open('', '', 'width=1000,height=800');
-			printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Print POI</title>
-                <style>
-                    /* Add your custom styles here */
-					@media print {
-					/* Adjust the layout for printing */
-					.row {
-						display: flex;
-						flex-wrap: nowrap; /* Ensure the columns stay on the same row */
-					}
-
-					.col {
-						flex: 0 0 auto; /* Reset flex properties to default */
-						width: auto; /* Reset width to auto */
-					}
-
-					/* Optionally, you can adjust specific columns' widths if needed */
-					.col-6 {
-						width: 50%; /* Make each column take up 50% of the row */
-					}
-					}
-
-
-					.setRight{
-					text-align: right !important;
-					}
-
-					.border-right{
-					border-right: 1px dashed black;
-					}
-
-					.printme{
-					display: none !important;
-					}
-					@media print {
-						.no-printme  {
-							display: none !important;
-						}
-						.printme  {
-							display: block !important;
-						}
-
-					.folder-list {
-						height: 100vh !important;
-					}
-					}
-
-                </style>
-            </head>
-            <body>
-                ${printRef.current.innerHTML}
-            </body>
-            </html>
-        `);
-
-			// Ensure the content is loaded before printing
-			printWindow.document.close();
-			printWindow.focus();
-
-			// Trigger the print dialog
-			printWindow.print();
-
-			// Close the window after printing is completed
-			printWindow.onafterprint = function () {
-				printWindow.close();
-			};
-		}
-
-		// Close the modal after the print operation
-		setShowPrintModal(false);
+	// Handle the print action to navigate to a new print page
+	const handlePrintPage = () => {
+		navigate(`/pois/${params.id}/print`);
 	};
 
 	return (
@@ -199,18 +97,12 @@ const ViewPoi = () => {
 				<>
 					<div className="container-fluid">
 						<div className="profile-foreground position-relative mx-n4 mt-n4">
-							<div className="profile-wid-bg">
-								{/*<img*/}
-								{/*	src="/assets/images/profile-bg.jpg"*/}
-								{/*	alt=""*/}
-								{/*	className="profile-wid-img"*/}
-								{/*/>*/}
-							</div>
+							<div className="profile-wid-bg"></div>
 						</div>
 						<div className="pt-4 mb-4 mb-lg-3 pb-lg-1">
 							<div className="row g-4">
 								<div className="col-auto">
-									<div className="profile-user position-relative d-inline-block  mb-4">
+									<div className="profile-user position-relative d-inline-block mb-4">
 										{poiData?.photo ? (
 											<img
 												src={poiData?.photo}
@@ -229,7 +121,6 @@ const ViewPoi = () => {
 										)}
 									</div>
 								</div>
-								{/* end col */}
 								<div className="col">
 									<div className="p-2">
 										<h3 className="text-white mb-1">
@@ -258,7 +149,6 @@ const ViewPoi = () => {
 										</div>
 									</div>
 								</div>
-								{/* end col */}
 								<div className="col-12 col-lg-auto order-last order-lg-0">
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
@@ -279,16 +169,13 @@ const ViewPoi = () => {
 										</div>
 									</div>
 								</div>
-								{/* end col */}
 							</div>
-							{/* end row */}
 						</div>
 
 						<div className="row">
 							<div className="col-lg-12">
 								<div>
 									<div className="d-flex profile-wrapper">
-										{/* Nav tabs */}
 										<ul
 											className="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1"
 											role="tablist"
@@ -299,10 +186,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('overview')}
 													role="tab"
 												>
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Overview
-													</span>
+													Overview
 												</a>
 											</li>
 											<li className="nav-item">
@@ -311,10 +195,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('crime')}
 													role="tab"
 												>
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Crime Committed
-													</span>
+													Crime Committed
 												</a>
 											</li>
 											<li className="nav-item">
@@ -323,10 +204,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('media')}
 													role="tab"
 												>
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Media/Document
-													</span>
+													Media/Document
 												</a>
 											</li>
 											<li className="nav-item">
@@ -335,10 +213,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('recovered')}
 													role="tab"
 												>
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Arms Recovered
-													</span>
+													Arms Recovered
 												</a>
 											</li>
 											<li className="nav-item">
@@ -347,23 +222,20 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('activities')}
 													role="tab"
 												>
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Activities
-													</span>
+													Activities
 												</a>
 											</li>
 										</ul>
 										<div className="flex-shrink-0">
-											<a
-												className="btn btn-info"
-												onClick={() => openPrintModal()}
+											<Button
+												type="primary"
+												icon={<i className="ri-printer-line" />}
+												onClick={handlePrintPage}
 											>
-												<i className="ri-edit-box-line align-bottom"></i> Print
-											</a>
+												Print
+											</Button>
 										</div>
 									</div>
-									{/* Tab panes */}
 									<div className="tab-content pt-4 text-muted">
 										<div
 											className="tab-pane active"
@@ -397,32 +269,13 @@ const ViewPoi = () => {
 					</div>
 				</>
 			) : (
-				<div>
-					<Spin spinning={true} indicator={antIconSync}>
-						<div className="fetching" />
-					</Spin>
+				<div
+					className="d-flex justify-content-center"
+					style={{ marginTop: '20%' }}
+				>
+					<Spin size="large" indicator={antIconSync} />
 				</div>
 			)}
-
-			{/* Ant Design Modal */}
-			<Modal
-				title=""
-				visible={showPrintModal}
-				onCancel={closePrintModal}
-				footer={[
-					<Button key="back" onClick={closePrintModal}>
-						Cancel
-					</Button>,
-					<Button key="print" type="primary" onClick={handlePrint}>
-						Print
-					</Button>,
-				]}
-				width={1000}
-			>
-				<div ref={printRef}>
-					<PoiPrint poiData={poiData} />
-				</div>
-			</Modal>
 		</>
 	);
 };
