@@ -17,7 +17,7 @@ import {
 	request,
 	formatName,
 	formatOrgName,
-	formatUserName
+	formatUserName,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -235,10 +235,10 @@ const Organisation = () => {
 											<tr>
 												<th>S/N</th>
 												<th>NAME</th>
-												<th>CEO</th>
-												<th>REG DATE</th>
-												<th>EMPLOYEES</th>
-												<th>ORG SOURCE</th>
+												<th>LEADER</th>
+												<th>ESTABLISHMENT DATE</th>
+												<th>AFFILIATION</th>
+												{/* <th>ORG SOURCE</th> */}
 												<th>ADDED BY</th>
 												<th>ACTIONS</th>
 											</tr>
@@ -268,7 +268,7 @@ const Organisation = () => {
 																</div>
 																<div>
 																	<a
-																		href={`/employees/${item.id}/view`}
+																		href={`/org/${item.id}/view?tab=overview`}
 																		className="text-reset text-underline"
 																	>
 																		<h5 className="fs-14 my-1">
@@ -282,10 +282,10 @@ const Organisation = () => {
 
 														<td>{item.ceo || 'N/A'} </td>
 														<td>
-															{formatDate(item.date_of_registration) || 'N/A'}
+															{formatDate(item.date_of_establishment) || 'N/A'}
 														</td>
-														<td>{item.employee_strength || 'N/A'}</td>
-														<td>{item.source?.name || 'N/A'}</td>
+														<td>{item.affiliation || 'N/A'}</td>
+														{/* <td>{item.source?.name || 'N/A'}</td> */}
 														<td>{formatUserName(item.user)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">

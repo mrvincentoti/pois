@@ -22,7 +22,7 @@ import {
 	FETCH_AFFILIATIONS_API,
 	GET_POI_API,
 	UPDATE_POI_API,
-	FETCH_POI_STATUSES_API
+	FETCH_POI_STATUSES_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -81,7 +81,7 @@ const EditPoi = () => {
 				FETCH_CATEGORIES_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
-				FETCH_POI_STATUSES_API
+				FETCH_POI_STATUSES_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -92,7 +92,7 @@ const EditPoi = () => {
 				rs_categories,
 				rs_sources,
 				rs_affiliations,
-				rs_statuses
+				rs_statuses,
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
@@ -230,7 +230,7 @@ const EditPoi = () => {
 		}
 	};
 
-	const onSubmit = async values => {	
+	const onSubmit = async values => {
 		convertNullToEmptyString(values);
 
 		try {
@@ -335,7 +335,7 @@ const EditPoi = () => {
 	const handleChangeSource = value => {
 		setSource(value);
 	};
-	const handleChangeStatus = value => {		
+	const handleChangeStatus = value => {
 		setPoiStatus(value);
 	};
 	const handleChangeCat = value => {
@@ -518,7 +518,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-											
+
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
@@ -645,6 +645,26 @@ const EditPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="passport_number" />
+												</div>
+												<div className="col-lg-6 mb-3">
+													<label
+														className="form-label"
+														htmlFor="other_id_number"
+													>
+														Other ID Number
+													</label>
+													<Field id="other_id_number" name="other_id_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="other_id_number"
+																placeholder="Enter passport no"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="other_id_number" />
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="affiliation">
@@ -841,8 +861,6 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="poiStatus" />
 												</div>
-
-											
 
 												<div className="col-lg-12 mb-3">
 													<label className="form-label" htmlFor="address">

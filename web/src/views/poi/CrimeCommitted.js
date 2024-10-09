@@ -8,6 +8,7 @@ import ManageCrimes from '../../modals/ManageCrimes';
 import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms
 import ManageCrimesMedia from '../../modals/ManageCrimesMedia'; // Import the new modal for managing media
 import CrimeDetailsModal from './CrimeDetailsModal';
+import NewEditComment from './NewEditComment';
 import { GET_CRIMES_COMMITTED_API } from '../../services/api';
 import {
 	antIconSync,
@@ -25,10 +26,12 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 	const [crimesData, setCrimesData] = useState([]);
 	const [showModal, setShowModal] = useState(false);
 	const [showArmsModal, setShowArmsModal] = useState(false); // State for Arms modal
+	const [showNotesModal, setShowNotesModal] = useState(false);
 	const [showMediaModal, setShowMediaModal] = useState(false); // State for Media modal
 	const [working, setWorking] = useState(false);
 	const [crimes, setCrimes] = useState(null);
 	const [arms, setArms] = useState(null);
+	const [notes, setNotes] = useState(null);
 	const [loadError, setLoadError] = useState('');
 	const [crimeCommitted, setCrimeCommitted] = useState(null);
 	const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -61,7 +64,7 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setShowModal(true);
 	};
 
-	const addArms = (item) => {
+	const addArms = item => {
 		if (item) {
 			setCrimeCommitted(item);
 		} else {
@@ -71,7 +74,17 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setShowArmsModal(true); // Open Arms modal
 	};
 
-	const addMedia = (item) => {		
+	const addNotes = item => {
+		if (item) {
+			setCrimeCommitted(item);
+		} else {
+			setCrimeCommitted(null);
+		}
+		document.body.classList.add('modal-open');
+		setShowNotesModal(true); // Open Notes modal
+	};
+
+	const addMedia = item => {
 		if (item) {
 			setCrimeCommitted(item);
 		} else {
@@ -98,6 +111,11 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		document.body.classList.remove('modal-open');
 	};
 
+	const closeNotesModal = () => {
+		setShowNotesModal(false); // Close notes modal
+		document.body.classList.remove('modal-open');
+	};
+
 	const closeMediaModal = () => {
 		setShowMediaModal(false); // Close Media modal
 		document.body.classList.remove('modal-open');
@@ -109,11 +127,11 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 		setWorking(false);
 	};
 
-	const showDetails = (item) => {
+	const showDetails = item => {
 		setCrimeCommitted(item);
 		setShowDetailsModal(true);
 		document.body.classList.add('modal-open');
-	}
+	};
 
 	const closeDetailsModal = () => {
 		setShowDetailsModal(false);
@@ -163,17 +181,23 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
+																Location:
+																<span className="fw-semibold text-body">
+																	{'N/A'}
+																</span>
+															</p>
+															{/* <p className="text-muted text-truncate mb-0">
 																Arresting Body:
 																<span className="fw-semibold text-body">
 																	{item.arresting_body?.name || 'N/A'}
 																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
+															</p> */}
+															{/* <p className="text-muted text-truncate mb-0">
 																Place Of Detention:
 																<span className="fw-semibold text-body">
 																	{item.place_of_detention || 'N/A'}
 																</span>
-															</p>
+															</p> */}
 															<p className="text-muted text-truncate mb-0">
 																Action Taken:
 																<span className="fw-semibold text-body">
@@ -181,15 +205,15 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
-																Arms Recovered:
+																Nature of Attack:
 																<span className="fw-semibold text-body">
-																	{item.total_arms_recovered || 'N/A'}
+																	{'N/A'}
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
-																Media:
+																Assessment:
 																<span className="fw-semibold text-body">
-																	{item.total_media || 'N/A'}
+																	{'N/A'}
 																</span>
 															</p>
 														</div>
@@ -203,9 +227,9 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 														</button>
 														<button
 															className="btn btn-sm btn-outline-success"
-															onClick={() => addArms(item)}
+															onClick={() => addNotes(item)}
 														>
-															Add Arms Recovered
+															Add Note
 														</button>
 														<button
 															className="btn btn-sm btn-outline-warning"
@@ -258,6 +282,17 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 					update={async () => {
 						await refreshTable();
 						refreshPoiData(); // Refresh POI data after updating arms
+					}}
+				/>
+			)}
+			{showNotesModal && (
+				<NewEditComment
+					closeModal={closeNotesModal}
+					notes={notes}
+					crimeCommitted={crimeCommitted}
+					update={async () => {
+						await refreshTable();
+						refreshPoiData(); // Refresh POI data after updating notes
 					}}
 				/>
 			)}

@@ -26,6 +26,7 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 	const [casualties, setCasualties] = useState(null);
 	const [detention, setDetention] = useState(null);
 	const [actionTaken, setActionTaken] = useState(null);
+	const [assessments, setAssessments] = useState(null);
 	const params = useParams();
 
 	useEffect(() => {
@@ -34,6 +35,10 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 				setCrime(crimesCommitted.crime);
 				setArrestingBody(crimesCommitted.arresting_body);
 				setCrimeDate(new Date(crimesCommitted.crime_date));
+				setAssessments(crimesCommitted.assessments);
+			} else {
+				// setActivityDate(null);
+				setAssessments(null);
 			}
 			loadCrimes();
 			loadArrestingBodies();
@@ -59,9 +64,10 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 					poi_id: params.id,
 					crime: undefined,
 					deleted_at: undefined,
+					assessment: values.assessment ? values.assessment.trim() : null,
 				},
 			};
-			
+
 			const uri = crimesCommitted
 				? UPDATE_CRIMES_COMMITTED_API.replace(':id', crimesCommitted.id)
 				: CREATE_CRIMES_COMMITTED_API;
@@ -118,7 +124,7 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 									</Field>
 									<ErrorBlock name="crime_id" />
 								</div>
-								<div className="col-lg-12">
+								{/* <div className="col-lg-12">
 									<label htmlFor="arresting_body_id" className="form-label">
 										Arresting Body
 									</label>
@@ -140,7 +146,7 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 										)}
 									</Field>
 									<ErrorBlock name="arresting_body_id" />
-								</div>
+								</div> */}
 								<div className="col-lg-12">
 									<label htmlFor="place_of_detention" className="form-label">
 										Place Of Detention
@@ -157,6 +163,40 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 										)}
 									</Field>
 									<ErrorBlock name="place_of_detention" />
+								</div>
+								<div className="col-lg-12">
+									<label htmlFor="location" className="form-label">
+										Location
+									</label>
+									<Field id="location" name="location">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												id="location"
+												placeholder="location"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="location" />
+								</div>
+								<div className="col-lg-12">
+									<label htmlFor="nature_of_attack" className="form-label">
+										Nature of Attack
+									</label>
+									<Field id="nature_of_attack" name="nature_of_attack">
+										{({ input, meta }) => (
+											<input
+												{...input}
+												type="text"
+												className={`form-control ${error(meta)}`}
+												id="nature_of_attack"
+												placeholder="nature of attack"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="nature of attack" />
 								</div>
 								<div className="col-lg-12">
 									<label htmlFor="casualties_recorded" className="form-label">
@@ -211,6 +251,21 @@ const ManageCrimes = ({ closeModal, update, crimesCommitted }) => {
 										)}
 									</Field>
 									<ErrorBlock name="crime_date" />
+								</div>
+								<div className="col-lg-12">
+									<label htmlFor="assessments" className="form-label">
+										Assessment
+									</label>
+									<Field id="assessments" name="assessments">
+										{({ input, meta }) => (
+											<textarea
+												{...input}
+												className={`form-control ${error(meta)}`}
+												placeholder="Type your assessment here"
+											/>
+										)}
+									</Field>
+									<ErrorBlock name="assessments" />
 								</div>
 							</div>
 						</div>

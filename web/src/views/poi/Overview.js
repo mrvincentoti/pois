@@ -104,14 +104,14 @@ const Overview = () => {
 														{poiData.phone_number || 'N/A'}
 													</td>
 												</tr>
-												<tr>
+												{/* <tr>
 													<th className="ps-0" scope="row">
 														E-mail :
 													</th>
 													<td className="text-muted">
 														{poiData.email ? poiData.email : 'N/A'}
 													</td>
-												</tr>
+												</tr> */}
 												<tr>
 													<th className="ps-0" scope="row">
 														Gender :
@@ -124,7 +124,9 @@ const Overview = () => {
 													<th className="ps-0" scope="row">
 														DOB :
 													</th>
-													<td className="text-muted">{formatDate(poiData.dob) || 'N/A'}</td>
+													<td className="text-muted">
+														{formatDate(poiData.dob) || 'N/A'}
+													</td>
 												</tr>
 												<tr>
 													<th className="ps-0" scope="row">
