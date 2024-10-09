@@ -16,7 +16,7 @@ import {
 	parseHashString,
 	request,
 	formatName,
-	formatUserName
+	formatUserName,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -235,7 +235,7 @@ const Poi = () => {
 												<th>S/N</th>
 												<th>NAME</th>
 												<th>CRIME COMMITTED</th>
-												<th>ARRESTING BODY</th>
+												{/* <th>ARRESTING BODY</th> */}
 												<th>ROLE</th>
 												<th>POI SOURCE</th>
 												<th>ADDED BY</th>
@@ -279,8 +279,10 @@ const Poi = () => {
 															</div>
 														</td>
 
-														<td>{item.crimes_committed?.crime?.name || 'N/A'} </td>
-														<td>{item.crimes_committed?.arresting_body?.name || 'N/A'}</td>
+														<td>
+															{item.crimes_committed?.crime?.name || 'N/A'}{' '}
+														</td>
+														{/* <td>{item.crimes_committed?.arresting_body?.name || 'N/A'}</td> */}
 														<td>{item.role || 'N/A'}</td>
 														<td>{item.source?.name || 'N/A'}</td>
 														<td>{formatUserName(item.user)}</td>

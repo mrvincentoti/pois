@@ -124,7 +124,8 @@ const ViewPoi = () => {
 								<div className="col">
 									<div className="p-2">
 										<h3 className="text-white mb-1">
-											{formatPoiName(poiData, true)} ({poiData.poi_status?.name})
+											{formatPoiName(poiData, true)} ({poiData.poi_status?.name}
+											)
 										</h3>
 										<p className="text-white text-opacity-75">
 											{poiData.role || 'N/A'}
@@ -144,7 +145,7 @@ const ViewPoi = () => {
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.age+' Years' || 'N/A'}
+												{poiData.age + ' Years' || 'N/A'}
 											</div>
 										</div>
 									</div>
@@ -162,9 +163,9 @@ const ViewPoi = () => {
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
 												<h4 className="text-white mb-1">
-													{poiData.arms_count || 0}
+													{poiData.age || 'NA'}
 												</h4>
-												<p className="fs-14 mb-0">Arms</p>
+												<p className="fs-14 mb-0">Years</p>
 											</div>
 										</div>
 									</div>
@@ -195,7 +196,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('crime')}
 													role="tab"
 												>
-													Crime Committed
+													Timeline of Activites
 												</a>
 											</li>
 											<li className="nav-item">
@@ -204,10 +205,10 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('media')}
 													role="tab"
 												>
-													Media/Document
+													Files
 												</a>
 											</li>
-											<li className="nav-item">
+											{/* <li className="nav-item">
 												<a
 													className={`nav-link fs-14 ${activeTab === 'recovered' ? 'active' : ''}`}
 													onClick={() => handleTabClick('recovered')}
@@ -215,7 +216,7 @@ const ViewPoi = () => {
 												>
 													Arms Recovered
 												</a>
-											</li>
+											</li> */}
 											<li className="nav-item">
 												<a
 													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}

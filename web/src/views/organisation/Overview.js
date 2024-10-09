@@ -87,14 +87,14 @@ const Overview = () => {
 														{formatOrgName(orgData, true)}
 													</td>
 												</tr>
-												<tr>
+												{/* <tr>
 													<th className="ps-0" scope="row">
 														Company Registration Number :
 													</th>
 													<td className="text-muted">
 														{orgData.reg_numb || 'N/A'}
 													</td>
-												</tr>
+												</tr> */}
 												<tr>
 													<th className="ps-0" scope="row">
 														Reference Number :
@@ -123,7 +123,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Date Of Registration :</p>
+												<p className="mb-1">Establishment Date :</p>
 												<h6 className="text-truncate mb-0">
 													{formatDate(orgData.date_of_registration) || 'N/A'}
 												</h6>
@@ -169,7 +169,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Countries Operational :</p>
+												<p className="mb-1">Operational Countries :</p>
 												<h6 className="fw-semibold">
 													{orgData.countries_operational || 'N/A'}
 												</h6>
@@ -185,7 +185,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">CEO :</p>
+												<p className="mb-1">Leader :</p>
 												<h6 className="fw-semibold">{orgData.ceo || 'N/A'}</h6>
 											</div>
 										</div>
@@ -199,7 +199,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Employee Strength :</p>
+												<p className="mb-1">Strength :</p>
 												<h6 className="fw-semibold">
 													{orgData.employee_strength || 'N/A'}
 												</h6>
@@ -207,7 +207,7 @@ const Overview = () => {
 										</div>
 									</div>
 									{/* end col */}
-									<div className="col-6 col-md-4">
+									{/* <div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
 											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
 												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
@@ -221,7 +221,7 @@ const Overview = () => {
 												</h6>
 											</div>
 										</div>
-									</div>
+									</div> */}
 									{/* end col */}
 									<div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
@@ -247,7 +247,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Nature Of Business :</p>
+												<p className="mb-1">Modus Operandi :</p>
 												<h6 className="fw-semibold">
 													{orgData.nature_of_business || 'N/A'}
 												</h6>
@@ -271,7 +271,7 @@ const Overview = () => {
 										</div>
 									</div>
 									{/* end col */}
-									<div className="col-6 col-md-4">
+									{/* <div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
 											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
 												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
@@ -285,7 +285,7 @@ const Overview = () => {
 												</h6>
 											</div>
 										</div>
-									</div>
+									</div> */}
 									{/* end col */}
 									<div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
@@ -295,7 +295,7 @@ const Overview = () => {
 												</div>
 											</div>
 											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Board Of Directors :</p>
+												<p className="mb-1">Top Commanders :</p>
 												<h6 className="fw-semibold">
 													{orgData.board_of_directors || 'N/A'}
 												</h6>

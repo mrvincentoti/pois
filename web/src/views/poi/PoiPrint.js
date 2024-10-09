@@ -116,10 +116,10 @@ const PoiPrint = () => {
 													• Mobile :{' '}
 													<span>{poiData?.phone_number || 'N/A'}</span>
 												</h6>
-												<h6 className="fs-14 mb-2 text-black">
+												{/* <h6 className="fs-14 mb-2 text-black">
 													• E-mail :{' '}
 													<span>{poiData?.email ? poiData.email : 'N/A'}</span>
-												</h6>
+												</h6> */}
 												<h6 className="fs-14 mb-2 text-black">
 													• Gender :{' '}
 													<span>{poiData?.gender?.name || 'N/A'}</span>
@@ -152,18 +152,16 @@ const PoiPrint = () => {
 													• Role : <span>{poiData?.role || 'N/A'}</span>
 												</h6>
 												<h6 className="fs-14 mb-2 text-black">
-													• Category :{' '}
-													<span>{poiData?.category.name || 'N/A'}</span>
+													• Category : <span>{poiData?.category || 'N/A'}</span>
 												</h6>
 												<h6 className="fs-14 mb-2 text-black">
-													• Source: <span>{poiData?.source.name || 'N/A'}</span>
+													• Source: <span>{poiData?.source || 'N/A'}</span>
 												</h6>
 												<h6 className="fs-14 mb-2 text-black">
-													• Country :{' '}
-													<span>{poiData?.country.name || 'N/A'}</span>
+													• Country : <span>{poiData?.country || 'N/A'}</span>
 												</h6>
 												<h6 className="fs-14 mb-2 text-black">
-													• State : <span>{poiData?.state.name || 'N/A'}</span>
+													• State : <span>{poiData?.state || 'N/A'}</span>
 												</h6>
 												<h6 className="fs-14 mb-2 text-black">
 													• Address : <span>{poiData?.address || 'N/A'}</span>
