@@ -11,6 +11,7 @@ import {
 } from '../services/constants';
 import LocalStorage from '../services/storage';
 import { notifyWithIcon } from '../services/utilities';
+import { fetchCategories } from '../redux/slices/category';
 
 const storage = new LocalStorage();
 
@@ -25,6 +26,7 @@ const AuthProvider = ({ children }) => {
 		storage.setItem(TOKEN_COOKIE, data.token);
 		storage.setItem(TOKEN_EXPIRATION, data.expiration);
 		storage.setItem(LOGGED_IN_UID, data.user.user_id);
+		dispatch(fetchCategories());
 	};
 
 	const logout = callback => {

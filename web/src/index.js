@@ -10,6 +10,7 @@ import LocalStorage from './services/storage';
 import { LOGGED_IN_UID, TOKEN_COOKIE } from './services/constants';
 import { togglePreloading } from './redux/slices/setting';
 import { fetchAuthUser } from './redux/slices/user';
+import { fetchCategories } from './redux/slices/category';
 
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import './assets/scss/themes.scss';
@@ -23,6 +24,7 @@ if (storage.getItem(TOKEN_COOKIE)) {
 		store.dispatch(togglePreloading(false));
 	} else {
 		store.dispatch(fetchAuthUser(id));
+		store.dispatch(fetchCategories());
 	}
 } else {
 	store.dispatch(togglePreloading(false));

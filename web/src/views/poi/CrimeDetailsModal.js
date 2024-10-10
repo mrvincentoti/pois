@@ -84,7 +84,7 @@ const CrimeDetailsModal = ({
 						<button type="button" className="btn-close" onClick={closeModal} />
 					</div>
 					<div className="modal-body">
-						<h6 className="fs-15">Arms Recovered</h6>
+						<h6 className="fs-15">Crimes Committed</h6>
 						<table className="table table-bordered border-secondary">
 							<thead>
 								<tr>

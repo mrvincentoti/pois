@@ -16,42 +16,61 @@ def get_categories():
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
 
-        # Extract search term from the request
-        search_term = request.args.get('q', default=None, type=str)
+        if page == 0:
+            categories = Category.query.filter(Category.deleted_at.is_(None)).all()
 
-        # Query the database, applying search and ordering by name
-        query = Category.query.order_by(Category.name.asc())
+            # Prepare the list of categories to return
+            category_list = []
+            for category in categories:
+                category_list.append(category.to_dict())
 
-        # Apply search if search term is provided
-        if search_term:
-            search = f"%{search_term}%"
-            query = query.filter(Category.name.ilike(search))
-
-        # Paginate the query
-        paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        # Prepare the list of categories to return
-        category_list = []
-        for category in paginated_categories.items:
-            category_data = category.to_dict()
-            category_list.append(category_data)
-
-        # Return the paginated and filtered categories with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "categories": category_list,
-            "pagination": {
-                "total": paginated_categories.total,
-                "pages": paginated_categories.pages,
-                "current_page": paginated_categories.page,
-                "per_page": paginated_categories.per_page,
-                "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
-                "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
+            # Return the categories with status success
+            result = {
+                "status": "success",
+                "status_code": 200,
+                "categories": category_list,
             }
-        })
+        else:
+
+            # Extract search term from the request
+            search_term = request.args.get('q', default=None, type=str)
+
+            # Query the database, applying search and ordering by name
+            query = Category.query.order_by(Category.name.asc())
+
+            # Apply search if search term is provided
+            if search_term:
+                search = f"%{search_term}%"
+                query = query.filter(Category.name.ilike(search))
+            
+            # Paginate the query
+            paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
+
+            # Prepare the list of categories to return
+            category_list = []
+            for category in paginated_categories.items:
+                category_data = category.to_dict()
+                category_list.append(category_data)
+
+            # Return the paginated and filtered categories with status success
+            result = {
+                "status": "success",
+                "status_code": 200,
+                "categories": category_list,
+                "pagination": {
+                    "total": paginated_categories.total,
+                    "pages": paginated_categories.pages,
+                    "current_page": paginated_categories.page,
+                    "per_page": paginated_categories.per_page,
+                    "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
+                    "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
+                }
+            }
+
+        return jsonify(result)
 
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 
@@ -100,7 +119,7 @@ def add_category():
 
             save_audit_data(audit_data)
             
-            return jsonify({"message": "Category added successfully"}), 201
+            return jsonify({"message": "Category added successfully", "category": new_category.to_dict()}), 201
         except Exception as e:
             db.session.rollback()
             return jsonify({"message": "Error adding category", "error": str(e)}), 500
@@ -190,7 +209,7 @@ def edit_category(category_id):
 
         save_audit_data(audit_data)
         
-        return jsonify({"message": "Category updated successfully"}), 200
+        return jsonify({"message": "Category updated successfully", "category": category.to_dict()}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error updating category", "error": str(e)}), 500

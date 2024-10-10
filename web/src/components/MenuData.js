@@ -3,13 +3,13 @@ import { checkPermission } from '../services/utilities';
 import { useSelector } from 'react-redux';
 
 const Navdata = () => {
-	const [isEntity, setIsEntity] = useState(false);
+	const [isCurrentState, setIsCurrentState] = useState('Dashboard');
 	const [isAccounts, setIsAccounts] = useState(false);
 	const [isSetup, setIsSetup] = useState(false);
-	const [isPromotions, setIsPromotions] = useState(false);
+	const [isPoi, setIsPoi] = useState(false);
 
-	const [isCurrentState, setIsCurrentState] = useState('Dashboard');
 	const permissions = useSelector(state => state.user.permissions);
+	const categories = useSelector(state => state.category.list);
 
 	function updateIconSidebar(e) {
 		if (e && e.target && e.target.getAttribute('subitems')) {
@@ -28,14 +28,16 @@ const Navdata = () => {
 
 	useEffect(() => {
 		document.body.classList.remove('twocolumn-panel');
-		if (isCurrentState === 'Dashboard' || isCurrentState === 'Audit Trail') {
+		if (
+			isCurrentState === 'Dashboard' ||
+			isCurrentState === 'Organisation' ||
+			isCurrentState === 'Brief' ||
+			isCurrentState === 'AuditTrail'
+		) {
 			document.body.classList.add('twocolumn-panel');
 		}
-		if (isCurrentState !== 'Entity') {
-			setIsEntity(false);
-		}
-		if (isCurrentState !== 'Entity') {
-			setIsEntity(false);
+		if (isCurrentState !== 'Poi') {
+			setIsPoi(false);
 		}
 		if (isCurrentState !== 'Accounts') {
 			setIsAccounts(false);
@@ -51,7 +53,6 @@ const Navdata = () => {
 			isHeader: true,
 			permission:
 				checkPermission(permissions, 'can-see-dashboard-link') ||
-				checkPermission(permissions, 'can-see-entity-link') ||
 				checkPermission(permissions, 'can-see-audit-trail-link'),
 		},
 		{
@@ -62,9 +63,6 @@ const Navdata = () => {
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Dashboard');
-				setIsEntity(false);
-				setIsAccounts(false);
-				setIsSetup(false);
 			},
 			permission: checkPermission(permissions, 'can-see-dashboard-link'),
 		},
@@ -81,15 +79,24 @@ const Navdata = () => {
 			id: 'poi',
 			label: 'POI',
 			icon: 'ri-group-fill',
-			link: '/pois/poi',
+			link: '/#',
 			click: function (e) {
 				e.preventDefault();
-				setIsCurrentState('POI');
-				setIsEntity(false);
-				setIsAccounts(false);
-				setIsSetup(false);
+				setIsPoi(!isPoi);
+				setIsCurrentState('Poi');
+				updateIconSidebar(e);
 			},
 			permission: checkPermission(permissions, 'can-see-poi-link'),
+			stateVariables: isPoi,
+			subItems: [
+				...categories.map(item => ({
+					id: item.name.toLowerCase(),
+					label: item.name,
+					link: `/pois/poi/${item.id}/list`,
+					parentId: 'poi',
+					permission: checkPermission(permissions, 'can-see-poi-link'),
+				})),
+			],
 		},
 		{
 			id: 'organisation',
@@ -99,9 +106,6 @@ const Navdata = () => {
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Organisation');
-				setIsEntity(false);
-				setIsAccounts(false);
-				setIsSetup(false);
 			},
 			permission: checkPermission(permissions, 'can-see-organisation-link'),
 		},
@@ -113,9 +117,6 @@ const Navdata = () => {
 			click: function (e) {
 				e.preventDefault();
 				setIsCurrentState('Brief');
-				setIsEntity(false);
-				setIsAccounts(false);
-				setIsSetup(false);
 			},
 			permission: checkPermission(permissions, 'can-see-brief-list'),
 		},
@@ -132,10 +133,7 @@ const Navdata = () => {
 			link: '/audit',
 			click: function (e) {
 				e.preventDefault();
-				setIsCurrentState('Audit Trail');
-				setIsEntity(false);
-				setIsAccounts(false);
-				setIsSetup(false);
+				setIsCurrentState('AuditTrail');
 			},
 			permission: checkPermission(permissions, 'can-see-audit-trail-link'),
 		},
@@ -153,11 +151,9 @@ const Navdata = () => {
 			link: '/#',
 			click: function (e) {
 				e.preventDefault();
-				updateIconSidebar(e);
-				setIsCurrentState('Accounts');
-				setIsEntity(false);
 				setIsAccounts(!isAccounts);
-				setIsSetup(false);
+				setIsCurrentState('Accounts');
+				updateIconSidebar(e);
 			},
 			permission: checkPermission(permissions, 'can-see-user-account-link'),
 			stateVariables: isAccounts,
@@ -202,11 +198,9 @@ const Navdata = () => {
 			link: '/#',
 			click: function (e) {
 				e.preventDefault();
-				updateIconSidebar(e);
-				setIsCurrentState('Setup');
-				setIsEntity(false);
-				setIsAccounts(false);
 				setIsSetup(!isSetup);
+				setIsCurrentState('Setup');
+				updateIconSidebar(e);
 			},
 			permission: checkPermission(permissions, 'can-see-setup-link'),
 			stateVariables: isSetup,

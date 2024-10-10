@@ -1,13 +1,24 @@
 import React from 'react';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
+import { useDispatch, useSelector } from 'react-redux';
 
 import ModalWrapper from '../container/ModalWrapper';
-import { notifyWithIcon, request } from '../services/utilities';
+import {
+	notifyWithIcon,
+	request,
+	updateImmutable,
+} from '../services/utilities';
 import { CREATE_CATEGORIES_API, UPDATE_CATEGORIES_API } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
+import { setCategories } from '../redux/slices/category';
+
 const ManageCategorySetup = ({ closeModal, update, category }) => {
+	const categories = useSelector(state => state.category.list);
+
+	const dispatch = useDispatch();
+
 	const onSubmit = async values => {
 		try {
 			const config = {
@@ -18,6 +29,17 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 				? UPDATE_CATEGORIES_API.replace(':id', category.id)
 				: CREATE_CATEGORIES_API;
 			const rs = await request(uri, config);
+
+			if (category) {
+				// update
+				const update_list = updateImmutable(categories, rs.category);
+				dispatch(setCategories(update_list));
+			} else {
+				// new category
+				const update_list = [...categories, rs.category];
+				dispatch(setCategories(update_list));
+			}
+
 			notifyWithIcon('success', rs.message);
 			update();
 			closeModal();

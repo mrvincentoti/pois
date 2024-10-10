@@ -104,14 +104,14 @@ const Overview = () => {
 														{poiData.phone_number || 'N/A'}
 													</td>
 												</tr>
-												{/* <tr>
+												<tr>
 													<th className="ps-0" scope="row">
 														E-mail :
 													</th>
 													<td className="text-muted">
 														{poiData.email ? poiData.email : 'N/A'}
 													</td>
-												</tr> */}
+												</tr>
 												<tr>
 													<th className="ps-0" scope="row">
 														Gender :
