@@ -185,6 +185,21 @@ export const changeHTMLAttribute = (attribute, value) => {
 	return true;
 };
 
+export const updateImmutable = (list, item) => {
+	const data = list.find(d => d.id === item.id);
+	if (data) {
+		const index = list.findIndex(d => d.id === item.id);
+
+		return [
+			...list.slice(0, index),
+			{ ...data, ...item },
+			...list.slice(index + 1),
+		];
+	}
+
+	return list;
+};
+
 export const checkPermission = (permissions, permission) => {
 	return permissions.find(p => p?.name === permission);
 };
@@ -599,12 +614,8 @@ export const formatName = employee => {
 
 export const formatBriefInitials = brief => {
 	if (brief) {
-		const firstNameInitial = brief.title
-			? brief.title.charAt(0)
-			: '';
-		const lastNameInitial = brief.title
-			? brief.title.charAt(1)
-			: '';
+		const firstNameInitial = brief.title ? brief.title.charAt(0) : '';
+		const lastNameInitial = brief.title ? brief.title.charAt(1) : '';
 
 		return `${firstNameInitial}${lastNameInitial}`;
 	}
@@ -614,12 +625,8 @@ export const formatBriefInitials = brief => {
 
 export const formatUserName = user => {
 	if (user) {
-		const firstNameInitial = user.first_name
-			? user.first_name
-			: '';
-		const lastNameInitial = user.last_name
-			? user.last_name
-			: '';
+		const firstNameInitial = user.first_name ? user.first_name : '';
+		const lastNameInitial = user.last_name ? user.last_name : '';
 
 		return `${firstNameInitial} ${lastNameInitial}`;
 	}
@@ -689,7 +696,7 @@ export const getActivitiesInitialLetter = data => {
 	return '';
 };
 
-export const getMediaDetails = (mediaType) => {
+export const getMediaDetails = mediaType => {
 	switch (mediaType) {
 		case 'image':
 			return { icon: 'ri-image-fill', colorClass: 'text-success' }; // Green for images
@@ -707,5 +714,3 @@ export const getMediaDetails = (mediaType) => {
 			return { icon: 'ri-file-fill', colorClass: 'text-secondary' }; // Grey for unknown types
 	}
 };
-
-

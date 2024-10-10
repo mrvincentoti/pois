@@ -21,7 +21,7 @@ const Dashboard = () => {
 										</p>
 									</div>
 									<div className="mt-3 mt-lg-0">
-										<form action="javascript:void(0);">
+										<form>
 											<div className="row g-3 mb-0 align-items-center">
 												<div className="col-sm-auto">
 													<DashboardDataFilter />

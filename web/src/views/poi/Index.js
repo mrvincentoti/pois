@@ -11,13 +11,12 @@ const ManagePoi = lazy(() => import('./ManagePoi'));
 const Index = () => {
 	return (
 		<Routes>
-			<Route path="poi" element={<Poi />} />
+			<Route path="poi/:category/list" element={<Poi />} />
 			<Route path="new" element={<NewPoi />} />
 			<Route path=":id/view" element={<ViewPoi />} />
 			<Route path=":id/print" element={<PoiPrint />} />
 			<Route path=":id/edit" element={<EditPoi />} />
 			<Route path=":id/manage" element={<ManagePoi />} />
-			<Route path="*" element={<Navigate to="/not-found" />} />
 			<Route path="*" element={<Navigate to="/not-found" />} />
 		</Routes>
 	);

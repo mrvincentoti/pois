@@ -23,7 +23,7 @@ import {
 	FETCH_SOURCES_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
-	FETCH_POI_STATUSES_API
+	FETCH_POI_STATUSES_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -145,7 +145,7 @@ const NewPoi = () => {
 				FETCH_CATEGORIES_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
-				FETCH_POI_STATUSES_API
+				FETCH_POI_STATUSES_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -156,7 +156,7 @@ const NewPoi = () => {
 				rs_categories,
 				rs_sources,
 				rs_affiliations,
-				rs_statuses
+				rs_statuses,
 			] = await Promise.all(requests);
 
 			const formattedAffiliations = rs_affiliations.affiliations.map(
@@ -171,7 +171,7 @@ const NewPoi = () => {
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
 			setAffliations(formattedAffiliations);
-			setPoiStatuses(rs_statuses.statuses)
+			setPoiStatuses(rs_statuses.statuses);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -252,7 +252,7 @@ const NewPoi = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'POI created successfully');
-				navigate('/pois/poi');
+				navigate(`/pois/poi/${values.category_id}/list`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -422,7 +422,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												{/* <div className="col-lg-4 mb-3">
+												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -438,7 +438,7 @@ const NewPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="email" />
-												</div> */}
+												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
@@ -483,7 +483,9 @@ const NewPoi = () => {
 																value={dateOfBirth}
 																onChange={([date]) => {
 																	input.onChange(
-																		moment(date).format('YYYY-MM-DD')
+																		moment(date).format(
+																			'ddd MMM DD YYYY HH:mm:ss [GMT]ZZ'
+																		)
 																	);
 																	setDateOfBirth(date);
 																}}

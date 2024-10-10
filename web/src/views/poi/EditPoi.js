@@ -80,7 +80,7 @@ const EditPoi = () => {
 				`${FETCH_COUNTRIES_API}?per_page=300`,
 				FETCH_CATEGORIES_API,
 				FETCH_SOURCES_API,
-				FETCH_AFFILIATIONS_API,
+				`${FETCH_AFFILIATIONS_API}?page=0`,
 				FETCH_POI_STATUSES_API,
 			];
 			const requests = urls.map(url =>
@@ -158,7 +158,7 @@ const EditPoi = () => {
 					setPoiStatus(item.poi_status?.id);
 
 					const affiliations_list =
-						item.affiliation?.split(',').map(a => {
+						item.affiliation_ids?.split(',').map(a => {
 							const affiliation = allAffiliations.find(
 								item => item.id === Number(a)
 							);
@@ -273,15 +273,7 @@ const EditPoi = () => {
 			if (values.state) {
 				formData.append('state_id', state || '');
 			}
-			if (values.affiliation) {
-				formData.append(
-					'affiliation_id',
-					affiliations.map(o => o.value).join(',')
-				);
-			}
-			if (values.affiliation) {
-				formData.set('affiliations', affiliations.map(o => o.value).join(','));
-			}
+
 			if (values.marital_status) {
 				formData.append('marital_status', values.marital_status?.name || '');
 			}
@@ -326,7 +318,7 @@ const EditPoi = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'POI updated successfully');
-				navigate('/pois/poi');
+				navigate(`/pois/poi/${values.category.id}/list`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -363,7 +355,7 @@ const EditPoi = () => {
 						country: poi?.country,
 						state: poi?.state,
 						affiliation:
-							poi?.affiliation.split(',').map(a => {
+							poi?.affiliation_ids.split(',').map(a => {
 								const affiliation = allAffiliations.find(
 									item => item.id === Number(a)
 								);
@@ -517,6 +509,23 @@ const EditPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="phone" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="email">
+														Email
+													</label>
+													<Field id="email" name="email">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="email"
+																className={`form-control ${error(meta)}`}
+																id="email"
+																placeholder="Enter email address"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="email" />
 												</div>
 
 												<div className="col-lg-4 mb-3">

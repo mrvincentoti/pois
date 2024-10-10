@@ -11,7 +11,6 @@ import {
 } from '../services/utilities';
 import {
 	FETCH_CRIMES_API,
-	FETCH_CATEGORIES_API,
 	FETCH_SOURCES_API,
 	FETCH_AFFILIATIONS_API,
 	FETCH_ARRESTING_BODY_API,
@@ -30,7 +29,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	const [arrestingBodies, setArrestingBody] = useState([]);
 	const [selectedArrestingBody, setSelectedArrestingBody] = useState('');
 	const [sources, setSource] = useState([]);
-	const [categories, setCategories] = useState([]);
 	const [startDate, setStartDate] = useState(null);
 	const [endDate, setEndDate] = useState(null);
 
@@ -38,18 +36,10 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	const [selectedCategory, setSelectedCategory] = useState(''); // State to track the selected option
 
 	const clearFilter = useSelector(state => state.employee.clearFilter);
+	const categories = useSelector(state => state.category.list);
 
 	const dispatch = useDispatch();
 	const location = useLocation();
-
-	const fetchCategories = useCallback(async () => {
-		try {
-			const rs = await request(`${FETCH_CATEGORIES_API}?page=1&per_page=10`);
-			setCategories(rs.categories);
-		} catch (error) {
-			notifyWithIcon('error', error.message);
-		}
-	}, []);
 
 	const fetchCrimes = useCallback(async () => {
 		try {
@@ -175,7 +165,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	useEffect(() => {
 		if (!loaded) {
-			fetchCategories();
 			fetchCrimes();
 			fetchArms();
 			fetchSources();
@@ -190,7 +179,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		clearFilterParams();
 	}, [
 		clearFilterParams,
-		fetchCategories,
 		fetchCrimes,
 		fetchArms,
 		fetchSources,
@@ -289,6 +277,30 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 					<div className="col-lg-6">
 						<div className="mb-4">
 							<label
+								htmlFor="arm-select"
+								className="form-label text-muted text-uppercase fw-semibold mb-3"
+							>
+								Arms Recovered
+							</label>
+
+							<Select
+								isClearable
+								className="mb-0"
+								value={selectedArm}
+								getOptionValue={option => option.id}
+								getOptionLabel={option => option.name}
+								options={arms || []}
+								isSearchable={true}
+								onChange={e => {
+									setSelectedArm(e);
+								}}
+								id="arm-select"
+							></Select>
+						</div>
+					</div>
+					{/* <div className="col-lg-6">
+						<div className="mb-4">
+							<label
 								htmlFor="rank-select"
 								className="form-label text-muted text-uppercase fw-semibold mb-3"
 							>
@@ -308,7 +320,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								}}
 							/>
 						</div>
-					</div>
+					</div> */}
 					<div className="col-lg-6">
 						<div className="mb-4">
 							<label
@@ -408,30 +420,6 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedSource(e);
 								}}
 								id="source-select"
-							></Select>
-						</div>
-					</div>
-					<div className="col-lg-6">
-						<div className="mb-4">
-							<label
-								htmlFor="arm-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
-								Arms Recovered
-							</label>
-
-							<Select
-								isClearable
-								className="mb-0"
-								value={selectedArm}
-								getOptionValue={option => option.id}
-								getOptionLabel={option => option.name}
-								options={arms || []}
-								isSearchable={true}
-								onChange={e => {
-									setSelectedArm(e);
-								}}
-								id="arm-select"
 							></Select>
 						</div>
 					</div>

@@ -12,11 +12,13 @@ class Category(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description
+            'description': self.description,
+            'deleted_at': self.deleted_at
         }
 
-    def __init__(self, name):
+    def __init__(self, name, description):
         self.name = name
+        self.description = description
 
     def __repr__(self):
         return f'<Category {self.name}>'

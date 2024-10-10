@@ -247,7 +247,7 @@ def get_poi(poi_id):
             crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
             arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
 
-            affiliation_ids = [int(aff_id) for aff_id in poi.affiliation.split(",") if aff_id]
+            affiliation_ids = [int(aff_id) for aff_id in poi.affiliation.split(",") if aff_id] if poi.affiliation is not None else []
             affiliations = Affiliation.query.filter(Affiliation.id.in_(affiliation_ids)).all()
             affiliation_names = [affiliation.name for affiliation in affiliations]
             affiliation_names_str = ", ".join(affiliation_names)
@@ -266,6 +266,7 @@ def get_poi(poi_id):
                 "email": poi.email,
                 "role": poi.role,
                 "affiliation": affiliation_names_str,
+                "affiliation_ids": poi.affiliation,
                 "remark": poi.remark,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
@@ -295,7 +296,7 @@ def get_poi(poi_id):
                     "id": poi.poi_status.id,
                     "name": poi.poi_status.name,
                 } if poi.poi_status else None,
-                "age": calculate_poi_age(poi.dob)
+                "age": calculate_poi_age(poi.dob) if poi.dob is not None else ''
             }
 
             response = {
@@ -305,18 +306,18 @@ def get_poi(poi_id):
             }
 
             # Audit logging for access event
-            audit_data = {
-                "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "event": "get_poi",
-                "auditable_id": poi.id,
-                "url": request.url,
-                "ip_address": request.remote_addr,
-                "user_agent": request.user_agent.string,
-                "created_at": current_time.isoformat(),
-                "updated_at": current_time.isoformat(),
-            }
+            # audit_data = {
+            #     "user_id": g.user["id"] if hasattr(g, "user") else None,
+            #     "event": "get_poi",
+            #     "auditable_id": poi.id,
+            #     "url": request.url,
+            #     "ip_address": request.remote_addr,
+            #     "user_agent": request.user_agent.string,
+            #     "created_at": current_time.isoformat(),
+            #     "updated_at": current_time.isoformat(),
+            # }
 
-            save_audit_data(audit_data)
+            # save_audit_data(audit_data)
 
         else:
             response = {

@@ -28,6 +28,7 @@ services:
   poi-service:
     container_name: poi-service
     build: ./poi
+    restart: always
     env_file:
       - ./poi/.env
     ports:

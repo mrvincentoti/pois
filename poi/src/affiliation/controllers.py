@@ -15,6 +15,22 @@ def get_affiliations():
         # Extract pagination parameters from the request
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
+
+        if page == 0:
+            affiliations = Affiliation.query.filter(Affiliation.deleted_at.is_(None)).all()
+
+            # Prepare the list of affiliations to return
+            affiliation_list = []
+            for affiliation in affiliations:
+                affiliation_list.append(affiliation.to_dict())
+
+            # Return the affiliations with status success
+            result = {
+                "status": "success",
+                "status_code": 200,
+                "affiliations": affiliation_list,
+            }
+            return jsonify(result)
         
         # Extract search term from the request
         search_term = request.args.get('q', default=None, type=str)

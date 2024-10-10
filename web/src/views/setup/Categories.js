@@ -144,6 +144,7 @@ const Categories = () => {
 											<th>S/N</th>
 											<th>Name</th>
 											<th>Description</th>
+											<th>Status</th>
 											<th>Actions</th>
 										</tr>
 									</thead>
@@ -154,6 +155,13 @@ const Categories = () => {
 													<td>{i + 1}</td>
 													<td>{item.name}</td>
 													<td>{item.description}</td>
+													<td>
+														{item.deleted_at ? (
+															<span className="badge bg-danger">deleted</span>
+														) : (
+															<span className="badge bg-success">active</span>
+														)}
+													</td>
 													<td className="text-end">
 														<div className="hstack gap-3 flex-wrap text-end">
 															<EditButton onClick={() => editCategory(item)} />
