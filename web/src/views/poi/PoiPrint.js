@@ -134,7 +134,7 @@ const PoiPrint = () => {
 										<h5 className="card-title text-decoration-underline mb-3">
 											TECHNICAL INFORMATION
 										</h5>
-										<div className="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
+										{/* <div className="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
 											<div className="flex-grow-1">
 												<h6 className="fs-14 mb-2 text-black">
 													• Passport Number :{' '}
@@ -170,7 +170,7 @@ const PoiPrint = () => {
 													• Remarks : <span>{poiData?.remark || 'N/A'}</span>
 												</h6>
 											</div>
-										</div>
+										</div> */}
 									</div>
 								</div>
 							</div>

@@ -282,9 +282,9 @@ const Organisation = () => {
 
 														<td>{item.ceo || 'N/A'} </td>
 														<td>
-															{formatDate(item.date_of_establishment) || 'N/A'}
+															{formatDate(item.date_of_registration) || 'N/A'}
 														</td>
-														<td>{item.affiliation || 'N/A'}</td>
+														<td>{item.affiliations?.name || 'N/A'}</td>
 														{/* <td>{item.source?.name || 'N/A'}</td> */}
 														<td>{formatUserName(item.user)}</td>
 														<td className="text-end">

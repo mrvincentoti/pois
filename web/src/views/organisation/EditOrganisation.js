@@ -495,6 +495,23 @@ const EditOrganisation = () => {
 														)}
 													</Field>
 												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="reg_numb">
+														Registration Number
+													</label>
+													<Field id="reg_numb" name="reg_numb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="reg_numb"
+																placeholder="Enter reg numb"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="other_id_number" />
+												</div>
 											</div>
 										</div>
 									</div>
@@ -538,7 +555,7 @@ const EditOrganisation = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="hq">
-														Headquarters
+														Address
 													</label>
 													<Field id="hq" name="hq">
 														{({ input, meta }) => (
@@ -547,15 +564,18 @@ const EditOrganisation = () => {
 																type="text"
 																className={`form-control ${error(meta)}`}
 																id="hq"
-																placeholder="Enter HQ"
+																placeholder="Enter address "
 															/>
 														)}
 													</Field>
 													<ErrorBlock name="hq" />
 												</div>
 												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="hq">
-														Modes of Operation (Modus Operandi)
+													<label
+														className="form-label"
+														htmlFor="nature_of_business"
+													>
+														Modus Operandi
 													</label>
 													<Field
 														id="nature_of_business"
@@ -566,7 +586,7 @@ const EditOrganisation = () => {
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}
-																id="hq"
+																id="nature_of_business"
 																placeholder="Modus Operandi"
 															/>
 														)}
@@ -802,28 +822,34 @@ const EditOrganisation = () => {
 													</Field>
 													<ErrorBlock name="email" />
 												</div>
-												{/* <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="category">
-                                                        Category <span style={{ color: 'red' }}></span>
-                                                    </label>
-                                                    <Field id="category" name="category">
-                                                        {({ input, meta }) => (
-                                                            <Select
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '40px',
-                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',
-                                                                }}
-                                                                placeholder="Select Category"
-                                                                onChange={handleChangeCat}
-                                                                value={category}
-                                                                options={categories.map(c => ({ label: c.name, value: c.id }))}
-                                                                className="custom-category-select"
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="category" />
-                                                </div> */}
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="category">
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category" name="category">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Category"
+																onChange={handleChangeCat}
+																value={category}
+																options={categories.map(c => ({
+																	label: c.name,
+																	value: c.id,
+																}))}
+																className="custom-category-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category" />
+												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>

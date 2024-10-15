@@ -103,6 +103,14 @@ const Overview = () => {
 														{orgData.ref_numb || 'N/A'}
 													</td>
 												</tr>
+												<tr>
+													<th className="ps-0" scope="row">
+														Registration Number :
+													</th>
+													<td className="text-muted">
+														{orgData.reg_numb || 'N/A'}
+													</td>
+												</tr>
 											</tbody>
 										</table>
 									</div>
