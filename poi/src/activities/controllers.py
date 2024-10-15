@@ -152,7 +152,7 @@ def add_activity():
 
             save_audit_data(audit_data)
 
-            return jsonify({"message": "Activity and media added successfully"}), 201
+            return jsonify({"message": "Activity added successfully"}), 201
 
         except Exception as e:
             db.session.rollback()
