@@ -291,27 +291,30 @@ def edit_activity(activity_id):
             )
             db.session.add(new_item)
 
-        # Handle media file update (if any file is uploaded)
-        if 'file' in request.files:
-            file = request.files['file']
+        # Handle media file update (if any files are uploaded)
+        files = request.files.getlist("file[]")  # Get all uploaded files
+        captions = request.form.getlist("media_caption[]")  # Get all captions
 
-            if file.filename != '':
-                if allowed_file(file.filename):
-                    file.seek(0)
+        # Delete existing media for this activity
+        PoiMedia.query.filter_by(activity_id=activity.id).delete()
 
-                    # Generate a new filename using UUID
-                    file_extension = os.path.splitext(file.filename)[1]
-                    new_filename = f"{uuid.uuid4()}{file_extension}"
-                    media_caption = request.form.get('media_caption')
-                    media_type = get_media_type_from_extension(new_filename)
-                    minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+        # Loop through each file and its corresponding caption
+        for i in range(len(files)):
+            file = files[i]
+            if file.filename != '' and allowed_file(file.filename):
+                file.seek(0)
 
-                    if not minio_file_url:
-                        return jsonify({"message": "Error uploading file to MinIO"}), 500
+                # Generate a new filename using UUID
+                file_extension = os.path.splitext(file.filename)[1]
+                new_filename = f"{uuid.uuid4()}{file_extension}"
+                media_type = get_media_type_from_extension(new_filename)
+                minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
 
-                    # Delete existing media for this activity
-                    PoiMedia.query.filter_by(activity_id=activity.id).delete()
+                if not minio_file_url:
+                    return jsonify({"message": "Error uploading file to MinIO"}), 500
 
+                if i < len(captions):  # Ensure there is a caption for the file
+                    media_caption = captions[i]
                     # Save new media record linked to the updated activity
                     new_media = PoiMedia(
                         poi_id=poi_id,
@@ -465,9 +468,7 @@ def get_activities_by_poi(poi_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
-            query = query.filter(
-                Activity.comment.ilike(search_pattern)
-            )
+            query = query.filter(Activity.comment.ilike(search_pattern))
 
         # Order by activity_date in descending order (newest first)
         query = query.order_by(Activity.activity_date.desc())
