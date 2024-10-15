@@ -75,7 +75,39 @@ def add_activity():
             db.session.add(new_activity)
             db.session.commit()
 
-            # Save each item and quantity in the `ActivityItem` table
+            # Handle media file uploads
+            files = request.files.getlist("file[]")  # Get all files
+            captions = request.form.getlist("media_caption[]")  # Get all captions
+
+            # Loop through each file and its corresponding caption
+            for i in range(len(files)):
+                if i < len(captions):  # Ensure there is a caption for the file
+                    file = files[i]
+                    caption = captions[i]
+
+                    if allowed_file(file.filename):
+                        file.seek(0)  # Ensure we read the file from the start
+                        file_extension = os.path.splitext(file.filename)[1]
+                        new_filename = f"{uuid.uuid4()}{file_extension}"
+                        media_type = get_media_type_from_extension(new_filename)
+
+                        minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
+                        if not minio_file_url:
+                            return jsonify({"message": "Error uploading file to MinIO"}), 500
+
+                        # Save the media record linked to the activity
+                        new_media = PoiMedia(
+                            poi_id=form_data["poi_id"],
+                            media_type=media_type,
+                            media_url=minio_file_url,
+                            media_caption=caption,  # Use the corresponding caption
+                            activity_id=new_activity.id,
+                            created_by=form_data["created_by"],
+                            created_at=datetime.utcnow()
+                        )
+                        db.session.add(new_media)
+
+            # Save items after processing media
             for item_qty in item_qty_pairs:
                 new_item = ActivityItem(
                     poi_id=form_data["poi_id"],
@@ -86,32 +118,6 @@ def add_activity():
                 db.session.add(new_item)
 
             db.session.commit()
-
-            # Handle media file upload if provided
-            if 'file' in request.files and allowed_file(request.files['file'].filename):
-                file = request.files['file']
-                file.seek(0)  # Ensure we read the file from the start
-                file_extension = os.path.splitext(file.filename)[1]
-                new_filename = f"{uuid.uuid4()}{file_extension}"
-                media_caption = request.form.get('media_caption')
-                media_type = get_media_type_from_extension(new_filename)
-
-                minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
-                if not minio_file_url:
-                    return jsonify({"message": "Error uploading file to MinIO"}), 500
-
-                # Save the media record linked to the activity
-                new_media = PoiMedia(
-                    poi_id=form_data["poi_id"],
-                    media_type=media_type,
-                    media_url=minio_file_url,
-                    media_caption=media_caption,
-                    activity_id=new_activity.id,
-                    created_by=form_data["created_by"],
-                    created_at=datetime.utcnow()
-                )
-                db.session.add(new_media)
-                db.session.commit()
 
             # Complete audit log with all fields from `Activity`
             audit_data = {
