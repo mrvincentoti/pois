@@ -557,7 +557,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="passport_number" />
 												</div>
-												{/* <div className="col-lg-6 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label
 														className="form-label"
 														htmlFor="other_id_number"
@@ -571,12 +571,12 @@ const NewPoi = () => {
 																type="text"
 																className={`form-control ${error(meta)}`}
 																id="other_id_number"
-																placeholder="Enter passport no"
+																placeholder="Enter number"
 															/>
 														)}
 													</Field>
 													<ErrorBlock name="other_id_number" />
-												</div> */}
+												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="affiliation">
 														Affiliation <span style={{ color: 'red' }}></span>

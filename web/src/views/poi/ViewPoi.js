@@ -124,8 +124,10 @@ const ViewPoi = () => {
 								<div className="col">
 									<div className="p-2">
 										<h3 className="text-white mb-1">
-											{formatPoiName(poiData, true)} ({poiData.poi_status?.name}
-											)
+											{formatPoiName(poiData, true)}{' '}
+											<span className="badge bg-danger">
+												{poiData.poi_status?.name}
+											</span>
 										</h3>
 										<p className="text-white text-opacity-75">
 											{poiData.role || 'N/A'}
@@ -217,7 +219,7 @@ const ViewPoi = () => {
 													Arms Recovered
 												</a>
 											</li> */}
-											<li className="nav-item">
+											{/* <li className="nav-item">
 												<a
 													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
 													onClick={() => handleTabClick('activities')}
@@ -225,7 +227,7 @@ const ViewPoi = () => {
 												>
 													Activities
 												</a>
-											</li>
+											</li> */}
 										</ul>
 										<div className="flex-shrink-0">
 											<Button

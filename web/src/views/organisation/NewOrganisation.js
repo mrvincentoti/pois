@@ -383,6 +383,23 @@ const NewOrganisation = () => {
 														)}
 													</Field>
 												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="reg_numb">
+														Registration Number
+													</label>
+													<Field id="reg_numb" name="reg_numb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="reg_numb"
+																placeholder="Enter reg number"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="reg_numb" />
+												</div>
 											</div>
 										</div>
 									</div>
@@ -397,7 +414,7 @@ const NewOrganisation = () => {
 														className="form-label"
 														htmlFor="date_of_registration"
 													>
-														Date Of Registration{' '}
+														Establishment Date{' '}
 														<span style={{ color: 'red' }}></span>
 													</label>
 													<Field
@@ -411,7 +428,7 @@ const NewOrganisation = () => {
 																	dateFormat: 'd M, Y',
 																	maxDate: new Date(),
 																}}
-																placeholder="Select date of birth"
+																placeholder="Select date of establishment"
 																value={dateOfRegistration}
 																onChange={([date]) => {
 																	input.onChange(
@@ -424,7 +441,7 @@ const NewOrganisation = () => {
 													</Field>
 													<ErrorBlock name="date_of_registration" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												{/* <div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="hq">
 														Headquarters
 													</label>
@@ -440,10 +457,13 @@ const NewOrganisation = () => {
 														)}
 													</Field>
 													<ErrorBlock name="hq" />
-												</div>
+												</div> */}
 												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="hq">
-														Mode of Operation (Modus Operandi)
+													<label
+														className="form-label"
+														htmlFor="nature_of_business"
+													>
+														Modus Operandi
 													</label>
 													<Field
 														id="nature_of_business"
@@ -454,7 +474,7 @@ const NewOrganisation = () => {
 																{...input}
 																type="text"
 																className={`form-control ${error(meta)}`}
-																id="hq"
+																id="nature_of_business"
 																placeholder="Modus Operandi"
 															/>
 														)}
@@ -740,30 +760,33 @@ const NewOrganisation = () => {
 													<ErrorBlock name="email" />
 												</div>
 
-												{/* <div className="col-lg-6 mb-3">
-                                                    <label className="form-label" htmlFor="category">
-                                                        Category <span style={{ color: 'red' }}></span>
-                                                    </label>
-                                                    <Field id="category" name="category">
-                                                        {({ input, meta }) => (
-                                                            <Select
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '40px',
-                                                                    borderColor: meta.touched && meta.error ? 'red' : '#ced4da',  // Border color based on validation
-                                                                }}
-                                                                placeholder="Select Category"
-                                                                onChange={(value) => input.onChange(value)}  // Handle change event
-                                                                options={categories.map(category => ({
-                                                                    value: category.id,  // Map id to value
-                                                                    label: category.name,  // Map name to label
-                                                                }))}
-                                                                className="custom-category-select"  // Custom class for further styling
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <ErrorBlock name="category" />
-                                                </div> */}
+												<div className="col-lg-6 mb-3">
+													<label className="form-label" htmlFor="category">
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category" name="category">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Border color based on validation
+																}}
+																placeholder="Select Category"
+																onChange={value => input.onChange(value)} // Handle change event
+																options={categories.map(category => ({
+																	value: category.id, // Map id to value
+																	label: category.name, // Map name to label
+																}))}
+																className="custom-category-select" // Custom class for further styling
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category" />
+												</div>
 
 												{/* <div className="col-lg-6 mb-3">
                                                     <label className="form-label" htmlFor="source">
@@ -809,6 +832,23 @@ const NewOrganisation = () => {
 														)}
 													</Field>
 													<ErrorBlock name="source" />
+												</div>
+												<div className="col-lg-12 mb-3">
+													<label className="form-label" htmlFor="address">
+														Address
+													</label>
+													<Field id="address" name="address">
+														{({ input, meta }) => (
+															<textarea
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="address"
+																placeholder="Enter address"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="address" />
 												</div>
 											</div>
 										</div>

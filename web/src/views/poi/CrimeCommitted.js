@@ -145,12 +145,12 @@ const CrimeCommitted = ({ refreshPoiData }) => {
 					<div className="card">
 						<div className="card-body">
 							<div className="d-flex align-items-center mb-4">
-								<h5 className="card-title flex-grow-1 mb-0">Crime Committed</h5>
+								<h5 className="card-title flex-grow-1 mb-0">Activities</h5>
 								<div className="d-flex gap-2">
 									<div onClick={addCrimes}>
 										<label htmlFor="formFile" className="btn btn-success">
 											<i className="ri-add-fill me-1 align-bottom"></i> Add
-											Crime
+											Activity
 										</label>
 									</div>
 								</div>
