@@ -4,32 +4,55 @@ from .. import db  # from __init__.py
 class Activity(db.Model):
     __tablename__ = 'activities'
     id = db.Column(db.Integer, primary_key=True)
+    type_id = db.Column(db.Integer, nullable=False)
     poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'))
+    crime_id = db.Column(db.Integer, db.ForeignKey('crimes.id'), nullable=True)
+    casualties_recorded = db.Column(db.Integer, nullable=True)
+    action_taken = db.Column(db.Text, nullable=True)
     comment = db.Column(db.String(252))
     activity_date = db.Column(db.DateTime, nullable=True)
-    
+    location_from = db.Column(db.String(64), nullable=True)
+    location_to = db.Column(db.String(64), nullable=True)
+    facilitator = db.Column(db.String(64), nullable=True)
+
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
 
     def to_dict(self):
         return {
             'id': self.id,
+            'type_id': self.type_id,
             'poi_id': self.poi_id,
+            'crime_id': self.crime_id,
+            'casualties_recorded': self.casualties_recorded,
+            'action_taken': self.action_taken,
             'comment': self.comment,
+            'location_from': self.location_from,
+            'location_to': self.location_to,
+            'facilitator': self.facilitator,
             'activity_date': self.activity_date,
             'created_by': self.created_by,
             'created_at': self.created_at,
             'deleted_at': self.deleted_at
         }
 
-    def __init__(self, poi_id=None, comment=None, activity_date=None, created_by=None,
-                created_at=None):
+    def __init__(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+                created_at=None, updated_at=None):
+        self.type_id = type_id
         self.poi_id = poi_id
+        self.crime_id = crime_id
+        self.casualties_recorded = casualties_recorded
+        self.action_taken = action_taken
         self.comment = comment
+        self.location_from = location_from
+        self.location_to =location_to
+        self.facilitator = facilitator
         self.activity_date = activity_date
         self.created_by = created_by
         self.created_at = created_at
+        self.updated_at = updated_at
     
     def __repr__(self):
         return f'<Activity id={self.id}>'
@@ -40,17 +63,29 @@ class Activity(db.Model):
     def restore(self):
         self.deleted_at = None
         
-    def update(self, poi_id=None, comment=None, activity_date=None, created_by=None,
-                created_at=None, deleted_at=None):
+    def update(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+                created_at=None, deleted_at=None, updated_at=None):
+        if type_id is not None:
+            self.type_id = type_id
         if poi_id is not None:
             self.poi_id = poi_id
+        if crime_id:
+            self.crime_id = crime_id
+        if casualties_recorded:
+            self.casualties_recorded = casualties_recorded
+        if action_taken:
+            self.action_taken = action_taken
         if comment is not None:
             self.comment = comment
+        if location_from is not None:
+            self.location_from = location_from
+        if location_to is not None:
+            self.location_to =location_to
+        if facilitator is not None:
+            self.facilitator = facilitator
         if activity_date is not None:
             self.activity_date = activity_date
-        if created_by is not None:
-            self.created_by = created_by
-        if created_at is not None:
-            self.created_at = created_at
+        if updated_at is not None:
+            self.updated_at = updated_at
         
         db.session.commit()

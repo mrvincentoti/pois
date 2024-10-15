@@ -5,7 +5,7 @@ from .controllers import add_activity, get_activities, get_activity, edit_activi
 from .models import Activity
 
 @app.route("/activities", methods=['GET', 'POST'])
-def list_activities():
+def add_get_activities():
    if request.method == 'GET': return get_activities()
    if request.method == 'POST': return add_activity()
    else: return 'Method is Not Allowed'
