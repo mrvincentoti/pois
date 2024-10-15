@@ -11,6 +11,7 @@ class ActivityItem(db.Model):
     qty = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    deleted_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):
         return {
@@ -20,16 +21,18 @@ class ActivityItem(db.Model):
             'item': self.item,
             'qty': self.qty,
             'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'updated_at': self.updated_at,
+            'deleted_at': self.updated_at
         }
 
-    def __init__(self, poi_id=None, activity_id=None, item=None, qty=None, created_at=None, updated_at=None):
+    def __init__(self, poi_id=None, activity_id=None, item=None, qty=None, created_at=None, updated_at=None, deleted_at=None):
         self.poi_id = poi_id
         self.activity_id = activity_id
         self.item = item
         self.qty = qty
         self.created_at = created_at
         self.updated_at = updated_at
+        self.deleted_at = deleted_at
         
 
     def update(self, poi_id=None, activity_id=None, item=None, qty=None, updated_at=None):
