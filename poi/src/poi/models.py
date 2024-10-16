@@ -30,6 +30,9 @@ class Poi(db.Model):
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=True) #captured
     state_id = db.Column(db.Integer, db.ForeignKey('state.id'), nullable=True) #captured
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True) #captured
+    place_of_detention = db.Column(db.String(255), nullable=True)
+    arresting_body_id = db.Column(db.Integer, db.ForeignKey('arresting_body.id'), nullable=True)
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     status_id = db.Column(db.Integer, db.ForeignKey('poi_status.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
@@ -42,10 +45,12 @@ class Poi(db.Model):
     gender = db.relationship("Gender", backref="poi")
     arms_recovered = db.relationship('ArmsRecovered', backref='poi', lazy=True)
     poi_status = db.relationship("PoiStatus", backref="poi")
+    arresting_body = db.relationship('ArrestingBody', backref='poi', lazy=True)
+    organisation = db.relationship('Organisation', backref='poi', lazy=True)
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,marital_status=None,
-                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, status_id=None, deleted_at=None,
+                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None,  status_id=None, deleted_at=None,
                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
@@ -68,6 +73,9 @@ class Poi(db.Model):
         self.country_id = country_id
         self.state_id = state_id
         self.gender_id = gender_id
+        self.place_of_detention = place_of_detention
+        self.arresting_body_id = arresting_body_id
+        self.organisation_id = organisation_id
         self.status_id = status_id
         self.deleted_at = deleted_at
         self.created_at = created_at
@@ -86,7 +94,7 @@ class Poi(db.Model):
 
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
             email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,marital_status= None,
-            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, status_id=None,deleted_at=None, created_by=None):
+            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None, status_id=None,deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
         if picture:
@@ -127,6 +135,12 @@ class Poi(db.Model):
             self.state_id = state_id
         if gender_id:
             self.gender_id = gender_id
+        if place_of_detention:
+            self.place_of_detention = place_of_detention
+        if arresting_body_id:
+            self.arresting_body_id = arresting_body_id
+        if organisation_id:
+            self.organisation_id = organisation_id
         if marital_status:
             self.marital_status = marital_status
         if status_id:
@@ -162,6 +176,9 @@ class Poi(db.Model):
             'country': self.country.to_dict() if self.country else None,
             'state': self.state.to_dict() if self.state else None,
             'gender': self.gender.to_dict() if self.gender else None,
+            'place_of_detention': self.place_of_detention.to_dict() if self.place_of_detention else None,
+            'arresting_body_id': self.arresting_body_id.to_dict() if self.arresting_body_id else None,
+            'organisation_id': self.organisation_id.to_dict() if self.organisation_id else None,
             'poi_status': self.poi_status.to_dict() if self.poi_status else None,
             'deleted_at': self.deleted_at,
             'created_at': self.created_at,
