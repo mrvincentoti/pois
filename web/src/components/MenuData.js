@@ -7,6 +7,7 @@ const Navdata = () => {
 	const [isAccounts, setIsAccounts] = useState(false);
 	const [isSetup, setIsSetup] = useState(false);
 	const [isPoi, setIsPoi] = useState(false);
+	const [isOrganisation, setIsOrganisation] = useState(false);
 
 	const permissions = useSelector(state => state.user.permissions);
 	const categories = useSelector(state => state.category.list);
@@ -30,7 +31,6 @@ const Navdata = () => {
 		document.body.classList.remove('twocolumn-panel');
 		if (
 			isCurrentState === 'Dashboard' ||
-			isCurrentState === 'Organisation' ||
 			isCurrentState === 'Brief' ||
 			isCurrentState === 'AuditTrail'
 		) {
@@ -38,6 +38,9 @@ const Navdata = () => {
 		}
 		if (isCurrentState !== 'Poi') {
 			setIsPoi(false);
+		}
+		if (isCurrentState !== 'Organisation') {
+			setIsOrganisation(false);
 		}
 		if (isCurrentState !== 'Accounts') {
 			setIsAccounts(false);
@@ -105,9 +108,21 @@ const Navdata = () => {
 			link: '/org/organisation',
 			click: function (e) {
 				e.preventDefault();
+				setIsPoi(!isOrganisation);
 				setIsCurrentState('Organisation');
+				updateIconSidebar(e);
 			},
 			permission: checkPermission(permissions, 'can-see-organisation-link'),
+			stateVariables: isOrganisation,
+			subItems: [
+				...categories.map(item => ({
+					id: item.name.toLowerCase(),
+					label: item.name,
+					link: `/org/organisation/${item.id}`,
+					parentId: 'organisation',
+					permission: checkPermission(permissions, 'can-see-organisation-link'),
+				})),
+			],
 		},
 		{
 			id: 'brief',

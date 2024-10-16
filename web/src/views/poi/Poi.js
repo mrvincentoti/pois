@@ -98,7 +98,6 @@ const Poi = () => {
 				_categoryId !== categoryId ||
 				_filterQuery !== filterQuery
 			) {
-				console.log(_categoryId);
 				setFetching(true);
 			}
 
