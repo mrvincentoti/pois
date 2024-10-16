@@ -124,7 +124,7 @@ def add_poi_media(poi_id):
             media_type=media_type,
             media_url=minio_file_url,
             media_caption=media_caption,
-            crime_id=crime_id,
+            activity_id=activity_id,
             created_by=created_by,
             created_at=datetime.utcnow()
         )
