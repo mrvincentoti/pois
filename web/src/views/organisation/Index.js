@@ -13,7 +13,6 @@ const Index = () => {
 			<Route path=":id/edit" element={<EditOrganisation />} />
 			<Route path=":id/view" element={<ViewOrganisation />} />
 			<Route path="*" element={<Navigate to="/not-found" />} />
-			<Route path="*" element={<Navigate to="/not-found" />} />
 		</Routes>
 	);
 };

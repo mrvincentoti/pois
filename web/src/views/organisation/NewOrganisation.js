@@ -274,7 +274,7 @@ const NewOrganisation = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'Organisation created successfully');
-				navigate(`/org/organisation/${values.category_id}/list`);
+				navigate(`/org/organisation/${values.category_id}`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Organisation' };

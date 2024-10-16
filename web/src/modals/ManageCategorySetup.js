@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,17 +9,28 @@ import {
 	request,
 	updateImmutable,
 } from '../services/utilities';
-import { CREATE_CATEGORIES_API, UPDATE_CATEGORIES_API } from '../services/api';
+import {
+	CREATE_CATEGORIES_API,
+	UPDATE_CATEGORIES_API,
+	FETCH_POI_CATEGORY_API,
+	FETCH_ORG_CATEGORY_API,
+} from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
 import { setCategories } from '../redux/slices/category';
 
 const ManageCategorySetup = ({ closeModal, update, category }) => {
 	const categories = useSelector(state => state.category.list);
-
 	const dispatch = useDispatch();
 
+	const [loading, setLoading] = useState(false);
+
+	// useEffect(() => {
+	//     console.log('Category:', category);  // To ensure that category_type is part of the category object
+	// }, [category]);
+
 	const onSubmit = async values => {
+		console.log('Submitting values:', values);
 		try {
 			const config = {
 				method: category ? 'PUT' : 'POST',
@@ -44,7 +55,7 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 			update();
 			closeModal();
 		} catch (e) {
-			return { [FORM_ERROR]: e.message || 'could not save category' };
+			return { [FORM_ERROR]: e.message || 'Could not save category' };
 		}
 	};
 
@@ -54,17 +65,22 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 			closeModal={closeModal}
 		>
 			<Form
-				initialValues={{ ...category }}
+				initialValues={{
+					...category,
+					category_type: category?.category_type?.toLowerCase() || '',
+				}}
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
 					if (!values.name) {
-						errors.name = 'enter category';
+						errors.name = 'Enter category';
 					}
 					if (!values.description) {
-						errors.description = 'enter description';
+						errors.description = 'Enter description';
 					}
-
+					if (!values.category_type) {
+						errors.category_type = 'Select category type';
+					}
 					return errors;
 				}}
 				render={({ handleSubmit, submitError, submitting }) => (
@@ -105,6 +121,25 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 										)}
 									</Field>
 									<ErrorBlock name="description" />
+								</div>
+								<div className="col-lg-12">
+									<label htmlFor="category_type" className="form-label">
+										Category Type
+									</label>
+									<Field name="category_type" component="select">
+										{({ input, meta }) => (
+											<select
+												{...input}
+												className={`form-control ${error(meta)}`}
+												id="category_type"
+											>
+												<option value="">Select category type</option>
+												<option value="poi">POI (Person of Interest)</option>
+												<option value="org">ORG (Organization)</option>
+											</select>
+										)}
+									</Field>
+									<ErrorBlock name="category_type" />
 								</div>
 							</div>
 						</div>
