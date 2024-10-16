@@ -738,8 +738,8 @@ def list_pois():
     # Filter by crimes committed
     crime_id = request.args.get('crime_id')
     if crime_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(Crime, CrimeCommitted.crime_id == Crime.id) \
+        query = query.join(Activity, Poi.id == Activity.poi_id) \
+            .join(Crime, Activity.crime_id == Crime.id) \
             .filter(Crime.id == crime_id)
 
     # Filter by arms recovered
@@ -865,7 +865,7 @@ def list_pois():
             } if poi.poi_status else None,
             "crime_count": crime_count,
             "arms_count": arms_count,
-            "arms_recovered": arms_data  # List of arms recovered
+            "arms_recovered": arms_data 
         })
 
     current_time = datetime.utcnow()
