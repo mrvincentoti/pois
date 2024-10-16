@@ -275,6 +275,7 @@ def edit_category(category_id):
 
     category.name = category_name
     category.description = description
+    category.category_type = category_type
 
     try:
         db.session.commit()
