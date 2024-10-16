@@ -187,7 +187,7 @@ def create_poi():
                 "state_id": poi.state_id,
                 "gender_id": poi.gender_id,
                 "place_of_detention": poi.place_of_detention,
-                    "arresting_body_id": poi.arresting_body_id,
+                "arresting_body_id": poi.arresting_body_id,
                 "organisation_id": poi.organisation_id,
                 "picture": poi.picture,
                 "social_address": social_address,
@@ -727,9 +727,13 @@ def list_pois():
     # Filter by arresting body
     arresting_body_id = request.args.get('arrestingBody_id')
     if arresting_body_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
-            .filter(ArrestingBody.id == arresting_body_id)
+        query = query.filter(Poi.arresting_body_id == arresting_body_id)
+        
+    
+    # Filter by organisation
+    organisation_id = request.args.get('organisation_id')
+    if organisation_id:
+        query = query.filter(Poi.organisation_id == organisation_id)
 
     # Filter by crimes committed
     crime_id = request.args.get('crime_id')
