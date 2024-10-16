@@ -43,6 +43,9 @@ def create_poi():
     country_id = data.get('country_id')
     state_id = data.get('state_id')
     gender_id = data.get('gender_id')
+    place_of_detention = data.get("place_of_detention")
+    arresting_body_id = data.get("arresting_body_id")
+    organisation_id = data.get("organisation_id")
     status_id = data.get('status_id')
     created_by = g.user["id"]
 
@@ -100,6 +103,9 @@ def create_poi():
             country_id=country_id,
             state_id=state_id,
             gender_id=gender_id,
+            place_of_detention=place_of_detention,
+            arresting_body_id=arresting_body_id,
+            organisation_id=organisation_id,
             marital_status=marital_status,
             status_id=status_id,
             created_by=created_by
@@ -180,6 +186,9 @@ def create_poi():
                 "country_id": poi.country_id,
                 "state_id": poi.state_id,
                 "gender_id": poi.gender_id,
+                "place_of_detention": poi.place_of_detention,
+                "arresting_body_id": poi.arresting_body_id,
+                "organisation_id": poi.organisation_id,
                 "picture": poi.picture,
                 "social_address": social_address,
                 "social_latitude": social_latitude,
@@ -289,7 +298,16 @@ def get_poi(poi_id):
                     "id": poi.gender.id,
                     "name": poi.gender.name,
                 } if poi.gender else None,
-                "addresses": address_data,  # Include structured address data
+                "place_of_detention": place_of_detention,
+                "arresting_body": {
+                    "id": poi.arresting_body.id,
+                    "name": poi.arresting_body.name,
+                } if poi.arresting_body else None,
+                "organisation": {
+                    "id": poi.organisation.id,
+                    "name": poi.organisation.org_name,
+                } if poi.organisation else None,
+                "addresses": address_data,
                 "crime_count": crime_count,
                 "arms_count": arms_count,
                 "poi_status": {
@@ -419,6 +437,9 @@ def update_poi(poi_id):
                 country_id=data.get('country_id'),
                 state_id=data.get('state_id'),
                 gender_id=data.get('gender_id'),
+                place_of_detention=data.get('place_of_detention'),
+                arresting_body_id=data.get('arresting_body_id'),
+                organisation_id=data.get('organisation_id'),
                 status_id=data.get('status_id'),
                 deleted_at=data.get('deleted_at')
             )
@@ -485,6 +506,9 @@ def update_poi(poi_id):
                     "country_id": poi.country_id,
                     "state_id": poi.state_id,
                     "gender_id": poi.gender_id,
+                    "place_of_detention": poi.place_of_detention,
+                    "arresting_body_id": poi.arresting_body_id,
+                    "organisation_id": poi.organisation_id,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
@@ -509,6 +533,9 @@ def update_poi(poi_id):
                     "country_id": poi.country_id,
                     "state_id": poi.state_id,
                     "gender_id": poi.gender_id,
+                    "place_of_detention": poi.place_of_detention,
+                    "arresting_body_id": poi.arresting_body_id,
+                    "organisation_id": poi.organisation_id,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
@@ -700,15 +727,19 @@ def list_pois():
     # Filter by arresting body
     arresting_body_id = request.args.get('arrestingBody_id')
     if arresting_body_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(ArrestingBody, CrimeCommitted.arresting_body_id == ArrestingBody.id) \
-            .filter(ArrestingBody.id == arresting_body_id)
+        query = query.filter(Poi.arresting_body_id == arresting_body_id)
+        
+    
+    # Filter by organisation
+    organisation_id = request.args.get('organisation_id')
+    if organisation_id:
+        query = query.filter(Poi.organisation_id == organisation_id)
 
     # Filter by crimes committed
     crime_id = request.args.get('crime_id')
     if crime_id:
-        query = query.join(CrimeCommitted, Poi.id == CrimeCommitted.poi_id) \
-            .join(Crime, CrimeCommitted.crime_id == Crime.id) \
+        query = query.join(Activity, Poi.id == Activity.poi_id) \
+            .join(Crime, Activity.crime_id == Crime.id) \
             .filter(Crime.id == crime_id)
 
     # Filter by arms recovered
@@ -834,7 +865,7 @@ def list_pois():
             } if poi.poi_status else None,
             "crime_count": crime_count,
             "arms_count": arms_count,
-            "arms_recovered": arms_data  # List of arms recovered
+            "arms_recovered": arms_data 
         })
 
     current_time = datetime.utcnow()
