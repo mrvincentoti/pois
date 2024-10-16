@@ -20,7 +20,8 @@ import { Button } from 'antd';
 import Overview from './Overview'; // Your components
 import CrimeCommitted from './CrimeCommitted';
 import MediaAndDocument from './MediaAndDocument';
-import Activities from './Activities';
+// import Activities from './Activities';
+import Timeline from './Timeline';
 import ArmsRecovered from './ArmsRecovered';
 
 const ViewPoi = () => {
@@ -194,8 +195,8 @@ const ViewPoi = () => {
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'crime' ? 'active' : ''}`}
-													onClick={() => handleTabClick('crime')}
+													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
+													onClick={() => handleTabClick('activities')}
 													role="tab"
 												>
 													Timeline of Activites
@@ -250,15 +251,15 @@ const ViewPoi = () => {
 													{activeTab === 'overview' && (
 														<Overview refreshPoiData={refreshPoiData} />
 													)}
-													{activeTab === 'crime' && (
-														<CrimeCommitted refreshPoiData={refreshPoiData} />
+													{activeTab === 'activities' && (
+														<Timeline refreshPoiData={refreshPoiData} />
 													)}
 													{activeTab === 'media' && (
 														<MediaAndDocument refreshPoiData={refreshPoiData} />
 													)}
-													{activeTab === 'activities' && (
+													{/* {activeTab === 'activities' && (
 														<Activities refreshPoiData={refreshPoiData} />
-													)}
+													)} */}
 													{activeTab === 'recovered' && (
 														<ArmsRecovered refreshPoiData={refreshPoiData} />
 													)}
