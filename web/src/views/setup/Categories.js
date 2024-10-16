@@ -143,6 +143,7 @@ const Categories = () => {
 										<tr>
 											<th>S/N</th>
 											<th>Name</th>
+											<th>Type</th>
 											<th>Description</th>
 											<th>Status</th>
 											<th>Actions</th>
@@ -154,6 +155,7 @@ const Categories = () => {
 												<tr key={item.id}>
 													<td>{i + 1}</td>
 													<td>{item.name}</td>
+													<td>{item.category_type}</td>
 													<td>{item.description}</td>
 													<td>
 														{item.deleted_at ? (

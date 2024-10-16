@@ -24,6 +24,7 @@ import {
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
 	FETCH_POI_STATUSES_API,
+	FETCH_ORG_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -64,6 +65,9 @@ const NewPoi = () => {
 	const [imageUrl, setImageUrl] = useState();
 	const [loading, setLoading] = useState(false);
 	const [fileList, setFileList] = useState([]);
+
+	const [organizations, setOrganizations] = useState([]);
+	const [selectedOrganization, setSelectedOrganization] = useState(null);
 
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
@@ -146,6 +150,7 @@ const NewPoi = () => {
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
 				FETCH_POI_STATUSES_API,
+				FETCH_ORG_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -157,6 +162,7 @@ const NewPoi = () => {
 				rs_sources,
 				rs_affiliations,
 				rs_statuses,
+				rs_orgs,
 			] = await Promise.all(requests);
 
 			const formattedAffiliations = rs_affiliations.affiliations.map(
@@ -166,12 +172,18 @@ const NewPoi = () => {
 				})
 			);
 
+			const formattedOrganizations = rs_orgs.orgs.map(org => ({
+				value: org.id, // Organization ID
+				label: org.org_name, // Organization name
+			}));
+
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
 			setAffliations(formattedAffiliations);
 			setPoiStatuses(rs_statuses.statuses);
+			setOrganizations(formattedOrganizations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -234,6 +246,7 @@ const NewPoi = () => {
 			appendIfExists('picture', imageUrl?.file);
 			appendIfExists('alias', alias.length > 0 ? alias.join(', ') : null);
 			appendIfExists('affiliation', affiliation?.join(','));
+			appendIfExists('organisation_id', selectedOrganization?.value);
 
 			const uri = CREATE_POI_API;
 
@@ -617,6 +630,28 @@ const NewPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="role" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label
+														className="form-label"
+														htmlFor="organisation_id"
+													>
+														Organization <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="organisation_id" name="organisation_id">
+														{({ input, meta }) => (
+															<Select
+																style={{ width: '100%', height: '40px' }}
+																placeholder="Select Organisation"
+																onChange={value => {
+																	setSelectedOrganization(value); // Store selected organization in state
+																	input.onChange(value); // Sync with form
+																}}
+																options={organizations} // Provide organizations list
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="organisation_id" />
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
