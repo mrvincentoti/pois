@@ -23,7 +23,7 @@ class Category(db.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "category_type": formatted_type  # Use the formatted category type
+            "category_type": formatted_type,  # Use the formatted category type
         }
 
     def __init__(self, name, description, category_type):

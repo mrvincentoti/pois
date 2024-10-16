@@ -233,7 +233,6 @@ export const UPDATE_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const FILTER_POI_API = `${BASE_POI_URL}/pois`;
 export const FETCH_POI_STATUSES_API = `${BASE_POI_URL}/poi_statuses`;
 
-
 // genders api
 export const FETCH_GENDERS_API = `${BASE_POI_URL}/genders`;
 
@@ -242,6 +241,8 @@ export const FETCH_CATEGORIES_API = `${BASE_POI_URL}/categories`;
 export const CREATE_CATEGORIES_API = `${BASE_POI_URL}/categories`;
 export const UPDATE_CATEGORIES_API = `${BASE_POI_URL}/categories/:id`;
 export const DELETE_CATEGORIES_API = `${BASE_POI_URL}/categories/:id`;
+export const FETCH_POI_CATEGORY_API = `${BASE_POI_URL}/poi-categories`;
+export const FETCH_ORG_CATEGORY_API = `${BASE_POI_URL}/org-categories`;
 
 // sources api
 export const FETCH_SOURCES_API = `${BASE_POI_URL}/sources`;
@@ -314,5 +315,5 @@ export const UPDATE_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
 export const GET_BRIEF_API = `${BASE_POI_URL}/brief/:id`;
 export const GET_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const CREATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-medias/:id`;
-export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`; 
+export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`;
 export const DELETE_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-media/:id`;

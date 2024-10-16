@@ -92,13 +92,15 @@ const Navdata = () => {
 			permission: checkPermission(permissions, 'can-see-poi-link'),
 			stateVariables: isPoi,
 			subItems: [
-				...categories.map(item => ({
-					id: item.name.toLowerCase(),
-					label: item.name,
-					link: `/pois/poi/${item.id}/list`,
-					parentId: 'poi',
-					permission: checkPermission(permissions, 'can-see-poi-link'),
-				})),
+				...categories
+					.filter(c => c.category_type.toLowerCase() === 'poi')
+					.map(item => ({
+						id: item.name.toLowerCase(),
+						label: item.name,
+						link: `/pois/poi/${item.id}/list`,
+						parentId: 'poi',
+						permission: checkPermission(permissions, 'can-see-poi-link'),
+					})),
 			],
 		},
 		{
@@ -115,13 +117,18 @@ const Navdata = () => {
 			permission: checkPermission(permissions, 'can-see-organisation-link'),
 			stateVariables: isOrganisation,
 			subItems: [
-				...categories.map(item => ({
-					id: item.name.toLowerCase(),
-					label: item.name,
-					link: `/org/organisation/${item.id}`,
-					parentId: 'organisation',
-					permission: checkPermission(permissions, 'can-see-organisation-link'),
-				})),
+				...categories
+					.filter(c => c.category_type.toLowerCase() === 'organisation')
+					.map(item => ({
+						id: item.name.toLowerCase(),
+						label: item.name,
+						link: `/org/organisation/${item.id}`,
+						parentId: 'organisation',
+						permission: checkPermission(
+							permissions,
+							'can-see-organisation-link'
+						),
+					})),
 			],
 		},
 		{
