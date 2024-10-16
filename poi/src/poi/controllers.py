@@ -298,7 +298,7 @@ def get_poi(poi_id):
                     "id": poi.gender.id,
                     "name": poi.gender.name,
                 } if poi.gender else None,
-                "place_of_detention": place_of_detention,
+                "place_of_detention": poi.place_of_detention,
                 "arresting_body": {
                     "id": poi.arresting_body.id,
                     "name": poi.arresting_body.name,
