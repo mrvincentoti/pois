@@ -75,18 +75,111 @@ def get_categories():
 
 
 @custom_jwt_required
+def get_poi_categories():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Category.query.filter_by(category_type="poi").order_by(Category.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Category.name.ilike(search))
+
+        # Paginate the query
+        paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of categories to return
+        category_list = [category.to_dict() for category in paginated_categories.items]
+
+        # Return the paginated and filtered categories with status success
+        result = {
+            "status": "success",
+            "status_code": 200,
+            "categories": category_list,
+            "pagination": {
+                "total": paginated_categories.total,
+                "pages": paginated_categories.pages,
+                "current_page": paginated_categories.page,
+                "per_page": paginated_categories.per_page,
+                "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
+                "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
+            }
+        }
+
+        return jsonify(result)
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+
+
+@custom_jwt_required
+def get_org_categories():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Category.query.filter_by(category_type="org").order_by(Category.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Category.name.ilike(search))
+
+        # Paginate the query
+        paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of categories to return
+        category_list = [category.to_dict() for category in paginated_categories.items]
+
+        # Return the paginated and filtered categories with status success
+        result = {
+            "status": "success",
+            "status_code": 200,
+            "categories": category_list,
+            "pagination": {
+                "total": paginated_categories.total,
+                "pages": paginated_categories.pages,
+                "current_page": paginated_categories.page,
+                "per_page": paginated_categories.per_page,
+                "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
+                "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
+            }
+        }
+
+        return jsonify(result)
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+
+@custom_jwt_required
 def add_category():
     if request.method == "POST":
         data = request.get_json()
         category_name = data.get("name")
         description = data.get("description")
+        category_type = data.get("category_type")
 
         if not category_name:
             return jsonify({"message": "Name is required"}), 400
 
         new_category = Category(
             name=category_name,
-            description=description
+            description=description,
+            category_type=category_type
         )
 
         try:
@@ -106,13 +199,14 @@ def add_category():
                 "new_values": json.dumps(
                     {
                         "category_name": category_name,
-                        "description": description
+                        "description": description,
+                        "category_type": category_type
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Category, Create",
+                "tags": "Setup, Category, Create",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
             }
@@ -134,7 +228,8 @@ def get_category(category_id):
         category_data = {
             "id": category.id,
             "name": category.name,
-            "description": category.description
+            "description": category.description,
+            "category_type": category.category_type
         }
 
         current_time = datetime.utcnow()
@@ -151,7 +246,7 @@ def get_category(category_id):
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "Auth, Category, Get",
+            "tags": "Setup, Category, Get",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
@@ -173,6 +268,7 @@ def edit_category(category_id):
     data = request.get_json()
     category_name = data.get("name")
     description = data.get("description")
+    category_type = data.get("category_type")
 
     if not category_name:
         return jsonify({"message": "Name is required"}), 400
@@ -196,13 +292,14 @@ def edit_category(category_id):
                 "new_values": json.dumps(
                     {
                         "category_name": category_name,
-                        "description": description
+                        "description": description,
+                        "category_type": category_type
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Category, Update",
+                "tags": "Setup, Category, Update",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -241,13 +338,14 @@ def delete_category(category_id):
                 "new_values": json.dumps(
                     {
                         "category_name": category.name,
-                        "description": category.description
+                        "description": category.description,
+                        "category_type": category.category_type
                     }
                 ),
                 "url": request.url,
                 "ip_address": request.remote_addr,
                 "user_agent": request.user_agent.string,
-                "tags": "Auth, Category, Delete",
+                "tags": "Setup, Category, Delete",
                 "created_at": current_time.isoformat(),
                 "updated_at": current_time.isoformat(),
         }
@@ -284,7 +382,8 @@ def restore_category(category_id):
             "new_values": json.dumps(
                 {
                     "name": category.name,
-                    "description": category.description
+                    "description": category.description,
+                    "category_type": category.category_type
                 }
             ),
             "url": request.url,
