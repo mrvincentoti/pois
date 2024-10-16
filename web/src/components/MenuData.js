@@ -93,9 +93,9 @@ const Navdata = () => {
 			stateVariables: isPoi,
 			subItems: [
 				...categories
-					.filter(c => c.category_type.toLowerCase() === 'poi')
+					.filter(c => c.category_type === 'poi')
 					.map(item => ({
-						id: item.name.toLowerCase(),
+						id: item.name,
 						label: item.name,
 						link: `/pois/poi/${item.id}/list`,
 						parentId: 'poi',
@@ -118,9 +118,9 @@ const Navdata = () => {
 			stateVariables: isOrganisation,
 			subItems: [
 				...categories
-					.filter(c => c.category_type.toLowerCase() === 'organisation')
+					.filter(c => c.category_type === 'org')
 					.map(item => ({
-						id: item.name.toLowerCase(),
+						id: item.name,
 						label: item.name,
 						link: `/org/organisation/${item.id}`,
 						parentId: 'organisation',
