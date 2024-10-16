@@ -60,7 +60,7 @@ const Organisation = () => {
 		async (per_page, page, q, cid, filters = '') => {
 			try {
 				const rs = await request(
-					`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
+					`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}&category_id=${cid}${filters}`
 				);
 				const { orgs, ...rest } = rs;
 				setList(orgs);
