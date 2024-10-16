@@ -23,7 +23,7 @@ import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { EditLink, ViewLink } from '../../components/Buttons';
 import { DELETE_POI_API, FETCH_ORG_API } from '../../services/api';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { doClearFilter } from '../../redux/slices/employee';
 import ImportBrief from '../../modals/ManageBrief';
@@ -46,31 +46,38 @@ const Organisation = () => {
 	const [filterQuery, setFilterQuery] = useState('');
 	const [queryLimit, setQueryLimit] = useState(limit);
 
+	const [categoryId, setCategoryId] = useState('');
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
 
 	const query = useQuery();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const dispatch = useDispatch();
+	const params = useParams();
 	const permissions = useSelector(state => state.user.permissions);
 
-	const fetchProfiles = useCallback(async (per_page, page, q, filters = '') => {
-		try {
-			const rs = await request(
-				`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}${filters}`
-			);
-			const { orgs, ...rest } = rs;
-			setList(orgs);
-			setMeta({ ...rest, per_page });
-		} catch (e) {
-			notifyWithIcon('error', e.message || 'error, could not fetch pois');
-		}
-	}, []);
+	const fetchProfiles = useCallback(
+		async (per_page, page, q, cid, filters = '') => {
+			try {
+				const rs = await request(
+					`${FETCH_ORG_API}?per_page=${per_page}&page=${page}&q=${q}&category_id=${cid}${filters}`
+				);
+				const { orgs, ...rest } = rs;
+				setList(orgs);
+				setMeta({ ...rest, per_page });
+			} catch (e) {
+				notifyWithIcon('error', e.message || 'error, could not fetch pois');
+			}
+		},
+		[]
+	);
 
 	useEffect(() => {
 		const _page = Number(query.get('page') || 1);
 		const _search = query.get('q') || '';
 		const _limit = Number(query.get('entries_per_page') || limit);
+
+		const _categoryId = params?.category;
 
 		const _queryString = parseHashString(location.hash);
 		const _filterQuery = _queryString
@@ -82,29 +89,34 @@ const Organisation = () => {
 			_page !== page ||
 			_search !== search ||
 			_limit !== queryLimit ||
+			_categoryId !== categoryId ||
 			_filterQuery !== filterQuery
 		) {
 			if (
 				_page !== page ||
 				_search !== search ||
 				_limit !== queryLimit ||
+				_categoryId !== categoryId ||
 				_filterQuery !== filterQuery
 			) {
 				setFetching(true);
 			}
 
-			fetchProfiles(_limit, _page, _search, _filterQuery).then(_ => {
-				setFetching(false);
-				setPage(_page);
-				setSearch(_search);
-				setSearchTerm(_search);
-				setQueryLimit(_limit);
-				setFilters(_queryString);
-				setFilterQuery(_filterQuery);
-				if (_filterQuery === '') {
-					dispatch(doClearFilter(true));
+			fetchProfiles(_limit, _page, _search, _categoryId, _filterQuery).then(
+				_ => {
+					setFetching(false);
+					setPage(_page);
+					setSearch(_search);
+					setSearchTerm(_search);
+					setCategoryId(_categoryId);
+					setQueryLimit(_limit);
+					setFilters(_queryString);
+					setFilterQuery(_filterQuery);
+					if (_filterQuery === '') {
+						dispatch(doClearFilter(true));
+					}
 				}
-			});
+			);
 		}
 	}, [
 		dispatch,
@@ -116,6 +128,7 @@ const Organisation = () => {
 		query,
 		queryLimit,
 		search,
+		params?.category,
 	]);
 
 	// eslint-disable-next-line no-unused-vars

@@ -274,7 +274,7 @@ const NewOrganisation = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'Organisation created successfully');
-				navigate('/org/organisation');
+				navigate(`/org/organisation/${values.category_id}/list`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Organisation' };
@@ -761,10 +761,10 @@ const NewOrganisation = () => {
 												</div>
 
 												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="category">
+													<label className="form-label" htmlFor="category_id">
 														Category <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="category" name="category">
+													<Field id="category_id" name="category_id">
 														{({ input, meta }) => (
 															<Select
 																style={{
@@ -785,7 +785,7 @@ const NewOrganisation = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category" />
+													<ErrorBlock name="category_id" />
 												</div>
 
 												{/* <div className="col-lg-6 mb-3">
