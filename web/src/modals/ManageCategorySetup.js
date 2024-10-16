@@ -25,9 +25,9 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 
 	const [loading, setLoading] = useState(false);
 
-	// useEffect(() => {
-	//     console.log('Category:', category);  // To ensure that category_type is part of the category object
-	// }, [category]);
+	useEffect(() => {
+		console.log('Category:', category); // To ensure that category_type is part of the category object
+	}, [category]);
 
 	const onSubmit = async values => {
 		console.log('Submitting values:', values);
@@ -67,7 +67,6 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 			<Form
 				initialValues={{
 					...category,
-					category_type: category?.category_type?.toLowerCase() || '',
 				}}
 				onSubmit={onSubmit}
 				validate={values => {
@@ -134,8 +133,8 @@ const ManageCategorySetup = ({ closeModal, update, category }) => {
 												id="category_type"
 											>
 												<option value="">Select category type</option>
-												<option value="poi">POI (Person of Interest)</option>
-												<option value="org">ORG (Organization)</option>
+												<option value="poi">Person of Interest</option>
+												<option value="org">Organization</option>
 											</select>
 										)}
 									</Field>
