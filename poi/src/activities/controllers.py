@@ -65,12 +65,14 @@ def add_activity():
             items = request.form.getlist("items[]")
             qtys = request.form.getlist("qtys[]")
 
-            # Validate that items and quantities exist and match in length
-            if not items or not qtys or len(items) != len(qtys):
-                return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+            # Check if there are any items first
+            if items:
+                # Validate that items and quantities match in length
+                if not qtys or len(items) != len(qtys):
+                    return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
-            # Prepare item-qty pairs as a list of dictionaries
-            item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
+                # Prepare item-qty pairs as a list of dictionaries
+                item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
 
             # Create and save a new activity
             new_activity = Activity(**form_data)
