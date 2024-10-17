@@ -561,7 +561,7 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": "org"  # Flag indicating this is an organization activity
+                "activity_type": "org"
             })
 
         # Process POI activities
@@ -602,7 +602,7 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": "poi"  # Flag indicating this is a POI activity
+                "activity_type": "poi"  
             })
 
         # Return the list of combined activities
