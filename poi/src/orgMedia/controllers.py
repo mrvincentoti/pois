@@ -188,6 +188,7 @@ def get_org_media(org_id):
                 "media_caption": media.media_caption or 'No caption',
                 "org_id": org.id,
                 "org_name": org_name,
+                "activity_id": media.activity_id,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None
             }
