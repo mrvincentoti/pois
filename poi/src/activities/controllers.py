@@ -481,35 +481,33 @@ def restore_activity(activity_id):
 @custom_jwt_required
 def get_activities_by_poi(poi_id):
     try:
-        # Get search parameters from request arguments
+        # Get search parameters and pagination settings from request arguments
         search_term = request.args.get('q', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 9, type=int)
 
         # Query the Activity table for the given poi_id and filter by deleted_at
         query = Activity.query.filter_by(poi_id=poi_id, deleted_at=None)
 
         # Apply search filters if a search term is provided
         if search_term:
-            search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
+            search_pattern = f"%{search_term}%"
             query = query.filter(Activity.comment.ilike(search_pattern))
 
         # Order by activity_date in descending order (newest first)
         query = query.order_by(Activity.activity_date.desc())
 
-        # Execute the query and get the results
-        activities = query.all()
+        # Paginate the query
+        paginated_activities = query.paginate(page=page, per_page=per_page, error_out=False)
+        activities = paginated_activities.items
 
         # Prepare the list of activities to return
         activity_list = []
         for activity in activities:
-            # Fetch the name of the user who created the record
             created_by = User.query.filter_by(id=activity.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
-
-            # Fetch associated items from the ActivityItem table
             activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=poi_id).all()
             items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
-
-            # Fetch associated media files from PoiMedia table
             media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
@@ -523,7 +521,6 @@ def get_activities_by_poi(poi_id):
                 for media in media_files
             ] if media_files else []
 
-            # Prepare the activity data including items and media
             activity_data = {
                 "id": activity.id,
                 "poi_id": activity.poi_id,
@@ -536,21 +533,26 @@ def get_activities_by_poi(poi_id):
                 "location_from": activity.location_from,
                 "location_to": activity.location_to,
                 "facilitator": activity.facilitator,
-                "comment": activity.comment,
                 "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
                 "created_by_id": activity.created_by,
                 "created_by_name": created_by_name,
-                "items": items_data,  # Add items belonging to the activity
-                "media_files": media_data  # Add media files associated with the activity
+                "items": items_data,
+                "media_files": media_data
             }
             activity_list.append(activity_data)
 
-        # Return the list of activities with status success
         return jsonify({
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
+            "pagination": {
+                "page": page,
+                "per_page": per_page,
+                "total": paginated_activities.total,
+                "total_pages": paginated_activities.pages
+            }
         })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

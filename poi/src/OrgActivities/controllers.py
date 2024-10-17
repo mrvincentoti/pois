@@ -499,7 +499,7 @@ def get_activities_by_org(org_id):
         # Get search and pagination parameters from request arguments
         search_term = request.args.get('q', '')
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
+        per_page = request.args.get('per_page', 9, type=int)
 
         # Query activities directly linked to the organization
         org_activities_query = OrgActivity.query.filter_by(org_id=org_id, deleted_at=None)
