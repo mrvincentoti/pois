@@ -50,6 +50,8 @@ def add_activity():
                 "poi_id": request.form.get("poi_id"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
+                "nature_of_attack": request.form.get("nature_of_attack"),
+                "location": request.form.get("location"),
                 "action_taken": request.form.get("action_taken"),
                 "location_from": request.form.get("location_from"),
                 "location_to": request.form.get("location_to"),
@@ -63,12 +65,14 @@ def add_activity():
             items = request.form.getlist("items[]")
             qtys = request.form.getlist("qtys[]")
 
-            # Validate that items and quantities exist and match in length
-            if not items or not qtys or len(items) != len(qtys):
-                return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+            # Check if there are any items first
+            if items:
+                # Validate that items and quantities match in length
+                if not qtys or len(items) != len(qtys):
+                    return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
-            # Prepare item-qty pairs as a list of dictionaries
-            item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
+                # Prepare item-qty pairs as a list of dictionaries
+                item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
 
             # Create and save a new activity
             new_activity = Activity(**form_data)
@@ -134,6 +138,8 @@ def add_activity():
                     "poi_id": form_data["poi_id"],
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
+                    "nature_of_attack": form_data["nature_of_attack"],
+                    "location": form_data["location"],
                     "action_taken": form_data["action_taken"],
                     "location_from": form_data["location_from"],
                     "location_to": form_data["location_to"],
@@ -180,7 +186,7 @@ def get_activity(activity_id):
         created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
 
         # Fetch associated items from `ActivityItem` table
-        activity_items = ActivityItem.query.filter_by(activity_id=activity.id).all()
+        activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=poi.id).all()
         items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
 
         # Fetch associated media files from `PoiMedia` table
@@ -249,6 +255,8 @@ def edit_activity(activity_id):
         poi_id = request.form.get("poi_id")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
+        nature_of_attack = request.form.get("nature_of_attack")
+        location = request.form.get("location")
         action_taken = request.form.get("action_taken")
         location_from = request.form.get("location_from")
         location_to = request.form.get("location_to")
@@ -262,6 +270,8 @@ def edit_activity(activity_id):
         activity.poi_id = poi_id
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
+        activity.nature_of_attack = nature_of_attack
+        activity.location = location
         activity.action_taken = action_taken
         activity.location_from = location_from
         activity.location_to = location_to
@@ -278,7 +288,7 @@ def edit_activity(activity_id):
             return jsonify({"message": "Mismatch between items and quantities"}), 400
 
         # Remove old items for this activity
-        ActivityItem.query.filter_by(activity_id=activity.id).delete()
+        ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).delete()
 
         # Add new items for the activity
         item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
@@ -342,10 +352,19 @@ def edit_activity(activity_id):
                 "auditable_id": activity.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "poi_id": poi_id,
-                    "comment": comment,
-                    "activity_date": activity_date,
-                    "updated_by": updated_by
+                    "type_id": form_data["type_id"],
+                    "poi_id": form_data["poi_id"],
+                    "crime_id": form_data["crime_id"],
+                    "casualties_recorded": form_data["casualties_recorded"],
+                    "nature_of_attack": form_data["nature_of_attack"],
+                    "location": form_data["location"],
+                    "action_taken": form_data["action_taken"],
+                    "location_from": form_data["location_from"],
+                    "location_to": form_data["location_to"],
+                    "facilitator": form_data["facilitator"],
+                    "comment": form_data["comment"],
+                    "activity_date": form_data["activity_date"],
+                    "created_by": form_data["created_by"]
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -379,7 +398,7 @@ def delete_activity(activity_id):
         activity.soft_delete()
 
         # Soft delete associated items
-        ActivityItem.query.filter_by(activity_id=activity.id).update({'deleted_at': datetime.utcnow()})
+        ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).update({'deleted_at': datetime.utcnow()})
 
         # Soft delete associated media
         PoiMedia.query.filter_by(activity_id=activity.id).update({'deleted_at': datetime.utcnow()})
@@ -419,17 +438,20 @@ def restore_activity(activity_id):
         ).first()
 
         if not activity:
-            return jsonify({"message": "Recovered activity not found or not deleted"}), 404
+            return jsonify({"message": "Activity not found or not deleted"}), 404
 
         # Restore the soft-deleted record by setting deleted_at to None
         activity.deleted_at = None
-
+        db.session.commit()
+        
         # Restore associated items
-        ActivityItem.query.filter_by(activity_id=activity.id).update({'deleted_at': None})
-
+        ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).update({'deleted_at': None})
+        db.session.commit()
+        
         # Restore associated media
         PoiMedia.query.filter_by(activity_id=activity.id).update({'deleted_at': None})
-
+        db.session.commit()
+        
         # Optionally save the restore action in the audit log
         current_time = datetime.utcnow()
         audit_data = {
@@ -448,10 +470,10 @@ def restore_activity(activity_id):
         save_audit_data(audit_data)
 
         db.session.commit()
-        return jsonify({"message": "Recovered activity restored successfully"}), 200
+        return jsonify({"message": "Activity restored successfully"}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": "Error restoring recovered activity", "error": str(e)}), 500
+        return jsonify({"message": "Error restoring activity", "error": str(e)}), 500
     finally:
         db.session.close()
 
@@ -484,7 +506,7 @@ def get_activities_by_poi(poi_id):
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
 
             # Fetch associated items from the ActivityItem table
-            activity_items = ActivityItem.query.filter_by(activity_id=activity.id).all()
+            activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=poi_id).all()
             items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
 
             # Fetch associated media files from PoiMedia table
@@ -494,6 +516,7 @@ def get_activities_by_poi(poi_id):
                     "media_url": media.media_url,
                     "media_type": media.media_type,
                     "media_caption": media.media_caption,
+                    "activity_id": media.activity_id,
                     "created_by": media.created_by,
                     "created_at": media.created_at.isoformat()
                 }
@@ -504,6 +527,15 @@ def get_activities_by_poi(poi_id):
             activity_data = {
                 "id": activity.id,
                 "poi_id": activity.poi_id,
+                "crime_id": activity.crime_id,
+                "casualties_recorded": activity.casualties_recorded,
+                "nature_of_attack": activity.nature_of_attack,
+                "location": activity.location,
+                "action_taken": activity.action_taken,
+                "comment": activity.comment,
+                "location_from": activity.location_from,
+                "location_to": activity.location_to,
+                "facilitator": activity.facilitator,
                 "comment": activity.comment,
                 "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
                 "created_by_id": activity.created_by,
