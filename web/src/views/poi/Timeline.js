@@ -4,12 +4,12 @@ import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditCrime from './NewEditCrime';
 import NoResult from '../../components/NoResult';
-import ManageCrimes from '../../modals/ManageCrimes';
+import ManageActivities from '../../modals/ManageActivities';
 import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms
 import ManageCrimesMedia from '../../modals/ManageCrimesMedia'; // Import the new modal for managing media
 import CrimeDetailsModal from './CrimeDetailsModal';
 import NewEditComment from './NewEditComment';
-import { GET_ACTIVITIES_API } from '../../services/api';
+import { FETCH_ACTIVITIES_API, GET_ACTIVITIES_API } from '../../services/api';
 import {
 	antIconSync,
 	formatDate,
@@ -34,7 +34,7 @@ const Timeline = ({ refreshPoiData }) => {
 	const [arms, setArms] = useState(null);
 	const [notes, setNotes] = useState(null);
 	const [loadError, setLoadError] = useState('');
-	const [crimeCommitted, setCrimeCommitted] = useState(null);
+	const [activities, setActivities] = useState(null);
 	const [showDetailsModal, setShowDetailsModal] = useState(false);
 
 	const navigate = useNavigate();
@@ -42,9 +42,8 @@ const Timeline = ({ refreshPoiData }) => {
 
 	const fetchActivityDetails = useCallback(async id => {
 		try {
-			const rs = await request(GET_ACTIVITIES_API.replace(':id', id));
-			console.log(rs);
-			setActivitiesData(rs.activity);
+			const rs = await request(FETCH_ACTIVITIES_API.replace(':id', id));
+			setActivitiesData(rs.activities);
 		} catch (error) {
 			setLoadError(error.message);
 		}
@@ -61,16 +60,16 @@ const Timeline = ({ refreshPoiData }) => {
 		navigate(`/pois/${id}/edit`);
 	};
 
-	const addCrimes = () => {
+	const addActivity = () => {
 		document.body.classList.add('modal-open');
 		setShowModal(true);
 	};
 
 	const addArms = item => {
 		if (item) {
-			setCrimeCommitted(item);
+			setActivities(item);
 		} else {
-			setCrimeCommitted(null);
+			setActivities(null);
 		}
 		document.body.classList.add('modal-open');
 		setShowArmsModal(true); // Open Arms modal
@@ -78,9 +77,9 @@ const Timeline = ({ refreshPoiData }) => {
 
 	const addNotes = item => {
 		if (item) {
-			setCrimeCommitted(item);
+			setActivities(item);
 		} else {
-			setCrimeCommitted(null);
+			setActivities(null);
 		}
 		document.body.classList.add('modal-open');
 		setShowNotesModal(true); // Open Notes modal
@@ -88,23 +87,23 @@ const Timeline = ({ refreshPoiData }) => {
 
 	const addMedia = item => {
 		if (item) {
-			setCrimeCommitted(item);
+			setActivities(item);
 		} else {
-			setCrimeCommitted(null);
+			setActivities(null);
 		}
 		document.body.classList.add('modal-open');
 		setShowMediaModal(true); // Open Media modal
 	};
 
-	const editCrimes = item => {
+	const editActivity = item => {
 		document.body.classList.add('modal-open');
-		setCrimes(item);
+		setActivities(item);
 		setShowModal(true);
 	};
 
 	const closeModal = () => {
 		setShowModal(false);
-		setCrimes(null);
+		setActivities(null);
 		document.body.classList.remove('modal-open');
 	};
 
@@ -130,7 +129,7 @@ const Timeline = ({ refreshPoiData }) => {
 	};
 
 	const showDetails = item => {
-		setCrimeCommitted(item);
+		setActivities(item);
 		setShowDetailsModal(true);
 		document.body.classList.add('modal-open');
 	};
@@ -149,7 +148,7 @@ const Timeline = ({ refreshPoiData }) => {
 							<div className="d-flex align-items-center mb-4">
 								<h5 className="card-title flex-grow-1 mb-0">Activities</h5>
 								<div className="d-flex gap-2">
-									<div onClick={addCrimes}>
+									<div onClick={addActivity}>
 										<label htmlFor="formFile" className="btn btn-success">
 											<i className="ri-add-fill me-1 align-bottom"></i> Add
 											Activity
@@ -165,11 +164,11 @@ const Timeline = ({ refreshPoiData }) => {
 												<div className="card-body p-4">
 													<div className="d-flex">
 														<div className="flex-grow-1 text-muted overflow-hidden">
-															<h5 className="fs-14 text-truncate">
+															{/* <h5 className="fs-14 text-truncate">
 																<a href="#" className="text-body">
-																	{item.poi_name.name || 'N/A'}
+																	{item.poi_name?.name || 'N/A'}
 																</a>
-															</h5>
+															</h5> */}
 															<p className="text-muted text-truncate mb-0">
 																Activity Date:
 																<span className="fw-semibold text-body">
@@ -183,35 +182,40 @@ const Timeline = ({ refreshPoiData }) => {
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
-																Location:
+																Items:
 																<span className="fw-semibold text-body">
-																	{'N/A'}
+																	{item.items.map((item, index) => (
+																		<span key={index}>
+																			{item.item} ({item.qty})
+																			{index !== item.items?.length - 1 && ', '}
+																		</span>
+																	))}
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
-																Action Taken:
+																Media Files:
 																<span className="fw-semibold text-body">
-																	{item.action_taken || 'N/A'}
+																	{item.media_files.length > 0 ? 'Yes' : 'No'}
 																</span>
 															</p>
-															<p className="text-muted text-truncate mb-0">
+															{/* <p className="text-muted text-truncate mb-0">
 																Nature of Attack:
 																<span className="fw-semibold text-body">
 																	{'N/A'}
 																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
+															</p> */}
+															{/* <p className="text-muted text-truncate mb-0">
 																Assessment:
 																<span className="fw-semibold text-body">
 																	{'N/A'}
 																</span>
-															</p>
+															</p> */}
 														</div>
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => editCrimes(item)}
+															onClick={() => editActivity(item)}
 														>
 															Edit
 														</button>
@@ -241,7 +245,11 @@ const Timeline = ({ refreshPoiData }) => {
 								</div>
 							) : (
 								<NoResult
-									title={loadError ? 'Error Loading Crimes' : 'No Crimes Found'}
+									title={
+										loadError
+											? 'Error Loading Activities'
+											: 'No Activities Found'
+									}
 								/>
 							)}
 						</div>
@@ -255,27 +263,27 @@ const Timeline = ({ refreshPoiData }) => {
 				)}
 			</div>
 			{showModal && (
-				<ManageCrimes
+				<ManageActivities
 					closeModal={closeModal}
-					crimesCommitted={crimes}
+					activities={activities}
 					update={async () => {
 						await refreshTable();
 						refreshPoiData(); // Refresh POI data after updating crimes
 					}}
 				/>
 			)}
-			{showArmsModal && (
+			{/* {showArmsModal && (
 				<ManageArmsRecovered
 					closeModal={closeArmsModal}
 					armsRecovered={arms}
-					crimeCommitted={crimeCommitted}
+					activities={activities}
 					update={async () => {
 						await refreshTable();
 						refreshPoiData(); // Refresh POI data after updating arms
 					}}
 				/>
-			)}
-			{showNotesModal && (
+			)} */}
+			{/* {showNotesModal && (
 				<NewEditComment
 					closeModal={closeNotesModal}
 					notes={notes}
@@ -285,8 +293,8 @@ const Timeline = ({ refreshPoiData }) => {
 						refreshPoiData(); // Refresh POI data after updating notes
 					}}
 				/>
-			)}
-			{showMediaModal && ( // Render Media Modal
+			)} */}
+			{/* {showMediaModal && ( // Render Media Modal
 				<ManageCrimesMedia
 					id={params.id}
 					closeModal={closeMediaModal}
@@ -296,8 +304,8 @@ const Timeline = ({ refreshPoiData }) => {
 						refreshPoiData();
 					}}
 				/>
-			)}
-			{showDetailsModal && (
+			)} */}
+			{/* {showDetailsModal && (
 				<CrimeDetailsModal
 					id={params.id}
 					closeModal={closeDetailsModal}
@@ -307,7 +315,7 @@ const Timeline = ({ refreshPoiData }) => {
 						refreshPoiData();
 					}}
 				/>
-			)}
+			)} */}
 		</>
 	);
 };
