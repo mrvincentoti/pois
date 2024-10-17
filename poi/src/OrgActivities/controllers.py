@@ -9,6 +9,9 @@ from .models import OrgActivity
 from ..activityItem.models import ActivityItem
 from ..organisation.models import Organisation
 from ..orgMedia.models import OrgMedia
+from ..poi.models import Poi
+from ..activities.models import Activity
+from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
@@ -496,32 +499,38 @@ def get_activities_by_org(org_id):
         # Get search parameters from request arguments
         search_term = request.args.get('q', '')
 
-        # Query the Activity table for the given org_id and filter by deleted_at
-        query = OrgActivity.query.filter_by(org_id=org_id, deleted_at=None)
+        # Query activities directly linked to the organization
+        org_activities_query = OrgActivity.query.filter_by(org_id=org_id, deleted_at=None)
+
+        # Query activities related to POIs that belong to the organization
+        poi_ids = Poi.query.with_entities(Poi.id).filter_by(organisation_id=org_id, deleted_at=None).subquery()
+        poi_activities_query = Activity.query.filter(Activity.poi_id.in_(poi_ids), Activity.deleted_at == None)
 
         # Apply search filters if a search term is provided
         if search_term:
-            search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
-            query = query.filter(OrgActivity.comment.ilike(search_pattern))
+            search_pattern = f"%{search_term}%"
+            org_activities_query = org_activities_query.filter(OrgActivity.comment.ilike(search_pattern))
+            poi_activities_query = poi_activities_query.filter(Activity.comment.ilike(search_pattern))
 
-        # Order by activity_date in descending order (newest first)
-        query = query.order_by(OrgActivity.activity_date.desc())
+        # Order both queries by activity_date in descending order
+        org_activities_query = org_activities_query.order_by(OrgActivity.activity_date.desc())
+        poi_activities_query = poi_activities_query.order_by(Activity.activity_date.desc())
 
-        # Execute the query and get the results
-        activities = query.all()
+        # Execute both queries and get the results
+        org_activities = org_activities_query.all()
+        poi_activities = poi_activities_query.all()
 
         # Prepare the list of activities to return
         activity_list = []
-        for activity in activities:
-            # Fetch the name of the user who created the record
+
+        # Process organization activities
+        for activity in org_activities:
             created_by = User.query.filter_by(id=activity.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
 
-            # Fetch associated items from the ActivityItem table
             activity_items = ActivityItem.query.filter_by(activity_id=activity.id, org_id=org_id).all()
             items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
 
-            # Fetch associated media files from PoiMedia table
             media_files = OrgMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
@@ -535,8 +544,7 @@ def get_activities_by_org(org_id):
                 for media in media_files
             ] if media_files else []
 
-            # Prepare the activity data including items and media
-            activity_data = {
+            activity_list.append({
                 "id": activity.id,
                 "org_id": activity.org_id,
                 "crime_id": activity.crime_id,
@@ -548,21 +556,62 @@ def get_activities_by_org(org_id):
                 "location_from": activity.location_from,
                 "location_to": activity.location_to,
                 "facilitator": activity.facilitator,
-                "comment": activity.comment,
                 "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
                 "created_by_id": activity.created_by,
                 "created_by_name": created_by_name,
-                "items": items_data,  # Add items belonging to the activity
-                "media_files": media_data  # Add media files associated with the activity
-            }
-            activity_list.append(activity_data)
+                "items": items_data,
+                "media_files": media_data,
+                "activity_type": "org"  # Flag indicating this is an organization activity
+            })
 
-        # Return the list of activities with status success
+        # Process POI activities
+        for activity in poi_activities:
+            created_by = User.query.filter_by(id=activity.created_by, deleted_at=None).first()
+            created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
+
+            activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).all()
+            items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
+
+            media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
+            media_data = [
+                {
+                    "media_url": media.media_url,
+                    "media_type": media.media_type,
+                    "media_caption": media.media_caption,
+                    "activity_id": media.activity_id,
+                    "created_by": media.created_by,
+                    "created_at": media.created_at.isoformat()
+                }
+                for media in media_files
+            ] if media_files else []
+
+            activity_list.append({
+                "id": activity.id,
+                "poi_id": activity.poi_id,
+                "crime_id": activity.crime_id,
+                "casualties_recorded": activity.casualties_recorded,
+                "nature_of_attack": activity.nature_of_attack,
+                "location": activity.location,
+                "action_taken": activity.action_taken,
+                "comment": activity.comment,
+                "location_from": activity.location_from,
+                "location_to": activity.location_to,
+                "facilitator": activity.facilitator,
+                "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
+                "created_by_id": activity.created_by,
+                "created_by_name": created_by_name,
+                "items": items_data,
+                "media_files": media_data,
+                "activity_type": "poi"  # Flag indicating this is a POI activity
+            })
+
+        # Return the list of combined activities
         return jsonify({
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
         })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
