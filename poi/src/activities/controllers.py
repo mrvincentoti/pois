@@ -50,6 +50,8 @@ def add_activity():
                 "poi_id": request.form.get("poi_id"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
+                "nature_of_attack": request.form.get("nature_of_attack"),
+                "location": request.form.get("location"),
                 "action_taken": request.form.get("action_taken"),
                 "location_from": request.form.get("location_from"),
                 "location_to": request.form.get("location_to"),
@@ -134,6 +136,8 @@ def add_activity():
                     "poi_id": form_data["poi_id"],
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
+                    "nature_of_attack": form_data("nature_of_attack"),
+                    "location": form_data("location"),
                     "action_taken": form_data["action_taken"],
                     "location_from": form_data["location_from"],
                     "location_to": form_data["location_to"],
@@ -249,6 +253,8 @@ def edit_activity(activity_id):
         poi_id = request.form.get("poi_id")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
+        nature_of_attack = request.form.get("nature_of_attack")
+        location = request.form.get("location")
         action_taken = request.form.get("action_taken")
         location_from = request.form.get("location_from")
         location_to = request.form.get("location_to")
@@ -262,6 +268,8 @@ def edit_activity(activity_id):
         activity.poi_id = poi_id
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
+        activity.nature_of_attack = nature_of_attack
+        activity.location = location
         activity.action_taken = action_taken
         activity.location_from = location_from
         activity.location_to = location_to
@@ -504,6 +512,15 @@ def get_activities_by_poi(poi_id):
             activity_data = {
                 "id": activity.id,
                 "poi_id": activity.poi_id,
+                "crime_id": activity.crime_id,
+                "casualties_recorded": activity.casualties_recorded,
+                "nature_of_attack": activity.nature_of_attack,
+                "location": activity.location,
+                "action_taken": activity.action_taken,
+                "comment": activity.comment,
+                "location_from": activity.location_from,
+                "location_to": activity.location_to,
+                "facilitator": activity.facilitator,
                 "comment": activity.comment,
                 "activity_date": activity.activity_date.isoformat() if activity.activity_date else None,
                 "created_by_id": activity.created_by,
