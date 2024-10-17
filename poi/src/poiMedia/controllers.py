@@ -192,16 +192,6 @@ def get_poi_media(poi_id):
             poi = Poi.query.filter_by(id=media.poi_id).first()
             poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else None
 
-            # Fetch the CrimeCommitted record
-            crime_committed = CrimeCommitted.query.filter_by(id=media.crime_id).first()
-
-            # Initialize crime_name as None
-            crime_name = None
-
-            # Proceed only if crime_committed is found
-            if crime_committed:
-                crime = Crime.query.filter_by(id=crime_committed.crime_id).first()
-                crime_name = f"{crime.name or ''}".strip() if crime else None
                 
             # Fetch file size from MinIO
             file_size = None
@@ -221,8 +211,7 @@ def get_poi_media(poi_id):
                 "media_caption": media.media_caption or 'No caption',
                 "poi_id": poi.id if poi else None,
                 "poi_name": poi_name,
-                "crime_id": media.crime_id,
-                "crime_committed": crime_name,
+                "activity_id": media.activity_id,
                 "created_by": media.created_by,
                 "created_at": media.created_at.isoformat() if media.created_at else None,
                 "file_size": file_size_str
