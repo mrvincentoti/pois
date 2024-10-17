@@ -8,6 +8,8 @@ class Activity(db.Model):
     poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'))
     crime_id = db.Column(db.Integer, db.ForeignKey('crimes.id'), nullable=True)
     casualties_recorded = db.Column(db.Integer, nullable=True)
+    nature_of_attack = db.Column(db.String(255), nullable=True)
+    location = db.Column(db.String(255), nullable=True)
     action_taken = db.Column(db.Text, nullable=True)
     comment = db.Column(db.String(252))
     activity_date = db.Column(db.DateTime, nullable=True)
@@ -27,6 +29,8 @@ class Activity(db.Model):
             'poi_id': self.poi_id,
             'crime_id': self.crime_id,
             'casualties_recorded': self.casualties_recorded,
+            'nature_of_attack': self.nature_of_attack,
+            'location': self.location,
             'action_taken': self.action_taken,
             'comment': self.comment,
             'location_from': self.location_from,
@@ -38,12 +42,14 @@ class Activity(db.Model):
             'deleted_at': self.deleted_at
         }
 
-    def __init__(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+    def __init__(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
                 created_at=None, updated_at=None):
         self.type_id = type_id
         self.poi_id = poi_id
         self.crime_id = crime_id
         self.casualties_recorded = casualties_recorded
+        self.nature_of_attack = nature_of_attack
+        self.location = location
         self.action_taken = action_taken
         self.comment = comment
         self.location_from = location_from
@@ -63,7 +69,7 @@ class Activity(db.Model):
     def restore(self):
         self.deleted_at = None
         
-    def update(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+    def update(self, type_id=None, poi_id=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
                 created_at=None, deleted_at=None, updated_at=None):
         if type_id is not None:
             self.type_id = type_id
@@ -73,6 +79,10 @@ class Activity(db.Model):
             self.crime_id = crime_id
         if casualties_recorded:
             self.casualties_recorded = casualties_recorded
+        if nature_of_attack:
+            self.nature_of_attack = nature_of_attack
+        if location:
+            self.location = location
         if action_taken:
             self.action_taken = action_taken
         if comment is not None:

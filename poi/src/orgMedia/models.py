@@ -10,29 +10,33 @@ class OrgMedia(db.Model):
     media_type = db.Column(db.String(255), nullable=True)
     media_url = db.Column(db.String(255), nullable=True)
     media_caption = db.Column(db.String(255), nullable=True)
+    activity_id = db.Column(db.Integer, db.ForeignKey('org_activities.id'), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     org = db.relationship('Organisation', backref='org_media')
 
-    def __init__(self, media_type=None, media_url=None, media_caption=None, org_id=None,
+    def __init__(self, org_id=None, media_type=None, media_url=None, media_caption=None, activity_id=None,
             deleted_at=None, created_by=None, created_at=None):
+        self.org_id = org_id
         self.media_type = media_type
         self.media_url = media_url
         self.media_caption = media_caption
-        self.org_id = org_id
+        self.activity_id = activity_id
         self.deleted_at = deleted_at
         self.created_by = created_by
         self.created_at = created_at
 
-    def update(self, media=None, media_type=None,media_url=None, media_caption=None, org_id=None, deleted_at=None, created_by=None):
+    def update(self, org_id=None, media=None, media_type=None,media_url=None, media_caption=None, activity_id=None, deleted_at=None, created_by=None):
+        if org_id is not None:
+            self.org_id = org_id
         if media_type is not None:
             self.media_type = media_type
         if media_url is not None:
             self.media_url = media_url
-        if org_id is not None:
-            self.org_id = org_id
+        if activity_id is not None:
+            self.activity_id = activity_id
         if deleted_at is not None:
             self.deleted_at = deleted_at
         if created_by is not None:
@@ -48,6 +52,7 @@ class OrgMedia(db.Model):
             'media_type': self.media_type,
             'media_url': self.media_url,
             'media_caption': self.media_caption,
+            'activity_id': self.activity_id,
             'deleted_at': self.deleted_at,
             'created_at': self.created_at,
             'created_by': self.created_by
