@@ -496,8 +496,10 @@ def restore_activity(activity_id):
 @custom_jwt_required
 def get_activities_by_org(org_id):
     try:
-        # Get search parameters from request arguments
+        # Get search and pagination parameters from request arguments
         search_term = request.args.get('q', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
 
         # Query activities directly linked to the organization
         org_activities_query = OrgActivity.query.filter_by(org_id=org_id, deleted_at=None)
@@ -516,9 +518,13 @@ def get_activities_by_org(org_id):
         org_activities_query = org_activities_query.order_by(OrgActivity.activity_date.desc())
         poi_activities_query = poi_activities_query.order_by(Activity.activity_date.desc())
 
-        # Execute both queries and get the results
-        org_activities = org_activities_query.all()
-        poi_activities = poi_activities_query.all()
+        # Apply pagination to both queries
+        org_activities_paginated = org_activities_query.paginate(page=page, per_page=per_page, error_out=False)
+        poi_activities_paginated = poi_activities_query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Combine the paginated activities from both organization and POI
+        org_activities = org_activities_paginated.items
+        poi_activities = poi_activities_paginated.items
 
         # Prepare the list of activities to return
         activity_list = []
@@ -602,14 +608,22 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": "poi"  
+                "activity_type": "poi"
             })
 
-        # Return the list of combined activities
+        # Return paginated results, including metadata for pagination
         return jsonify({
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
+            "pagination": {
+                "current_page": page,
+                "per_page": per_page,
+                "total_org_pages": org_activities_paginated.pages,
+                "total_poi_pages": poi_activities_paginated.pages,
+                "total_org_items": org_activities_paginated.total,
+                "total_poi_items": poi_activities_paginated.total
+            }
         })
 
     except Exception as e:
