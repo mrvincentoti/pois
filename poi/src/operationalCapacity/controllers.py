@@ -171,4 +171,40 @@ def delete_operational_capacity(id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
     
-    
+
+@custom_jwt_required
+def restore_operational_capacity(id):
+    try:
+        capacity = OperationalCapacity.query.get(id)
+        if not capacity or not capacity.deleted_at:
+            return jsonify({"message": "Operational capacity not found or not deleted"}), 404
+
+        capacity.deleted_at = None
+        capacity.updated_at = datetime.utcnow()
+        db.session.commit()
+
+        # Audit log for restoration
+        audit_data = {
+            "user_id": g.user["id"],
+            "first_name": g.user["first_name"],
+            "last_name": g.user["last_name"],
+            "pfs_num": g.user["pfs_num"],
+            "user_email": g.user["email"],
+            "event": "restore_operational_capacity",
+            "auditable_id": capacity.id,
+            "old_values": None,
+            "new_values": json.dumps(capacity.to_dict()),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "OperationalCapacity, Restore",
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat(),
+        }
+        save_audit_data(audit_data)
+
+        return jsonify(capacity.to_dict()), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500 
