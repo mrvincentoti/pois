@@ -45,7 +45,7 @@ def create_operational_capacity():
         }
         save_audit_data(audit_data)
 
-        return jsonify({"message": "Operational capacity added successfully"}), 201
+        return jsonify({"message": "Item added successfully"}), 201
 
     except Exception as e:
         db.session.rollback()
@@ -125,7 +125,7 @@ def update_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
         if not capacity or capacity.deleted_at:
-            return jsonify({"message": "Operational capacity not found"}), 404
+            return jsonify({"message": "Item not found"}), 404
 
         data = request.get_json()
         old_values = capacity.to_dict()
@@ -134,6 +134,7 @@ def update_operational_capacity(id):
         capacity.type_id = data.get("type_id", capacity.type_id)
         capacity.item = data.get("item", capacity.item)
         capacity.qty = data.get("qty", capacity.qty)
+        capacity.description = data.get("description", capacity.description)
         capacity.updated_at = current_time
 
         db.session.commit()
@@ -170,7 +171,7 @@ def delete_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
         if not capacity or capacity.deleted_at:
-            return jsonify({"message": "Operational capacity not found"}), 404
+            return jsonify({"message": "Item not found"}), 404
 
         current_time = datetime.utcnow()
         capacity.deleted_at = current_time
@@ -196,7 +197,7 @@ def delete_operational_capacity(id):
         }
         save_audit_data(audit_data)
 
-        return jsonify({"message": "Operational capacity soft-deleted"}), 200
+        return jsonify({"message": "Item deleted"}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -208,7 +209,7 @@ def restore_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
         if not capacity or not capacity.deleted_at:
-            return jsonify({"message": "Operational capacity not found or not deleted"}), 404
+            return jsonify({"message": "Item not found or not deleted"}), 404
 
         capacity.deleted_at = None
         capacity.updated_at = datetime.utcnow()
