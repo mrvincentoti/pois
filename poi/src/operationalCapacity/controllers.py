@@ -132,3 +132,43 @@ def update_operational_capacity(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+@custom_jwt_required
+def delete_operational_capacity(id):
+    try:
+        capacity = OperationalCapacity.query.get(id)
+        if not capacity or capacity.deleted_at:
+            return jsonify({"message": "Operational capacity not found"}), 404
+
+        current_time = datetime.utcnow()
+        capacity.deleted_at = current_time
+        db.session.commit()
+
+        # Audit log for deletion
+        audit_data = {
+            "user_id": g.user["id"],
+            "first_name": g.user["first_name"],
+            "last_name": g.user["last_name"],
+            "pfs_num": g.user["pfs_num"],
+            "user_email": g.user["email"],
+            "event": "delete_operational_capacity",
+            "auditable_id": capacity.id,
+            "old_values": json.dumps(capacity.to_dict()),
+            "new_values": None,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "OperationalCapacity, Delete",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+        save_audit_data(audit_data)
+
+        return jsonify({"message": "Operational capacity soft-deleted"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+    
