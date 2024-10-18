@@ -158,8 +158,8 @@ const EditOrganisation = () => {
 			if (countries.length > 0 && allAffiliations.length > 0) {
 				fetchOrg(param.id).then(item => {
 					if (!item) {
-						notifyWithIcon('error', 'poi not found!');
-						navigate('/org/organisation');
+						notifyWithIcon('error', 'org not found!');
+						navigate(-1);
 						return;
 					}
 
@@ -370,7 +370,7 @@ const EditOrganisation = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'Organisation updated successfully');
-				navigate('/org/organisation');
+				navigate(`/org/organisation/${values.category.id}`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
