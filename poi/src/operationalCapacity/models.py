@@ -1,6 +1,5 @@
 from datetime import datetime
 from .. import db 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, event
 
 class OperationalCapacity(db.Model):
     __tablename__ = 'operational_capacity'

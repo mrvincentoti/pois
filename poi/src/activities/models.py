@@ -1,5 +1,5 @@
 from datetime import datetime
-from .. import db  # from __init__.py
+from .. import db 
 
 class Activity(db.Model):
     __tablename__ = 'activities'
