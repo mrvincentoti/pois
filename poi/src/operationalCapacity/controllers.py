@@ -89,3 +89,46 @@ def get_operational_capacity_by_org(org_id):
         return jsonify({"error": str(e)}), 500
 
 
+@custom_jwt_required
+def update_operational_capacity(id):
+    try:
+        capacity = OperationalCapacity.query.get(id)
+        if not capacity or capacity.deleted_at:
+            return jsonify({"message": "Operational capacity not found"}), 404
+
+        data = request.get_json()
+        old_values = capacity.to_dict()
+        current_time = datetime.utcnow()
+
+        capacity.type_id = data.get("type_id", capacity.type_id)
+        capacity.item = data.get("item", capacity.item)
+        capacity.qty = data.get("qty", capacity.qty)
+        capacity.updated_at = current_time
+
+        db.session.commit()
+
+        # Audit log for update
+        audit_data = {
+            "user_id": g.user["id"],
+            "first_name": g.user["first_name"],
+            "last_name": g.user["last_name"],
+            "pfs_num": g.user["pfs_num"],
+            "user_email": g.user["email"],
+            "event": "update_operational_capacity",
+            "auditable_id": capacity.id,
+            "old_values": json.dumps(old_values),
+            "new_values": json.dumps(capacity.to_dict()),
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "OperationalCapacity, Update",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+        save_audit_data(audit_data)
+
+        return jsonify(capacity.to_dict()), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
