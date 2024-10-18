@@ -5,7 +5,7 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -268,7 +268,7 @@ def edit_media(media_id):
             # Delete the old file from MinIO (if necessary)
             old_file_key = os.path.basename(media_record.media_url)
             try:
-                minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_file_key)
+                delete_picture_file(os.getenv("MINIO_BUCKET_NAME"), old_file_key)
             except Exception as e:
                 print(f"Error deleting old file from MinIO: {e}")
 
