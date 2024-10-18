@@ -1,11 +1,6 @@
 from flask import request, jsonify, json, g
-from sqlalchemy import or_
-from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
-from ..arms.models import Arm
-from ..poi.models import Poi
-from ..users.models import User
 from ..util import custom_jwt_required, save_audit_data
 from .models import OperationalCapacity
 
@@ -17,13 +12,14 @@ def create_operational_capacity():
     try:
         data = request.get_json()
         current_time = datetime.utcnow()
+        created_by = g.user["id"]
 
         new_capacity = OperationalCapacity(
             type_id=data["type_id"],
             org_id=data["org_id"],
             item=data["item"],
             qty=data["qty"],
-            created_by=g.user["id"],
+            created_by=created_by,
         )
 
         db.session.add(new_capacity)
@@ -59,9 +55,33 @@ def create_operational_capacity():
 @custom_jwt_required
 def get_operational_capacity_by_org(org_id):
     try:
-        capacities = OperationalCapacity.query.filter_by(org_id=org_id, deleted_at=None).all()
-        if not capacities:
-            return jsonify({"message": "No operational capacities found"}), 404
+        # Get search parameters from the request arguments
+        search_term = request.args.get('q', '')  # Search keyword
+        page = request.args.get('page', 1, type=int)  # Page number (default is 1)
+        per_page = request.args.get('per_page', 10, type=int)  # Items per page (default is 10)
+
+        # Query the OperationalCapacity table, filtering by org_id and search term, if provided
+        query = OperationalCapacity.query.filter(
+            OperationalCapacity.org_id == org_id,
+            OperationalCapacity.deleted_at == None
+        )
+
+        # Apply search filter if a search term is provided
+        if search_term:
+            search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
+            query = query.filter(OperationalCapacity.item.ilike(search_pattern))
+
+        # Order by created_at in descending order (newest first)
+        query = query.order_by(OperationalCapacity.created_at.desc())
+
+        # Paginate the results
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Get the paginated records
+        operational_capacities = pagination.items
+
+        # Prepare the list of operational capacities to return
+        capacity_list = [capacity.to_dict() for capacity in operational_capacities]
 
         current_time = datetime.utcnow()
         audit_data = {
@@ -70,20 +90,31 @@ def get_operational_capacity_by_org(org_id):
             "last_name": g.user["last_name"],
             "pfs_num": g.user["pfs_num"],
             "user_email": g.user["email"],
-            "event": "update_operational_capacity",
+            "event": "list_operational_capacity",
             "auditable_id": org_id,
             "old_values": None,
             "new_values": None,
             "url": request.url,
             "ip_address": request.remote_addr,
             "user_agent": request.user_agent.string,
-            "tags": "OperationalCapacity, Update",
+            "tags": "OperationalCapacity, List",
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
         save_audit_data(audit_data)
         
-        return jsonify([capacity.to_dict() for capacity in capacities]), 200
+        # Return the paginated list of capacities with pagination metadata
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "page": pagination.page,
+            "pages": pagination.pages,
+            "per_page": pagination.per_page,
+            "total": pagination.total,
+            "has_next": pagination.has_next,
+            "has_prev": pagination.has_prev,
+            "capacities": capacity_list,
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -7,7 +7,7 @@ from ..crimesCommitted.models import CrimeCommitted
 from ..crimes.models import Crime
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, minio_client
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from minio.error import S3Error
@@ -110,7 +110,7 @@ def add_poi_media(poi_id):
         file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{uuid.uuid4()}{file_extension}"
         media_caption = request.form.get('media_caption')
-        crime_id = request.form.get('crime_id')
+        activity_id = request.form.get('activity_id')
         media_type = get_media_type_from_extension(new_filename)
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
 
@@ -273,7 +273,7 @@ def edit_media(media_id):
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "media_caption": media_record.media_caption,
-        "crime_id": media_record.crime_id
+        "activity_id": media_record.activity_id
     }
 
     # Check if a file is in the request
@@ -298,7 +298,7 @@ def edit_media(media_id):
             new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
             media_type = request.form.get('media_type') 
             media_caption = request.form.get('media_caption')
-            crime_id = request.form.get('crime_id')
+            activity_id = request.form.get('activity_id')
 
             # Upload the new file to MinIO
             minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -309,7 +309,7 @@ def edit_media(media_id):
             media_record.media_type = media_type
             media_record.media_url = minio_file_url
             media_record.media_caption = media_caption
-            media_record.crime_id = crime_id
+            media_record.activity_id = activity_id
 
             db.session.commit()
 
@@ -329,7 +329,7 @@ def edit_media(media_id):
                         "media_type": media_record.media_type,
                         "media_url": media_record.media_url,
                         "media_caption": media_record.media_caption,
-                        "crime_id": media_record.crime_id
+                        "activity_id": media_record.activity_id
                     }),
                     "url": request.url,
                     "ip_address": request.remote_addr,
@@ -351,7 +351,7 @@ def edit_media(media_id):
     # If no file was uploaded, allow updating other media details like type and caption
     media_type = request.form.get('media_type') 
     media_caption = request.form.get('media_caption')
-    crime_id = request.form.get('crime_id')
+    activity_id = request.form.get('activity_id')
 
     if media_type:
         media_record.media_type = media_type
@@ -359,8 +359,8 @@ def edit_media(media_id):
     if media_caption:
         media_record.media_caption = media_caption
     
-    if crime_id:
-        media_record.crime_id = crime_id
+    if activity_id:
+        media_record.activity_id = activity_id
 
     db.session.commit()
 
@@ -380,7 +380,7 @@ def edit_media(media_id):
                 "media_type": media_record.media_type,
                 "media_url": media_record.media_url,
                 "media_caption": media_record.media_caption,
-                "crime_id": media_record.crime_id
+                "activity_id": media_record.activity_id
             }),
             "url": request.url,
             "ip_address": request.remote_addr,
@@ -409,7 +409,7 @@ def delete_media(media_id):
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "media_caption": media_record.media_caption,
-        "crime_id": media_record.crime_id
+        "activity_id": media_record.activity_id
     }
 
     try:
