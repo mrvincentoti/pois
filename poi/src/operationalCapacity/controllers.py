@@ -56,3 +56,36 @@ def create_operational_capacity():
         return jsonify({"error": str(e)}), 500
 
 
+@custom_jwt_required
+def get_operational_capacity_by_org(org_id):
+    try:
+        capacities = OperationalCapacity.query.filter_by(org_id=org_id, deleted_at=None).all()
+        if not capacities:
+            return jsonify({"message": "No operational capacities found"}), 404
+
+        current_time = datetime.utcnow()
+        audit_data = {
+            "user_id": g.user["id"],
+            "first_name": g.user["first_name"],
+            "last_name": g.user["last_name"],
+            "pfs_num": g.user["pfs_num"],
+            "user_email": g.user["email"],
+            "event": "update_operational_capacity",
+            "auditable_id": org_id,
+            "old_values": None,
+            "new_values": None,
+            "url": request.url,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string,
+            "tags": "OperationalCapacity, Update",
+            "created_at": current_time.isoformat(),
+            "updated_at": current_time.isoformat(),
+        }
+        save_audit_data(audit_data)
+        
+        return jsonify([capacity.to_dict() for capacity in capacities]), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
