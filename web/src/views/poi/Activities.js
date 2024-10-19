@@ -44,6 +44,8 @@ const Activities = () => {
 					navigate('/not-found');
 				});
 		}
+		console.log(activitiesData);
+		
 	}, [fetchActivitiesDetails, loaded, navigate, params.id]);
 
 	// Function to add a new activity

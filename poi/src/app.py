@@ -117,7 +117,7 @@ from .organisation import urls
 from .orgMedia import urls
 from .brief import urls
 from .briefMedia import urls
-from .orgActivities import urls
+from .OrgActivities import urls
 from .poiStatus import urls
 from .activityItem import urls
 
