@@ -37,7 +37,7 @@ import Overview from './Overview'; // Your components
 // import CrimeCommitted from './CrimeCommitted';
 import MediaAndDocument from './MediaAndDocument';
 import Activities from './Activities';
-// import ArmsRecovered from './ArmsRecovered';
+import OperationalCapacity from './OperationalCapacity';
 
 const ViewOrganisation = () => {
 	const printRef = useRef(null);
@@ -321,18 +321,7 @@ const ViewOrganisation = () => {
 													</span>
 												</a>
 											</li>
-											{/* <li className="nav-item">
-                                                <a
-                                                    className={`nav-link fs-14 ${activeTab === 'recovered' ? 'active' : ''}`}
-                                                    onClick={() => handleTabClick('recovered')}
-                                                    role="tab"
-                                                >
-                                                    <i className="ri-airplay-fill d-inline-block d-md-none"></i>
-                                                    <span className="d-none d-md-inline-block">
-                                                        Arms Recovered
-                                                    </span>
-                                                </a>
-                                            </li> */}
+
 											<li className="nav-item">
 												<a
 													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
@@ -342,6 +331,18 @@ const ViewOrganisation = () => {
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Activities
+													</span>
+												</a>
+											</li>
+											<li className="nav-item">
+												<a
+													className={`nav-link fs-14 ${activeTab === 'capacity' ? 'active' : ''}`}
+													onClick={() => handleTabClick('capacity')}
+													role="tab"
+												>
+													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
+													<span className="d-none d-md-inline-block">
+														Operational Capacity
 													</span>
 												</a>
 											</li>
@@ -376,9 +377,11 @@ const ViewOrganisation = () => {
 													{activeTab === 'activities' && (
 														<Activities refreshOrgData={refreshOrgData} />
 													)}
-													{/* {activeTab === 'recovered' && (
-                                                        <ArmsRecovered refreshPoiData={refreshPoiData} />
-                                                    )} */}
+													{activeTab === 'capacity' && (
+														<OperationalCapacity
+															refreshPoiData={refreshOrgData}
+														/>
+													)}
 												</div>
 											</div>
 										</div>

@@ -5,7 +5,7 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 
@@ -101,6 +101,7 @@ def add_org_media(org_id):
         new_filename = f"{uuid.uuid4()}{file_extension}"
         media_type = get_media_type_from_extension(new_filename)
         media_caption = request.form.get('media_caption')
+        activity_id = request.form.get('activity_id')
 
         # Upload the file to MinIO
         minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -113,6 +114,7 @@ def add_org_media(org_id):
             media_type=media_type,
             media_url=minio_file_url,
             media_caption=media_caption,
+            activity_id=activity_id,
             created_by=created_by,
             created_at=datetime.utcnow()
         )
@@ -253,6 +255,7 @@ def edit_media(media_id):
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
         "media_caption": media_record.media_caption,
+        "activity_id": media_record.activity_id,
     }
 
     # Check if a file is in the request
@@ -268,7 +271,7 @@ def edit_media(media_id):
             # Delete the old file from MinIO (if necessary)
             old_file_key = os.path.basename(media_record.media_url)
             try:
-                minio_client.remove_object(os.getenv("MINIO_BUCKET_NAME"), old_file_key)
+                delete_picture_file(os.getenv("MINIO_BUCKET_NAME"), old_file_key)
             except Exception as e:
                 print(f"Error deleting old file from MinIO: {e}")
 
@@ -277,6 +280,7 @@ def edit_media(media_id):
             new_filename = f"{uuid.uuid4()}{file_extension}"  # Generate a new filename
             media_type = request.form.get('media_type') 
             media_caption = request.form.get('media_caption')
+            activity_id = request.form.get('activity_id')
 
             # Upload the new file to MinIO
             minio_file_url = upload_file_to_minio(os.getenv("MINIO_BUCKET_NAME"), file, new_filename)
@@ -287,6 +291,7 @@ def edit_media(media_id):
             media_record.media_type = media_type
             media_record.media_url = minio_file_url
             media_record.media_caption = media_caption
+            media_record.activity_id = activity_id
 
             db.session.commit()
 

@@ -57,17 +57,35 @@ const ManageActivities = ({ closeModal, update, crimesCommitted }) => {
 		setCrimesOptions(rs?.crimes || []);
 	};
 
+	const typeMapping = {
+		Attack: 1,
+		Procurement: 2,
+		CateredAway: 3,
+		PressRelease: 4,
+		Others: 5,
+	};
+
 	const onSubmit = async values => {
 		try {
 			const formData = new FormData();
+
+			const type_id = typeMapping[type];
+			if (!type_id) {
+				throw new Error('Type must be selected'); // Handle missing type
+			}
+			console.log('Selected type:', type); // Debug to see if type is selected
+			console.log('Mapped type_id:', type_id);
+
 			if (type === 'PressRelease') {
 				formData.append('file', fileList[0]);
 				formData.append('media_caption', caption);
+				formData.append('type_id', type_id);
 			}
 			const config = {
 				method: crimesCommitted ? 'PUT' : 'POST',
 				body: {
 					...values,
+					type_id,
 					poi_id: params.id,
 					activity_id: activityId, // Send activity_id
 					crime: undefined,

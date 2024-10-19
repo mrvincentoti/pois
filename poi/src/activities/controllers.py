@@ -1,6 +1,4 @@
-from flask import request, jsonify, json, g, current_app
-from sqlalchemy import or_
-from sqlalchemy.exc import SQLAlchemyError
+from flask import request, jsonify, json, g
 from datetime import datetime
 from .. import db
 import os
@@ -12,9 +10,6 @@ from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
-from werkzeug.utils import secure_filename
-from minio.error import S3Error
-from minio import Minio
 
 load_dotenv()
 
@@ -263,7 +258,7 @@ def edit_activity(activity_id):
         facilitator = request.form.get("facilitator")
         comment = request.form.get("comment")
         activity_date = request.form.get("activity_date")
-        updated_by = g.user["id"]
+        created_by = g.user["id"]
 
         # Update basic activity details
         activity.type_id = type_id
@@ -332,7 +327,7 @@ def edit_activity(activity_id):
                         media_url=minio_file_url,
                         media_caption=media_caption,
                         activity_id=activity.id,
-                        created_by=updated_by,
+                        created_by=created_by,
                         created_at=datetime.utcnow()
                     )
                     db.session.add(new_media)
@@ -352,19 +347,19 @@ def edit_activity(activity_id):
                 "auditable_id": activity.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "type_id": form_data["type_id"],
-                    "poi_id": form_data["poi_id"],
-                    "crime_id": form_data["crime_id"],
-                    "casualties_recorded": form_data["casualties_recorded"],
-                    "nature_of_attack": form_data["nature_of_attack"],
-                    "location": form_data["location"],
-                    "action_taken": form_data["action_taken"],
-                    "location_from": form_data["location_from"],
-                    "location_to": form_data["location_to"],
-                    "facilitator": form_data["facilitator"],
-                    "comment": form_data["comment"],
-                    "activity_date": form_data["activity_date"],
-                    "created_by": form_data["created_by"]
+                    "type_id": type_id,
+                    "poi_id": poi_id,
+                    "crime_id": crime_id,
+                    "casualties_recorded": casualties_recorded,
+                    "nature_of_attack": nature_of_attack,
+                    "location": location,
+                    "action_taken": action_taken,
+                    "location_from": location_from,
+                    "location_to": location_to,
+                    "facilitator": facilitator,
+                    "comment": comment,
+                    "activity_date": activity_date,
+                    "created_by": created_by
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
