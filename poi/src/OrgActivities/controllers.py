@@ -74,8 +74,8 @@ def add_activity():
                 if not qtys or len(items) != len(qtys):
                     return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
-                # Prepare item-qty pairs as a list of dictionaries
-                item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
+            # Prepare item-qty pairs as a list of dictionaries
+            item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
 
             # Create and save a new activity
             new_activity = OrgActivity(**form_data)
