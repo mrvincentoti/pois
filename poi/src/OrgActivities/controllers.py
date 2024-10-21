@@ -291,9 +291,12 @@ def edit_activity(activity_id):
         items = request.form.getlist("items[]")
         qtys = request.form.getlist("qtys[]")
 
-        if len(items) != len(qtys):
-            return jsonify({"message": "Mismatch between items and quantities"}), 400
-
+        # Check if there are any items first
+        if items:
+            # Validate that items and quantities match in length
+            if not qtys or len(items) != len(qtys):
+                return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+            
         # Remove old items for this activity
         ActivityItem.query.filter_by(activity_id=activity.id, org_id=activity.org_id).delete()
 
