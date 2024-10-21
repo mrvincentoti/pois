@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import NewEditCrime from './NewEditCrime';
+import AppPagination from '../../components/AppPagination';
 import NoResult from '../../components/NoResult';
 import ManageActivities from '../../modals/ManageActivities';
 import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms

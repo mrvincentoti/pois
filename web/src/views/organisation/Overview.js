@@ -139,7 +139,7 @@ const Overview = () => {
 										</div>
 									</div>
 									{/* end col */}
-									<div className="col-6 col-md-4">
+									{/* <div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
 											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
 												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
@@ -151,7 +151,7 @@ const Overview = () => {
 												<h6 className="text-truncate">{orgData.hq || 'N/A'}</h6>
 											</div>
 										</div>
-									</div>
+									</div> */}
 									{/* end col */}
 									<div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
