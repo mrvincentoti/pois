@@ -1,6 +1,4 @@
-from flask import request, jsonify, json, g, current_app
-from sqlalchemy import or_
-from sqlalchemy.exc import SQLAlchemyError
+from flask import request, jsonify, json, g
 from datetime import datetime
 from .. import db
 import os
@@ -15,9 +13,6 @@ from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
-from werkzeug.utils import secure_filename
-from minio.error import S3Error
-from minio import Minio
 
 load_dotenv()
 
