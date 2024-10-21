@@ -275,7 +275,7 @@ def edit_activity(activity_id):
         facilitator = request.form.get("facilitator")
         comment = request.form.get("comment")
         activity_date = request.form.get("activity_date")
-        updated_by = g.user["id"]
+        created_by = g.user["id"]
 
         # Update basic activity details
         activity.type_id = type_id
@@ -344,7 +344,7 @@ def edit_activity(activity_id):
                         media_url=minio_file_url,
                         media_caption=media_caption,
                         activity_id=activity.id,
-                        created_by=updated_by,
+                        created_by=created_by,
                         created_at=datetime.utcnow()
                     )
                     db.session.add(new_media)
@@ -364,19 +364,19 @@ def edit_activity(activity_id):
                 "auditable_id": activity.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "type_id": form_data["type_id"],
-                    "org_id": form_data["org_id"],
-                    "crime_id": form_data["crime_id"],
-                    "casualties_recorded": form_data["casualties_recorded"],
-                    "nature_of_attack": form_data["nature_of_attack"],
-                    "location": form_data["location"],
-                    "action_taken": form_data["action_taken"],
-                    "location_from": form_data["location_from"],
-                    "location_to": form_data["location_to"],
-                    "facilitator": form_data["facilitator"],
-                    "comment": form_data["comment"],
-                    "activity_date": form_data["activity_date"],
-                    "created_by": form_data["created_by"]
+                    "type_id": type_id,
+                    "org_id": org_id,
+                    "crime_id": crime_id,
+                    "casualties_recorded": casualties_recorded,
+                    "nature_of_attack": nature_of_attack,
+                    "location": location,
+                    "action_taken": action_taken,
+                    "location_from": location_from,
+                    "location_to": location_to,
+                    "facilitator": facilitator,
+                    "comment": comment,
+                    "activity_date": activity_date,
+                    "created_by": created_by
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
