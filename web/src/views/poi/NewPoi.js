@@ -834,6 +834,120 @@ const NewPoi = () => {
 											</div>
 										</div>
 									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Social Media</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Website
+													</label>
+													<Field id="website" name="website">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="website"
+																placeholder="Website"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="website" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Facebook
+													</label>
+													<Field id="fb" name="fb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="hq"
+																placeholder="Facebook"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="fb" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="instagram">
+														Instagram
+													</label>
+													<Field id="instagram" name="instagram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="instagram"
+																placeholder="Instagram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="instagram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="twitter">
+														X
+													</label>
+													<Field id="twitter" name="twitter">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="twitter"
+																placeholder="X handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="twitter" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="telegram">
+														Telegram
+													</label>
+													<Field id="telegram" name="telegram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="telegram"
+																placeholder="Telegram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="telegram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="tiktok">
+														Tiktok
+													</label>
+													<Field id="tiktok" name="tiktok">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="tiktok"
+																placeholder="Tiktok Handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="tiktok" />
+												</div>
+											</div>
+										</div>
+									</div>
 									<div className="text-end mb-4">
 										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
 											Cancel
