@@ -17,6 +17,8 @@ import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import { Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 const ManageActivities = ({ closeModal, update, activities }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -26,7 +28,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	const [crimeDate, setCrimeDate] = useState(null);
 	const [activityDate, setActivityDate] = useState(null);
 	const [initialValues, setInitialValues] = useState({});
-	const [fileList, setFileList] = useState([]);
+	const [fileList, setFileList] = useState([{ file: null, caption: '' }]);
 	const [caption, setCaption] = useState('');
 	const [items, setItems] = useState([{ item: '', quantity: '' }]);
 	const [activityId, setActivityId] = useState(null);
@@ -71,6 +73,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 	const onSubmit = async values => {
 		console.log(values);
+		console.log(type);
 
 		try {
 			const formData = new FormData();
@@ -97,11 +100,11 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			appendIfExists('action_taken', values.action_taken || '');
 			appendIfExists(
 				'crime_date',
-				moment(crimeDate).format('YYYY-MM-DD') || null
+				moment(values.crimeDate).format('YYYY-MM-DD') || null
 			);
 			appendIfExists(
 				'activity_date',
-				moment(activityDate).format('YYYY-MM-DD') || null
+				moment(values.activityDate).format('YYYY-MM-DD') || null
 			);
 			appendIfExists(
 				'comment',
@@ -112,13 +115,23 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			appendIfExists('comment', values.remarks || null);
 
 			// If it's PressRelease, append the file and caption to formData
+			// if (type === 4 && fileList.length > 0) {
+			// 	if (fileList.length === 0) {
+			// 		return { [FORM_ERROR]: 'A file must be selected for Press Release.' };
+			// 	}
+			// 	appendIfExists('file[]', fileList[0]);
+			// 	appendIfExists('media_caption[]', caption);
+			// }
+			console.log(fileList[0]);
+
+			// If it's PressRelease, append multiple files and captions to formData
 			if (type === 4 && fileList.length > 0) {
-				if (fileList.length === 0) {
-					return { [FORM_ERROR]: 'A file must be selected for Press Release.' };
-				}
-				appendIfExists('file[]', fileList[0]);
-				appendIfExists('media_caption[]', caption);
+				fileList.forEach((file, index) => {
+					appendIfExists('file[]', fileList[index].file); // Use 'file[]' to send multiple files
+					appendIfExists('media_caption[]', fileList[index].caption); // Ensure captions are appended for each file
+				});
 			}
+
 			for (let [key, value] of formData.entries()) {
 				console.log(key, value);
 			}
@@ -179,6 +192,25 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		const newItems = [...items];
 		newItems.splice(index, 1);
 		setItems(newItems);
+	};
+
+	// Add a new file and caption entry
+	const addFileEntry = () => {
+		setFileList([...fileList, { file: null, caption: '' }]);
+	};
+
+	// Handle file and caption change
+	const handleFileChange = (index, field, value) => {
+		const newFileList = [...fileList];
+		newFileList[index][field] = value;
+		setFileList(newFileList);
+	};
+
+	// Remove file entry
+	const removeFileEntry = index => {
+		const newFileList = [...fileList];
+		newFileList.splice(index, 1);
+		setFileList(newFileList);
 	};
 
 	// Render procurement fields dynamically
@@ -305,7 +337,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		</>
 	);
 
-	// Render procurement fields dynamically
+	// Render catered away fields dynamically
 	const renderCateredAwayFields = () => (
 		<>
 			{items.map((item, index) => (
@@ -379,6 +411,125 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
+			<div className="col-lg-12">
+				<label htmlFor="remarks" className="form-label">
+					Remarks
+				</label>
+				<Field id="remarks" name="remarks">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Remarks"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="remarks" />
+			</div>
+		</>
+	);
+
+	// Render Press Release fields dynamically (files and captions)
+	const renderPressReleaseFields = () => (
+		<>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<label htmlFor={`file_${index}`} className="form-label">
+							Upload Data
+						</label>
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '10px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<label htmlFor={`caption_${index}`} className="form-label">
+							Caption
+						</label>
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '35px' }}
+					>
+						<Tooltip title="Add more files">
+							<PlusOutlined
+								style={{
+									fontSize: '15px',
+									color: 'green',
+									cursor: 'pointer',
+									marginBottom: '2px',
+								}}
+								onClick={addFileEntry}
+							/>
+						</Tooltip>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+
+			{/* Add More Files Icon */}
+			<div className="row mb-3"></div>
+
+			{/* Activity Date Field */}
+			<div className="col-lg-12">
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(moment(date).format('YYYY-MM-DD'));
+								setActivityDate(date);
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
+
+			{/* Remarks Field */}
 			<div className="col-lg-12">
 				<label htmlFor="remarks" className="form-label">
 					Remarks
@@ -534,91 +685,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		} else if (type === 3) {
 			return renderCateredAwayFields();
 		} else if (type === 4) {
-			return (
-				<>
-					<div className="col-lg-12">
-						<label htmlFor="fileList" className="form-label">
-							Upload Data
-						</label>
-						<Field id="fileList" name="fileList">
-							{({ input, meta }) => (
-								<div style={{ marginTop: '10px' }}>
-									<Upload
-										fileList={fileList}
-										onRemove={file => {
-											const index = fileList.indexOf(file);
-											const newFileList = fileList.slice();
-											newFileList.splice(index, 1);
-											setFileList(newFileList);
-										}}
-										beforeUpload={file => {
-											setFileList([file]);
-										}}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-								</div>
-							)}
-						</Field>
-						<ErrorBlock name="fileList" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="caption" className="form-label">
-							Caption
-						</label>
-						<Field id="caption" name="caption">
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={caption}
-									onChange={e => {
-										setCaption(e.target.value);
-										input.onChange(e);
-									}}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="caption" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="activity_date" className="form-label">
-							Activity Date
-						</label>
-						<Field id="activity_date" name="activity_date">
-							{({ input, meta }) => (
-								<Flatpickr
-									className={`form-control ${error(meta)}`}
-									placeholder="Select Activity Date"
-									value={activityDate}
-									onChange={([date]) => {
-										input.onChange(moment(date).format('YYYY-MM-DD'));
-										setActivityDate(date);
-									}}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="activity_date" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="remarks" className="form-label">
-							Remarks
-						</label>
-						<Field id="remarks" name="remarks">
-							{({ input, meta }) => (
-								<textarea
-									{...input}
-									className={`form-control ${error(meta)}`}
-									placeholder="Remarks"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="remarks" />
-					</div>
-				</>
-			);
+			return renderPressReleaseFields();
 		} else if (type === 5) {
 			return (
 				<>
