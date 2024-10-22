@@ -15,8 +15,9 @@ class Crime(db.Model):
             'description': self.description
         }
 
-    def __init__(self, name):
+    def __init__(self, name, description):
         self.name = name
+        self.description = description
 
     def __repr__(self):
         return f'<Crime {self.name}>'

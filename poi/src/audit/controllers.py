@@ -35,7 +35,20 @@ def get_all_audits():
         
         # Filter by module tag
         if module:
-            audit_query = audit_query.filter(Audit.tags.like(f"%{module}%"))
+            search = f"%{module}%"
+            audit_query = audit_query.filter(
+            (Audit.tags.ilike(search)) |
+            (Audit.first_name.ilike(search)) |
+            (Audit.pfs_num.ilike(search)) |
+            (Audit.user_email.ilike(search)) |
+            (Audit.old_values.ilike(search)) |
+            (Audit.new_values.ilike(search)) |
+            (Audit.url.ilike(search)) |
+            (Audit.tags.ilike(search)) |
+            (Audit.event.ilike(search)) |
+            (Audit.ip_address.ilike(search))
+        )
+            
 
         # Filter by created date (start_date, end_date)
         if start_date and end_date:
