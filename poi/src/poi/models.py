@@ -33,6 +33,12 @@ class Poi(db.Model):
     place_of_detention = db.Column(db.String(255), nullable=True)
     arresting_body_id = db.Column(db.Integer, db.ForeignKey('arresting_body.id'), nullable=True)
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=True)
+    website = db.Column(db.String(64), nullable=True)
+    fb = db.Column(db.String(64), nullable=True)
+    instagram = db.Column(db.String(64), nullable=True)
+    twitter = db.Column(db.String(64), nullable=True)
+    telegram = db.Column(db.String(64), nullable=True)
+    tiktok = db.Column(db.String(64), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     status_id = db.Column(db.Integer, db.ForeignKey('poi_status.id'), nullable=True)
     deleted_at = db.Column(db.DateTime, nullable=True)
@@ -50,7 +56,7 @@ class Poi(db.Model):
 
     def __init__(self, ref_numb=None, picture=None, first_name=None, middle_name=None, last_name=None, alias=None, dob=None,
                 passport_number=None, other_id_number=None, phone_number=None, email=None, role=None,marital_status=None,
-                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None,  status_id=None, deleted_at=None,
+                affiliation=None, address=None, remark=None, category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None,  status_id=None, deleted_at=None,
                 created_at=None, created_by=None):
         self.ref_numb = ref_numb
         self.picture = picture
@@ -76,6 +82,12 @@ class Poi(db.Model):
         self.place_of_detention = place_of_detention
         self.arresting_body_id = arresting_body_id
         self.organisation_id = organisation_id
+        self.website = website
+        self.fb = fb
+        self.instagram = instagram
+        self.twitter = twitter
+        self.telegram = telegram
+        self.tiktok = tiktok
         self.status_id = status_id
         self.deleted_at = deleted_at
         self.created_at = created_at
@@ -94,7 +106,7 @@ class Poi(db.Model):
 
     def update(self, first_name, last_name, ref_numb=None, dob=None, passport_number=None, other_id_number=None, phone_number=None,
             email=None, role=None, affiliation=None, address=None, remark=None, middle_name=None, alias=None,picture=None,marital_status= None,
-            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None, status_id=None,deleted_at=None, created_by=None):
+            category_id=None, source_id=None, country_id=None, state_id=None, gender_id=None, place_of_detention=None, arresting_body_id=None, organisation_id=None, website=None, fb=None, instagram=None, twitter=None, telegram=None, tiktok=None, status_id=None,deleted_at=None, created_by=None):
         if first_name:
             self.first_name = first_name
         if picture:
@@ -141,6 +153,18 @@ class Poi(db.Model):
             self.arresting_body_id = arresting_body_id
         if organisation_id:
             self.organisation_id = organisation_id
+        if website:
+            self.website = website
+        if fb:
+            self.fb = fb
+        if instagram:
+            self.instagram = instagram
+        if twitter:
+            self.twitter = twitter
+        if telegram:
+            self.telegram = telegram
+        if tiktok:
+            self.tiktok = tiktok
         if marital_status:
             self.marital_status = marital_status
         if status_id:
@@ -179,6 +203,12 @@ class Poi(db.Model):
             'place_of_detention': self.place_of_detention.to_dict() if self.place_of_detention else None,
             'arresting_body_id': self.arresting_body_id.to_dict() if self.arresting_body_id else None,
             'organisation_id': self.organisation_id.to_dict() if self.organisation_id else None,
+            'website': self.website,
+            'fb': self.fb,
+            'instagram': self.instagram,
+            'twitter': self.twitter,
+            'telegram': self.telegram,
+            'tiktok': self.tiktok,
             'poi_status': self.poi_status.to_dict() if self.poi_status else None,
             'deleted_at': self.deleted_at,
             'created_at': self.created_at,
