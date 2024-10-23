@@ -217,6 +217,10 @@ const NewPoi = () => {
 		setAffliation(value);
 	};
 
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
+
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -735,7 +739,9 @@ const NewPoi = () => {
 																	value: category.id, // Map id to value
 																	label: category.name, // Map name to label
 																}))}
-																className={`custom-category-select ${error(meta)}`} // Custom class for further styling
+																className={`custom-category-select ${error(
+																	meta
+																)}`} // Custom class for further styling
 															/>
 														)}
 													</Field>
@@ -948,9 +954,13 @@ const NewPoi = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
+										<button
+											type="button"
+											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}
+										>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
 											Create POI
 										</button>
