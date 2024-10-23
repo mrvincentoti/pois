@@ -547,9 +547,23 @@ def get_activities_by_org(org_id):
                 }
                 for media in media_files
             ] if media_files else []
+            
+            # Mapping type_id to activity types
+            activity_type_mapping = {
+                1: "Attack",
+                2: "Procurement",
+                3: "Items Carted Away",
+                4: "Press Release",
+                5: "Others"
+            }
 
+            # Get activity type based on type_id
+            activity_type = activity_type_mapping.get(activity.type_id, "Unknown")
+            
             activity_list.append({
                 "id": activity.id,
+                "type_id": activity.type_id,
+                "activity_type": activity_type,
                 "org_id": activity.org_id,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
