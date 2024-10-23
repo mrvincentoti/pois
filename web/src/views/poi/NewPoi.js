@@ -282,15 +282,15 @@ const NewPoi = () => {
 					validate={values => {
 						const errors = {};
 
-						if (!values.first_name) {
-							errors.first_name = 'Enter first name';
+						if (!values.category_id) {
+							errors.category_id = 'Enter Category';
 						}
-						if (!values.last_name) {
-							errors.last_name = 'enter first name';
-						}
-						if (!values.ref_numb) {
-							errors.ref_numb = 'enter ref number';
-						}
+						// if (!values.last_name) {
+						// 	errors.last_name = 'enter first name';
+						// }
+						// if (!values.ref_numb) {
+						// 	errors.ref_numb = 'enter ref number';
+						// }
 
 						return errors;
 					}}
@@ -310,7 +310,6 @@ const NewPoi = () => {
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
-														<span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="ref_numb" name="ref_numb">
 														{({ input, meta }) => (
@@ -327,7 +326,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="first_name">
-														First Name <span style={{ color: 'red' }}>*</span>
+														First Name
 													</label>
 													<Field id="first_name" name="first_name">
 														{({ input, meta }) => (
@@ -360,7 +359,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="last_name">
-														Last Name <span style={{ color: 'red' }}>*</span>
+														Last Name
 													</label>
 													<Field id="last_name" name="last_name">
 														{({ input, meta }) => (
@@ -454,7 +453,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="gender_id">
-														Gender <span style={{ color: 'red' }}>*</span>
+														Gender
 													</label>
 													<Field id="gender_id" name="gender_id">
 														{({ input, meta }) => (
@@ -636,7 +635,7 @@ const NewPoi = () => {
 														className="form-label"
 														htmlFor="organisation_id"
 													>
-														Organization <span style={{ color: 'red' }}>*</span>
+														Organization
 													</label>
 													<Field id="organisation_id" name="organisation_id">
 														{({ input, meta }) => (
@@ -655,7 +654,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="country_id">
-														Country <span style={{ color: 'red' }}>*</span>
+														Country
 													</label>
 													<Field id="country_id" name="country_id">
 														{({ input, meta }) => (
@@ -690,7 +689,7 @@ const NewPoi = () => {
 
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="state_id">
-														State <span style={{ color: 'red' }}>*</span>
+														State
 													</label>
 													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
@@ -717,7 +716,7 @@ const NewPoi = () => {
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="category_id">
-														Category <span style={{ color: 'red' }}></span>
+														Category <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="category_id" name="category_id">
 														{({ input, meta }) => (
@@ -736,11 +735,11 @@ const NewPoi = () => {
 																	value: category.id, // Map id to value
 																	label: category.name, // Map name to label
 																}))}
-																className="custom-category-select" // Custom class for further styling
+																className={`custom-category-select ${error(meta)}`} // Custom class for further styling
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category_id" />
+													<ErrorBlock name="category_id">ctyfctfcht</ErrorBlock>
 												</div>
 												<div className="col-lg-4 mb-3">
 													<label className="form-label" htmlFor="source_id">
