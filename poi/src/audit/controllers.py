@@ -69,9 +69,11 @@ def get_all_audits():
         # Filter by search term if provided
         for audit in audits.items:
             if search_term:
-                if not any(search_term.lower() in field.lower() for field in [
-                    audit.event, audit.tags, audit.old_values, audit.new_values, audit.url, audit.ip_address, audit.user_agent
-                ]):
+                if not any(
+            search_term.lower() in (field.lower() if field else '') for field in [
+                audit.event, audit.tags, audit.old_values, audit.new_values, audit.url, audit.ip_address, audit.user_agent
+            ]
+        ):
                     continue
             
             audit_data = {
