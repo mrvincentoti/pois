@@ -46,6 +46,12 @@ def create_poi():
     gender_id = data.get('gender_id')
     place_of_detention = data.get("place_of_detention")
     arresting_body_id = data.get("arresting_body_id")
+    website = data.get('website')
+    fb = data.get('fb')
+    instagram = data.get('instagram')
+    twitter = data.get('twitter')
+    telegram = data.get('telegram')
+    tiktok = data.get('tiktok')
     organisation_id = data.get("organisation_id")
     status_id = data.get('status_id')
     created_by = g.user["id"]
@@ -107,6 +113,12 @@ def create_poi():
             place_of_detention=place_of_detention,
             arresting_body_id=arresting_body_id,
             organisation_id=organisation_id,
+            website=website,
+            fb=fb,
+            instagram=instagram,
+            twitter=twitter,
+            telegram=telegram,
+            tiktok=tiktok,
             marital_status=marital_status,
             status_id=status_id,
             created_by=created_by
@@ -190,6 +202,12 @@ def create_poi():
                 "place_of_detention": poi.place_of_detention,
                 "arresting_body_id": poi.arresting_body_id,
                 "organisation_id": poi.organisation_id,
+                "website": poi.website,
+                "fb": poi.fb,
+                "instagram": poi.instagram,
+                "twitter": poi.twitter,
+                "telegram": poi.telegram,
+                "tiktok": poi.tiktok,
                 "picture": poi.picture,
                 "social_address": social_address,
                 "social_latitude": social_latitude,
@@ -447,6 +465,12 @@ def update_poi(poi_id):
                 place_of_detention=data.get('place_of_detention'),
                 arresting_body_id=data.get('arresting_body_id'),
                 organisation_id=data.get('organisation_id'),
+                website=data.get('website'),
+                fb=data.get('fb'),
+                instagram=data.get('instagram'),
+                twitter=data.get('twitter'),
+                telegram=data.get('telegram'),
+                tiktok=data.get('tiktok'),
                 status_id=data.get('status_id'),
                 deleted_at=data.get('deleted_at')
             )
@@ -516,6 +540,12 @@ def update_poi(poi_id):
                     "place_of_detention": poi.place_of_detention,
                     "arresting_body_id": poi.arresting_body_id,
                     "organisation_id": poi.organisation_id,
+                    "website": poi.website,
+                    "fb": poi.fb,
+                    "instagram": poi.instagram,
+                    "twitter": poi.twitter,
+                    "telegram": poi.telegram,
+                    "tiktok": poi.tiktok,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
@@ -543,6 +573,12 @@ def update_poi(poi_id):
                     "place_of_detention": poi.place_of_detention,
                     "arresting_body_id": poi.arresting_body_id,
                     "organisation_id": poi.organisation_id,
+                    "website": poi.website,
+                    "fb": poi.fb,
+                    "instagram": poi.instagram,
+                    "twitter": poi.twitter,
+                    "telegram": poi.telegram,
+                    "tiktok": poi.tiktok,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
