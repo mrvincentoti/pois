@@ -18,6 +18,7 @@ from ..address.models import Address
 from ..arrestingBody.models import ArrestingBody
 from ..crimes.models import Crime
 from ..affiliation.models import Affiliation
+from ..activities.models import Activity
 from sqlalchemy.orm import joinedload
 
 # Create POI
