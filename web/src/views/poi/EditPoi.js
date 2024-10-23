@@ -16,7 +16,7 @@ import { message, Upload } from 'antd';
 import {
 	FETCH_GENDERS_API,
 	FETCH_STATES_API,
-	FETCH_CATEGORIES_API,
+	FETCH_POI_CATEGORY_API,
 	FETCH_SOURCES_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
@@ -78,7 +78,7 @@ const EditPoi = () => {
 			const urls = [
 				FETCH_GENDERS_API,
 				`${FETCH_COUNTRIES_API}?per_page=300`,
-				FETCH_CATEGORIES_API,
+				FETCH_POI_CATEGORY_API,
 				FETCH_SOURCES_API,
 				`${FETCH_AFFILIATIONS_API}?page=0`,
 				FETCH_POI_STATUSES_API,
@@ -211,6 +211,10 @@ const EditPoi = () => {
 		setInputValue('');
 	};
 
+	const handleChangeCat = value => {
+		setCategory(value);
+	};
+
 	const forMap = tag => (
 		<span key={tag} style={{ display: 'inline-block' }}>
 			<Tag closable onClose={() => handleClose(tag)}>
@@ -255,7 +259,7 @@ const EditPoi = () => {
 
 			// Conditionally append values to FormData, with empty strings for non-existent values
 			if (values.category) {
-				formData.append('category_id', values.category.id);
+				formData.append('category_id', category);
 			}
 
 			// Conditionally append values to FormData, with empty strings for non-existent values
@@ -330,9 +334,9 @@ const EditPoi = () => {
 	const handleChangeStatus = value => {
 		setPoiStatus(value);
 	};
-	const handleChangeCat = value => {
-		setCategory(value);
-	};
+	// const handleChangeCat = value => {
+	// 	setCategory(value);
+	// };
 	const handleChangeState = value => {
 		setState(value);
 	};
@@ -904,6 +908,120 @@ const EditPoi = () => {
 														)}
 													</Field>
 													<ErrorBlock name="remark" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Social Media</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Website
+													</label>
+													<Field id="website" name="website">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="website"
+																placeholder="Website"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="website" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Facebook
+													</label>
+													<Field id="fb" name="fb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="hq"
+																placeholder="Facebook"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="fb" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="instagram">
+														Instagram
+													</label>
+													<Field id="instagram" name="instagram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="instagram"
+																placeholder="Instagram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="instagram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="twitter">
+														X
+													</label>
+													<Field id="twitter" name="twitter">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="twitter"
+																placeholder="X handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="twitter" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="telegram">
+														Telegram
+													</label>
+													<Field id="telegram" name="telegram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="telegram"
+																placeholder="Telegram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="telegram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="tiktok">
+														Tiktok
+													</label>
+													<Field id="tiktok" name="tiktok">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="tiktok"
+																placeholder="Tiktok Handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="tiktok" />
 												</div>
 											</div>
 										</div>
