@@ -277,6 +277,12 @@ def get_poi(poi_id):
                 "affiliation": affiliation_names_str,
                 "affiliation_ids": poi.affiliation,
                 "remark": poi.remark,
+                "website": poi.website,
+                "fb": poi.fb,
+                "instagram": poi.instagram,
+                "twitter": poi.instagram,
+                "telegram": poi.telegram,
+                "tiktok": poi.tiktok,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
                     "id": poi.category.id,
