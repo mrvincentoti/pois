@@ -139,7 +139,7 @@ const Crimes = () => {
 									<thead className="table-light">
 										<tr>
 											<th>S/N</th>
-											<th>Name</th>
+											<th>Type</th>
 											<th>Description</th>
 											<th>Actions</th>
 										</tr>
