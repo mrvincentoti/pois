@@ -752,7 +752,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 										options={[
 											{ value: 1, label: 'Attack' },
 											{ value: 2, label: 'Procurement' },
-											{ value: 3, label: 'Items Catered Away' },
+											{ value: 3, label: 'Items Carted Away' },
 											{ value: 4, label: 'Press Release' },
 											{ value: 5, label: 'Others' },
 										]}
