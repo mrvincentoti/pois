@@ -199,7 +199,7 @@ const ViewPoi = () => {
 													onClick={() => handleTabClick('activities')}
 													role="tab"
 												>
-													Timeline of Activites
+													Activites
 												</a>
 											</li>
 											<li className="nav-item">
