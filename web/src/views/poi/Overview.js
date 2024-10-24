@@ -299,6 +299,21 @@ const Overview = () => {
 											</div>
 										</div>
 									</div>
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-stack-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Organisation :</p>
+												<h6 className="fw-semibold">
+													{poiData.organisation.name || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
 									{/* end col */}
 								</div>
 								{/* end row */}
