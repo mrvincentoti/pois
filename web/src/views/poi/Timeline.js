@@ -165,11 +165,11 @@ const Timeline = ({ refreshPoiData }) => {
 												<div className="card-body p-4">
 													<div className="d-flex">
 														<div className="flex-grow-1 text-muted overflow-hidden">
-															{/* <h5 className="fs-14 text-truncate">
+															<h5 className="fs-14 text-truncate">
 																<a href="#" className="text-body">
-																	{item.poi_name?.name || 'N/A'}
+																	{item.activity_type || 'N/A'}
 																</a>
-															</h5> */}
+															</h5>
 															<p className="text-muted text-truncate mb-0">
 																Activity Date:
 																<span className="fw-semibold text-body">

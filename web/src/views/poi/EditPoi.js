@@ -214,6 +214,9 @@ const EditPoi = () => {
 	const handleChangeCat = value => {
 		setCategory(value);
 	};
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
 
 	const forMap = tag => (
 		<span key={tag} style={{ display: 'inline-block' }}>
@@ -1027,9 +1030,13 @@ const EditPoi = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
+										<button
+											type="button"
+											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}
+										>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
 											Update POI
 										</button>
