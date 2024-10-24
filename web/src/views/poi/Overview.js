@@ -70,8 +70,7 @@ const Overview = () => {
 										/>
 										<button
 											className="btn btn-info"
-											onClick={() => handleEditClick(params.id)}
-										>
+											onClick={() => handleEditClick(params.id)}>
 											<i className="ri-pencil-line me-1 align-bottom"></i> Edit
 										</button>
 									</div>
@@ -87,16 +86,14 @@ const Overview = () => {
 													<td className="text-muted">
 														{formatPoiName(poiData, true)}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Alias :
 													</th>
 													<td className="text-muted">
 														{poiData.alias || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Mobile :
 													</th>
@@ -111,24 +108,21 @@ const Overview = () => {
 													<td className="text-muted">
 														{poiData.email ? poiData.email : 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Gender :
 													</th>
 													<td className="text-muted">
 														{poiData.gender?.name || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														DOB :
 													</th>
 													<td className="text-muted">
 														{formatDate(poiData.dob) || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Marital Status :
 													</th>
