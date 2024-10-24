@@ -817,28 +817,7 @@ def list_pois():
     pois_list = []
 
     for poi in paginated_pois.items:
-        crime_count = len(poi.crimes) if hasattr(poi, 'crimes') else 0
-        arms_count = len(poi.arms_recovered) if hasattr(poi, 'arms_recovered') else 0
-        crimes_committed = CrimeCommitted.query.filter_by(poi_id=poi.id).first()
         created_by = User.query.filter_by(id=poi.created_by).first()
-
-        crime_data = None
-        arresting_body_data = None
-
-        if crimes_committed:
-            # Crime data
-            if crimes_committed.crime:
-                crime_data = {
-                    "id": crimes_committed.crime.id,
-                    "name": crimes_committed.crime.name
-                }
-
-            # Arresting body data
-            if crimes_committed.arresting_body:
-                arresting_body_data = {
-                    "id": crimes_committed.arresting_body.id,
-                    "name": crimes_committed.arresting_body.name
-                }
                 
         # List arms recovered
         arms_data = []
@@ -868,6 +847,10 @@ def list_pois():
             "address": poi.address,
             "remark": poi.remark,
             "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
+            "organisation": {
+                "id": poi.organisation.id,
+                "name": poi.organisation.org_name,
+            } if poi.organisation else None,
             "category": {
                 "id": poi.category.id,
                 "name": poi.category.name,
@@ -888,13 +871,6 @@ def list_pois():
                 "id": poi.gender.id,
                 "name": poi.gender.name,
             } if poi.gender else None,
-            "crimes_committed": {
-                "id": crimes_committed.id,
-                "poi_id": crimes_committed.poi_id,
-                "crime_id": crimes_committed.crime_id,
-                "crime": crime_data,  # Including the Crime details here
-                "arresting_body": arresting_body_data  # Including the ArrestingBody details here
-            } if crimes_committed else [],
             "user": {
                 "id": created_by.id,
                 "username": created_by.username,
@@ -906,9 +882,6 @@ def list_pois():
                 "id": poi.poi_status.id,
                 "name": poi.poi_status.name,
             } if poi.poi_status else None,
-            "crime_count": crime_count,
-            "arms_count": arms_count,
-            "arms_recovered": arms_data 
         })
 
     current_time = datetime.utcnow()
