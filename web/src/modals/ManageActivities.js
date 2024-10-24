@@ -73,7 +73,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 	const onSubmit = async values => {
 		console.log(values);
-		console.log(type);
+		console.log(items);
 
 		try {
 			const formData = new FormData();
@@ -110,18 +110,9 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				'comment',
 				values.assessments ? values.assessments.trim() : null
 			);
-			// appendIfExists('items[]', values.item || null);
-			// appendIfExists('qtys[]', values.quantity || null);
+
 			appendIfExists('comment', values.remarks || null);
 
-			// If it's PressRelease, append the file and caption to formData
-			// if (type === 4 && fileList.length > 0) {
-			// 	if (fileList.length === 0) {
-			// 		return { [FORM_ERROR]: 'A file must be selected for Press Release.' };
-			// 	}
-			// 	appendIfExists('file[]', fileList[0]);
-			// 	appendIfExists('media_caption[]', caption);
-			// }
 			console.log(fileList[0]);
 
 			// If it's PressRelease, append multiple files and captions to formData
@@ -136,8 +127,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				console.log(key, value);
 			}
 			// Append array of items and quantities
-			if (values.items)
-				values.items.forEach((item, index) => {
+			if (items)
+				items.forEach((item, index) => {
 					appendIfExists('items[]', item.item || null);
 					appendIfExists('qtys[]', item.quantity || null);
 				});
@@ -188,9 +179,13 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	};
 
 	// Remove an item
+	// const removeItem = index => {
+	// 	const newItems = [...items];
+	// 	newItems.splice(index, 1);
+	// 	setItems(newItems);
+	// };
 	const removeItem = index => {
-		const newItems = [...items];
-		newItems.splice(index, 1);
+		const newItems = items.filter((_, i) => i !== index); // Remove the item and its quantity
 		setItems(newItems);
 	};
 
@@ -219,25 +214,38 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
 					<div className="col-lg-6">
-						<label htmlFor={`item_${index}`} className="form-label">
+						<label htmlFor={`items[${index}].item`} className="form-label">
 							Item
 						</label>
-						<Field name={`items[${index}].item`}>
-							{({ input, meta }) => (
-								<input {...input} className="form-control" placeholder="Item" />
-							)}
-						</Field>
-					</div>
-					<div className="col-lg-4">
-						<label htmlFor={`quantity_${index}`} className="form-label">
-							Quantity
-						</label>
-						<Field name={`items[${index}].quantity`} type="number">
+						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
 								<input
 									{...input}
 									className="form-control"
+									placeholder="Item"
+									value={item.item} // Ensure the correct value is used
+									onChange={e =>
+										handleItemChange(index, 'item', e.target.value)
+									} // Correct the onChange handler
+								/>
+							)}
+						</Field>
+					</div>
+					<div className="col-lg-4">
+						<label htmlFor={`items[${index}].quantity`} className="form-label">
+							Quantity
+						</label>
+						<Field name={`items[${index}].quantity`} value={item.quantity}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									className="form-control"
+									type="number"
 									placeholder="Quantity"
+									value={item.quantity} // Ensure the correct value is used
+									onChange={e =>
+										handleItemChange(index, 'quantity', e.target.value)
+									} // Correct the onChange handler
 								/>
 							)}
 						</Field>
@@ -343,25 +351,38 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
 					<div className="col-lg-6">
-						<label htmlFor={`item_${index}`} className="form-label">
+						<label htmlFor={`items[${index}].item`} className="form-label">
 							Item
 						</label>
-						<Field name={`items[${index}].item`}>
-							{({ input, meta }) => (
-								<input {...input} className="form-control" placeholder="Item" />
-							)}
-						</Field>
-					</div>
-					<div className="col-lg-4">
-						<label htmlFor={`quantity_${index}`} className="form-label">
-							Quantity
-						</label>
-						<Field name={`items[${index}].quantity`} type="number">
+						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
 								<input
 									{...input}
 									className="form-control"
+									placeholder="Item"
+									value={item.item} // Ensure the correct value is used
+									onChange={e =>
+										handleItemChange(index, 'item', e.target.value)
+									} // Correct the onChange handler
+								/>
+							)}
+						</Field>
+					</div>
+					<div className="col-lg-4">
+						<label htmlFor={`items[${index}].quantity`} className="form-label">
+							Quantity
+						</label>
+						<Field name={`items[${index}].quantity`} value={item.quantity}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									className="form-control"
+									type="number"
 									placeholder="Quantity"
+									value={item.quantity} // Ensure the correct value is used
+									onChange={e =>
+										handleItemChange(index, 'quantity', e.target.value)
+									} // Correct the onChange handler
 								/>
 							)}
 						</Field>
