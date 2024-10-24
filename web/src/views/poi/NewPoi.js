@@ -311,7 +311,7 @@ const NewPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
 													</label>
@@ -328,7 +328,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="ref_numb" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="first_name">
 														First Name
 													</label>
@@ -345,7 +345,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="first_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="middle_name">
 														Middle Name
 													</label>
@@ -361,7 +361,7 @@ const NewPoi = () => {
 														)}
 													</Field>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="last_name">
 														Last Name
 													</label>
@@ -378,7 +378,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="last_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="alias">
 														Alias <span style={{ color: 'red' }}></span>
 													</label>
@@ -404,8 +404,7 @@ const NewPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus"
-																	>
+																		className="site-tag-plus">
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -421,7 +420,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="alias" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="phone_number">
 														Phone
 													</label>
@@ -438,7 +437,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -455,7 +454,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="email" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender
 													</label>
@@ -483,7 +482,7 @@ const NewPoi = () => {
 													<ErrorBlock name="gender_id" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="dob">
 														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
@@ -510,11 +509,10 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="dob" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status"
-													>
+														htmlFor="marital_status">
 														Marital Status
 													</label>
 													<Field id="marital_status" name="marital_status">
@@ -544,119 +542,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="marital_status" />
 												</div>
-											</div>
-										</div>
-									</div>
-									<div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Technical Information</h5>
-										</div>
-										<div className="card-body">
-											<div className="row">
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="passport_number"
-													>
-														Passport Number
-													</label>
-													<Field id="passport_number" name="passport_number">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="passport_number"
-																placeholder="Enter passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="passport_number" />
-												</div>
-												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="other_id_number"
-													>
-														Other ID Number
-													</label>
-													<Field id="other_id_number" name="other_id_number">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="other_id_number"
-																placeholder="Enter number"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="other_id_number" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="affiliation">
-														Affiliation <span style={{ color: 'red' }}></span>
-													</label>
-
-													<Field id="affiliation" name="affiliation">
-														{({ input, meta }) => (
-															<Select
-																mode="multiple"
-																allowClear
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor: '#ced4da',
-																}}
-																placeholder="Please Affiliation"
-																onChange={handleAffiliationChange}
-																options={affiliations}
-															/>
-														)}
-													</Field>
-
-													<ErrorBlock name="affiliation" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="role">
-														Role
-													</label>
-													<Field id="role" name="role">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="role"
-																placeholder="Enter role"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="role" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="organisation_id"
-													>
-														Organization
-													</label>
-													<Field id="organisation_id" name="organisation_id">
-														{({ input, meta }) => (
-															<Select
-																style={{ width: '100%', height: '40px' }}
-																placeholder="Select Organisation"
-																onChange={value => {
-																	setSelectedOrganization(value); // Store selected organization in state
-																	input.onChange(value); // Sync with form
-																}}
-																options={organizations} // Provide organizations list
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="organisation_id" />
-												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="country_id">
 														Country
 													</label>
@@ -691,7 +577,7 @@ const NewPoi = () => {
 													<ErrorBlock name="country_id" />
 												</div>
 
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="state_id">
 														State
 													</label>
@@ -718,7 +604,16 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="state_id" />
 												</div>
-												<div className="col-lg-4 mb-3">
+											</div>
+										</div>
+									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Technical Information</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="category_id">
 														Category <span style={{ color: 'red' }}>*</span>
 													</label>
@@ -747,7 +642,107 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="category_id">ctyfctfcht</ErrorBlock>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="organisation_id">
+														Organization
+													</label>
+													<Field id="organisation_id" name="organisation_id">
+														{({ input, meta }) => (
+															<Select
+																style={{ width: '100%', height: '40px' }}
+																placeholder="Select Organisation"
+																onChange={value => {
+																	setSelectedOrganization(value); // Store selected organization in state
+																	input.onChange(value); // Sync with form
+																}}
+																options={organizations} // Provide organizations list
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="organisation_id" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="passport_number">
+														Passport Number
+													</label>
+													<Field id="passport_number" name="passport_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="passport_number"
+																placeholder="Enter passport no"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="passport_number" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="other_id_number">
+														Other ID Number
+													</label>
+													<Field id="other_id_number" name="other_id_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="other_id_number"
+																placeholder="Enter number"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="other_id_number" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="affiliation">
+														Affiliation <span style={{ color: 'red' }}></span>
+													</label>
+
+													<Field id="affiliation" name="affiliation">
+														{({ input, meta }) => (
+															<Select
+																mode="multiple"
+																allowClear
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor: '#ced4da',
+																}}
+																placeholder="Please Affiliation"
+																onChange={handleAffiliationChange}
+																options={affiliations}
+															/>
+														)}
+													</Field>
+
+													<ErrorBlock name="affiliation" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="role">
+														Role
+													</label>
+													<Field id="role" name="role">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="role"
+																placeholder="Enter role"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="role" />
+												</div>
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="source_id">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
@@ -774,7 +769,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="source_id" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="status_id">
 														Status <span style={{ color: 'red' }}></span>
 													</label>
@@ -802,7 +797,7 @@ const NewPoi = () => {
 													<ErrorBlock name="status_id" />
 												</div>
 
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
 														Address
 													</label>
@@ -819,7 +814,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="address" />
 												</div>
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="remark">
 														Remark
 													</label>
@@ -957,8 +952,7 @@ const NewPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}
-										>
+											onClick={handleCancel}>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">

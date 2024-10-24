@@ -54,6 +54,9 @@ const EditPoi = () => {
 	const [alias, setAlias] = useState([]);
 	const [allAffiliations, setAllAffiliations] = useState([]);
 
+	const [organizations, setOrganizations] = useState([]);
+	const [selectedOrganization, setSelectedOrganization] = useState(null);
+
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState(null);
@@ -388,7 +391,7 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
 														<span style={{ color: 'red' }}>*</span>
@@ -406,7 +409,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="ref_numb" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="first_name">
 														First Name <span style={{ color: 'red' }}>*</span>
 													</label>
@@ -423,7 +426,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="first_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="middle_name">
 														Middle Name
 													</label>
@@ -439,7 +442,7 @@ const EditPoi = () => {
 														)}
 													</Field>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="last_name">
 														Last Name <span style={{ color: 'red' }}>*</span>
 													</label>
@@ -456,7 +459,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="last_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="alias">
 														Alias <span style={{ color: 'red' }}></span>
 													</label>
@@ -482,8 +485,7 @@ const EditPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus"
-																	>
+																		className="site-tag-plus">
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -500,7 +502,7 @@ const EditPoi = () => {
 													<ErrorBlock name="alias" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="phone_number">
 														Phone
 													</label>
@@ -517,7 +519,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -535,7 +537,7 @@ const EditPoi = () => {
 													<ErrorBlock name="email" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="gender_id">
 														Gender <span style={{ color: 'red' }}>*</span>
 													</label>
@@ -568,7 +570,7 @@ const EditPoi = () => {
 													<ErrorBlock name="gender_id" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="dateOfBirth">
 														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
@@ -593,11 +595,10 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="dateOfBirth" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status"
-													>
+														htmlFor="marital_status">
 														Marital Status
 													</label>
 
@@ -633,6 +634,65 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="marital_status" />
 												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="country_id">
+														Country <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="country_id" name="country_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Country"
+																onChange={handleCountryChange}
+																value={country}
+																options={countries.map(country => ({
+																	value: country.id, // Set the ID as value
+																	label: country.en_short_name || country.name, // Use either en_short_name or name
+																}))}
+																className="custom-country-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="country_id" />
+												</div>
+
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="state_id">
+														State <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="state_id" name="state_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																onChange={handleChangeState}
+																placeholder="Select state"
+																value={state}
+																options={states.map(state => ({
+																	value: state.id, // Set the ID as value
+																	label: state.name, // Set the name as label
+																}))}
+																className="custom-state-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="state_id" />
+												</div>
 											</div>
 										</div>
 									</div>
@@ -642,11 +702,57 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="category">
+														Category <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="category" name="category">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Category"
+																onChange={handleChangeCat}
+																value={category}
+																options={categories.map(c => ({
+																	label: c.name,
+																	value: c.id,
+																}))}
+																className="custom-category-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="category">
+														Organisation <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="organisation_id" name="organisation_id">
+														{({ input, meta }) => (
+															<Select
+																style={{ width: '100%', height: '40px' }}
+																placeholder="Select Organisation"
+																onChange={value => {
+																	setSelectedOrganization(value);
+																	input.onChange(value);
+																}}
+																options={organizations}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="organisation_id" />
+												</div>
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number"
-													>
+														htmlFor="passport_number">
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -662,11 +768,10 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="passport_number" />
 												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number"
-													>
+														htmlFor="other_id_number">
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -682,7 +787,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="other_id_number" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="affiliation">
 														Affiliation <span style={{ color: 'red' }}></span>
 													</label>
@@ -716,7 +821,7 @@ const EditPoi = () => {
 
 													<ErrorBlock name="affiliation" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="role">
 														Role
 													</label>
@@ -733,95 +838,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="role" />
 												</div>
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="country_id">
-														Country <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="country_id" name="country_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																placeholder="Select Country"
-																onChange={handleCountryChange}
-																value={country}
-																options={countries.map(country => ({
-																	value: country.id, // Set the ID as value
-																	label: country.en_short_name || country.name, // Use either en_short_name or name
-																}))}
-																className="custom-country-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="country_id" />
-												</div>
-
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="state_id">
-														State <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="state_id" name="state_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																onChange={handleChangeState}
-																placeholder="Select state"
-																value={state}
-																options={states.map(state => ({
-																	value: state.id, // Set the ID as value
-																	label: state.name, // Set the name as label
-																}))}
-																className="custom-state-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="state_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="category">
-														Category <span style={{ color: 'red' }}></span>
-													</label>
-													<Field id="category" name="category">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																placeholder="Select Category"
-																onChange={handleChangeCat}
-																value={category}
-																options={categories.map(c => ({
-																	label: c.name,
-																	value: c.id,
-																}))}
-																className="custom-category-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="category" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
@@ -849,7 +866,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="source" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="poiStatus">
 														Status <span style={{ color: 'red' }}></span>
 													</label>
@@ -878,7 +895,7 @@ const EditPoi = () => {
 													<ErrorBlock name="poiStatus" />
 												</div>
 
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
 														Address
 													</label>
@@ -895,7 +912,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="address" />
 												</div>
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="remark">
 														Remark
 													</label>
@@ -1033,8 +1050,7 @@ const EditPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}
-										>
+											onClick={handleCancel}>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">
