@@ -457,20 +457,16 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				<div key={index} className="row mb-3 align-items-center">
 					{/* Upload Data Field */}
 					<div className="col-lg-4">
-						<label htmlFor={`file_${index}`} className="form-label">
-							Upload Data
-						</label>
 						<Field id={`file_${index}`} name={`file_${index}`}>
 							{({ input, meta }) => (
-								<div style={{ marginTop: '10px' }}>
+								<div style={{ marginTop: '15px' }}>
 									<Upload
 										fileList={fileEntry.file ? [fileEntry.file] : []}
 										beforeUpload={file => {
 											handleFileChange(index, 'file', file);
 											return false; // Prevent automatic upload
 										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
+										onRemove={() => handleFileChange(index, 'file', null)}>
 										<Button icon={<UploadOutlined />}>Select File</Button>
 									</Upload>
 									<ErrorBlock name={`file_${index}`} />
@@ -481,9 +477,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 					{/* Caption Field */}
 					<div className="col-lg-7">
-						<label htmlFor={`caption_${index}`} className="form-label">
-							Caption
-						</label>
 						<Field id={`caption_${index}`} name={`caption_${index}`}>
 							{({ input, meta }) => (
 								<input
@@ -495,27 +488,17 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 									onChange={e =>
 										handleFileChange(index, 'caption', e.target.value)
 									}
+									style={{ marginTop: '15px' }}
 								/>
 							)}
 						</Field>
+
 						<ErrorBlock name={`caption_${index}`} />
 					</div>
 
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '35px' }}
-					>
-						<Tooltip title="Add more files">
-							<PlusOutlined
-								style={{
-									fontSize: '15px',
-									color: 'green',
-									cursor: 'pointer',
-									marginBottom: '2px',
-								}}
-								onClick={addFileEntry}
-							/>
-						</Tooltip>
+						style={{ paddingTop: '15px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -525,7 +508,30 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 				</div>
 			))}
-
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-50px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right">
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								color: 'green',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
 			{/* Add More Files Icon */}
 			<div className="row mb-3"></div>
 
