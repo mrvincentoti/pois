@@ -278,7 +278,6 @@ def save_audit_data(audit_data):
         db.session.rollback()
         print(f"Error saving audit: {str(e)}")
 
-
 def upload_file_to_minio(bucket_name, file, new_filename):
     try:
         # Ensure the file stream is at the beginning
@@ -309,8 +308,6 @@ def upload_file_to_minio(bucket_name, file, new_filename):
     except Exception as e:
         print(f"An unexpected error occurred while saving picture file: {str(e)}")
         return None
-
-
 
 def save_picture_file(file):
     try:
@@ -368,7 +365,6 @@ def delete_picture_file(picture_url):
         # Log the error if needed
         print(f"Error deleting picture file {picture_url} from MinIO: {str(e)}")
 
-
 def get_media_type_from_extension(filename):
     extension = os.path.splitext(filename)[1].lower()
     if extension in ['.jpg', '.jpeg', '.png', '.gif']:
@@ -385,7 +381,6 @@ def get_media_type_from_extension(filename):
         return 'archive'
     else:
         return 'document'  # Default for other file types
-
 
 def calculate_poi_age(date_string):
     # Define the date format
