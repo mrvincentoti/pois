@@ -554,7 +554,7 @@ def get_activities_by_org(org_id):
                 2: "Procurement",
                 3: "Items Carted Away",
                 4: "Press Release",
-                5: "Others"
+                5: "Other"
             }
 
             # Get activity type based on type_id
