@@ -567,11 +567,9 @@ def get_activities_by_poi(poi_id):
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
-           
-                "page": page,
-                "per_page": per_page,
-                "total": paginated_activities.total,
-                "total_pages": paginated_activities.pages
+            "pages": page,
+            "per_page": per_page,
+            "total": paginated_activities.total,
            
         })
 

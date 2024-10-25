@@ -20,6 +20,8 @@ from .roles.models import Role
 from .permissions.models import Permission
 from .rolePermissions.models import RolePermission  """
 
+from .users.models import User
+
 # Load environment variables from a .env file
 load_dotenv()
 
@@ -39,6 +41,27 @@ minio_client = Minio(
     secret_key=minio_secret_key,
     secure=False
 )
+
+def requires_permission(permission_name):
+    def decorator(fn):
+        @wraps(fn)
+        def decorated_function(*args, **kwargs):
+            # Ensure user is authenticated first
+            token_data = custom_jwt_required(fn)
+            if not token_data:  # If token is invalid or expired
+                return token_data  # Return the response from the JWT check
+
+            user_id = g.user['id']  # Assuming you've set the user context
+            user = User.query.get(user_id)
+
+            if user:
+                # Check if user has the required permission
+                if not any(p.name == permission_name for role in user.roles for p in role.permissions):
+                    return jsonify({"message": "Unauthorized"}), 403
+
+            return fn(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 # Custom JWT decorator
 def custom_jwt_required(fn):
