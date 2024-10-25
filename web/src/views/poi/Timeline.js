@@ -59,8 +59,9 @@ const Timeline = ({ refreshPoiData }) => {
 				`${FETCH_ACTIVITIES_API.replace(':id', id)}?per_page=${per_page}&page=${page}&q=${q}`
 			);
 			const { activities, ...rest } = rs;
+			console.log(rs);
 			setActivitiesData(activities);
-			setMeta({ ...rest, per_page });
+			setMeta({ ...rest });
 		} catch (error) {
 			setLoadError(error.message);
 		}
@@ -262,7 +263,8 @@ const Timeline = ({ refreshPoiData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none', // Remove underline
 																		display: 'inline-block',
-																	}}>
+																	}}
+																>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -296,7 +298,8 @@ const Timeline = ({ refreshPoiData }) => {
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => editActivity(item)}>
+															onClick={() => editActivity(item)}
+														>
 															Edit
 														</button>
 														{/*<button
@@ -311,7 +314,8 @@ const Timeline = ({ refreshPoiData }) => {
 														</button> */}
 														<button
 															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}>
+															onClick={() => showDetails(item)}
+														>
 															Details
 														</button>
 													</div>

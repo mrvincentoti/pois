@@ -14,7 +14,6 @@ const AppPagination = ({ meta, filters }) => {
 	const filterHash = filterHashString !== '' ? `#${filterHashString}` : '';
 
 	const sizes = useMemo(() => {
-		console.log(meta);
 		const valPrev = meta.current_page > 1 ? meta.current_page - 1 : 1; // previous page
 		const valNext =
 			meta.current_page < meta.pages ? meta.current_page + 1 : meta.pages; // next page
@@ -48,6 +47,8 @@ const AppPagination = ({ meta, filters }) => {
 	}, [meta.current_page, meta.pages]);
 
 	const min = useMemo(() => {
+		console.log('ygf');
+		console.log(meta);
 		return meta.per_page * (meta.current_page - 1) + 1;
 	}, [meta.per_page, meta.current_page]);
 
