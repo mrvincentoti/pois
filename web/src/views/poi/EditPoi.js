@@ -18,6 +18,7 @@ import {
 	FETCH_STATES_API,
 	FETCH_POI_CATEGORY_API,
 	FETCH_SOURCES_API,
+	FETCH_ORG_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
 	GET_POI_API,
@@ -48,14 +49,16 @@ const EditPoi = () => {
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
+	const [organisations, setOrganisations] = useState([]);
+	const [organisation, setOrganisation] = useState([]);
 	const [poiStatuses, setPoiStatuses] = useState(null);
 	const [poiStatus, setPoiStatus] = useState(null);
 	const [affiliations, setAffiliations] = useState([]);
 	const [alias, setAlias] = useState([]);
 	const [allAffiliations, setAllAffiliations] = useState([]);
 
-	const [organizations, setOrganizations] = useState([]);
-	const [selectedOrganization, setSelectedOrganization] = useState(null);
+	// const [organizations, setOrganizations] = useState([]);
+	// const [selectedOrganization, setSelectedOrganization] = useState(null);
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
@@ -83,6 +86,7 @@ const EditPoi = () => {
 				`${FETCH_COUNTRIES_API}?per_page=300`,
 				FETCH_POI_CATEGORY_API,
 				FETCH_SOURCES_API,
+				FETCH_ORG_API,
 				`${FETCH_AFFILIATIONS_API}?page=0`,
 				FETCH_POI_STATUSES_API,
 			];
@@ -94,6 +98,7 @@ const EditPoi = () => {
 				rs_countries,
 				rs_categories,
 				rs_sources,
+				rs_orgs,
 				rs_affiliations,
 				rs_statuses,
 			] = await Promise.all(requests);
@@ -101,6 +106,7 @@ const EditPoi = () => {
 			setCountries(rs_countries.countries);
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
+			setOrganisations(rs_orgs.orgs);
 			setAllAffiliations(rs_affiliations.affiliations);
 			setPoiStatuses(rs_statuses.statuses);
 		} catch (error) {
@@ -156,6 +162,7 @@ const EditPoi = () => {
 					setState(item.state?.id);
 					setCountry(item.country?.id);
 					setSource(item.source?.id);
+					setOrganisation(item.organisation?.name);
 					setPoi(item);
 					setCategory(item.category?.id);
 					setPoiStatus(item.poi_status?.id);
@@ -165,7 +172,7 @@ const EditPoi = () => {
 							const affiliation = allAffiliations.find(
 								item => item.id === Number(a)
 							);
-							console.log(affiliation);
+
 							return { label: affiliation?.name || '', value: Number(a) };
 						}) || [];
 					// console.log(affiliations_list);
@@ -173,6 +180,7 @@ const EditPoi = () => {
 					setAffiliations(affiliations_list);
 
 					setImageString(item.picture);
+					console.log(item.marital_status);
 					if (item.marital_status)
 						setMaritalStatus(
 							maritalStatusList.find(
@@ -248,7 +256,7 @@ const EditPoi = () => {
 			const formData = new FormData();
 			// Append your values to FormData
 
-			if (maritalStatus) values.marital_status = maritalStatus.name;
+			if (maritalStatus) values.marital_status = maritalStatus;
 			if (dateOfBirth) values.dob = dateOfBirth;
 			if (tags) values.alias = tags;
 
@@ -275,6 +283,9 @@ const EditPoi = () => {
 
 			if (values.source) {
 				formData.append('source_id', source || '');
+			}
+			if (values.organisation) {
+				formData.append('organisation_id', organisation || '');
 			}
 			if (values.gender) {
 				formData.append('gender_id', values.gender?.id || '');
@@ -336,6 +347,9 @@ const EditPoi = () => {
 	};
 	const handleChangeSource = value => {
 		setSource(value);
+	};
+	const handleChangeOrganisation = value => {
+		setOrganisation(value);
 	};
 	const handleChangeStatus = value => {
 		setPoiStatus(value);
@@ -485,7 +499,8 @@ const EditPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus">
+																		className="site-tag-plus"
+																	>
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -598,7 +613,8 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status">
+														htmlFor="marital_status"
+													>
 														Marital Status
 													</label>
 
@@ -616,10 +632,10 @@ const EditPoi = () => {
 																			: '#ced4da',
 																}}
 																options={maritalStatusList.map(status => ({
-																	value: status.id, // Set the ID as value
+																	value: status.name, // Set the ID as value
 																	label: status.name, // Set the name as label
 																}))}
-																value={maritalStatus} // Bind the selected value
+																value={maritalStatus?.name} // Bind the selected value
 																className={
 																	meta.touched && meta.error ? 'error' : ''
 																}
@@ -731,28 +747,38 @@ const EditPoi = () => {
 													<ErrorBlock name="category" />
 												</div>
 												<div className="col-lg-3 mb-3">
-													<label className="form-label" htmlFor="category">
+													<label className="form-label" htmlFor="organisation">
 														Organisation <span style={{ color: 'red' }}></span>
 													</label>
-													<Field id="organisation_id" name="organisation_id">
+
+													<Field id="organisation" name="organisation">
 														{({ input, meta }) => (
 															<Select
-																style={{ width: '100%', height: '40px' }}
-																placeholder="Select Organisation"
-																onChange={value => {
-																	setSelectedOrganization(value);
-																	input.onChange(value);
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Dynamic border color based on validation
 																}}
-																options={organizations}
+																value={organisation}
+																placeholder="Select Organisation"
+																onChange={handleChangeOrganisation} // Handle change event
+																options={organisations?.map(o => ({
+																	label: o.org_name,
+																	value: o.id,
+																}))}
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="organisation_id" />
+													<ErrorBlock name="organisation" />
 												</div>
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number">
+														htmlFor="passport_number"
+													>
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -771,7 +797,8 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number">
+														htmlFor="other_id_number"
+													>
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -1050,7 +1077,8 @@ const EditPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}>
+											onClick={handleCancel}
+										>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">

@@ -14,17 +14,14 @@ const AppPagination = ({ meta, filters }) => {
 	const filterHash = filterHashString !== '' ? `#${filterHashString}` : '';
 
 	const sizes = useMemo(() => {
+		console.log(meta);
 		const valPrev = meta.current_page > 1 ? meta.current_page - 1 : 1; // previous page
 		const valNext =
-			meta.current_page < meta.pages
-				? meta.current_page + 1
-				: meta.pages; // next page
+			meta.current_page < meta.pages ? meta.current_page + 1 : meta.pages; // next page
 		const extraPrev = valPrev === 3 ? 2 : null;
-		const extraNext =
-			valNext === meta.pages - 2 ? meta.pages - 1 : null;
+		const extraNext = valNext === meta.pages - 2 ? meta.pages - 1 : null;
 		const dotsBefore = valPrev > 3 ? 2 : null;
-		const dotsAfter =
-			valNext < meta.pages - 2 ? meta.pages - 1 : null;
+		const dotsAfter = valNext < meta.pages - 2 ? meta.pages - 1 : null;
 		const output = [];
 		for (let i = 1; i <= meta.pages; i += 1) {
 			if (
