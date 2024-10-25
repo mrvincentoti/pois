@@ -566,6 +566,7 @@ def get_activities_by_poi(poi_id):
         return jsonify({
             "status": "success",
             "status_code": 200,
+            'current_page': paginated_activities.page,
             "activities": activity_list,
             "pages": page,
             "per_page": per_page,
