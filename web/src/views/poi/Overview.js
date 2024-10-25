@@ -70,7 +70,8 @@ const Overview = () => {
 										/>
 										<button
 											className="btn btn-info"
-											onClick={() => handleEditClick(params.id)}>
+											onClick={() => handleEditClick(params.id)}
+										>
 											<i className="ri-pencil-line me-1 align-bottom"></i> Edit
 										</button>
 									</div>
@@ -278,7 +279,7 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Address :</p>
 												<h6 className="fw-semibold">
-													{poiData.address || 'N/A'}
+													{poiData?.address || 'N/A'}
 												</h6>
 											</div>
 										</div>
@@ -294,7 +295,7 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Remark :</p>
 												<h6 className="fw-semibold">
-													{poiData.remark || 'N/A'}
+													{poiData?.remark || 'N/A'}
 												</h6>
 											</div>
 										</div>
@@ -309,7 +310,7 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Organisation :</p>
 												<h6 className="fw-semibold">
-													{poiData.organisation.name || 'N/A'}
+													{poiData.organisation?.name || 'N/A'}
 												</h6>
 											</div>
 										</div>

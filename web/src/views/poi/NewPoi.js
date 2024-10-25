@@ -229,6 +229,8 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
+		console.log(values);
+
 		try {
 			// Create a FormData object
 			const formData = new FormData();
@@ -246,7 +248,7 @@ const NewPoi = () => {
 
 			appendIfExists('country_id', country);
 			appendIfExists('affiliation_id', affiliation);
-			appendIfExists('marital_status', values.marital_status?.name);
+			appendIfExists('marital_status', maritalStatus);
 			appendIfExists('picture', imageUrl?.file);
 			appendIfExists('alias', alias.length > 0 ? alias.join(', ') : null);
 			appendIfExists('affiliation', affiliation?.join(','));
@@ -404,7 +406,8 @@ const NewPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus">
+																		className="site-tag-plus"
+																	>
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -512,7 +515,8 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status">
+														htmlFor="marital_status"
+													>
 														Marital Status
 													</label>
 													<Field id="marital_status" name="marital_status">
@@ -645,7 +649,8 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="organisation_id">
+														htmlFor="organisation_id"
+													>
 														Organization
 													</label>
 													<Field id="organisation_id" name="organisation_id">
@@ -666,7 +671,8 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number">
+														htmlFor="passport_number"
+													>
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -685,7 +691,8 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number">
+														htmlFor="other_id_number"
+													>
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -952,7 +959,8 @@ const NewPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}>
+											onClick={handleCancel}
+										>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">

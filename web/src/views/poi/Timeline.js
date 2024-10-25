@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'antd';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
@@ -21,6 +21,9 @@ import {
 	request,
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
+import { APP_SHORT_NAME, limit, paginate } from '../../services/constants';
+import { useQuery } from '../../hooks/query';
+import TitleSearchBar from '../../components/TitleSearchBar';
 
 const Timeline = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -38,24 +41,68 @@ const Timeline = ({ refreshPoiData }) => {
 	const [activities, setActivities] = useState(null);
 	const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+	const [meta, setMeta] = useState(paginate);
+	const [page, setPage] = useState(null);
+	const [search, setSearch] = useState('');
+	const [searchTerm, setSearchTerm] = useState('');
+	const [queryLimit, setQueryLimit] = useState(limit);
+
 	const navigate = useNavigate();
 	const params = useParams();
+	const query = useQuery();
 
-	const fetchActivityDetails = useCallback(async id => {
+	const [fetching, setFetching] = useState(true);
+
+	const fetchActivityDetails = useCallback(async (id, per_page, page, q) => {
 		try {
-			const rs = await request(FETCH_ACTIVITIES_API.replace(':id', id));
-			setActivitiesData(rs.activities);
+			const rs = await request(
+				`${FETCH_ACTIVITIES_API.replace(':id', id)}?per_page=${per_page}&page=${page}&q=${q}`
+			);
+			const { activities, ...rest } = rs;
+			setActivitiesData(activities);
+			setMeta({ ...rest, per_page });
 		} catch (error) {
 			setLoadError(error.message);
 		}
 	}, []);
 
 	useEffect(() => {
+		const _page = Number(query.get('page') || 1);
+		const _search = query.get('q') || '';
+		const _limit = Number(query.get('entries_per_page') || limit);
+
 		if (!loaded) {
 			fetchActivityDetails(params.id);
 			setLoaded(true);
 		}
-	}, [fetchActivityDetails, loaded, params.id]);
+		if (
+			fetching ||
+			_page !== page ||
+			_search !== search ||
+			_limit !== queryLimit
+		) {
+			if (_page !== page || _search !== search || _limit !== queryLimit) {
+				setFetching(true);
+			}
+
+			fetchActivityDetails(params.id, _limit, _page, _search).then(() => {
+				setFetching(false);
+				setPage(_page);
+				setSearch(_search);
+				setSearchTerm(_search);
+				setQueryLimit(_limit);
+			});
+		}
+	}, [
+		fetchActivityDetails,
+		fetching,
+		loaded,
+		params.id,
+		page,
+		query,
+		queryLimit,
+		search,
+	]);
 
 	const handleEditClick = id => {
 		navigate(`/pois/${id}/edit`);
@@ -125,7 +172,8 @@ const Timeline = ({ refreshPoiData }) => {
 
 	const refreshTable = async () => {
 		setWorking(true);
-		await fetchActivityDetails(params.id);
+		const _limit = Number(query.get('entries_per_page') || limit);
+		await fetchActivityDetails(params.id, _limit, 1, '');
 		setWorking(false);
 	};
 
@@ -140,13 +188,27 @@ const Timeline = ({ refreshPoiData }) => {
 		document.body.classList.remove('modal-open');
 	};
 
+	const min = useMemo(() => {
+		return meta.per_page * (meta.current_page - 1) + 1;
+	}, [meta.per_page, meta.current_page]);
+
 	return (
 		<>
 			<div className="container-fluid no-printme mb-5">
 				{loaded ? (
 					<div className="card">
+						<TitleSearchBar
+							title="Activities"
+							onClick={() => addActivity()}
+							queryLimit={queryLimit}
+							search={search}
+							searchTerm={searchTerm}
+							onChangeSearch={e => setSearchTerm(e.target.value)}
+							hasCreateBtn={true}
+							createBtnTitle="Add Activity"
+						/>
 						<div className="card-body">
-							<div className="d-flex align-items-center mb-4">
+							{/* <div className="d-flex align-items-center mb-4">
 								<h5 className="card-title flex-grow-1 mb-0">Activities</h5>
 								<div className="d-flex gap-2">
 									<div onClick={addActivity}>
@@ -156,7 +218,7 @@ const Timeline = ({ refreshPoiData }) => {
 										</label>
 									</div>
 								</div>
-							</div>
+							</div> */}
 							{activitiesData.length > 0 ? (
 								<div className="row">
 									{activitiesData.map((item, i) => (
@@ -253,6 +315,9 @@ const Timeline = ({ refreshPoiData }) => {
 									}
 								/>
 							)}
+							<div className="d-flex justify-content-end mt-3">
+								<AppPagination meta={meta} />
+							</div>
 						</div>
 					</div>
 				) : (
