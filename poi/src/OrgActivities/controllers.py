@@ -509,7 +509,7 @@ def get_activities_by_org(org_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"
-            org_activities_query = org_activities_query.filter(OrgActivity.comment.ilike(search_pattern))
+            org_activities_query = org_activities_query.filter(OrgActivity.comment.ilike(search_pattern) | OrgActivity.location.ilike(search_pattern) | OrgActivity.location_from.ilike(search_pattern) | OrgActivity.location_to.ilike(search_pattern) | OrgActivity.nature_of_attack.ilike(search_pattern) | OrgActivity.facilitator.ilike(search_pattern))
             poi_activities_query = poi_activities_query.filter(Activity.comment.ilike(search_pattern))
 
         # Order both queries by activity_date in descending order

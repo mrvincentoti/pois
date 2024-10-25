@@ -495,6 +495,8 @@ def get_activities_by_poi(poi_id):
                 or_(
                     Activity.comment.ilike(search_pattern),
                     Activity.location.ilike(search_pattern),
+                    Activity.location_from.ilike(search_pattern),
+                    Activity.location_to.ilike(search_pattern),
                     Activity.facilitator.ilike(search_pattern),
                     Activity.nature_of_attack.ilike(search_pattern)
                 )
