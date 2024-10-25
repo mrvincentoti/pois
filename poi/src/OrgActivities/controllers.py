@@ -628,14 +628,13 @@ def get_activities_by_org(org_id):
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
-            "pagination": {
-                "current_page": page,
-                "per_page": per_page,
-                "total_org_pages": org_activities_paginated.pages,
-                "total_poi_pages": poi_activities_paginated.pages,
-                "total_org_items": org_activities_paginated.total,
-                "total_poi_items": poi_activities_paginated.total
-            }
+            "current_page": page,
+            "per_page": per_page,
+            "total_org_pages": org_activities_paginated.pages,
+            "total_poi_pages": poi_activities_paginated.pages,
+            "total_org_items": org_activities_paginated.total,
+            "total_poi_items": poi_activities_paginated.total
+           
         })
 
     except Exception as e:
