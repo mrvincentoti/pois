@@ -161,81 +161,95 @@ const Timeline = ({ refreshPoiData }) => {
 								<div className="row">
 									{activitiesData.map((item, i) => (
 										<div key={i} className="col-xxl-4 col-sm-4">
-											<div className="card profile-project-card shadow-none profile-project-warning">
+											<div className="card profile-project-card shadow-lg profile-project-dark">
 												<div className="card-body p-4">
 													<div className="d-flex">
 														<div className="flex-grow-1 text-muted overflow-hidden">
 															<h5 className="fs-14 text-truncate">
-																<a href="#" className="text-body">
+																<span
+																	style={{
+																		cursor: 'pointer',
+																		color: '#fff', // White text for readability
+																		backgroundColor:
+																			item.type_id === 1
+																				? '#007bff' // Blue for Type1
+																				: item.type_id === 2
+																					? '#28a745' // Green for Type2
+																					: item.type_id === 3
+																						? '#ffc107' // Yellow for Type3
+																						: item.type_id === 4
+																							? '#dc3545' // Red for Type4
+																							: item.type_id === 5
+																								? '#6c757d' // Gray for Type5
+																								: '#6c757d', // Default Gray
+																		borderColor:
+																			item.type_id === 1
+																				? '#007bff'
+																				: item.type_id === 2
+																					? '#28a745'
+																					: item.type_id === 3
+																						? '#ffc107'
+																						: item.type_id === 4
+																							? '#dc3545'
+																							: item.type_id === 5
+																								? '#6c757d'
+																								: '#6c757d',
+																		borderStyle: 'solid',
+																		borderWidth: '1px',
+																		borderRadius: '5px',
+																		padding: '5px 10px',
+																		textDecoration: 'none', // Remove underline
+																		display: 'inline-block',
+																	}}>
 																	{item.activity_type || 'N/A'}
-																</a>
+																</span>
 															</h5>
+
 															<p className="text-muted text-truncate mb-0">
-																Activity Date:
-																<span className="fw-semibold text-body">
-																	{item.activity_date || 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Comment:
-																<span className="fw-semibold text-body">
-																	{item.comment || 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Items:
-																<span className="fw-semibold text-body">
-																	{item.items.map((item, index) => (
-																		<span key={index}>
-																			{item.item} ({item.qty})
-																			{index !== item.items?.length - 1 && ', '}
-																		</span>
-																	))}
+																Location:
+																<span className="fw-semibold text-body p-2">
+																	{item.location || item.location_from || 'N/A'}
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
 																Media Files:
-																<span className="fw-semibold text-body">
+																<span className="fw-semibold text-body p-2">
 																	{item.media_files.length > 0 ? 'Yes' : 'No'}
 																</span>
 															</p>
-															{/* <p className="text-muted text-truncate mb-0">
-																Nature of Attack:
-																<span className="fw-semibold text-body">
-																	{'N/A'}
+															<p className="text-muted text-truncate mb-0">
+																Created by:
+																<span className="fw-semibold text-body p-2">
+																	{item.created_by_name || 'N/A'}
 																</span>
-															</p> */}
-															{/* <p className="text-muted text-truncate mb-0">
-																Assessment:
-																<span className="fw-semibold text-body">
-																	{'N/A'}
+															</p>
+															<p className="text-muted text-truncate mb-0">
+																Activity Date:
+																<span className="fw-semibold text-body p-2">
+																	{item.activity_date || 'N/A'}
 																</span>
-															</p> */}
+															</p>
 														</div>
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => editActivity(item)}
-														>
+															onClick={() => editActivity(item)}>
 															Edit
 														</button>
-														<button
+														{/*<button
 															className="btn btn-sm btn-outline-success"
-															onClick={() => addNotes(item)}
-														>
+															onClick={() => addNotes(item)}>
 															Add Note
 														</button>
-														<button
+														 <button
 															className="btn btn-sm btn-outline-warning"
-															onClick={() => addMedia(item)}
-														>
+															onClick={() => addMedia(item)}>
 															Add Media
-														</button>
+														</button> */}
 														<button
-															className="btn btn-sm btn-outline-primary"
-															onClick={() => showDetails(item)}
-														>
+															className="btn btn-sm btn-success"
+															onClick={() => showDetails(item)}>
 															Details
 														</button>
 													</div>

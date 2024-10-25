@@ -9,6 +9,7 @@ from ..poi.models import Poi
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
+from sqlalchemy import or_
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
 
 load_dotenv()
@@ -46,7 +47,7 @@ def add_activity():
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
                 "nature_of_attack": request.form.get("nature_of_attack"),
-                "location": request.form.get("location"),
+                "location": request.form.get("location") or request.form.get("location_from"),
                 "action_taken": request.form.get("action_taken"),
                 "location_from": request.form.get("location_from"),
                 "location_to": request.form.get("location_to"),
@@ -490,7 +491,14 @@ def get_activities_by_poi(poi_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"
-            query = query.filter(Activity.comment.ilike(search_pattern))
+            query = query.filter(
+                or_(
+                    Activity.comment.ilike(search_pattern),
+                    Activity.location.ilike(search_pattern),
+                    Activity.facilitator.ilike(search_pattern),
+                    Activity.nature_of_attack.ilike(search_pattern)
+                )
+            )
 
         # Order by activity_date in descending order (newest first)
         query = query.order_by(Activity.activity_date.desc())
