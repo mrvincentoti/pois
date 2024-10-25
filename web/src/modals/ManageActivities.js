@@ -271,8 +271,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
-								color: 'green',
-								cursor: 'pointer',
 								marginBottom: '2px',
 							}}
 							onClick={addItem}
@@ -370,10 +368,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		<>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
-					<div className="col-lg-6">
-						<label htmlFor={`items[${index}].item`} className="form-label">
-							Item
-						</label>
+					<div className="col-lg-7" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
 								<input
@@ -388,10 +383,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							)}
 						</Field>
 					</div>
-					<div className="col-lg-4">
-						<label htmlFor={`items[${index}].quantity`} className="form-label">
-							Quantity
-						</label>
+					<div className="col-lg-4" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].quantity`} value={item.quantity}>
 							{({ input, meta }) => (
 								<input
@@ -407,16 +399,40 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							)}
 						</Field>
 					</div>
-					<div className="col-lg-2 d-flex align-items-end">
-						<Button type="danger" onClick={() => removeItem(index)}>
-							Remove
-						</Button>
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeItem(index)}
+							/>
+						</Tooltip>
 					</div>
 				</div>
 			))}
-			<Button type="primary" onClick={addItem}>
-				Add Item
-			</Button>
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addItem}
+						className="btn btn-sm btn-success float-right">
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								marginBottom: '2px',
+							}}
+							onClick={addItem}
+						/>
+					</button>
+				</div>
+			</div>
 			<div className="col-lg-12">
 				<label htmlFor="location" className="form-label">
 					Location
@@ -535,7 +551,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-0px',
+							marginTop: '-40px',
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
@@ -543,7 +559,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
-								color: 'green',
 								cursor: 'pointer',
 								marginBottom: '2px',
 							}}
