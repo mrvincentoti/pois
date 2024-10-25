@@ -102,9 +102,15 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				'crime_date',
 				moment(values.crimeDate).format('YYYY-MM-DD') || null
 			);
+			// appendIfExists(
+			// 	'activity_date',
+			// 	moment(values.activityDate).format('YYYY-MM-DD') || null
+			// );
 			appendIfExists(
 				'activity_date',
-				moment(values.activityDate).format('YYYY-MM-DD') || null
+				values.activity_date
+					? moment(values.activity_date).format('YYYY-MM-DD')
+					: null
 			);
 			appendIfExists(
 				'comment',
@@ -116,7 +122,13 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			console.log(fileList[0]);
 
 			// If it's PressRelease, append multiple files and captions to formData
-			if (type === 4 && fileList.length > 0) {
+			if (
+				type === 4 ||
+				type === 5 ||
+				type === 1 ||
+				type === 2 ||
+				(type === 3 && fileList.length > 0)
+			) {
 				fileList.forEach((file, index) => {
 					appendIfExists('file[]', fileList[index].file); // Use 'file[]' to send multiple files
 					appendIfExists('media_caption[]', fileList[index].caption); // Ensure captions are appended for each file
@@ -208,6 +220,213 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		setFileList(newFileList);
 	};
 
+	const renderAttackFields = () => (
+		<>
+			<div className="col-lg-12">
+				<label htmlFor="crime_id" className="form-label">
+					Crime
+				</label>
+				<Field id="crime_id" name="crime_id">
+					{({ input, meta }) => (
+						<Select
+							isClearable
+							getOptionValue={option => option.id}
+							getOptionLabel={option => option.name}
+							options={crimesOptions}
+							value={crime}
+							className={error(meta)}
+							onChange={e => {
+								setCrime(e);
+								e ? input.onChange(e.id) : input.onChange('');
+							}}
+							placeholder="Select crime"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="crime_id" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="location" className="form-label">
+					Location
+				</label>
+				<Field id="location" name="location">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Location"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="location" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="nature_of_attack" className="form-label">
+					Nature of Attack
+				</label>
+				<Field id="nature_of_attack" name="nature_of_attack">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Nature of attack"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="nature_of_attack" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="casualties_recorded" className="form-label">
+					Casualties Recorded
+				</label>
+				<Field id="casualties_recorded" name="casualties_recorded">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="number"
+							className={`form-control ${error(meta)}`}
+							placeholder="Casualties recorded"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="casualties_recorded" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="action_taken" className="form-label">
+					Action Taken
+				</label>
+				<Field id="action_taken" name="action_taken">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Action taken"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="action_taken" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="crime_date" className="form-label">
+					Crime Date
+				</label>
+				<Field id="crime_date" name="crime_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select date of crime"
+							value={crimeDate}
+							onChange={([date]) => {
+								input.onChange(moment(date).format('YYYY-MM-DD'));
+								setCrimeDate(date);
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="crime_date" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="assessments" className="form-label">
+					Assessment
+				</label>
+				<Field id="assessments" name="assessments">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Type your assessment here"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="assessments" />
+			</div>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}
+					>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
+		</>
+	);
+
 	// Render procurement fields dynamically
 	const renderProcurementFields = () => (
 		<>
@@ -246,7 +465,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '15px' }}
+					>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -267,7 +487,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addItem}
-						className="btn btn-sm btn-success float-right">
+						className="btn btn-sm btn-success float-right"
+					>
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -318,11 +539,11 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					{({ input, meta }) => (
 						<Flatpickr
 							className={`form-control ${error(meta)}`}
-							placeholder="Select activity date"
+							placeholder="Select Activity Date"
 							value={activityDate}
 							onChange={([date]) => {
-								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setActivityDate(date);
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
 							}}
 						/>
 					)}
@@ -359,6 +580,87 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					)}
 				</Field>
 				<ErrorBlock name="remarks" />
+			</div>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}
+					>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
 			</div>
 		</>
 	);
@@ -401,7 +703,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '15px' }}
+					>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -422,7 +725,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addItem}
-						className="btn btn-sm btn-success float-right">
+						className="btn btn-sm btn-success float-right"
+					>
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -457,11 +761,11 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					{({ input, meta }) => (
 						<Flatpickr
 							className={`form-control ${error(meta)}`}
-							placeholder="Select activity date"
+							placeholder="Select Activity Date"
 							value={activityDate}
 							onChange={([date]) => {
-								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setActivityDate(date);
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
 							}}
 						/>
 					)}
@@ -483,6 +787,87 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="remarks" />
 			</div>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}
+					>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
 		</>
 	);
 
@@ -502,7 +887,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 											handleFileChange(index, 'file', file);
 											return false; // Prevent automatic upload
 										}}
-										onRemove={() => handleFileChange(index, 'file', null)}>
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
 										<Button icon={<UploadOutlined />}>Select File</Button>
 									</Upload>
 									<ErrorBlock name={`file_${index}`} />
@@ -534,7 +920,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '15px' }}
+					>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -555,7 +942,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right">
+						className="btn btn-sm btn-success float-right"
+					>
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -582,8 +970,133 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							placeholder="Select Activity Date"
 							value={activityDate}
 							onChange={([date]) => {
-								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setActivityDate(date);
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
+
+			{/* Remarks Field */}
+			<div className="col-lg-12">
+				<label htmlFor="remarks" className="form-label">
+					Remarks
+				</label>
+				<Field id="remarks" name="remarks">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Remarks"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="remarks" />
+			</div>
+		</>
+	);
+
+	// Render Others fields dynamically (files, captions, remarks, and activity date)
+	const renderOthersFields = () => (
+		<>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}
+					>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
+
+			{/* Activity Date Field */}
+			<div className="col-lg-12">
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
 							}}
 						/>
 					)}
@@ -613,180 +1126,16 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	// Conditionally render fields based on the selected "TYPE"
 	const renderFieldsForType = () => {
 		if (type === 1) {
-			return (
-				<>
-					<div className="col-lg-12">
-						<label htmlFor="crime_id" className="form-label">
-							Crime
-						</label>
-						<Field id="crime_id" name="crime_id">
-							{({ input, meta }) => (
-								<Select
-									isClearable
-									getOptionValue={option => option.id}
-									getOptionLabel={option => option.name}
-									options={crimesOptions}
-									value={crime}
-									className={error(meta)}
-									onChange={e => {
-										setCrime(e);
-										e ? input.onChange(e.id) : input.onChange('');
-									}}
-									placeholder="Select crime"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="crime_id" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="location" className="form-label">
-							Location
-						</label>
-						<Field id="location" name="location">
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Location"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="location" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="nature_of_attack" className="form-label">
-							Nature of Attack
-						</label>
-						<Field id="nature_of_attack" name="nature_of_attack">
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Nature of attack"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="nature_of_attack" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="casualties_recorded" className="form-label">
-							Casualties Recorded
-						</label>
-						<Field id="casualties_recorded" name="casualties_recorded">
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="number"
-									className={`form-control ${error(meta)}`}
-									placeholder="Casualties recorded"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="casualties_recorded" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="action_taken" className="form-label">
-							Action Taken
-						</label>
-						<Field id="action_taken" name="action_taken">
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Action taken"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="action_taken" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="crime_date" className="form-label">
-							Crime Date
-						</label>
-						<Field id="crime_date" name="crime_date">
-							{({ input, meta }) => (
-								<Flatpickr
-									className={`form-control ${error(meta)}`}
-									placeholder="Select date of crime"
-									value={crimeDate}
-									onChange={([date]) => {
-										input.onChange(moment(date).format('YYYY-MM-DD'));
-										setCrimeDate(date);
-									}}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="crime_date" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="assessments" className="form-label">
-							Assessment
-						</label>
-						<Field id="assessments" name="assessments">
-							{({ input, meta }) => (
-								<textarea
-									{...input}
-									className={`form-control ${error(meta)}`}
-									placeholder="Type your assessment here"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="assessments" />
-					</div>
-				</>
-			);
+			return renderAttackFields();
 		} else if (type === 2) {
 			return renderProcurementFields();
-
-			{
-				/* catered away Fields */
-			}
 		} else if (type === 3) {
 			return renderCateredAwayFields();
 		} else if (type === 4) {
 			return renderPressReleaseFields();
 		} else if (type === 5) {
-			return (
-				<>
-					<div className="col-lg-12">
-						<label htmlFor="remarks" className="form-label">
-							Remarks
-						</label>
-						<Field id="remarks" name="remarks">
-							{({ input, meta }) => (
-								<textarea
-									{...input}
-									className={`form-control ${error(meta)}`}
-									placeholder="Remarks"
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="remarks" />
-					</div>
-					<div className="col-lg-12">
-						<label htmlFor="activity_date" className="form-label">
-							Activity Date
-						</label>
-						<Field id="activity_date" name="activity_date">
-							{({ input, meta }) => (
-								<Flatpickr
-									className={`form-control ${error(meta)}`}
-									placeholder="Select Activity Date"
-									value={activityDate}
-									onChange={([date]) => {
-										input.onChange(moment(date).format('YYYY-MM-DD'));
-										setActivityDate(date);
-									}}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name="activity_date" />
-					</div>
-				</>
-			);
+			// Render "Others" Fields
+			return renderOthersFields(); // Add this new render function
 		}
 		return null;
 	};
