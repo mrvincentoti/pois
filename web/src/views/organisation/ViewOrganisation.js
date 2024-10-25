@@ -221,8 +221,7 @@ const ViewOrganisation = () => {
 											<div className="avatar-xl">
 												<div
 													className="avatar-title rounded-circle bg-light text-primary text-uppercase "
-													style={{ fontSize: '60px' }}
-												>
+													style={{ fontSize: '60px' }}>
 													{formatGetInitialsName(orgData)}
 												</div>
 											</div>
@@ -283,14 +282,17 @@ const ViewOrganisation = () => {
 										{/* Nav tabs */}
 										<ul
 											className="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1"
-											role="tablist"
-										>
+											role="tablist">
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'overview' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'overview' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('overview')}
-													role="tab"
-												>
+													role="tab">
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Overview
@@ -311,10 +313,14 @@ const ViewOrganisation = () => {
                                             </li> */}
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'media' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'media' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('media')}
-													role="tab"
-												>
+													role="tab">
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Files
@@ -324,10 +330,14 @@ const ViewOrganisation = () => {
 
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'activities' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('activities')}
-													role="tab"
-												>
+													role="tab">
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Activities
@@ -336,10 +346,14 @@ const ViewOrganisation = () => {
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'capacity' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'capacity' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('capacity')}
-													role="tab"
-												>
+													role="tab">
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Operational Capacity
@@ -350,8 +364,7 @@ const ViewOrganisation = () => {
 										<div className="flex-shrink-0">
 											<a
 												className="btn btn-info"
-												onClick={() => openPrintModal()}
-											>
+												onClick={() => openPrintModal()}>
 												<i className="ri-edit-box-line align-bottom"></i> Print
 											</a>
 										</div>
@@ -361,8 +374,7 @@ const ViewOrganisation = () => {
 										<div
 											className="tab-pane active"
 											id="overview-tab"
-											role="tabpanel"
-										>
+											role="tabpanel">
 											<div className="row">
 												<div className="col-xxl-12 col-lg-12">
 													{activeTab === 'overview' && (
@@ -412,8 +424,7 @@ const ViewOrganisation = () => {
 						Print
 					</Button>,
 				]}
-				width={1000}
-			>
+				width={1000}>
 				{/* <div ref={printRef}>
                     <PoiPrint poiData={poiData} />
                 </div> */}

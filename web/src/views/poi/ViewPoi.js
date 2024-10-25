@@ -114,8 +114,7 @@ const ViewPoi = () => {
 											<div className="avatar-xl">
 												<div
 													className="avatar-title rounded-circle bg-light text-primary text-uppercase "
-													style={{ fontSize: '60px' }}
-												>
+													style={{ fontSize: '60px' }}>
 													{formatGetInitialsName(poiData)}
 												</div>
 											</div>
@@ -182,32 +181,43 @@ const ViewPoi = () => {
 									<div className="d-flex profile-wrapper">
 										<ul
 											className="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1"
-											role="tablist"
-										>
+											role="tablist">
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'overview' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'overview' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('overview')}
-													role="tab"
-												>
+													role="tab">
 													Overview
 												</a>
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'activities' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('activities')}
-													role="tab"
-												>
+													role="tab">
 													Activites
 												</a>
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'media' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'media' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('media')}
-													role="tab"
-												>
+													role="tab">
 													Files
 												</a>
 											</li>
@@ -234,8 +244,7 @@ const ViewPoi = () => {
 											<Button
 												type="primary"
 												icon={<i className="ri-printer-line" />}
-												onClick={handlePrintPage}
-											>
+												onClick={handlePrintPage}>
 												Print
 											</Button>
 										</div>
@@ -244,8 +253,7 @@ const ViewPoi = () => {
 										<div
 											className="tab-pane active"
 											id="overview-tab"
-											role="tabpanel"
-										>
+											role="tabpanel">
 											<div className="row">
 												<div className="col-xxl-12 col-lg-12">
 													{activeTab === 'overview' && (
@@ -275,8 +283,7 @@ const ViewPoi = () => {
 			) : (
 				<div
 					className="d-flex justify-content-center"
-					style={{ marginTop: '20%' }}
-				>
+					style={{ marginTop: '20%' }}>
 					<Spin size="large" indicator={antIconSync} />
 				</div>
 			)}
