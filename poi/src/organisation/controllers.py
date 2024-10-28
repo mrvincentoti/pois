@@ -295,7 +295,6 @@ def get_organisations():
     return jsonify(response), response.get('status_code', 500)
 
 
-
 @custom_jwt_required
 @requires_permission('can-see-organisation-link')
 def get_organisation(organisation_id):
