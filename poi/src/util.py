@@ -15,8 +15,6 @@ import uuid
 from minio import Minio
 from minio.error import S3Error
 
-""" from .users.models import User 
-from .roles.models import Role """
 from .permissions.models import Permission
 from .rolePermissions.models import RolePermission  
 

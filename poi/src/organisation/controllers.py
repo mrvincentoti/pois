@@ -507,6 +507,7 @@ def update_organisation(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_organisation(org_id):
     response = {}
     try:
@@ -552,6 +553,7 @@ def delete_organisation(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_organisation(org_id):
     response = {}
     try:
