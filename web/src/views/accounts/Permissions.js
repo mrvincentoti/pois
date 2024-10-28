@@ -171,7 +171,22 @@ const Permissions = () => {
 													<td>{item.module?.name}</td>
 													<td>{item.group}</td>
 													<td>
-														{item.method}:{item.route_path}
+														<span
+															style={{
+																color:
+																	item.method === 'GET'
+																		? 'green'
+																		: item.method === 'PUT'
+																			? 'blue'
+																			: item.method === 'DELETE'
+																				? 'red'
+																				: item.method === 'POST'
+																					? 'orange'
+																					: 'black',
+															}}>
+															{item.method}
+														</span>
+														: {item.route_path}
 													</td>
 													<td></td>
 												</tr>

@@ -166,16 +166,11 @@ def list_permissions():
 @custom_jwt_required
 def list_all_permissions():
     try:
-        # Pagination parameters from request args
-        page = request.args.get("page", 1, type=int)
-        per_page = request.args.get("per_page", 10, type=int)
+       
+        permissions_query = Permission.query.all()
 
-        # Query for permissions, order by descending id, and paginate
-        permissions_query = Permission.query.order_by(Permission.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
-
-        # Process permissions
         permission_list = []
-        for permission in permissions_query.items:
+        for permission in permissions_query:
             permission_data = {
                 "id": permission.id,
                 "name": permission.name,
@@ -190,7 +185,6 @@ def list_all_permissions():
             }
             permission_list.append(permission_data)
 
-        # Audit logging
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
@@ -209,19 +203,13 @@ def list_all_permissions():
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
+
         save_audit_data(audit_data)
 
-        # Response with pagination info
         response = {
             "status": "success",
             "status_code": 200,
             "permissions": permission_list,
-            "pagination": {
-                "total": permissions_query.total,
-                "pages": permissions_query.pages,
-                "current_page": permissions_query.page,
-                "per_page": permissions_query.per_page,
-            }
         }
     except SQLAlchemyError as e:
         response = {

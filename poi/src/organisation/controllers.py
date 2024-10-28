@@ -10,6 +10,7 @@ from ..users.models import User
 from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required
 
 @custom_jwt_required
+@permission_required
 def create_organisation():
     data = request.form
     ref_numb = generate_unique_ref_numb()  # Generate a unique reference number
@@ -295,6 +296,7 @@ def get_organisations():
 
 
 @custom_jwt_required
+@permission_required
 def get_organisation(organisation_id):
     response = {}
     try:
@@ -347,6 +349,7 @@ def get_organisation(organisation_id):
 
 
 @custom_jwt_required
+@permission_required
 def update_organisation(org_id):
     data = request.form
     organisation = Organisation.query.get(org_id)
