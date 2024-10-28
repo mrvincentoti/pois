@@ -7,9 +7,10 @@ from urllib.parse import urljoin
 from .. import db
 from sqlalchemy import func
 from ..users.models import User
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, delete_picture_file, save_picture_file
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, requires_permission
 
 @custom_jwt_required
+@requires_permission('can-add-organisation')
 def create_organisation():
     data = request.form
     ref_numb = generate_unique_ref_numb()  # Generate a unique reference number
@@ -158,6 +159,7 @@ def create_organisation():
 
 
 @custom_jwt_required
+@requires_permission('can-see-organisation-link')
 def get_organisations():
     page = request.args.get('page', default=1, type=int)
     per_page = request.args.get('per_page', default=10, type=int)
@@ -295,6 +297,7 @@ def get_organisations():
 
 
 @custom_jwt_required
+@requires_permission('can-see-organisation-link')
 def get_organisation(organisation_id):
     response = {}
     try:

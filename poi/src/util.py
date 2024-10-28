@@ -16,9 +16,9 @@ from minio import Minio
 from minio.error import S3Error
 
 """ from .users.models import User 
-from .roles.models import Role 
+from .roles.models import Role """
 from .permissions.models import Permission
-from .rolePermissions.models import RolePermission  """
+from .rolePermissions.models import RolePermission  
 
 from .users.models import User
 
@@ -48,15 +48,25 @@ def requires_permission(permission_name):
         def decorated_function(*args, **kwargs):
             # Ensure user is authenticated first
             token_data = custom_jwt_required(fn)
-            if not token_data:  # If token is invalid or expired
-                return token_data  # Return the response from the JWT check
+            if not token_data:
+                return token_data 
 
-            user_id = g.user['id']  # Assuming you've set the user context
+            user_id = g.user['id'] 
             user = User.query.get(user_id)
 
             if user:
-                # Check if user has the required permission
-                if not any(p.name == permission_name for role in user.roles for p in role.permissions):
+                # Check if the user has the required permission
+                has_permission = (
+                    db.session.query(RolePermission)
+                    .join(Permission, RolePermission.permission_id == Permission.id)
+                    .filter(
+                        RolePermission.role_id == user.role_id,
+                        Permission.name == permission_name
+                    )
+                    .first()
+                )
+
+                if not has_permission:
                     return jsonify({"message": "Unauthorized"}), 403
 
             return fn(*args, **kwargs)
