@@ -19,12 +19,14 @@ def add_permission():
         permission_description = data.get("description")
         permission_group = slugify(data.get("group"))
         permission_module_id = data.get("module_id")
-
+        method = data.get("method")
+        route_path = data.get("route_path")
+        
         if not permission_name or not permission_description or not permission_group or not permission_module_id:
             return jsonify({"message": "Name and description and Group and Module id are required"}), 400
 
         new_permission = Permission(
-            name=permission_name, description=permission_description, group=permission_group, module_id=permission_module_id
+            name=permission_name, description=permission_description, group=permission_group, module_id=permission_module_id, route_path=route_path, method=method
         )
 
         try:
@@ -46,7 +48,9 @@ def add_permission():
                         "permission_name": permission_name,
                         "permission_description": permission_description,
                         "permission_group": permission_group,
-                        "permission_module_id": permission_module_id
+                        "permission_module_id": permission_module_id,
+                        "route_path":route_path,
+                        "method":method
                     }
                 ),
                 "url": request.url,
@@ -74,31 +78,35 @@ def list_permissions():
         page = request.args.get("page", default=1, type=int)
         per_page = request.args.get("per_page", default=10, type=int)
 
-        # Get query parameters for pagination and search
+        # Get query parameters for search and filtering
         search_query = request.args.get("q", "")
         group_query = request.args.get("group", "")
-        # Base query
-        permissions_query = Permission.query
+        
+        # Base query with sorting in descending order
+        permissions_query = Permission.query.order_by(Permission.id.desc())
 
-        # If search query is not empty
+        # If search query is not empty, apply filtering
         if search_query:
             permissions_query = permissions_query.filter(
                 or_(
                     Permission.name.ilike(f"%{search_query}%"),
                     Permission.description.ilike(f"%{search_query}%"),
                     Permission.group.ilike(f"%{search_query}%"),
+                    Permission.method.ilike(f"%{search_query}%"),
+                    Permission.route_path.ilike(f"%{search_query}%")
                 )
             )
 
-        # If group query is not empty
+        # If group query is not empty, apply filtering
         if group_query:
             permissions_query = permissions_query.filter(
-                or_(Permission.group == group_query)
+                Permission.group == group_query
             )
 
-        # Paginate the Permission query
+        # Paginate the permissions query
         permissions_paginated = permissions_query.paginate(page=page, per_page=per_page)
 
+        # Prepare the permissions list
         permission_list = []
         for permission in permissions_paginated.items:
             permission_data = {
@@ -106,6 +114,8 @@ def list_permissions():
                 "name": permission.name,
                 "description": permission.description,
                 "group": permission.group,
+                "method": permission.method,
+                "route_path": permission.route_path,
                 "module": {
                     "id": permission.module.id,
                     "name": permission.module.name,
@@ -113,6 +123,7 @@ def list_permissions():
             }
             permission_list.append(permission_data)
 
+        # Audit logging
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
@@ -131,9 +142,9 @@ def list_permissions():
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
-
         save_audit_data(audit_data)
 
+        # Response with pagination info
         response = {
             "status": "success",
             "status_code": 200,
@@ -151,19 +162,27 @@ def list_permissions():
 
     return jsonify(response), response["status_code"]
 
+
 @custom_jwt_required
 def list_all_permissions():
     try:
-       
-        permissions_query = Permission.query.all()
+        # Pagination parameters from request args
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
 
+        # Query for permissions, order by descending id, and paginate
+        permissions_query = Permission.query.order_by(Permission.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+
+        # Process permissions
         permission_list = []
-        for permission in permissions_query:
+        for permission in permissions_query.items:
             permission_data = {
                 "id": permission.id,
                 "name": permission.name,
                 "description": permission.description,
                 "group": permission.group,
+                "method": permission.method,
+                "route_path": permission.route_path,
                 "module": {
                     "id": permission.module.id,
                     "name": permission.module.name,
@@ -171,6 +190,7 @@ def list_all_permissions():
             }
             permission_list.append(permission_data)
 
+        # Audit logging
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"] if hasattr(g, "user") else None,
@@ -189,13 +209,19 @@ def list_all_permissions():
             "created_at": current_time.isoformat(),
             "updated_at": current_time.isoformat(),
         }
-
         save_audit_data(audit_data)
 
+        # Response with pagination info
         response = {
             "status": "success",
             "status_code": 200,
             "permissions": permission_list,
+            "pagination": {
+                "total": permissions_query.total,
+                "pages": permissions_query.pages,
+                "current_page": permissions_query.page,
+                "per_page": permissions_query.per_page,
+            }
         }
     except SQLAlchemyError as e:
         response = {
@@ -216,6 +242,8 @@ def get_permission(permission_id):
             "name": permission.name,
             "description": permission.description,
             "group": permission.group,
+            "method": permission.method,
+            "route_path": permission.route_path,
             "module": {
                 "id": permission.module.id,
                 "name": permission.module.name,
@@ -258,12 +286,16 @@ def edit_permission(permission_id):
     data = request.get_json()
     permission_name = data.get("name")
     permission_description = data.get("description")
+    method = data.get("method")
+    route_path = data.get("route_path")
 
     if not permission_name or not permission_description:
         return jsonify({"message": "Name and description are required"}), 400
 
     permission.name = permission_name
     permission.description = permission_description
+    permission.method = method
+    permission.route_path = route_path
 
     try:
         db.session.commit()
@@ -283,7 +315,9 @@ def edit_permission(permission_id):
                         "permission_name": permission_name,
                         "permission_description": permission_description,
                         "permission_group": permission.group,
-                        "permission_module_id": permission.module_id
+                        "permission_module_id": permission.module_id,
+                        "method": permission.method,
+                        "route_path": permission.route_path
                     }
                 ),
                 "url": request.url,
@@ -330,7 +364,9 @@ def delete_permission(permission_id):
                         "permission_name": permission.name,
                         "permission_description": permission.description,
                         "permission_group": permission.group,
-                        "permission_module_id": permission.module_id
+                        "permission_module_id": permission.module_id,
+                        "method": permission.method,
+                        "route_path": permission.route_path
                     }
                 ),
                 "url": request.url,
@@ -374,6 +410,8 @@ def restore_permission(permission_id):
                 {
                     "name": permission.name,
                     "description": permission.description,
+                    "method": permission.method,
+                    "route_path": permission.route_path
                 }
             ),
             "url": request.url,

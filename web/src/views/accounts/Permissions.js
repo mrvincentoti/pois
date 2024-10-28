@@ -148,8 +148,7 @@ const Permissions = () => {
 							<TableWrapper
 								className="table-responsive table-card"
 								fetching={fetching}
-								working={working}
-							>
+								working={working}>
 								<table className="table align-middle table-nowrap">
 									<thead className="table-light">
 										<tr>
@@ -158,6 +157,7 @@ const Permissions = () => {
 											<th>Description</th>
 											<th>Module</th>
 											<th>Group</th>
+											<th>Method:Route</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -170,6 +170,9 @@ const Permissions = () => {
 													<td>{item.description}</td>
 													<td>{item.module?.name}</td>
 													<td>{item.group}</td>
+													<td>
+														{item.method}:{item.route_path}
+													</td>
 													<td></td>
 												</tr>
 											);
@@ -210,6 +213,12 @@ const Permissions = () => {
 									}
 									if (!values.module_id) {
 										errors.module_id = 'select module';
+									}
+									if (!values.method) {
+										errors.method = 'enter method';
+									}
+									if (!values.route_path) {
+										errors.route_path = 'enter route';
 									}
 									return errors;
 								}}
@@ -286,13 +295,46 @@ const Permissions = () => {
 												</Field>
 												<ErrorBlock name="group" />
 											</div>
+											<div className="col-lg-12 mt-3">
+												<label htmlFor="route_path" className="form-label">
+													Route Path
+												</label>
+												<Field id="route_path" name="route_path">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="text"
+															className={`form-control ${error(meta)}`}
+															id="route_path"
+															placeholder="Enter route path"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="route_path" />
+											</div>
+											<div className="col-lg-12 mt-3">
+												<label htmlFor="method" className="form-label">
+													Method
+												</label>
+												<Field id="method" name="method">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="text"
+															className={`form-control ${error(meta)}`}
+															id="method"
+															placeholder="Enter method"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="method" />
+											</div>
 										</div>
 										<div className="d-flex gap-3 mt-3 justify-content-end">
 											<button
 												type="submit"
 												className="btn btn-success"
-												disabled={submitting}
-											>
+												disabled={submitting}>
 												Add Permission
 											</button>
 										</div>
