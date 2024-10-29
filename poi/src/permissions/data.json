@@ -30,5 +30,12 @@
 	{"name":"can-see-setup-conference-list","description":"Can See Setup Conference List","group":"sidemenu","module_id":"1"},
 	{"name":"can-see-setup-sanction-list","description":"Can See Setup Sanction List","group":"sidemenu","module_id":"1"},
 	{"name":"can-view-dashboard","description":"Can View Dashboard","group":"dashboard","module_id":"1"},
-	{"name":"can-bulk-upload-data","description":"Can Bulk Upload Data","group":"sidemenu","module_id":"1"}
+	{"name":"can-bulk-upload-data","description":"Can Bulk Upload Data","group":"sidemenu","module_id":"1"},
+	
+	{"name":"can-restore-organisation","description":"Can Restore Organisation","group":"organisation","module_id":"4","method":"GET","route_path":"/organisation/<organisation_id>/restore"},
+	{"name":"can-delete-organisation","description":"Can DeleteOrganisation","group":"organisation","module_id":"4","method":"DELETE","route_path":"/organisation/<organisation_id>"},
+	{"name":"can-update-organisation","description":"Can Update Organisation","group":"organisation","module_id":"4","method":"PUT","route_path":"/organisation/<organisation_id>"},
+	{"name":"can-view-organisation","description":"Can View Organisation","group":"organisation","module_id":"4","method":"GET","route_path":"/organisation/<organisation_id>"},
+	{"name":"can-see-organisations","description":"Can See Organisations","group":"organisation","module_id":"4","method":"GET","route_path":"/organisations"},
+	{"name":"can-create-organisation","description":"Can Create Organisation","group":"organisation","module_id":"4","method":"POST","route_path":"/organisations"}
 ]

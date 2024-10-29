@@ -149,9 +149,9 @@ def list_permissions():
             "status": "success",
             "status_code": 200,
             "permissions": permission_list,
-            "total_pages": permissions_paginated.pages,
+            "pages": permissions_paginated.pages,
             "current_page": permissions_paginated.page,
-            "total_items": permissions_paginated.total,
+            "total": permissions_paginated.total,
         }
     except SQLAlchemyError as e:
         response = {

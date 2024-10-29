@@ -145,17 +145,14 @@ const Permissions = () => {
 							onChangeSearch={e => setSearchTerm(e.target.value)}
 						/>
 						<div className="card-body">
-							<TableWrapper
-								className="table-responsive table-card"
-								fetching={fetching}
-								working={working}>
+							<div className="table-responsive table-card">
 								<table className="table align-middle table-nowrap">
 									<thead className="table-light">
 										<tr>
 											<th>S/N</th>
 											<th>Name</th>
 											<th>Description</th>
-											<th>Module</th>
+											{/* <th>Module</th> */}
 											<th>Group</th>
 											<th>Method:Route</th>
 											<th></th>
@@ -168,7 +165,7 @@ const Permissions = () => {
 													<td>{i + min}</td>
 													<td>{item.name}</td>
 													<td>{item.description}</td>
-													<td>{item.module?.name}</td>
+													{/* <td>{item.module?.name}</td> */}
 													<td>{item.group}</td>
 													<td>
 														<span
@@ -199,7 +196,7 @@ const Permissions = () => {
 										<NoResult title="Permissions" />
 									</div>
 								)}
-							</TableWrapper>
+							</div>
 							<div className="d-flex justify-content-end mt-3">
 								<AppPagination meta={meta} />
 							</div>
