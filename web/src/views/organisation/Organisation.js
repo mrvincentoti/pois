@@ -227,7 +227,7 @@ const Organisation = () => {
 								onClick={() => bulkUpload()}
 								onBulkUploadClick={() => bulkUpload()}
 								hasEmployeeCreate={true}
-								hasUploadBtn={true}
+								hasUploadBtn={false}
 								uploadBtnTitle="Bulk Upload"
 								linkTo="/org/new"
 								hasFilter={true}

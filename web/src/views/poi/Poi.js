@@ -226,7 +226,7 @@ const Poi = () => {
 								onClick={() => bulkUpload()}
 								onBulkUploadClick={() => bulkUpload()}
 								hasEmployeeCreate={true}
-								hasUploadBtn={true}
+								hasUploadBtn={false}
 								uploadBtnTitle="Bulk Upload"
 								linkTo="/pois/new"
 								hasFilter={true}
