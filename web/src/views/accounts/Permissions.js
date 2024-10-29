@@ -154,7 +154,7 @@ const Permissions = () => {
 											<th>Description</th>
 											{/* <th>Module</th> */}
 											<th>Group</th>
-											<th>Method:Route</th>
+											<th>Method:Route Path</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -164,24 +164,10 @@ const Permissions = () => {
 												<tr key={item.id}>
 													<td>{i + min}</td>
 													<td>
-														<span
-															style={{
-																color:
-																	item.method === 'GET'
-																		? 'green'
-																		: item.method === 'PUT'
-																			? 'blue'
-																			: item.method === 'DELETE'
-																				? 'red'
-																				: item.method === 'POST'
-																					? 'orange'
-																					: 'black',
-															}}>
-															<td>
-																{item.name.charAt(0).toUpperCase() +
-																	item.name.slice(1)}
-															</td>
-														</span>
+														<td>
+															{item.name.charAt(0).toUpperCase() +
+																item.name.slice(1)}
+														</td>
 													</td>
 													<td>{item.description}</td>
 													{/* <td>{item.module?.name}</td> */}
@@ -191,19 +177,18 @@ const Permissions = () => {
 													</td>
 													<td>
 														<span
-															style={{
-																color:
-																	item.method === 'GET'
-																		? 'green'
-																		: item.method === 'PUT'
-																			? 'blue'
-																			: item.method === 'DELETE'
-																				? 'red'
-																				: item.method === 'POST'
-																					? 'orange'
-																					: 'black',
-															}}>
-															{item.method}
+															className={
+																item.method === 'GET'
+																	? 'text-success'
+																	: item.method === 'PUT'
+																		? 'text-info'
+																		: item.method === 'DELETE'
+																			? 'text-danger'
+																			: item.method === 'POST'
+																				? 'text-warning'
+																				: 'text-dark'
+															}>
+															<b>{item.method}</b>
 														</span>
 														: <i>{item.route_path}</i>
 													</td>
@@ -348,7 +333,10 @@ const Permissions = () => {
 											</div>
 											<div className="col-lg-12 mt-3">
 												<label htmlFor="method" className="form-label">
-													Method
+													Method (<span className="text-danger">DELETE</span>,
+													<span className="text-success"> GET</span>,{' '}
+													<span className="text-warning"> POST</span>,{' '}
+													<span className="text-info"> PUT</span>)
 												</label>
 												<Field id="method" name="method">
 													{({ input, meta }) => (
