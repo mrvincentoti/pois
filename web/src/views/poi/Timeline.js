@@ -232,19 +232,19 @@ const Timeline = ({ refreshPoiData }) => {
 																<span
 																	style={{
 																		cursor: 'pointer',
-																		color: '#fff', // White text for readability
+																		color: '#fff',
 																		backgroundColor:
 																			item.type_id === 1
-																				? '#007bff' // Blue for Type1
+																				? '#007bff'
 																				: item.type_id === 2
-																					? '#28a745' // Green for Type2
+																					? '#28a745'
 																					: item.type_id === 3
-																						? '#ffc107' // Yellow for Type3
+																						? '#ffc107'
 																						: item.type_id === 4
-																							? '#dc3545' // Red for Type4
+																							? '#dc3545'
 																							: item.type_id === 5
-																								? '#6c757d' // Gray for Type5
-																								: '#6c757d', // Default Gray
+																								? '#6c757d'
+																								: '#6c757d',
 																		borderColor:
 																			item.type_id === 1
 																				? '#007bff'
@@ -263,8 +263,7 @@ const Timeline = ({ refreshPoiData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none', // Remove underline
 																		display: 'inline-block',
-																	}}
-																>
+																	}}>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -297,26 +296,24 @@ const Timeline = ({ refreshPoiData }) => {
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
-															className="btn btn-sm btn-outline-secondary"
-															onClick={() => editActivity(item)}
-														>
-															Edit
+															className="btn btn-sm btn-success"
+															onClick={() => showDetails(item)}>
+															Details
 														</button>
-														{/*<button
+														<button
 															className="btn btn-sm btn-outline-success"
 															onClick={() => addNotes(item)}>
-															Add Note
+															Files
 														</button>
-														 <button
+														<button
 															className="btn btn-sm btn-outline-warning"
 															onClick={() => addMedia(item)}>
-															Add Media
-														</button> */}
+															Items
+														</button>
 														<button
-															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}
-														>
-															Details
+															className="btn btn-sm btn-outline-secondary"
+															onClick={() => editActivity(item)}>
+															Edit
 														</button>
 													</div>
 												</div>
