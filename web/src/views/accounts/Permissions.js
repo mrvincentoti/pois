@@ -163,10 +163,32 @@ const Permissions = () => {
 											return (
 												<tr key={item.id}>
 													<td>{i + min}</td>
-													<td>{item.name}</td>
+													<td>
+														<span
+															style={{
+																color:
+																	item.method === 'GET'
+																		? 'green'
+																		: item.method === 'PUT'
+																			? 'blue'
+																			: item.method === 'DELETE'
+																				? 'red'
+																				: item.method === 'POST'
+																					? 'orange'
+																					: 'black',
+															}}>
+															<td>
+																{item.name.charAt(0).toUpperCase() +
+																	item.name.slice(1)}
+															</td>
+														</span>
+													</td>
 													<td>{item.description}</td>
 													{/* <td>{item.module?.name}</td> */}
-													<td>{item.group}</td>
+													<td>
+														{item.group.charAt(0).toUpperCase() +
+															item.group.slice(1)}
+													</td>
 													<td>
 														<span
 															style={{
@@ -183,7 +205,7 @@ const Permissions = () => {
 															}}>
 															{item.method}
 														</span>
-														: {item.route_path}
+														: <i>{item.route_path}</i>
 													</td>
 													<td></td>
 												</tr>
