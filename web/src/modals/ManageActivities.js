@@ -343,63 +343,65 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="assessments" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					{/* Upload Data Field */}
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
-							)}
-						</Field>
-					</div>
+			<div className="col-lg-12">
+				<label htmlFor="attachment" className="form-label">
+					Attachment
+				</label>
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
 
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
 								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
+							</Tooltip>
+						</div>
 					</div>
-
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
-
+				))}
+			</div>
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -411,8 +413,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -465,8 +466,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
+						style={{ paddingTop: '15px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -487,8 +487,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addItem}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -581,63 +580,65 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="remarks" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					{/* Upload Data Field */}
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
-							)}
-						</Field>
-					</div>
+			<div className="col-lg-12">
+				<label htmlFor="attachment" className="form-label">
+					Attachment
+				</label>
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
 
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
 								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
+							</Tooltip>
+						</div>
 					</div>
-
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
-
+				))}
+			</div>
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -649,8 +650,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -703,8 +703,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
+						style={{ paddingTop: '15px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -725,8 +724,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addItem}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -787,85 +785,87 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="remarks" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					{/* Upload Data Field */}
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
-							)}
-						</Field>
-					</div>
+			<div className="col-lg-12">
+				<label htmlFor="attachment" className="form-label">
+					Attachment
+				</label>
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
 
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
 								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
+							</Tooltip>
+						</div>
 					</div>
+				))}
 
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
-
-			<div className="row g-3">
-				<div className="col-lg-8"></div>
-				<div className="col-lg-3">
-					<button
-						type="button"
-						style={{
-							width: '100px',
-							marginTop: '-40px',
-							marginLeft: '-14px',
-						}}
-						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
-						<PlusOutlined
+				<div className="row g-3">
+					<div className="col-lg-8"></div>
+					<div className="col-lg-3">
+						<button
+							type="button"
 							style={{
-								fontSize: '15px',
-								cursor: 'pointer',
-								marginBottom: '2px',
+								width: '100px',
+								marginTop: '5px',
+								marginLeft: '-14px',
 							}}
 							onClick={addFileEntry}
-						/>
-					</button>
+							className="btn btn-sm btn-success float-right">
+							<PlusOutlined
+								style={{
+									fontSize: '15px',
+									cursor: 'pointer',
+									marginBottom: '2px',
+								}}
+								onClick={addFileEntry}
+							/>
+						</button>
+					</div>
 				</div>
 			</div>
 		</>
@@ -887,8 +887,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 											handleFileChange(index, 'file', file);
 											return false; // Prevent automatic upload
 										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
+										onRemove={() => handleFileChange(index, 'file', null)}>
 										<Button icon={<UploadOutlined />}>Select File</Button>
 									</Upload>
 									<ErrorBlock name={`file_${index}`} />
@@ -920,8 +919,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
+						style={{ paddingTop: '15px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -942,8 +940,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -1014,8 +1011,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 											handleFileChange(index, 'file', file);
 											return false; // Prevent automatic upload
 										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
+										onRemove={() => handleFileChange(index, 'file', null)}>
 										<Button icon={<UploadOutlined />}>Select File</Button>
 									</Upload>
 									<ErrorBlock name={`file_${index}`} />
@@ -1046,8 +1042,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
+						style={{ paddingTop: '15px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -1069,8 +1064,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
+						className="btn btn-sm btn-success float-right">
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
@@ -1143,8 +1137,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	return (
 		<ModalWrapper
 			title={`${activities ? 'Edit' : 'Add'} Activity`}
-			closeModal={closeModal}
-		>
+			closeModal={closeModal}>
 			<Form
 				initialValues={activities}
 				onSubmit={onSubmit}
@@ -1180,8 +1173,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							<button
 								type="submit"
 								className="btn btn-success"
-								disabled={submitting}
-							>
+								disabled={submitting}>
 								{`${activities ? 'Update' : 'Add'} Activity`}
 							</button>
 						</div>
