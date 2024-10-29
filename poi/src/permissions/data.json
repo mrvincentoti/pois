@@ -87,10 +87,33 @@
 	{"name":"can-see-affiliations","description":"Can See Affiliations","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliations"},
 	{"name":"can-create-affiliation","description":"Can Create Affiliation","group":"affiliation","module_id":"4","method":"POST","route_path":"/affiliations"},
 
+	{"name":"can-restore-category","description":"Can Restore Category","group":"category","module_id":"4","method":"GET","route_path":"/category/restore/<category_id>"},
+	{"name":"can-delete-category","description":"Can Delete Category","group":"category","module_id":"4","method":"DELETE","route_path":"/categories/<category_id>"},
+	{"name":"can-update-category","description":"Can Update Category","group":"category","module_id":"4","method":"PUT","route_path":"/categories/<category_id>"},
+	{"name":"can-view-category","description":"Can View Category","group":"category","module_id":"4","method":"GET","route_path":"/categories/<category_id>"},
+	{"name":"can-see-org-categories","description":"Can See Org Categories","group":"category","module_id":"4","method":"GET","route_path":"/org-categories"},
+	{"name":"can-see-poi-categories","description":"Can See POI Categories","group":"category","module_id":"4","method":"GET","route_path":"/poi-categories"},
+	{"name":"can-see-categories","description":"Can See Categories","group":"category","module_id":"4","method":"GET","route_path":"/categories"},
+	{"name":"can-create-category","description":"Can Create Category","group":"category","module_id":"4","method":"POST","route_path":"/categories"},
+
+	{"name":"can-restore-crime","description":"Can Restore Crime","group":"crime","module_id":"4","method":"GET","route_path":"/crime/restore/<crime_id>"},
+	{"name":"can-delete-crime","description":"Can Delete Crime","group":"crime","module_id":"4","method":"DELETE","route_path":"/crimes/<crime_id>"},
+	{"name":"can-update-crime","description":"Can Update Crime","group":"crime","module_id":"4","method":"PUT","route_path":"/crimes/<crime_id>"},
+	{"name":"can-view-crime","description":"Can View Crime","group":"crime","module_id":"4","method":"GET","route_path":"/crimes/<crime_id>"},
+	{"name":"can-see-crimes","description":"Can See Crimes","group":"crime","module_id":"4","method":"GET","route_path":"/crimes"},
+	{"name":"can-create-crime","description":"Can Create Crime","group":"crime","module_id":"4","method":"POST","route_path":"/crimes"},
+
 	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/item/restore/<item_id>"},
 	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/items/<item_id>"},
 	{"name":"can-update-item","description":"Can Update Item","group":"item","module_id":"4","method":"PUT","route_path":"/arms/<item_id>"},
 	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/items/<item_id>"},
 	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/items"},
-	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/items"}
+	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/items"},
+
+	{"name":"can-restore-source","description":"Can Restore Source","group":"source","module_id":"4","method":"GET","route_path":"/source/restore/<source_id>"},
+	{"name":"can-delete-source","description":"Can Delete Source","group":"source","module_id":"4","method":"DELETE","route_path":"/sources/<source_id>"},
+	{"name":"can-update-source","description":"Can Update Source","group":"source","module_id":"4","method":"PUT","route_path":"/sources/<source_id>"},
+	{"name":"can-view-source","description":"Can View Source","group":"source","module_id":"4","method":"GET","route_path":"/sources/<source_id>"},
+	{"name":"can-see-sources","description":"Can See Sources","group":"source","module_id":"4","method":"GET","route_path":"/sources"},
+	{"name":"can-create-source","description":"Can Create Source","group":"source","module_id":"4","method":"POST","route_path":"/sources"}
 ]
