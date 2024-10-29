@@ -8,8 +8,8 @@ import { notifyWithIcon, request, createHeaders } from '../services/utilities';
 import {
 	CREATE_ACTIVITIES_API,
 	FETCH_CRIMES_API,
-	FETCH_ARRESTING_BODY_API,
 	UPDATE_ACTIVITIES_API,
+	FETCH_ARMS_API
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
 import FormWrapper from '../container/FormWrapper';
@@ -24,6 +24,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crime, setCrime] = useState(null);
 	const [crimesOptions, setCrimesOptions] = useState([]);
+	const [itemsOptions, setItemsOptions] = useState([]);
 	const [type, setType] = useState(null); // Track the selected type
 	const [crimeDate, setCrimeDate] = useState(null);
 	const [activityDate, setActivityDate] = useState(null);
@@ -61,6 +62,31 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	const loadCrimes = async () => {
 		const rs = await request(FETCH_CRIMES_API);
 		setCrimesOptions(rs?.crimes || []);
+	};
+
+	useEffect(() => {
+		if (!loaded) {
+			if (activities) {
+				// Pre-select the items and other fields for editing
+				const preSelectedItems = activities.items.map(activityItem => ({
+					item: itemsOptions.find(option => option.id === activityItem.item_id),
+					quantity: activityItem.quantity,
+				}));
+				setItems(preSelectedItems);
+				setInitialValues({
+					// Assuming other values like crime_id, location, etc., were set here.
+					items: activities.items,
+				});
+			}
+			loadItems();
+			setLoaded(true);
+		}
+	}, [activities, loaded, itemsOptions]);
+
+	// Function to load items
+	const loadItems = async () => {
+		const response = await request(FETCH_ARMS_API); // Replace with your API endpoint
+		setItemsOptions(response?.items || []);
 	};
 
 	const typeMapping = {
@@ -433,21 +459,33 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		<>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
+					{/* Item Dropdown */}
 					<div className="col-lg-7" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									placeholder="Item"
-									value={item.item} // Ensure the correct value is used
-									onChange={e =>
-										handleItemChange(index, 'item', e.target.value)
-									} // Correct the onChange handler
+								<Select
+									isClearable
+									getOptionValue={option => option.id}
+									getOptionLabel={option => option.name}
+									options={itemsOptions} // assuming itemOptions is an array of {id, name}
+									value={
+										itemsOptions.find(option => option.id === item.item) || null
+									}
+									classNamePrefix="select" // Add this to customize styling if needed
+									onChange={selectedOption =>
+										handleItemChange(
+											index,
+											'item',
+											selectedOption ? selectedOption.id : ''
+										)
+									}
+									placeholder="Select an item"
 								/>
 							)}
 						</Field>
 					</div>
+
+					{/* Quantity Input */}
 					<div className="col-lg-4" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].quantity`} value={item.quantity}>
 							{({ input, meta }) => (
@@ -456,14 +494,16 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 									className="form-control"
 									type="number"
 									placeholder="Quantity"
-									value={item.quantity} // Ensure the correct value is used
+									value={item.quantity}
 									onChange={e =>
 										handleItemChange(index, 'quantity', e.target.value)
-									} // Correct the onChange handler
+									}
 								/>
 							)}
 						</Field>
 					</div>
+
+					{/* Remove Item Button */}
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
 						style={{ paddingTop: '15px' }}>
@@ -476,6 +516,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 				</div>
 			))}
+			{/* Add New Item Button */}
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -493,7 +534,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 								fontSize: '15px',
 								marginBottom: '2px',
 							}}
-							onClick={addItem}
 						/>
 					</button>
 				</div>
@@ -670,21 +710,33 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		<>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
+					{/* Item Dropdown */}
 					<div className="col-lg-7" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									placeholder="Item"
-									value={item.item} // Ensure the correct value is used
-									onChange={e =>
-										handleItemChange(index, 'item', e.target.value)
-									} // Correct the onChange handler
+								<Select
+									isClearable
+									getOptionValue={option => option.id}
+									getOptionLabel={option => option.name}
+									options={itemsOptions} // assuming itemOptions is an array of {id, name}
+									value={
+										itemsOptions.find(option => option.id === item.item) || null
+									}
+									classNamePrefix="select" // Add this to customize styling if needed
+									onChange={selectedOption =>
+										handleItemChange(
+											index,
+											'item',
+											selectedOption ? selectedOption.id : ''
+										)
+									}
+									placeholder="Select an item"
 								/>
 							)}
 						</Field>
 					</div>
+
+					{/* Quantity Input */}
 					<div className="col-lg-4" style={{ marginTop: '15px' }}>
 						<Field name={`items[${index}].quantity`} value={item.quantity}>
 							{({ input, meta }) => (
@@ -693,14 +745,16 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 									className="form-control"
 									type="number"
 									placeholder="Quantity"
-									value={item.quantity} // Ensure the correct value is used
+									value={item.quantity}
 									onChange={e =>
 										handleItemChange(index, 'quantity', e.target.value)
-									} // Correct the onChange handler
+									}
 								/>
 							)}
 						</Field>
 					</div>
+
+					{/* Remove Item Button */}
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
 						style={{ paddingTop: '15px' }}>
@@ -713,6 +767,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 				</div>
 			))}
+			{/* Add New Item Button */}
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -730,7 +785,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 								fontSize: '15px',
 								marginBottom: '2px',
 							}}
-							onClick={addItem}
 						/>
 					</button>
 				</div>
