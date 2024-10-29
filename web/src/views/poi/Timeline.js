@@ -230,38 +230,26 @@ const Timeline = ({ refreshPoiData }) => {
 														<div className="flex-grow-1 text-muted overflow-hidden">
 															<h5 className="fs-14 text-truncate">
 																<span
+																	className={
+																		item.type_id === 1
+																			? 'bg-success text-light'
+																			: item.type_id === 2
+																				? ' bg-info text-light'
+																				: item.type_id === 3
+																					? 'bg-danger text-light'
+																					: item.type_id === 4
+																						? 'bg-warning text-light'
+																						: item.type_id === 5
+																							? 'bg-secondary text-light'
+																							: 'bg-dark text-light'
+																	}
 																	style={{
 																		cursor: 'pointer',
-																		color: '#fff',
-																		backgroundColor:
-																			item.type_id === 1
-																				? '#007bff'
-																				: item.type_id === 2
-																					? '#28a745'
-																					: item.type_id === 3
-																						? '#ffc107'
-																						: item.type_id === 4
-																							? '#dc3545'
-																							: item.type_id === 5
-																								? '#6c757d'
-																								: '#6c757d',
-																		borderColor:
-																			item.type_id === 1
-																				? '#007bff'
-																				: item.type_id === 2
-																					? '#28a745'
-																					: item.type_id === 3
-																						? '#ffc107'
-																						: item.type_id === 4
-																							? '#dc3545'
-																							: item.type_id === 5
-																								? '#6c757d'
-																								: '#6c757d',
 																		borderStyle: 'solid',
 																		borderWidth: '1px',
 																		borderRadius: '5px',
 																		padding: '5px 10px',
-																		textDecoration: 'none', // Remove underline
+																		textDecoration: 'none',
 																		display: 'inline-block',
 																	}}>
 																	{item.activity_type || 'N/A'}
@@ -289,7 +277,11 @@ const Timeline = ({ refreshPoiData }) => {
 															<p className="text-muted text-truncate mb-0">
 																Activity Date:
 																<span className="fw-semibold text-body p-2">
-																	{item.activity_date || 'N/A'}
+																	{item.activity_date
+																		? new Date(
+																				item.activity_date
+																			).toLocaleDateString()
+																		: 'N/A'}
 																</span>
 															</p>
 														</div>
