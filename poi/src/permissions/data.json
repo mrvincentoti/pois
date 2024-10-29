@@ -33,9 +33,64 @@
 	{"name":"can-bulk-upload-data","description":"Can Bulk Upload Data","group":"sidemenu","module_id":"1"},
 	
 	{"name":"can-restore-organisation","description":"Can Restore Organisation","group":"organisation","module_id":"4","method":"GET","route_path":"/organisation/<organisation_id>/restore"},
-	{"name":"can-delete-organisation","description":"Can DeleteOrganisation","group":"organisation","module_id":"4","method":"DELETE","route_path":"/organisation/<organisation_id>"},
+	{"name":"can-delete-organisation","description":"Can Delete Organisation","group":"organisation","module_id":"4","method":"DELETE","route_path":"/organisation/<organisation_id>"},
 	{"name":"can-update-organisation","description":"Can Update Organisation","group":"organisation","module_id":"4","method":"PUT","route_path":"/organisation/<organisation_id>"},
 	{"name":"can-view-organisation","description":"Can View Organisation","group":"organisation","module_id":"4","method":"GET","route_path":"/organisation/<organisation_id>"},
 	{"name":"can-see-organisations","description":"Can See Organisations","group":"organisation","module_id":"4","method":"GET","route_path":"/organisations"},
-	{"name":"can-create-organisation","description":"Can Create Organisation","group":"organisation","module_id":"4","method":"POST","route_path":"/organisations"}
+	{"name":"can-create-organisation","description":"Can Create Organisation","group":"organisation","module_id":"4","method":"POST","route_path":"/organisations"},
+
+	{"name":"can-restore-org-activity","description":"Can Restore Org Activity","group":"organisation","module_id":"4","method":"GET","route_path":"/org-activity/restore/<activity_id>"},
+	{"name":"can-delete-org-activity","description":"Can Delete Org Activity","group":"organisation","module_id":"4","method":"DELETE","route_path":"/org-activities/<activity_id>"},
+	{"name":"can-update-org-activity","description":"Can Update Org Activity","group":"organisation","module_id":"4","method":"PUT","route_path":"/org-activities/<activity_id>"},
+	{"name":"can-view-org-activity","description":"Can View Org Activity","group":"organisation","module_id":"4","method":"GET","route_path":"/org-activities/<activity_id>"},
+	{"name":"can-see-org-activities","description":"Can See Org Activities","group":"organisation","module_id":"4","method":"GET","route_path":"/list-org-activities/<org_id>"},
+	{"name":"can-create-org-activity","description":"Can Create Org Activity","group":"organisation","module_id":"4","method":"POST","route_path":"/org-activities"},
+
+	{"name":"can-restore-org-file","description":"Can Restore Org File","group":"organisation","module_id":"4","method":"GET","route_path":"/org-media/restore/<media_id>"},
+	{"name":"can-delete-org-file","description":"Can Delete Org File","group":"organisation","module_id":"4","method":"DELETE","route_path":"/org-media/<media_id>"},
+	{"name":"can-update-org-file","description":"Can Update Org File","group":"organisation","module_id":"4","method":"PUT","route_path":"/org-media/<media_id>"},
+	{"name":"can-view-org-file","description":"Can View Org File","group":"organisation","module_id":"4","method":"GET","route_path":"/org-media/<media_id>"},
+	{"name":"can-see-org-files","description":"Can See Org Files","group":"organisation","module_id":"4","method":"GET","route_path":"/org-medias/<org_id>>"},
+	{"name":"can-create-org-file","description":"Can Create Org File","group":"organisation","module_id":"4","method":"POST","route_path":"/org-medias/<org_id>"},
+
+	{"name":"can-restore-org-capacity","description":"Can Restore Op Capacity","group":"organisation","module_id":"4","method":"GET","route_path":"/operational-capacity/restore/<operational_capacity_id>"},
+	{"name":"can-delete-org-capacity","description":"Can Delete Op Capacity","group":"organisation","module_id":"4","method":"DELETE","route_path":"/operational-capacities/<operational_capacity_id>"},
+	{"name":"can-update-org-capacity","description":"Can Update Op Capacity","group":"organisation","module_id":"4","method":"PUT","route_path":"/operational-capacities/<operational_capacity_id>"},
+	{"name":"can-see-org-capacities","description":"Can See Op Capacities","group":"organisation","module_id":"4","method":"GET","route_path":"/org-operational-capacities/<org_id>"},
+	{"name":"can-create-org-capacity","description":"Can Create Op Capacity","group":"organisation","module_id":"4","method":"POST","route_path":"/operational-capacities"},
+
+	{"name":"can-restore-poi","description":"Can Restore POI","group":"person of interest","module_id":"4","method":"GET","route_path":"/pois/<int:poi_id>/restore"},
+	{"name":"can-delete-poi","description":"Can Delete POI","group":"person of interest","module_id":"4","method":"DELETE","route_path":"/pois/<int:poi_id>"},
+	{"name":"can-update-poi","description":"Can Update POI","group":"person of interest","module_id":"4","method":"PUT","route_path":"/pois/<int:poi_id>"},
+	{"name":"can-view-poi","description":"Can View POI","group":"person of interest","module_id":"4","method":"GET","route_path":"/pois/<int:poi_id>"},
+	{"name":"can-see-pois","description":"Can See POIs","group":"person of interest","module_id":"4","method":"GET","route_path":"/pois"},
+	{"name":"can-create-poi","description":"Can Create POI","group":"person of interest","module_id":"4","method":"POST","route_path":"/pois"},
+
+	{"name":"can-restore-poi-activity","description":"Can Restore POI Activity","group":"person of interest","module_id":"4","method":"GET","route_path":"/activity/restore/<activity_id>"},
+	{"name":"can-delete-poi-activity","description":"Can Delete POI Activity","group":"person of interest","module_id":"4","method":"DELETE","route_path":"/activities/<activity_id>"},
+	{"name":"can-update-poi-activity","description":"Can Update POI Activity","group":"person of interest","module_id":"4","method":"PUT","route_path":"/activities/<activity_id>"},
+	{"name":"can-view-poi-activity","description":"Can View POI Activity","group":"person of interest","module_id":"4","method":"GET","route_path":"/activities/<activity_id>"},
+	{"name":"can-see-poi-activities","description":"Can See POI Activities","group":"person of interest","module_id":"4","method":"GET","route_path":"/poi-activities/<poi_id>"},
+	{"name":"can-create-poi-activity","description":"Can Create POI Activity","group":"person of interest","module_id":"4","method":"POST","route_path":"/activities"},
+
+	{"name":"can-restore-poi-file","description":"Can Restore POI File","group":"person of interest","module_id":"4","method":"GET","route_path":"/poi-media/restore/<media_id>"},
+	{"name":"can-delete-poi-file","description":"Can Delete POI File","group":"person of interest","module_id":"4","method":"DELETE","route_path":"/poi-media/<media_id>"},
+	{"name":"can-update-poi-file","description":"Can Update POI File","group":"person of interest","module_id":"4","method":"PUT","route_path":"/poi-media/<media_id>"},
+	{"name":"can-view-poi-file","description":"Can View POI File","group":"person of interest","module_id":"4","method":"GET","route_path":"/poi-media/<media_id>"},
+	{"name":"can-see-poi-files","description":"Can See POI Files","group":"person of interest","module_id":"4","method":"GET","route_path":"/poi-medias/<poi_id>"},
+	{"name":"can-create-poi-file","description":"Can Create POI File","group":"person of interest","module_id":"4","method":"POST","route_path":"/poi-medias/<poi_id>"},
+
+	{"name":"can-restore-affiliation","description":"Can Restore Affiliation","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliation/restore/<affiliation_id>"},
+	{"name":"can-delete-affiliation","description":"Can Delete Affiliation","group":"affiliation","module_id":"4","method":"DELETE","route_path":"/affiliations/<affiliation_id>"},
+	{"name":"can-update-affiliation","description":"Can Update Affiliation","group":"affiliation","module_id":"4","method":"PUT","route_path":"/affiliations/<affiliation_id>"},
+	{"name":"can-view-affiliation","description":"Can View Affiliation","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliations/<affiliation_id>"},
+	{"name":"can-see-affiliations","description":"Can See Affiliations","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliations"},
+	{"name":"can-create-affiliation","description":"Can Create Affiliation","group":"affiliation","module_id":"4","method":"POST","route_path":"/affiliations"},
+
+	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/item/restore/<item_id>"},
+	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/items/<item_id>"},
+	{"name":"can-update-item","description":"Can Update Item","group":"item","module_id":"4","method":"PUT","route_path":"/arms/<item_id>"},
+	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/items/<item_id>"},
+	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/items"},
+	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/items"}
 ]
