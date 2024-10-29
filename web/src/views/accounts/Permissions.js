@@ -206,7 +206,7 @@ const Permissions = () => {
 				<div className="col-lg-4">
 					<div className="card">
 						<div className="card-header">
-							<h6>Add Permission</h6>
+							<h5 class="card-title">Add Permission</h5>
 						</div>
 						<div className="card-body pt-0">
 							<Form
