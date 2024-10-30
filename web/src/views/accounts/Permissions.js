@@ -145,19 +145,16 @@ const Permissions = () => {
 							onChangeSearch={e => setSearchTerm(e.target.value)}
 						/>
 						<div className="card-body">
-							<TableWrapper
-								className="table-responsive table-card"
-								fetching={fetching}
-								working={working}
-							>
+							<div className="table-responsive table-card">
 								<table className="table align-middle table-nowrap">
 									<thead className="table-light">
 										<tr>
 											<th>S/N</th>
 											<th>Name</th>
 											<th>Description</th>
-											<th>Module</th>
+											{/* <th>Module</th> */}
 											<th>Group</th>
+											<th>Method:Route Path</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -166,10 +163,35 @@ const Permissions = () => {
 											return (
 												<tr key={item.id}>
 													<td>{i + min}</td>
-													<td>{item.name}</td>
+													<td>
+														<td>
+															{item.name.charAt(0).toUpperCase() +
+																item.name.slice(1)}
+														</td>
+													</td>
 													<td>{item.description}</td>
-													<td>{item.module?.name}</td>
-													<td>{item.group}</td>
+													{/* <td>{item.module?.name}</td> */}
+													<td>
+														{item.group.charAt(0).toUpperCase() +
+															item.group.slice(1)}
+													</td>
+													<td>
+														<span
+															className={
+																item.method === 'GET'
+																	? 'text-success'
+																	: item.method === 'PUT'
+																		? 'text-info'
+																		: item.method === 'DELETE'
+																			? 'text-danger'
+																			: item.method === 'POST'
+																				? 'text-warning'
+																				: 'text-dark'
+															}>
+															<b>{item.method}</b>
+														</span>
+														: <i>{item.route_path}</i>
+													</td>
 													<td></td>
 												</tr>
 											);
@@ -181,7 +203,7 @@ const Permissions = () => {
 										<NoResult title="Permissions" />
 									</div>
 								)}
-							</TableWrapper>
+							</div>
 							<div className="d-flex justify-content-end mt-3">
 								<AppPagination meta={meta} />
 							</div>
@@ -191,7 +213,7 @@ const Permissions = () => {
 				<div className="col-lg-4">
 					<div className="card">
 						<div className="card-header">
-							<h6>Add Permission</h6>
+							<h5 class="card-title">Add Permission</h5>
 						</div>
 						<div className="card-body pt-0">
 							<Form
@@ -210,6 +232,12 @@ const Permissions = () => {
 									}
 									if (!values.module_id) {
 										errors.module_id = 'select module';
+									}
+									if (!values.method) {
+										errors.method = 'enter method';
+									}
+									if (!values.route_path) {
+										errors.route_path = 'enter route';
 									}
 									return errors;
 								}}
@@ -286,13 +314,49 @@ const Permissions = () => {
 												</Field>
 												<ErrorBlock name="group" />
 											</div>
+											<div className="col-lg-12 mt-3">
+												<label htmlFor="route_path" className="form-label">
+													Route Path
+												</label>
+												<Field id="route_path" name="route_path">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="text"
+															className={`form-control ${error(meta)}`}
+															id="route_path"
+															placeholder="Enter route path"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="route_path" />
+											</div>
+											<div className="col-lg-12 mt-3">
+												<label htmlFor="method" className="form-label">
+													Method (<span className="text-danger">DELETE</span>,
+													<span className="text-success"> GET</span>,{' '}
+													<span className="text-warning"> POST</span>,{' '}
+													<span className="text-info"> PUT</span>)
+												</label>
+												<Field id="method" name="method">
+													{({ input, meta }) => (
+														<input
+															{...input}
+															type="text"
+															className={`form-control ${error(meta)}`}
+															id="method"
+															placeholder="Enter method"
+														/>
+													)}
+												</Field>
+												<ErrorBlock name="method" />
+											</div>
 										</div>
 										<div className="d-flex gap-3 mt-3 justify-content-end">
 											<button
 												type="submit"
 												className="btn btn-success"
-												disabled={submitting}
-											>
+												disabled={submitting}>
 												Add Permission
 											</button>
 										</div>

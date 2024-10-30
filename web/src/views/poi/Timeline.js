@@ -278,41 +278,28 @@ const Timeline = ({ refreshPoiData }) => {
 														<div className="flex-grow-1 text-muted overflow-hidden">
 															<h5 className="fs-14 text-truncate">
 																<span
+																	className={
+																		item.type_id === 1
+																			? 'bg-success text-light'
+																			: item.type_id === 2
+																				? ' bg-info text-light'
+																				: item.type_id === 3
+																					? 'bg-danger text-light'
+																					: item.type_id === 4
+																						? 'bg-warning text-light'
+																						: item.type_id === 5
+																							? 'bg-secondary text-light'
+																							: 'bg-dark text-light'
+																	}
 																	style={{
 																		cursor: 'pointer',
-																		color: '#fff', // White text for readability
-																		backgroundColor:
-																			item.type_id === 1
-																				? '#007bff' // Blue for Type1
-																				: item.type_id === 2
-																					? '#28a745' // Green for Type2
-																					: item.type_id === 3
-																						? '#ffc107' // Yellow for Type3
-																						: item.type_id === 4
-																							? '#dc3545' // Red for Type4
-																							: item.type_id === 5
-																								? '#6c757d' // Gray for Type5
-																								: '#6c757d', // Default Gray
-																		borderColor:
-																			item.type_id === 1
-																				? '#007bff'
-																				: item.type_id === 2
-																					? '#28a745'
-																					: item.type_id === 3
-																						? '#ffc107'
-																						: item.type_id === 4
-																							? '#dc3545'
-																							: item.type_id === 5
-																								? '#6c757d'
-																								: '#6c757d',
 																		borderStyle: 'solid',
 																		borderWidth: '1px',
 																		borderRadius: '5px',
 																		padding: '5px 10px',
-																		textDecoration: 'none', // Remove underline
+																		textDecoration: 'none',
 																		display: 'inline-block',
-																	}}
-																>
+																	}}>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -338,33 +325,42 @@ const Timeline = ({ refreshPoiData }) => {
 															<p className="text-muted text-truncate mb-0">
 																Activity Date:
 																<span className="fw-semibold text-body p-2">
-																	{item.activity_date || 'N/A'}
+																	{item.activity_date
+																		? new Date(
+																				item.activity_date
+																			).toLocaleDateString()
+																		: 'N/A'}
 																</span>
 															</p>
 														</div>
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
+
 															className="btn btn-sm btn-outline-secondary"
 															onClick={() => handleEditClick(item)}
 														>
 															Edit
+
+															className="btn btn-sm btn-success"
+															onClick={() => showDetails(item)}>
+															Details
+
 														</button>
-														{/*<button
+														<button
 															className="btn btn-sm btn-outline-success"
 															onClick={() => addNotes(item)}>
-															Add Note
+															Files
 														</button>
-														 <button
+														<button
 															className="btn btn-sm btn-outline-warning"
 															onClick={() => addMedia(item)}>
-															Add Media
-														</button> */}
+															Items
+														</button>
 														<button
-															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}
-														>
-															Details
+															className="btn btn-sm btn-outline-secondary"
+															onClick={() => editActivity(item)}>
+															Edit
 														</button>
 													</div>
 												</div>

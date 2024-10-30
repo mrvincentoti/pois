@@ -6,7 +6,7 @@ class ArmsRecovered(db.Model):
     __tablename__ = 'arms_recovered'
     id = db.Column(db.Integer, primary_key=True)
     poi_id = db.Column(db.Integer, db.ForeignKey('poi.id'))
-    arm_id = db.Column(db.Integer, db.ForeignKey('arms.id'))
+    item_id = db.Column(db.Integer, db.ForeignKey('items.id'))
     crime_id = db.Column(db.Integer, db.ForeignKey('crime_committed.id'), nullable=True)
     location = db.Column(db.String(64))
     comments = db.Column(db.String(252))
@@ -16,7 +16,7 @@ class ArmsRecovered(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
     number_recovered = db.Column(db.Integer, nullable=True)
-    arm = db.relationship("Arm", backref="arms_recovered")
+    item = db.relationship("Item", backref="arms_recovered")
 
     def to_dict(self):
         return {

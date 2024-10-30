@@ -73,6 +73,7 @@ def add_role():
         finally:
             db.session.close()
 
+
 @custom_jwt_required
 def get_role(role_id):
     role = Role.query.filter_by(id=role_id, deleted_at=None).first()
@@ -87,6 +88,7 @@ def get_role(role_id):
     else:
         return jsonify({'message': 'Role not found'}), 404
     
+
 @custom_jwt_required
 def edit_role(role_id):
     role = Role.query.filter_by(id=role_id, deleted_at=None).first()
@@ -148,6 +150,7 @@ def edit_role(role_id):
     finally:
         db.session.close()
 
+
 @custom_jwt_required
 def delete_role(role_id):
     role = Role.query.filter_by(id=role_id, deleted_at=None).first()
@@ -189,6 +192,7 @@ def delete_role(role_id):
         return jsonify({'message': 'Error deleting role', 'error': str(e)}), 500
     finally:
         db.session.close()
+
 
 @custom_jwt_required
 def restore_role(role_id):
@@ -236,6 +240,7 @@ def restore_role(role_id):
         return jsonify({"message": "Error restoring role", "error": str(e)}), 500
     finally:
         db.session.close()
+
 
 @custom_jwt_required
 def list_roles():

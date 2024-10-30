@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import func 
 from ..crimesCommitted.models import CrimeCommitted
 from ..armsRecovered.models import ArmsRecovered
-from ..arms.models import Arm
+from ..items.models import Item
 from ..crimesCommitted.models import CrimeCommitted
 from ..users.models import User
 from ..address.models import Address
@@ -273,7 +273,7 @@ def get_poi(poi_id):
                         }
 
             crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
-            arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
+            arms_count = 0 # To be removed
 
             affiliation_ids = [int(aff_id) for aff_id in poi.affiliation.split(",") if aff_id] if poi.affiliation is not None else []
             affiliations = Affiliation.query.filter(Affiliation.id.in_(affiliation_ids)).all()
@@ -785,12 +785,6 @@ def list_pois():
             .join(Crime, Activity.crime_id == Crime.id) \
             .filter(Crime.id == crime_id)
 
-    # Filter by arms recovered
-    arm_id = request.args.get('arm_id')
-    if arm_id:
-        query = query.join(ArmsRecovered, Poi.id == ArmsRecovered.poi_id) \
-            .filter(ArmsRecovered.arm_id == arm_id)
-
     # Filter based on search term if supplied
     if search_term:
         search = f"%{search_term}%"
@@ -818,16 +812,6 @@ def list_pois():
 
     for poi in paginated_pois.items:
         created_by = User.query.filter_by(id=poi.created_by).first()
-                
-        # List arms recovered
-        arms_data = []
-        if poi.arms_recovered:
-            for arm in poi.arms_recovered:
-                arms_data.append({
-                    "id": arm.arm_id,
-                    "name": arm.arm.name,  
-                    "number_recovered": arm.number_recovered
-                })
 
         pois_list.append({
             "id": poi.id,

@@ -29,8 +29,7 @@ from .source.models import Source
 from .poi.models import Poi
 from .poiMedia.models import PoiMedia
 from .affiliation.models import Affiliation
-from .arms.models import Arm
-from .armsRecovered.models import ArmsRecovered
+from .items.models import Item
 from .crimes.models import Crime
 from .arrestingBody.models import ArrestingBody
 from .crimesCommitted.models import CrimeCommitted
@@ -107,8 +106,8 @@ from .poi import urls
 from .poiMedia import urls
 from .modules import urls
 from .affiliation import urls
-from .arms import urls
-from .armsRecovered import urls
+from .items import urls
+#from .armsRecovered import urls
 from .crimes import urls
 from .arrestingBody import urls
 from .crimesCommitted import urls

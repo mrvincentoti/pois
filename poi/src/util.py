@@ -15,10 +15,8 @@ import uuid
 from minio import Minio
 from minio.error import S3Error
 
-""" from .users.models import User 
-from .roles.models import Role 
 from .permissions.models import Permission
-from .rolePermissions.models import RolePermission  """
+from .rolePermissions.models import RolePermission  
 
 from .users.models import User
 
@@ -42,26 +40,73 @@ minio_client = Minio(
     secure=False
 )
 
-def requires_permission(permission_name):
-    def decorator(fn):
-        @wraps(fn)
-        def decorated_function(*args, **kwargs):
-            # Ensure user is authenticated first
-            token_data = custom_jwt_required(fn)
-            if not token_data:  # If token is invalid or expired
-                return token_data  # Return the response from the JWT check
+def permission_required(fn):
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        # Ensure the user is authenticated
+        token_data = custom_jwt_required(fn)
+        if not token_data:
+            return token_data
 
-            user_id = g.user['id']  # Assuming you've set the user context
-            user = User.query.get(user_id)
+        user_id = g.user['id']
+        user = User.query.get(user_id)
 
-            if user:
-                # Check if user has the required permission
-                if not any(p.name == permission_name for role in user.roles for p in role.permissions):
-                    return jsonify({"message": "Unauthorized"}), 403
+        if user:
+            # Get the request path and method
+            request_path = request.path
+            request_method = request.method
 
-            return fn(*args, **kwargs)
-        return decorated_function
-    return decorator
+            # Check if any permission matches the user’s role, path, and method
+            has_permission = (
+                db.session.query(RolePermission)
+                .join(Permission, RolePermission.permission_id == Permission.id)
+                .filter(
+                    RolePermission.role_id == user.role_id,
+                    Permission.route_path.ilike(request_path), 
+                    Permission.method == request_method     
+                )
+                .first()
+            )
+
+            # Handle dynamic segments in the route path by adjusting the query
+            if not has_permission:
+                # Check if any route_path in permissions matches the request path with placeholders
+                permissions = (
+                    db.session.query(Permission)
+                    .join(RolePermission, RolePermission.permission_id == Permission.id)
+                    .filter(
+                        RolePermission.role_id == user.role_id,
+                        Permission.method == request_method
+                    )
+                    .all()
+                )
+                
+                # Compare each permission route_path with placeholders
+                for permission in permissions:
+                    if match_route_with_placeholders(permission.route_path, request_path):
+                        has_permission = True
+                        break
+
+            if not has_permission:
+                return jsonify({"message": "Unauthorized"}), 403
+
+        return fn(*args, **kwargs)
+
+    return decorated_function
+
+def match_route_with_placeholders(permission_route, request_path):
+    from werkzeug.routing import Map, Rule
+
+    # Define a rule map with the placeholder route path
+    url_map = Map([Rule(permission_route)])
+    matcher = url_map.bind("")
+
+    try:
+        # Try to match the request path to the rule
+        matcher.match(request_path)
+        return True
+    except:
+        return False
 
 # Custom JWT decorator
 def custom_jwt_required(fn):

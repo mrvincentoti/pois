@@ -502,8 +502,8 @@ def get_activities_by_poi(poi_id):
                 )
             )
 
-        # Order by activity_date in descending order (newest first)
-        query = query.order_by(Activity.activity_date.desc())
+        # Order by created_at in descending order (newest first)
+        query = query.order_by(Activity.created_at.desc())
 
         # Paginate the query
         paginated_activities = query.paginate(page=page, per_page=per_page, error_out=False)

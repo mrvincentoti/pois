@@ -24,33 +24,33 @@ def get_all_audits():
         module = request.args.get('module', default=None, type=str)
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
-        
+
+        # Start the query with ordering
         audit_query = Audit.query.order_by(desc(Audit.created_at))
 
-        # Filter by date range
+        # Apply date range filter
         if from_date_str and to_date_str:
             from_date = datetime.strptime(from_date_str, "%Y-%m-%d")
             to_date = datetime.strptime(to_date_str, "%Y-%m-%d")
             audit_query = audit_query.filter(and_(Audit.updated_at >= from_date, Audit.updated_at <= to_date))
         
-        # Filter by module tag
+        # Apply module filter
         if module:
             search = f"%{module}%"
             audit_query = audit_query.filter(
-            (Audit.tags.ilike(search)) |
-            (Audit.first_name.ilike(search)) |
-            (Audit.pfs_num.ilike(search)) |
-            (Audit.user_email.ilike(search)) |
-            (Audit.old_values.ilike(search)) |
-            (Audit.new_values.ilike(search)) |
-            (Audit.url.ilike(search)) |
-            (Audit.tags.ilike(search)) |
-            (Audit.event.ilike(search)) |
-            (Audit.ip_address.ilike(search))
-        )
-            
-
-        # Filter by created date (start_date, end_date)
+                (Audit.tags.ilike(search)) |
+                (Audit.first_name.ilike(search)) |
+                (Audit.pfs_num.ilike(search)) |
+                (Audit.user_email.ilike(search)) |
+                (Audit.old_values.ilike(search)) |
+                (Audit.new_values.ilike(search)) |
+                (Audit.url.ilike(search)) |
+                (Audit.tags.ilike(search)) |
+                (Audit.event.ilike(search)) |
+                (Audit.ip_address.ilike(search))
+            )
+        
+        # Apply created date filter
         if start_date and end_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -62,20 +62,25 @@ def get_all_audits():
             end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
             audit_query = audit_query.filter(Audit.created_at <= end_date)
 
-        # Paginate the results
-        audits = audit_query.paginate(page=page, per_page=per_page)
-        audit_list = []
+        # Apply search term filter directly in the query
+        if search_term:
+            search = f"%{search_term}%"
+            audit_query = audit_query.filter(
+                (Audit.event.ilike(search)) |
+                (Audit.tags.ilike(search)) |
+                (Audit.old_values.ilike(search)) |
+                (Audit.new_values.ilike(search)) |
+                (Audit.url.ilike(search)) |
+                (Audit.ip_address.ilike(search)) |
+                (Audit.user_agent.ilike(search))
+            )
 
-        # Filter by search term if provided
+        # Paginate after all filters are applied
+        audits = audit_query.paginate(page=page, per_page=per_page)
+        
+        # Collect audit data for response
+        audit_list = []
         for audit in audits.items:
-            if search_term:
-                if not any(
-            search_term.lower() in (field.lower() if field else '') for field in [
-                audit.event, audit.tags, audit.old_values, audit.new_values, audit.url, audit.ip_address, audit.user_agent
-            ]
-        ):
-                    continue
-            
             audit_data = {
                 "user_id": audit.user_id if hasattr(g, "user") else None,
                 "first_name": audit.first_name if hasattr(g, "user") else None,
@@ -125,7 +130,7 @@ def get_all_audits():
             "current_page": audits.page,
             "total": audits.total,
         }
-    
+
     except SQLAlchemyError as e:
         response = {
             "status": "error",

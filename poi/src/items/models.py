@@ -1,8 +1,8 @@
 from .. import db
 from datetime import datetime
 
-class Arm(db.Model):
-    __tablename__ = 'arms'
+class Item(db.Model):
+    __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     description = db.Column(db.Text, nullable=True)
@@ -20,7 +20,7 @@ class Arm(db.Model):
         self.description = description
 
     def __repr__(self):
-        return f'<Arm {self.name}>'
+        return f'<Item {self.name}>'
 
     def soft_delete(self):
         self.deleted_at = datetime.now()

@@ -425,7 +425,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="first_name">
-														First Name <span style={{ color: 'red' }}>*</span>
+														First Name
 													</label>
 													<Field id="first_name" name="first_name">
 														{({ input, meta }) => (
@@ -458,7 +458,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="last_name">
-														Last Name <span style={{ color: 'red' }}>*</span>
+														Last Name
 													</label>
 													<Field id="last_name" name="last_name">
 														{({ input, meta }) => (
@@ -499,8 +499,7 @@ const EditPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus"
-																	>
+																		className="site-tag-plus">
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -554,7 +553,7 @@ const EditPoi = () => {
 
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="gender_id">
-														Gender <span style={{ color: 'red' }}>*</span>
+														Gender <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="gender_id" name="gender_id">
 														{({ input, meta }) => (
@@ -613,8 +612,7 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status"
-													>
+														htmlFor="marital_status">
 														Marital Status
 													</label>
 
@@ -652,7 +650,7 @@ const EditPoi = () => {
 												</div>
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="country_id">
-														Country <span style={{ color: 'red' }}>*</span>
+														Country <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="country_id" name="country_id">
 														{({ input, meta }) => (
@@ -682,7 +680,7 @@ const EditPoi = () => {
 
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="state_id">
-														State <span style={{ color: 'red' }}>*</span>
+														State <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
@@ -720,7 +718,7 @@ const EditPoi = () => {
 											<div className="row">
 												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="category">
-														Category <span style={{ color: 'red' }}></span>
+														Category <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="category" name="category">
 														{({ input, meta }) => (
@@ -777,8 +775,7 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number"
-													>
+														htmlFor="passport_number">
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -797,8 +794,7 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number"
-													>
+														htmlFor="other_id_number">
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -1077,8 +1073,7 @@ const EditPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}
-										>
+											onClick={handleCancel}>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">
