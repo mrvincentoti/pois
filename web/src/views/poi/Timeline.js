@@ -29,6 +29,7 @@ import EditAttack from '../../modals/EditAttack';
 import EditProcurement from '../../modals/EditProcurement';
 import EditItemsCartedAway from '../../modals/EditItemsCartedAway';
 import EditPressRelease from '../../modals/EditPressRelease';
+import EditOthers from '../../modals/EditOthers';
 
 const Timeline = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -168,6 +169,14 @@ const Timeline = ({ refreshPoiData }) => {
 			case 'Press Release':
 				return (
 					<EditPressRelease
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Others':
+				return (
+					<EditOthers
 						visible={showEditModal}
 						activity={selectedActivity}
 						closeModal={closeEditModal}

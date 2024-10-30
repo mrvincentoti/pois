@@ -18,13 +18,12 @@ import {
 import { Tooltip } from 'antd';
 import FormWrapper from '../container/FormWrapper';
 
-const EditProcurement = ({ closeModal, activity }) => {
+const EditOthers = ({ closeModal, activity }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [type, setType] = useState(null);
 	const [initialValues, setInitialValues] = useState({});
 	const [activityDate, setActivityDate] = useState(null);
 	const [fileList, setFileList] = useState([{ file: null, caption: '' }]);
-	const [items, setItems] = useState([{ item: '', qty: '' }]);
 	const params = useParams();
 
 	useEffect(() => {
@@ -33,15 +32,11 @@ const EditProcurement = ({ closeModal, activity }) => {
 			console.log('Setting initialValues:', activity);
 			setInitialValues({
 				type_id: activity.type_id,
-				location_from: activity.location_from,
-				location_to: activity.location_to,
-				facilitator: activity.facilitator,
 				activity_date: activity.activity_date,
 				comment: activity.comment,
 			});
 			setActivityDate(new Date(activity.activity_date));
 			setType(activity.type_id);
-			setItems(activity.items || [{ item: '', qty: '' }]);
 			// Map existing media_files into fileList
 			const existingFiles = activity.media_files.map(file => ({
 				file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
@@ -66,9 +61,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
 			appendIfExists('poi_id', parseInt(params.id));
-			appendIfExists('location_from', values.location_from || null);
-			appendIfExists('location_to', values.location_to || null);
-			appendIfExists('facilitator', values.facilitator || null);
 			appendIfExists(
 				'activity_date',
 				moment(values.activity_date).format('YYYY-MM-DD') || null
@@ -87,16 +79,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 			//         appendIfExists('media_caption[]', fileEntry.caption);
 			//     });
 			// }
-
-			if (items)
-				items.forEach((item, index) => {
-					appendIfExists('items[]', item.item || null);
-					appendIfExists('qtys[]', item.qty || null);
-				});
-
-			for (let [key, value] of formData.entries()) {
-				console.log(key, value);
-			}
 
 			fileList.forEach(fileEntry => {
 				if (fileEntry.file && fileEntry.file.originFileObj) {
@@ -129,21 +111,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 		}
 	};
 
-	const addItem = () => {
-		setItems([...items, { item: '', qty: '' }]);
-	};
-
-	// Handle change for item and quantity fields
-	const handleItemChange = (index, field, value) => {
-		const newItems = [...items];
-		newItems[index][field] = value;
-		setItems(newItems);
-	};
-	const removeItem = index => {
-		const newItems = items.filter((_, i) => i !== index); // Remove the item and its quantity
-		setItems(newItems);
-	};
-
 	const handleFileChange = (index, field, value) => {
 		const newFileList = [...fileList];
 		newFileList[index][field] = value;
@@ -161,59 +128,54 @@ const EditProcurement = ({ closeModal, activity }) => {
 
 	const renderProcurementFields = () => (
 		<>
-			{items.map((item, index) => (
-				<div key={index} className="row mb-3">
-					<div className="col-lg-7" style={{ marginTop: '15px' }}>
-						<label htmlFor="location" className="form-label">
-							Items
-						</label>
-						<Field name={`items[${index}].item`} value={item.item}>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
 							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									placeholder="Item"
-									value={item.item} // Ensure the correct value is used
-									onChange={e =>
-										handleItemChange(index, 'item', e.target.value)
-									} // Correct the onChange handler
-								/>
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}
+									>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
 							)}
 						</Field>
 					</div>
-					<div className="col-lg-4" style={{ marginTop: '15px' }}>
-						<label htmlFor="location" className="form-label">
-							Quantity
-						</label>
-						<Field name={`items[${index}].qty`} value={item.qty}>
+
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
 							{({ input, meta }) => (
 								<input
 									{...input}
-									className="form-control"
-									type="number"
-									placeholder="Quantity"
-									value={item.qty} // Ensure the correct value is used
-									onChange={
-										e => handleItemChange(index, 'qty', e.target.value) // Change 'quantity' to 'qty'
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
 									}
 								/>
 							)}
 						</Field>
 					</div>
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
+					<div className="col-lg-1 d-flex align-items-center justify-content-center">
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeItem(index)}
+								onClick={() => removeFileEntry(index)}
 							/>
 						</Tooltip>
 					</div>
 				</div>
 			))}
-
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -221,53 +183,22 @@ const EditProcurement = ({ closeModal, activity }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-40px',
+							marginTop: '-10px',
 							marginLeft: '-14px',
 						}}
-						onClick={addItem}
+						onClick={addFileEntry}
 						className="btn btn-sm btn-success float-right"
 					>
 						<PlusOutlined
 							style={{
 								fontSize: '15px',
+								cursor: 'pointer',
 								marginBottom: '2px',
 							}}
-							onClick={addItem}
+							onClick={addFileEntry}
 						/>
 					</button>
 				</div>
-			</div>
-			<div className="col-lg-12">
-				<label htmlFor="location_from" className="form-label">
-					Location From
-				</label>
-				<Field id="location_from" name="location_from">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Location From"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="location_from" />
-			</div>
-			<div className="col-lg-12">
-				<label htmlFor="location_to" className="form-label">
-					Location To
-				</label>
-				<Field id="location_to" name="location_to">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Location To"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="location_to" />
 			</div>
 			<div className="col-lg-12">
 				<label htmlFor="activity_date" className="form-label">
@@ -289,22 +220,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 				<ErrorBlock name="activity_date" />
 			</div>
 			<div className="col-lg-12">
-				<label htmlFor="facilitator" className="form-label">
-					Facilitator
-				</label>
-				<Field id="facilitator" name="facilitator">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Facilitator"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="facilitator" />
-			</div>
-			<div className="col-lg-12">
 				<label htmlFor="comment" className="form-label">
 					Assessment
 				</label>
@@ -319,92 +234,11 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="comment" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					{/* Upload Data Field */}
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
-							)}
-						</Field>
-					</div>
-
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
-					</div>
-
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
-
-			<div className="row g-3">
-				<div className="col-lg-8"></div>
-				<div className="col-lg-3">
-					<button
-						type="button"
-						style={{
-							width: '100px',
-							marginTop: '-40px',
-							marginLeft: '-14px',
-						}}
-						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right"
-					>
-						<PlusOutlined
-							style={{
-								fontSize: '15px',
-								cursor: 'pointer',
-								marginBottom: '2px',
-							}}
-							onClick={addFileEntry}
-						/>
-					</button>
-				</div>
-			</div>
 		</>
 	);
 
 	return (
-		<ModalWrapper closeModal={closeModal} title="Edit Procurement">
+		<ModalWrapper closeModal={closeModal} title="Edit Others">
 			{console.log('EditAttack component is rendering')}
 			<Form
 				onSubmit={onSubmit}
@@ -421,7 +255,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 								className="btn btn-success"
 								disabled={submitting}
 							>
-								Update Procurement
+								Update
 							</button>
 						</div>
 					</FormWrapper>
@@ -431,4 +265,4 @@ const EditProcurement = ({ closeModal, activity }) => {
 	);
 };
 
-export default EditProcurement;
+export default EditOthers;

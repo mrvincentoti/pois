@@ -130,7 +130,6 @@ const EditAttack = ({ closeModal, activity }) => {
 			for (let pair of formData.entries()) {
 				console.log(`${pair[0]}: ${pair[1]}`);
 			}
-			return;
 
 			const response = await fetch(
 				UPDATE_ACTIVITIES_API.replace(':id', activity.id),
@@ -147,6 +146,7 @@ const EditAttack = ({ closeModal, activity }) => {
 			notifyWithIcon('success');
 			// update();
 			closeModal();
+			window.location.reload();
 		} catch (e) {
 			console.error(e);
 			const errorMessage = e.message || 'Something went wrong';
