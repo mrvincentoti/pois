@@ -25,11 +25,18 @@ import { APP_SHORT_NAME, limit, paginate } from '../../services/constants';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 
+import EditAttack from '../../modals/EditAttack';
+import EditProcurement from '../../modals/EditProcurement';
+import EditItemsCartedAway from '../../modals/EditItemsCartedAway';
+import EditPressRelease from '../../modals/EditPressRelease';
+import EditOthers from '../../modals/EditOthers';
+
 const Timeline = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimesData, setCrimesData] = useState([]);
 	const [activitiesData, setActivitiesData] = useState([]);
 	const [showModal, setShowModal] = useState(false);
+	const [showEditModal, setShowEditModal] = useState(false);
 	const [showArmsModal, setShowArmsModal] = useState(false); // State for Arms modal
 	const [showNotesModal, setShowNotesModal] = useState(false);
 	const [showMediaModal, setShowMediaModal] = useState(false); // State for Media modal
@@ -40,6 +47,7 @@ const Timeline = ({ refreshPoiData }) => {
 	const [loadError, setLoadError] = useState('');
 	const [activities, setActivities] = useState(null);
 	const [showDetailsModal, setShowDetailsModal] = useState(false);
+	const [selectedActivity, setSelectedActivity] = useState(null);
 
 	const [meta, setMeta] = useState(paginate);
 	const [page, setPage] = useState(null);
@@ -71,6 +79,13 @@ const Timeline = ({ refreshPoiData }) => {
 		const _page = Number(query.get('page') || 1);
 		const _search = query.get('q') || '';
 		const _limit = Number(query.get('entries_per_page') || limit);
+
+		const fetchInitialData = async () => {
+			await fetchActivityDetails(params.id, limit, 1, '');
+			setLoaded(true);
+			setFetching(false);
+		};
+		fetchInitialData();
 
 		if (!loaded) {
 			fetchActivityDetails(params.id);
@@ -105,8 +120,71 @@ const Timeline = ({ refreshPoiData }) => {
 		search,
 	]);
 
-	const handleEditClick = id => {
-		navigate(`/pois/${id}/edit`);
+	const handleEditClick = activity => {
+		// console.log("Activity clicked for editing:", activity);
+		document.body.classList.add('modal-open');
+		setSelectedActivity(activity);
+		setShowEditModal(true);
+	};
+
+	const closeEditModal = () => {
+		setShowEditModal(false);
+		setSelectedActivity(null);
+		document.body.classList.remove('modal-open');
+	};
+
+	// const handleEditClick = id => {
+	// 	navigate(`/pois/${id}/edit`);
+	// };
+	const renderEditModal = () => {
+		// console.log("Selected Activity:", selectedActivity);
+		// console.log("Show Edit Modal:", showEditModal);
+		if (!selectedActivity) return null;
+
+		switch (selectedActivity.activity_type) {
+			case 'Attack':
+				return (
+					<EditAttack
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Procurement':
+				return (
+					<EditProcurement
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Items Carted Away':
+				return (
+					<EditItemsCartedAway
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Press Release':
+				return (
+					<EditPressRelease
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Others':
+				return (
+					<EditOthers
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			default:
+				return null;
+		}
 	};
 
 	const addActivity = () => {
@@ -114,41 +192,11 @@ const Timeline = ({ refreshPoiData }) => {
 		setShowModal(true);
 	};
 
-	const addArms = item => {
-		if (item) {
-			setActivities(item);
-		} else {
-			setActivities(null);
-		}
-		document.body.classList.add('modal-open');
-		setShowArmsModal(true); // Open Arms modal
-	};
-
-	const addNotes = item => {
-		if (item) {
-			setActivities(item);
-		} else {
-			setActivities(null);
-		}
-		document.body.classList.add('modal-open');
-		setShowNotesModal(true); // Open Notes modal
-	};
-
-	const addMedia = item => {
-		if (item) {
-			setActivities(item);
-		} else {
-			setActivities(null);
-		}
-		document.body.classList.add('modal-open');
-		setShowMediaModal(true); // Open Media modal
-	};
-
-	const editActivity = item => {
-		document.body.classList.add('modal-open');
-		setActivities(item);
-		setShowModal(true);
-	};
+	// const editActivity = item => {
+	// 	document.body.classList.add('modal-open');
+	// 	setActivities(item);
+	// 	setShowModal(true);
+	// };
 
 	const closeModal = () => {
 		setShowModal(false);
@@ -288,9 +336,16 @@ const Timeline = ({ refreshPoiData }) => {
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
+
+															className="btn btn-sm btn-outline-secondary"
+															onClick={() => handleEditClick(item)}
+														>
+															Edit
+
 															className="btn btn-sm btn-success"
 															onClick={() => showDetails(item)}>
 															Details
+
 														</button>
 														<button
 															className="btn btn-sm btn-outline-success"
@@ -345,50 +400,7 @@ const Timeline = ({ refreshPoiData }) => {
 					}}
 				/>
 			)}
-			{/* {showArmsModal && (
-				<ManageArmsRecovered
-					closeModal={closeArmsModal}
-					armsRecovered={arms}
-					activities={activities}
-					update={async () => {
-						await refreshTable();
-						refreshPoiData(); // Refresh POI data after updating arms
-					}}
-				/>
-			)} */}
-			{/* {showNotesModal && (
-				<NewEditComment
-					closeModal={closeNotesModal}
-					notes={notes}
-					crimeCommitted={crimeCommitted}
-					update={async () => {
-						await refreshTable();
-						refreshPoiData(); // Refresh POI data after updating notes
-					}}
-				/>
-			)} */}
-			{/* {showMediaModal && ( // Render Media Modal
-				<ManageCrimesMedia
-					id={params.id}
-					closeModal={closeMediaModal}
-					crimeCommitted={crimeCommitted}
-					update={async () => {
-						await refreshTable();
-						refreshPoiData();
-					}}
-				/>
-			)} */}
-			{/* {showDetailsModal && (
-				<CrimeDetailsModal
-					id={params.id}
-					closeModal={closeDetailsModal}
-					crimeCommitted={crimeCommitted}
-					update={async () => {
-						await refreshTable();
-						refreshPoiData();
-					}}
-				/>
-			)} */}
+			{renderEditModal()}
 		</>
 	);
 };
