@@ -299,7 +299,8 @@ const Timeline = ({ refreshPoiData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none',
 																		display: 'inline-block',
-																	}}>
+																	}}
+																>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -336,31 +337,26 @@ const Timeline = ({ refreshPoiData }) => {
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
-
 															className="btn btn-sm btn-outline-secondary"
 															onClick={() => handleEditClick(item)}
 														>
 															Edit
-
-															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}>
-															Details
-
 														</button>
-														<button
+														{/*<button
 															className="btn btn-sm btn-outline-success"
 															onClick={() => addNotes(item)}>
-															Files
+															Add Note
 														</button>
-														<button
+														 <button
 															className="btn btn-sm btn-outline-warning"
 															onClick={() => addMedia(item)}>
-															Items
-														</button>
+															Add Media
+														</button> */}
 														<button
-															className="btn btn-sm btn-outline-secondary"
-															onClick={() => editActivity(item)}>
-															Edit
+															className="btn btn-sm btn-success"
+															onClick={() => showDetails(item)}
+														>
+															Details
 														</button>
 													</div>
 												</div>
