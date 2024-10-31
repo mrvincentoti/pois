@@ -299,12 +299,17 @@ const Timeline = ({ refreshPoiData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none',
 																		display: 'inline-block',
-																	}}
-																>
+																	}}>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
 
+															<p className="text-muted text-truncate mb-0">
+																Title:
+																<span className="fw-semibold text-body p-2 text-success">
+																	{item.title || 'N/A'}
+																</span>
+															</p>
 															<p className="text-muted text-truncate mb-0">
 																Location:
 																<span className="fw-semibold text-body p-2">
@@ -318,12 +323,6 @@ const Timeline = ({ refreshPoiData }) => {
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
-																Created by:
-																<span className="fw-semibold text-body p-2">
-																	{item.created_by_name || 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
 																Activity Date:
 																<span className="fw-semibold text-body p-2">
 																	{item.activity_date
@@ -333,13 +332,18 @@ const Timeline = ({ refreshPoiData }) => {
 																		: 'N/A'}
 																</span>
 															</p>
+															<p className="text-muted text-truncate mb-0">
+																Created by:
+																<span className="fw-semibold text-body p-2">
+																	{item.created_by_name || 'N/A'}
+																</span>
+															</p>
 														</div>
 													</div>
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => handleEditClick(item)}
-														>
+															onClick={() => handleEditClick(item)}>
 															Edit
 														</button>
 														{/*<button
@@ -354,8 +358,7 @@ const Timeline = ({ refreshPoiData }) => {
 														</button> */}
 														<button
 															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}
-														>
+															onClick={() => showDetails(item)}>
 															Details
 														</button>
 													</div>

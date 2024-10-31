@@ -40,16 +40,15 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			if (activities) {
 				// Pre-select the crime, type, and other fields for editing
 				setCrime(crimesOptions.find(c => c.id === activities.crime_id));
-				setCrimeDate(new Date(activities.crime_date));
 				setActivityDate(new Date(activities.activity_date));
 				setType(activities.type); // Pre-select type
 				setInitialValues({
 					crime_id: activities.crime_id,
+					title: activities.title,
 					location: activities.location,
 					nature_of_attack: activities.nature_of_attack,
 					casualties_recorded: activities.casualties_recorded,
 					action_taken: activities.action_taken,
-					crime_date: activities.crime_date,
 					activity_date: activities.activity_date,
 					assessments: activities.assessments,
 				});
@@ -116,6 +115,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(type));
 			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('title', values.title || null);
 			appendIfExists('crime_id', parseInt(values.crime_id) || null);
 			appendIfExists('location', values.location || null);
 			appendIfExists('location_from', values.location_from || null);
@@ -125,8 +125,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			appendIfExists('casualties_recorded', values.casualties_recorded || null);
 			appendIfExists('action_taken', values.action_taken || '');
 			appendIfExists(
-				'crime_date',
-				moment(values.crimeDate).format('YYYY-MM-DD') || null
+				'activity_date',
+				moment(values.activityDate).format('YYYY-MM-DD') || null
 			);
 			// appendIfExists(
 			// 	'activity_date',
@@ -249,6 +249,22 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	const renderAttackFields = () => (
 		<>
 			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			<div className="col-lg-12">
 				<label htmlFor="crime_id" className="form-label">
 					Crime
 				</label>
@@ -336,25 +352,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				<ErrorBlock name="action_taken" />
 			</div>
 			<div className="col-lg-12">
-				<label htmlFor="crime_date" className="form-label">
-					Crime Date
-				</label>
-				<Field id="crime_date" name="crime_date">
-					{({ input, meta }) => (
-						<Flatpickr
-							className={`form-control ${error(meta)}`}
-							placeholder="Select date of crime"
-							value={crimeDate}
-							onChange={([date]) => {
-								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setCrimeDate(date);
-							}}
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="crime_date" />
-			</div>
-			<div className="col-lg-12">
 				<label htmlFor="assessments" className="form-label">
 					Assessment
 				</label>
@@ -370,6 +367,25 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				<ErrorBlock name="assessments" />
 			</div>
 			<div className="col-lg-12">
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select date of crime"
+							value={crimeDate}
+							onChange={([date]) => {
+								input.onChange(moment(date).format('YYYY-MM-DD'));
+								setCrimeDate(date);
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
+			<div className="col-lg-12">
 				<label htmlFor="attachment" className="form-label">
 					Attachment
 				</label>
@@ -379,7 +395,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						<div className="col-lg-4">
 							<Field id={`file_${index}`} name={`file_${index}`}>
 								{({ input, meta }) => (
-									<div style={{ marginTop: '15px' }}>
+									<div style={{ marginTop: '0px' }}>
 										<Upload
 											fileList={fileEntry.file ? [fileEntry.file] : []}
 											beforeUpload={file => {
@@ -408,7 +424,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 										onChange={e =>
 											handleFileChange(index, 'caption', e.target.value)
 										}
-										style={{ marginTop: '15px' }}
+										style={{ marginTop: '0px' }}
 									/>
 								)}
 							</Field>
@@ -417,7 +433,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 						<div
 							className="col-lg-1 d-flex align-items-center justify-content-center"
-							style={{ paddingTop: '15px' }}>
+							style={{ paddingTop: '0px' }}>
 							<Tooltip title="Remove">
 								<DeleteOutlined
 									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -457,86 +473,21 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 	// Render procurement fields dynamically
 	const renderProcurementFields = () => (
 		<>
-			{items.map((item, index) => (
-				<div key={index} className="row mb-3">
-					{/* Item Dropdown */}
-					<div className="col-lg-7" style={{ marginTop: '15px' }}>
-						<Field name={`items[${index}].item`} value={item.item}>
-							{({ input, meta }) => (
-								<Select
-									isClearable
-									getOptionValue={option => option.id}
-									getOptionLabel={option => option.name}
-									options={itemsOptions} // assuming itemOptions is an array of {id, name}
-									value={
-										itemsOptions.find(option => option.id === item.item) || null
-									}
-									classNamePrefix="select" // Add this to customize styling if needed
-									onChange={selectedOption =>
-										handleItemChange(
-											index,
-											'item',
-											selectedOption ? selectedOption.id : ''
-										)
-									}
-									placeholder="Select an item"
-								/>
-							)}
-						</Field>
-					</div>
-
-					{/* Quantity Input */}
-					<div className="col-lg-4" style={{ marginTop: '15px' }}>
-						<Field name={`items[${index}].quantity`} value={item.quantity}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									type="number"
-									placeholder="Quantity"
-									value={item.quantity}
-									onChange={e =>
-										handleItemChange(index, 'quantity', e.target.value)
-									}
-								/>
-							)}
-						</Field>
-					</div>
-
-					{/* Remove Item Button */}
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeItem(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
-			{/* Add New Item Button */}
-			<div className="row g-3">
-				<div className="col-lg-8"></div>
-				<div className="col-lg-3">
-					<button
-						type="button"
-						style={{
-							width: '100px',
-							marginTop: '-40px',
-							marginLeft: '-14px',
-						}}
-						onClick={addItem}
-						className="btn btn-sm btn-success float-right">
-						<PlusOutlined
-							style={{
-								fontSize: '15px',
-								marginBottom: '2px',
-							}}
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
 						/>
-					</button>
-				</div>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
 			</div>
 			<div className="col-lg-12">
 				<label htmlFor="location_from" className="form-label">
@@ -571,6 +522,37 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				<ErrorBlock name="location_to" />
 			</div>
 			<div className="col-lg-12">
+				<label htmlFor="facilitator" className="form-label">
+					Facilitator
+				</label>
+				<Field id="facilitator" name="facilitator">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Facilitator"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="facilitator" />
+			</div>
+			<div className="col-lg-12">
+				<label htmlFor="remarks" className="form-label">
+					Assessment
+				</label>
+				<Field id="remarks" name="remarks">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Type your assessment here"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="remarks" />
+			</div>
+			<div className="col-lg-12">
 				<label htmlFor="activity_date" className="form-label">
 					Activity Date
 				</label>
@@ -589,129 +571,13 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
-			<div className="col-lg-12">
-				<label htmlFor="facilitator" className="form-label">
-					Facilitator
-				</label>
-				<Field id="facilitator" name="facilitator">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Facilitator"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="facilitator" />
-			</div>
-			<div className="col-lg-12">
-				<label htmlFor="remarks" className="form-label">
-					Remarks
-				</label>
-				<Field id="remarks" name="remarks">
-					{({ input, meta }) => (
-						<textarea
-							{...input}
-							className={`form-control ${error(meta)}`}
-							placeholder="Remarks"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="remarks" />
-			</div>
-			<div className="col-lg-12">
-				<label htmlFor="attachment" className="form-label">
-					Attachment
-				</label>
-				{fileList.map((fileEntry, index) => (
-					<div key={index} className="row mb-3 align-items-center">
-						{/* Upload Data Field */}
-						<div className="col-lg-4">
-							<Field id={`file_${index}`} name={`file_${index}`}>
-								{({ input, meta }) => (
-									<div style={{ marginTop: '15px' }}>
-										<Upload
-											fileList={fileEntry.file ? [fileEntry.file] : []}
-											beforeUpload={file => {
-												handleFileChange(index, 'file', file);
-												return false; // Prevent automatic upload
-											}}
-											onRemove={() => handleFileChange(index, 'file', null)}>
-											<Button icon={<UploadOutlined />}>Select File</Button>
-										</Upload>
-										<ErrorBlock name={`file_${index}`} />
-									</div>
-								)}
-							</Field>
-						</div>
-
-						{/* Caption Field */}
-						<div className="col-lg-7">
-							<Field id={`caption_${index}`} name={`caption_${index}`}>
-								{({ input, meta }) => (
-									<input
-										{...input}
-										type="text"
-										className={`form-control ${error(meta)}`}
-										placeholder="Enter caption"
-										value={fileEntry.caption}
-										onChange={e =>
-											handleFileChange(index, 'caption', e.target.value)
-										}
-										style={{ marginTop: '15px' }}
-									/>
-								)}
-							</Field>
-							<ErrorBlock name={`caption_${index}`} />
-						</div>
-
-						<div
-							className="col-lg-1 d-flex align-items-center justify-content-center"
-							style={{ paddingTop: '15px' }}>
-							<Tooltip title="Remove">
-								<DeleteOutlined
-									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-									onClick={() => removeFileEntry(index)}
-								/>
-							</Tooltip>
-						</div>
-					</div>
-				))}
-			</div>
-			<div className="row g-3">
-				<div className="col-lg-8"></div>
-				<div className="col-lg-3">
-					<button
-						type="button"
-						style={{
-							width: '100px',
-							marginTop: '-40px',
-							marginLeft: '-14px',
-						}}
-						onClick={addFileEntry}
-						className="btn btn-sm btn-success float-right">
-						<PlusOutlined
-							style={{
-								fontSize: '15px',
-								cursor: 'pointer',
-								marginBottom: '2px',
-							}}
-							onClick={addFileEntry}
-						/>
-					</button>
-				</div>
-			</div>
-		</>
-	);
-
-	// Render catered away fields dynamically
-	const renderCateredAwayFields = () => (
-		<>
+			<label htmlFor="title" className="form-label">
+				Items
+			</label>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
 					{/* Item Dropdown */}
-					<div className="col-lg-7" style={{ marginTop: '15px' }}>
+					<div className="col-lg-7" style={{ marginTop: '0px' }}>
 						<Field name={`items[${index}].item`} value={item.item}>
 							{({ input, meta }) => (
 								<Select
@@ -737,7 +603,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 					</div>
 
 					{/* Quantity Input */}
-					<div className="col-lg-4" style={{ marginTop: '15px' }}>
+					<div className="col-lg-4" style={{ marginTop: '0px' }}>
 						<Field name={`items[${index}].quantity`} value={item.quantity}>
 							{({ input, meta }) => (
 								<input
@@ -753,11 +619,10 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							)}
 						</Field>
 					</div>
-
 					{/* Remove Item Button */}
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '0px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -788,6 +653,109 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						/>
 					</button>
 				</div>
+			</div>
+
+			<label htmlFor="attachment" className="form-label">
+				Attachment
+			</label>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
+
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '15px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
+
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right">
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
+		</>
+	);
+
+	// Render catered away fields dynamically
+	const renderCateredAwayFields = () => (
+		<>
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
 			</div>
 			<div className="col-lg-12">
 				<label htmlFor="location" className="form-label">
@@ -826,110 +794,127 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			</div>
 			<div className="col-lg-12">
 				<label htmlFor="remarks" className="form-label">
-					Remarks
+					Assessment
 				</label>
 				<Field id="remarks" name="remarks">
 					{({ input, meta }) => (
 						<textarea
 							{...input}
 							className={`form-control ${error(meta)}`}
-							placeholder="Remarks"
+							placeholder="Enter your assessment here"
 						/>
 					)}
 				</Field>
 				<ErrorBlock name="remarks" />
 			</div>
-			<div className="col-lg-12">
-				<label htmlFor="attachment" className="form-label">
-					Attachment
-				</label>
-				{fileList.map((fileEntry, index) => (
-					<div key={index} className="row mb-3 align-items-center">
-						{/* Upload Data Field */}
-						<div className="col-lg-4">
-							<Field id={`file_${index}`} name={`file_${index}`}>
-								{({ input, meta }) => (
-									<div style={{ marginTop: '15px' }}>
-										<Upload
-											fileList={fileEntry.file ? [fileEntry.file] : []}
-											beforeUpload={file => {
-												handleFileChange(index, 'file', file);
-												return false; // Prevent automatic upload
-											}}
-											onRemove={() => handleFileChange(index, 'file', null)}>
-											<Button icon={<UploadOutlined />}>Select File</Button>
-										</Upload>
-										<ErrorBlock name={`file_${index}`} />
-									</div>
-								)}
-							</Field>
-						</div>
-
-						{/* Caption Field */}
-						<div className="col-lg-7">
-							<Field id={`caption_${index}`} name={`caption_${index}`}>
-								{({ input, meta }) => (
-									<input
-										{...input}
-										type="text"
-										className={`form-control ${error(meta)}`}
-										placeholder="Enter caption"
-										value={fileEntry.caption}
-										onChange={e =>
-											handleFileChange(index, 'caption', e.target.value)
-										}
-										style={{ marginTop: '15px' }}
-									/>
-								)}
-							</Field>
-							<ErrorBlock name={`caption_${index}`} />
-						</div>
-
-						<div
-							className="col-lg-1 d-flex align-items-center justify-content-center"
-							style={{ paddingTop: '15px' }}>
-							<Tooltip title="Remove">
-								<DeleteOutlined
-									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-									onClick={() => removeFileEntry(index)}
+			<label htmlFor="items" className="form-label">
+				Items
+			</label>
+			{items.map((item, index) => (
+				<div key={index} className="row mb-3">
+					{/* Item Dropdown */}
+					<div className="col-lg-7" style={{ marginTop: '0px' }}>
+						<Field name={`items[${index}].item`} value={item.item}>
+							{({ input, meta }) => (
+								<Select
+									isClearable
+									getOptionValue={option => option.id}
+									getOptionLabel={option => option.name}
+									options={itemsOptions} // assuming itemOptions is an array of {id, name}
+									value={
+										itemsOptions.find(option => option.id === item.item) || null
+									}
+									classNamePrefix="select" // Add this to customize styling if needed
+									onChange={selectedOption =>
+										handleItemChange(
+											index,
+											'item',
+											selectedOption ? selectedOption.id : ''
+										)
+									}
+									placeholder="Select an item"
 								/>
-							</Tooltip>
-						</div>
+							)}
+						</Field>
 					</div>
-				))}
 
-				<div className="row g-3">
-					<div className="col-lg-8"></div>
-					<div className="col-lg-3">
-						<button
-							type="button"
-							style={{
-								width: '100px',
-								marginTop: '5px',
-								marginLeft: '-14px',
-							}}
-							onClick={addFileEntry}
-							className="btn btn-sm btn-success float-right">
-							<PlusOutlined
-								style={{
-									fontSize: '15px',
-									cursor: 'pointer',
-									marginBottom: '2px',
-								}}
-								onClick={addFileEntry}
+					{/* Quantity Input */}
+					<div className="col-lg-4" style={{ marginTop: '0px' }}>
+						<Field name={`items[${index}].quantity`} value={item.quantity}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									className="form-control"
+									type="number"
+									placeholder="Quantity"
+									value={item.quantity}
+									onChange={e =>
+										handleItemChange(index, 'quantity', e.target.value)
+									}
+								/>
+							)}
+						</Field>
+					</div>
+
+					{/* Remove Item Button */}
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '0px' }}>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeItem(index)}
 							/>
-						</button>
+						</Tooltip>
 					</div>
 				</div>
+			))}
+			{/* Add New Item Button */}
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-40px',
+							marginLeft: '-14px',
+						}}
+						onClick={addItem}
+						className="btn btn-sm btn-success float-right">
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								marginBottom: '2px',
+							}}
+						/>
+					</button>
+				</div>
 			</div>
-		</>
-	);
-
-	// Render Press Release fields dynamically (files and captions)
-	const renderPressReleaseFields = () => (
-		<>
+			<label htmlFor="attachment" className="form-label">
+				Attachment
+			</label>
 			{fileList.map((fileEntry, index) => (
 				<div key={index} className="row mb-3 align-items-center">
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '15px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
 					{/* Upload Data Field */}
 					<div className="col-lg-4">
 						<Field id={`file_${index}`} name={`file_${index}`}>
@@ -949,7 +934,105 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							)}
 						</Field>
 					</div>
+					<div
+						className="col-lg-1 d-flex align-items-center justify-content-center"
+						style={{ paddingTop: '15px' }}>
+						<Tooltip title="Remove">
+							<DeleteOutlined
+								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+								onClick={() => removeFileEntry(index)}
+							/>
+						</Tooltip>
+					</div>
+				</div>
+			))}
 
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '5px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right">
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div>
+		</>
+	);
+
+	// Render Press Release fields dynamically (files and captions)
+	const renderPressReleaseFields = () => (
+		<>
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			{/* Remarks Field */}
+			<div className="col-lg-12">
+				<label htmlFor="remarks" className="form-label">
+					Assessment
+				</label>
+				<Field id="remarks" name="remarks">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Enter your assessment here"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="remarks" />
+			</div>
+			{/* Activity Date Field */}
+			<div className="col-lg-12">
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
+			<label htmlFor="attachment" className="form-label">
+				Attachment
+			</label>
+			{fileList.map((fileEntry, index) => (
+				<div key={index} className="row mb-3 align-items-center">
 					{/* Caption Field */}
 					<div className="col-lg-7">
 						<Field id={`caption_${index}`} name={`caption_${index}`}>
@@ -963,17 +1046,35 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 									onChange={e =>
 										handleFileChange(index, 'caption', e.target.value)
 									}
-									style={{ marginTop: '15px' }}
+									style={{ marginTop: '0px' }}
 								/>
 							)}
 						</Field>
 
 						<ErrorBlock name={`caption_${index}`} />
 					</div>
-
+					{/* Upload Data Field */}
+					<div className="col-lg-4">
+						<Field id={`file_${index}`} name={`file_${index}`}>
+							{({ input, meta }) => (
+								<div style={{ marginTop: '0px' }}>
+									<Upload
+										fileList={fileEntry.file ? [fileEntry.file] : []}
+										beforeUpload={file => {
+											handleFileChange(index, 'file', file);
+											return false; // Prevent automatic upload
+										}}
+										onRemove={() => handleFileChange(index, 'file', null)}>
+										<Button icon={<UploadOutlined />}>Select File</Button>
+									</Upload>
+									<ErrorBlock name={`file_${index}`} />
+								</div>
+							)}
+						</Field>
+					</div>
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '0px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -1007,8 +1108,44 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</div>
 			</div>
 			{/* Add More Files Icon */}
-			<div className="row mb-3"></div>
+		</>
+	);
 
+	// Render Others fields dynamically (files, captions, remarks, and activity date)
+	const renderOthersFields = () => (
+		<>
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			{/* Remarks Field */}
+			<div className="col-lg-12">
+				<label htmlFor="remarks" className="form-label">
+					Assessment
+				</label>
+				<Field id="remarks" name="remarks">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Enter your assessment here"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="remarks" />
+			</div>
 			{/* Activity Date Field */}
 			<div className="col-lg-12">
 				<label htmlFor="activity_date" className="form-label">
@@ -1029,36 +1166,35 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
-
-			{/* Remarks Field */}
-			<div className="col-lg-12">
-				<label htmlFor="remarks" className="form-label">
-					Remarks
-				</label>
-				<Field id="remarks" name="remarks">
-					{({ input, meta }) => (
-						<textarea
-							{...input}
-							className={`form-control ${error(meta)}`}
-							placeholder="Remarks"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="remarks" />
-			</div>
-		</>
-	);
-
-	// Render Others fields dynamically (files, captions, remarks, and activity date)
-	const renderOthersFields = () => (
-		<>
+			<label htmlFor="attachment" className="form-label">
+				Attachment
+			</label>
 			{fileList.map((fileEntry, index) => (
 				<div key={index} className="row mb-3 align-items-center">
+					{/* Caption Field */}
+					<div className="col-lg-7">
+						<Field id={`caption_${index}`} name={`caption_${index}`}>
+							{({ input, meta }) => (
+								<input
+									{...input}
+									type="text"
+									className={`form-control ${error(meta)}`}
+									placeholder="Enter caption"
+									value={fileEntry.caption}
+									onChange={e =>
+										handleFileChange(index, 'caption', e.target.value)
+									}
+									style={{ marginTop: '0px' }}
+								/>
+							)}
+						</Field>
+						<ErrorBlock name={`caption_${index}`} />
+					</div>
 					{/* Upload Data Field */}
 					<div className="col-lg-4">
 						<Field id={`file_${index}`} name={`file_${index}`}>
 							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
+								<div style={{ marginTop: '0px' }}>
 									<Upload
 										fileList={fileEntry.file ? [fileEntry.file] : []}
 										beforeUpload={file => {
@@ -1073,30 +1209,9 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 							)}
 						</Field>
 					</div>
-
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
-								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
-					</div>
-
 					<div
 						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}>
+						style={{ paddingTop: '0px' }}>
 						<Tooltip title="Remove">
 							<DeleteOutlined
 								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
@@ -1129,44 +1244,6 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						/>
 					</button>
 				</div>
-			</div>
-
-			{/* Activity Date Field */}
-			<div className="col-lg-12">
-				<label htmlFor="activity_date" className="form-label">
-					Activity Date
-				</label>
-				<Field id="activity_date" name="activity_date">
-					{({ input, meta }) => (
-						<Flatpickr
-							className={`form-control ${error(meta)}`}
-							placeholder="Select Activity Date"
-							value={activityDate}
-							onChange={([date]) => {
-								input.onChange(date); // Pass the date directly to the form
-								setActivityDate(date); // Update activityDate in state
-							}}
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="activity_date" />
-			</div>
-
-			{/* Remarks Field */}
-			<div className="col-lg-12">
-				<label htmlFor="remarks" className="form-label">
-					Remarks
-				</label>
-				<Field id="remarks" name="remarks">
-					{({ input, meta }) => (
-						<textarea
-							{...input}
-							className={`form-control ${error(meta)}`}
-							placeholder="Remarks"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="remarks" />
 			</div>
 		</>
 	);
