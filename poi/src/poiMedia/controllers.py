@@ -172,7 +172,7 @@ def get_poi_media(poi_id):
     try:
         # Get pagination parameters from the request (default values: page=1, per_page=10)
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
 
         # Query the database for media associated with the given poi_id, ordered by created_at descending, and paginate
         media_paginated = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None)\
