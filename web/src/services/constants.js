@@ -21,7 +21,7 @@ export const DURATION = 2;
 // Poi
 export const BASE_POI_URL = process.env.REACT_APP_BASE_POI_URL;
 
-export const limits = [2, 4, 8, 12, 16, 20];
+export const limits = [2, 4, 9, 12, 16, 20];
 export const limit = 8;
 export const paginate = {
 	total: 0,
