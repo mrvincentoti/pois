@@ -308,10 +308,16 @@ def edit_activity(activity_id):
         # Handle media file update (if any files are uploaded)
         files = request.files.getlist("file[]")  # Get all uploaded files
         captions = request.form.getlist("media_caption[]")  # Get all captions
+        
+        # Validate that the number of captions matches the number of files
+        if len(files) != len(captions):
+            return jsonify({"message": "Mismatch between files and captions"}), 400
 
         # Loop through each file and its corresponding caption
         for i in range(len(files)):
             file = files[i]
+            media_caption = captions[i] if i < len(captions) else "No caption provided"
+
             if file.filename != '' and allowed_file(file.filename):
                 file.seek(0)
 
@@ -324,19 +330,17 @@ def edit_activity(activity_id):
                 if not minio_file_url:
                     return jsonify({"message": "Error uploading file to MinIO"}), 500
 
-                if i < len(captions):  # Ensure there is a caption for the file
-                    media_caption = captions[i]
-                    # Save new media record linked to the updated activity
-                    new_media = PoiMedia(
-                        poi_id=poi_id,
-                        media_type=media_type,
-                        media_url=minio_file_url,
-                        media_caption=media_caption,
-                        activity_id=activity.id,
-                        created_by=created_by,
-                        created_at=datetime.utcnow()
-                    )
-                    db.session.add(new_media)
+                # Save new media record linked to the updated activity
+                new_media = PoiMedia(
+                    poi_id=poi_id,
+                    media_type=media_type,
+                    media_url=minio_file_url,
+                    media_caption=media_caption,
+                    activity_id=activity.id,
+                    created_by=created_by,
+                    created_at=datetime.utcnow()
+                )
+                db.session.add(new_media)
 
         try:
             db.session.commit()

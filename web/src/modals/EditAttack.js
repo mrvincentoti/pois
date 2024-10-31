@@ -294,6 +294,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				<ErrorBlock name="comment" />
 			</div>
 			<div className="col-lg-12" style={{ marginTop: '20px' }}>
+				
 				{fileList.map((fileEntry, index) => (
 					<div key={index} className="row mb-3 align-items-center">
 						<div className="col-lg-4">
