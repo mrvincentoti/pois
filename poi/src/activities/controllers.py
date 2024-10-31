@@ -44,6 +44,7 @@ def add_activity():
             form_data = {
                 "type_id": request.form.get("type_id"),
                 "poi_id": request.form.get("poi_id"),
+                "title": request.form.get("title"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
                 "nature_of_attack": request.form.get("nature_of_attack"),
@@ -132,6 +133,7 @@ def add_activity():
                 "new_values": json.dumps({
                     "type_id": form_data["type_id"],
                     "poi_id": form_data["poi_id"],
+                    "title": form_data["title"],
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
                     "nature_of_attack": form_data["nature_of_attack"],
@@ -203,6 +205,7 @@ def get_activity(activity_id):
             "id": activity.id,
             "poi_id": activity.poi_id,
             "poi_name": poi_name,
+            "title": activity.title,
             "comment": activity.comment,
             "activity_date": activity.activity_date,
             "created_by_id": activity.created_by,
@@ -249,6 +252,7 @@ def edit_activity(activity_id):
         # Form data
         type_id = request.form.get("type_id")
         poi_id = request.form.get("poi_id")
+        title = request.form.get("title")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
         nature_of_attack = request.form.get("nature_of_attack")
@@ -264,6 +268,7 @@ def edit_activity(activity_id):
         # Update basic activity details
         activity.type_id = type_id
         activity.poi_id = poi_id
+        activity.title = title
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
         activity.nature_of_attack = nature_of_attack
@@ -353,6 +358,7 @@ def edit_activity(activity_id):
                 "new_values": json.dumps({
                     "type_id": type_id,
                     "poi_id": poi_id,
+                    "title": title,
                     "crime_id": crime_id,
                     "casualties_recorded": casualties_recorded,
                     "nature_of_attack": nature_of_attack,
@@ -493,6 +499,7 @@ def get_activities_by_poi(poi_id):
             search_pattern = f"%{search_term}%"
             query = query.filter(
                 or_(
+                    Activity.title.ilike(search_pattern),
                     Activity.comment.ilike(search_pattern),
                     Activity.location.ilike(search_pattern),
                     Activity.location_from.ilike(search_pattern),
@@ -546,6 +553,7 @@ def get_activities_by_poi(poi_id):
                 "type_id": activity.type_id,
                 "activity_type": activity_type, 
                 "poi_id": activity.poi_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,

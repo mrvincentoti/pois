@@ -6,6 +6,7 @@ class OrgActivity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type_id = db.Column(db.Integer, nullable=True)
     org_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    title = db.Column(db.String(255), nullable=True)
     crime_id = db.Column(db.Integer, db.ForeignKey('crimes.id'), nullable=True)
     casualties_recorded = db.Column(db.Integer, nullable=True)
     nature_of_attack = db.Column(db.String(255), nullable=True)
@@ -27,6 +28,7 @@ class OrgActivity(db.Model):
             'id': self.id,
             'type_id': self.type_id,
             'org_id': self.org_id,
+            'title': self.title,
             'crime_id': self.crime_id,
             'casualties_recorded': self.casualties_recorded,
             'nature_of_attack': self.nature_of_attack,
@@ -42,10 +44,11 @@ class OrgActivity(db.Model):
             'deleted_at': self.deleted_at
         }
 
-    def __init__(self, type_id=None, org_id=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+    def __init__(self, type_id=None, org_id=None, title=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
                 created_at=None, updated_at=None):
         self.type_id = type_id
         self.org_id = org_id
+        self.title = title
         self.crime_id = crime_id
         self.casualties_recorded = casualties_recorded
         self.nature_of_attack = nature_of_attack
@@ -69,12 +72,14 @@ class OrgActivity(db.Model):
     def restore(self):
         self.deleted_at = None
         
-    def update(self, type_id=None, org_id=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
-                created_at=None, deleted_at=None, updated_at=None):
+    def update(self, type_id=None, org_id=None, title=None, crime_id=None, casualties_recorded=None, nature_of_attack=None, location=None, action_taken=None, comment=None, location_from=None, location_to=None, facilitator=None, activity_date=None, created_by=None,
+                updated_at=None):
         if type_id is not None:
             self.type_id = type_id
         if org_id is not None:
             self.org_id = org_id
+        if title is not None:
+            self.title = title
         if crime_id:
             self.crime_id = crime_id
         if casualties_recorded:
