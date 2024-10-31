@@ -309,9 +309,6 @@ def edit_activity(activity_id):
         files = request.files.getlist("file[]")  # Get all uploaded files
         captions = request.form.getlist("media_caption[]")  # Get all captions
 
-        # Delete existing media for this activity
-        PoiMedia.query.filter_by(activity_id=activity.id).delete()
-
         # Loop through each file and its corresponding caption
         for i in range(len(files)):
             file = files[i]
