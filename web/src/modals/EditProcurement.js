@@ -33,6 +33,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 			console.log('Setting initialValues:', activity);
 			setInitialValues({
 				type_id: activity.type_id,
+				title: activity.title,
 				location_from: activity.location_from,
 				location_to: activity.location_to,
 				facilitator: activity.facilitator,
@@ -43,11 +44,11 @@ const EditProcurement = ({ closeModal, activity }) => {
 			setType(activity.type_id);
 			setItems(activity.items || [{ item: '', qty: '' }]);
 			// Map existing media_files into fileList
-			const existingFiles = activity.media_files.map(file => ({
-				file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
-				caption: file.media_caption,
-			}));
-			setFileList(existingFiles);
+			// const existingFiles = activity.media_files.map(file => ({
+			// 	file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
+			// 	caption: file.media_caption,
+			// }));
+			// setFileList(existingFiles);
 
 			// loadCrimes();
 			setLoaded(true);
@@ -66,6 +67,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
 			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('title', values.title || null);
 			appendIfExists('location_from', values.location_from || null);
 			appendIfExists('location_to', values.location_to || null);
 			appendIfExists('facilitator', values.facilitator || null);
@@ -98,12 +100,16 @@ const EditProcurement = ({ closeModal, activity }) => {
 				console.log(key, value);
 			}
 
-			fileList.forEach(fileEntry => {
-				if (fileEntry.file && fileEntry.file.originFileObj) {
-					// new file
-					appendIfExists('file[]', fileEntry.file.originFileObj);
+			const validFileList = fileList.filter(
+				fileEntry => fileEntry.file || fileEntry.caption
+			);
+
+			validFileList.forEach(fileEntry => {
+				const file = fileEntry.file.originFileObj || fileEntry.file;
+				if (file) {
+					appendIfExists('file[]', file); // Appends only if there’s a valid file
 				}
-				appendIfExists('media_caption[]', fileEntry.caption);
+				appendIfExists('media_caption[]', fileEntry.caption); // Appends only if caption exists
 			});
 
 			const response = await fetch(
@@ -161,6 +167,104 @@ const EditProcurement = ({ closeModal, activity }) => {
 
 	const renderProcurementFields = () => (
 		<>
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="location_from" className="form-label">
+					Location From
+				</label>
+				<Field id="location_from" name="location_from">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Location From"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="location_from" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="location_to" className="form-label">
+					Location To
+				</label>
+				<Field id="location_to" name="location_to">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Location To"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="location_to" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="facilitator" className="form-label">
+					Facilitator
+				</label>
+				<Field id="facilitator" name="facilitator">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Facilitator"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="facilitator" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="comment" className="form-label">
+					Assessment
+				</label>
+				<Field id="comment" name="comment">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Assessment"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="comment" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
 					<div className="col-lg-7" style={{ marginTop: '15px' }}>
@@ -237,91 +341,110 @@ const EditProcurement = ({ closeModal, activity }) => {
 					</button>
 				</div>
 			</div>
-			<div className="col-lg-12">
-				<label htmlFor="location_from" className="form-label">
-					Location From
-				</label>
-				<Field id="location_from" name="location_from">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Location From"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="location_from" />
-			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="location_to" className="form-label">
-					Location To
-				</label>
-				<Field id="location_to" name="location_to">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Location To"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="location_to" />
-			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="activity_date" className="form-label">
-					Activity Date
-				</label>
-				<Field id="activity_date" name="activity_date">
-					{({ input, meta }) => (
-						<Flatpickr
-							className={`form-control ${error(meta)}`}
-							placeholder="Select Activity Date"
-							value={activityDate}
-							onChange={([date]) => {
-								input.onChange(date); // Pass the date directly to the form
-								setActivityDate(date); // Update activityDate in state
-							}}
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="activity_date" />
-			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="facilitator" className="form-label">
-					Facilitator
-				</label>
-				<Field id="facilitator" name="facilitator">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Facilitator"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="facilitator" />
-			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="comment" className="form-label">
-					Assessment
-				</label>
-				<Field id="comment" name="comment">
-					{({ input, meta }) => (
-						<textarea
-							{...input}
-							className={`form-control ${error(meta)}`}
-							placeholder="Assessment"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="comment" />
-			</div>
 			<div className="col-lg-12" style={{ marginTop: '20px' }}>
+				{/* {fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						<div className="col-lg-4">
+							{fileEntry.file?.url ? (
+								<a
+									href={fileEntry.file.url}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{fileEntry.file.url.split('/').pop()}
+								</a>
+							) : (
+								<Field name={`file_${index}`}>
+									{({ input, meta }) => (
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false;
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+									)}
+								</Field>
+							)}
+						</div>
+						<div className="col-lg-7">
+							{fileEntry.caption ? (
+								<p>{fileEntry.caption}</p>
+							) : (
+								<Field id={`caption_${index}`} name={`caption_${index}`}>
+									{({ input, meta }) => (
+										<input
+											{...input}
+											type="text"
+											className={`form-control ${error(meta)}`}
+											placeholder="Caption"
+											onBlur={e =>
+												handleFileChange(index, 'caption', e.target.value)
+											} // Update fileList on blur
+										/>
+									)}
+								</Field>
+							)}
+						</div>
+						<div className="col-lg-1 d-flex align-items-center justify-content-center">
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
+								/>
+							</Tooltip>
+						</div>
+					</div>
+				))}
+			</div>
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-10px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
+						/>
+					</button>
+				</div>
+			</div> */}
 				{fileList.map((fileEntry, index) => (
 					<div key={index} className="row mb-3 align-items-center">
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
 						{/* Upload Data Field */}
 						<div className="col-lg-4">
 							<Field id={`file_${index}`} name={`file_${index}`}>
@@ -342,27 +465,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 								)}
 							</Field>
 						</div>
-
-						{/* Caption Field */}
-						<div className="col-lg-7">
-							<Field id={`caption_${index}`} name={`caption_${index}`}>
-								{({ input, meta }) => (
-									<input
-										{...input}
-										type="text"
-										className={`form-control ${error(meta)}`}
-										placeholder="Enter caption"
-										value={fileEntry.caption}
-										onChange={e =>
-											handleFileChange(index, 'caption', e.target.value)
-										}
-										style={{ marginTop: '15px' }}
-									/>
-								)}
-							</Field>
-							<ErrorBlock name={`caption_${index}`} />
-						</div>
-
 						<div
 							className="col-lg-1 d-flex align-items-center justify-content-center"
 							style={{ paddingTop: '15px' }}
@@ -377,7 +479,6 @@ const EditProcurement = ({ closeModal, activity }) => {
 					</div>
 				))}
 			</div>
-
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">
@@ -385,7 +486,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-10px',
+							marginTop: '5px',
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}

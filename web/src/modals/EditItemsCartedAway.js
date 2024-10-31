@@ -33,6 +33,7 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 			console.log('Setting initialValues:', activity);
 			setInitialValues({
 				type_id: activity.type_id,
+				title: activity.title,
 				location: activity.location,
 				activity_date: activity.activity_date,
 				comment: activity.comment,
@@ -41,11 +42,11 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 			setType(activity.type_id);
 			setItems(activity.items || [{ item: '', qty: '' }]);
 			// Map existing media_files into fileList
-			const existingFiles = activity.media_files.map(file => ({
-				file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
-				caption: file.media_caption,
-			}));
-			setFileList(existingFiles);
+			// const existingFiles = activity.media_files.map(file => ({
+			// 	file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
+			// 	caption: file.media_caption,
+			// }));
+			// setFileList(existingFiles);
 
 			// loadCrimes();
 			setLoaded(true);
@@ -64,6 +65,7 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
 			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('title', values.title || null);
 			appendIfExists('location', values.location || null);
 			appendIfExists(
 				'activity_date',
@@ -94,12 +96,16 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 				console.log(key, value);
 			}
 
-			fileList.forEach(fileEntry => {
-				if (fileEntry.file && fileEntry.file.originFileObj) {
-					// new file
-					appendIfExists('file[]', fileEntry.file.originFileObj);
+			const validFileList = fileList.filter(
+				fileEntry => fileEntry.file || fileEntry.caption
+			);
+
+			validFileList.forEach(fileEntry => {
+				const file = fileEntry.file.originFileObj || fileEntry.file;
+				if (file) {
+					appendIfExists('file[]', file); // Appends only if there’s a valid file
 				}
-				appendIfExists('media_caption[]', fileEntry.caption);
+				appendIfExists('media_caption[]', fileEntry.caption); // Appends only if caption exists
 			});
 
 			const response = await fetch(
@@ -157,6 +163,72 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 
 	const renderProcurementFields = () => (
 		<>
+			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="location" className="form-label">
+					Location
+				</label>
+				<Field id="location" name="location">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Location"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="location" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="comment" className="form-label">
+					Assessment
+				</label>
+				<Field id="comment" name="comment">
+					{({ input, meta }) => (
+						<textarea
+							{...input}
+							className={`form-control ${error(meta)}`}
+							placeholder="Assessment"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="comment" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
 			{items.map((item, index) => (
 				<div key={index} className="row mb-3">
 					<div className="col-lg-7" style={{ marginTop: '15px' }}>
@@ -233,55 +305,167 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 					</button>
 				</div>
 			</div>
-			<div className="col-lg-12">
-				<label htmlFor="location" className="form-label">
-					Location
-				</label>
-				<Field id="location" name="location">
-					{({ input, meta }) => (
-						<input
-							{...input}
-							type="text"
-							className={`form-control ${error(meta)}`}
-							placeholder="Location"
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="location" />
+			<div className="col-lg-12" style={{ marginTop: '20px' }}>
+				{/* {fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						<div className="col-lg-4">
+							{fileEntry.file?.url ? (
+								<a
+									href={fileEntry.file.url}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{fileEntry.file.url.split('/').pop()}
+								</a>
+							) : (
+								<Field name={`file_${index}`}>
+									{({ input, meta }) => (
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false;
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+									)}
+								</Field>
+							)}
+						</div>
+						<div className="col-lg-7">
+							{fileEntry.caption ? (
+								<p>{fileEntry.caption}</p>
+							) : (
+								<Field id={`caption_${index}`} name={`caption_${index}`}>
+									{({ input, meta }) => (
+										<input
+											{...input}
+											type="text"
+											className={`form-control ${error(meta)}`}
+											placeholder="Caption"
+											onBlur={e =>
+												handleFileChange(index, 'caption', e.target.value)
+											} // Update fileList on blur
+										/>
+									)}
+								</Field>
+							)}
+						</div>
+						<div className="col-lg-1 d-flex align-items-center justify-content-center">
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
+								/>
+							</Tooltip>
+						</div>
+					</div>
+				))}
 			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="activity_date" className="form-label">
-					Activity Date
-				</label>
-				<Field id="activity_date" name="activity_date">
-					{({ input, meta }) => (
-						<Flatpickr
-							className={`form-control ${error(meta)}`}
-							placeholder="Select Activity Date"
-							value={activityDate}
-							onChange={([date]) => {
-								input.onChange(date); // Pass the date directly to the form
-								setActivityDate(date); // Update activityDate in state
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '-10px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
 							}}
+							onClick={addFileEntry}
 						/>
-					)}
-				</Field>
-				<ErrorBlock name="activity_date" />
+					</button>
+				</div>
+			</div> */}
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}
+						>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
+								/>
+							</Tooltip>
+						</div>
+					</div>
+				))}
 			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="comment" className="form-label">
-					Assessment
-				</label>
-				<Field id="comment" name="comment">
-					{({ input, meta }) => (
-						<textarea
-							{...input}
-							className={`form-control ${error(meta)}`}
-							placeholder="Assessment"
+			<div className="row g-3">
+				<div className="col-lg-8"></div>
+				<div className="col-lg-3">
+					<button
+						type="button"
+						style={{
+							width: '100px',
+							marginTop: '5px',
+							marginLeft: '-14px',
+						}}
+						onClick={addFileEntry}
+						className="btn btn-sm btn-success float-right"
+					>
+						<PlusOutlined
+							style={{
+								fontSize: '15px',
+								cursor: 'pointer',
+								marginBottom: '2px',
+							}}
+							onClick={addFileEntry}
 						/>
-					)}
-				</Field>
-				<ErrorBlock name="comment" />
+					</button>
+				</div>
 			</div>
 		</>
 	);

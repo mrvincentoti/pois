@@ -104,9 +104,9 @@ const ViewPoi = () => {
 							<div className="row g-4">
 								<div className="col-auto">
 									<div className="profile-user position-relative d-inline-block mb-4">
-										{poiData?.photo ? (
+										{poiData?.picture ? (
 											<img
-												src={poiData?.photo}
+												src={poiData?.picture}
 												className="rounded-circle avatar-xl img-thumbnail user-profile-image"
 												alt="user-profile"
 											/>
@@ -114,7 +114,8 @@ const ViewPoi = () => {
 											<div className="avatar-xl">
 												<div
 													className="avatar-title rounded-circle bg-light text-primary text-uppercase "
-													style={{ fontSize: '60px' }}>
+													style={{ fontSize: '60px' }}
+												>
 													{formatGetInitialsName(poiData)}
 												</div>
 											</div>
@@ -143,16 +144,16 @@ const ViewPoi = () => {
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.gender?.name || 'N/A'}
+												{poiData.age + ' Years' || 'N/A'}
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.age + ' Years' || 'N/A'}
+												{poiData.organisation?.name || 'N/A'}
 											</div>
 										</div>
 									</div>
 								</div>
-								<div className="col-12 col-lg-auto order-last order-lg-0">
+								{/* <div className="col-12 col-lg-auto order-last order-lg-0">
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
@@ -171,7 +172,7 @@ const ViewPoi = () => {
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> */}
 							</div>
 						</div>
 
@@ -181,7 +182,8 @@ const ViewPoi = () => {
 									<div className="d-flex profile-wrapper">
 										<ul
 											className="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1"
-											role="tablist">
+											role="tablist"
+										>
 											<li className="nav-item">
 												<a
 													style={{
@@ -191,7 +193,8 @@ const ViewPoi = () => {
 														activeTab === 'overview' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('overview')}
-													role="tab">
+													role="tab"
+												>
 													Overview
 												</a>
 											</li>
@@ -204,7 +207,8 @@ const ViewPoi = () => {
 														activeTab === 'activities' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('activities')}
-													role="tab">
+													role="tab"
+												>
 													Activites
 												</a>
 											</li>
@@ -217,7 +221,8 @@ const ViewPoi = () => {
 														activeTab === 'media' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('media')}
-													role="tab">
+													role="tab"
+												>
 													Files
 												</a>
 											</li>
@@ -244,7 +249,8 @@ const ViewPoi = () => {
 											<Button
 												type="primary"
 												icon={<i className="ri-printer-line" />}
-												onClick={handlePrintPage}>
+												onClick={handlePrintPage}
+											>
 												Print
 											</Button>
 										</div>
@@ -253,7 +259,8 @@ const ViewPoi = () => {
 										<div
 											className="tab-pane active"
 											id="overview-tab"
-											role="tabpanel">
+											role="tabpanel"
+										>
 											<div className="row">
 												<div className="col-xxl-12 col-lg-12">
 													{activeTab === 'overview' && (
@@ -283,7 +290,8 @@ const ViewPoi = () => {
 			) : (
 				<div
 					className="d-flex justify-content-center"
-					style={{ marginTop: '20%' }}>
+					style={{ marginTop: '20%' }}
+				>
 					<Spin size="large" indicator={antIconSync} />
 				</div>
 			)}

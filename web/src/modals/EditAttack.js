@@ -23,7 +23,7 @@ const EditAttack = ({ closeModal, activity }) => {
 	const [type, setType] = useState(null);
 	const [crime, setCrime] = useState(null);
 	const [crimesOptions, setCrimesOptions] = useState([]);
-	const [crimeDate, setCrimeDate] = useState(null);
+	const [activityDate, setActivityDate] = useState(null);
 	const [initialValues, setInitialValues] = useState({});
 	const [fileList, setFileList] = useState([{ file: null, caption: '' }]);
 	const params = useParams();
@@ -35,23 +35,24 @@ const EditAttack = ({ closeModal, activity }) => {
 			setInitialValues({
 				type_id: activity.type_id,
 				crime_id: activity.crime_id,
+				title: activity.title,
 				location: activity.location,
 				nature_of_attack: activity.nature_of_attack,
 				casualties_recorded: activity.casualties_recorded,
 				action_taken: activity.action_taken,
-				crime_date: activity.crime_date,
+				activity_date: activity.activity_date,
 				comment: activity.comment,
 			});
-			setCrimeDate(new Date(activity.crime_date));
+			setActivityDate(new Date(activity.activity_date));
 			setCrime(activity.crime_id);
 			setType(activity.type_id);
 
 			// Map existing media_files into fileList
-			const existingFiles = activity.media_files.map(file => ({
-				file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
-				caption: file.media_caption,
-			}));
-			setFileList(existingFiles);
+			// const existingFiles = activity.media_files.map(file => ({
+			// 	file: { url: file.media_url }, // Ant Design Upload accepts 'url' for preview
+			// 	caption: file.media_caption,
+			// }));
+			// setFileList(existingFiles);
 
 			loadCrimes();
 			setLoaded(true);
@@ -78,36 +79,17 @@ const EditAttack = ({ closeModal, activity }) => {
 			appendIfExists('type_id', parseInt(values.type_id));
 			appendIfExists('poi_id', parseInt(params.id));
 			appendIfExists('crime_id', parseInt(values.crime_id) || null);
+			appendIfExists('title', values.title || null);
 			appendIfExists('location', values.location || null);
 			appendIfExists('nature_of_attack', values.nature_of_attack || null);
 			appendIfExists('casualties_recorded', values.casualties_recorded || null);
 			appendIfExists('action_taken', values.action_taken || '');
 			appendIfExists(
-				'crime_date',
-				moment(values.crime_date).format('YYYY-MM-DD') || null
+				'activity_date',
+				moment(values.activity_date).format('YYYY-MM-DD') || null
 			);
 			appendIfExists('comment', values.comment || null);
 
-			// fileList.forEach(fileEntry => {
-			// 	const file = fileEntry.file.originFileObj || fileEntry.file;
-			// 	if (file) {
-			// 		appendIfExists('file[]', file);
-			// 		console.log(`Appending file: ${file.name}`);
-			// 	}
-			// 	appendIfExists('media_caption[]', fileEntry.caption);
-			// });
-			// Append each file and caption to formData
-			// fileList.forEach((fileEntry, index) => {
-			// 	const file = fileEntry.file.originFileObj || fileEntry.file;
-			// 	if (file) {
-			// 		formData.append('file[]', file); // Use 'file[]' to support multiple files
-			// 		console.log(`Appending file: ${file.name}`);
-			// 	}
-			// 	formData.append('media_caption[]', fileEntry.caption); // Append each caption with 'media_caption[]'
-			// });
-			// Check if fileList meets condition and append files and captions accordingly
-			// Filter out fileList entries with null/undefined file or caption
-			// Filter fileList to skip entries without a file or caption
 			const validFileList = fileList.filter(
 				fileEntry => fileEntry.file || fileEntry.caption
 			);
@@ -115,9 +97,9 @@ const EditAttack = ({ closeModal, activity }) => {
 			validFileList.forEach(fileEntry => {
 				const file = fileEntry.file.originFileObj || fileEntry.file;
 				if (file) {
-					appendIfExists('file[]', file); // Appends only if there’s a valid file
+					appendIfExists('file[]', file || null); // Appends only if there’s a valid file
 				}
-				appendIfExists('media_caption[]', fileEntry.caption); // Appends only if caption exists
+				appendIfExists('media_caption[]', fileEntry.caption || null); // Appends only if caption exists
 			});
 
 			for (let pair of formData.entries()) {
@@ -172,6 +154,22 @@ const EditAttack = ({ closeModal, activity }) => {
 	const renderAttackFields = () => (
 		<>
 			<div className="col-lg-12">
+				<label htmlFor="title" className="form-label">
+					Title
+				</label>
+				<Field id="title" name="title">
+					{({ input, meta }) => (
+						<input
+							{...input}
+							type="text"
+							className={`form-control ${error(meta)}`}
+							placeholder="Title"
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="title" />
+			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="crime_id" className="form-label">
 					Crime
 				</label>
@@ -260,25 +258,6 @@ const EditAttack = ({ closeModal, activity }) => {
 				<ErrorBlock name="action_taken" />
 			</div>
 			<div className="col-lg-12" style={{ marginTop: '15px' }}>
-				<label htmlFor="crime_date" className="form-label">
-					Crime Date
-				</label>
-				<Field id="crime_date" name="crime_date">
-					{({ input, meta }) => (
-						<Flatpickr
-							className={`form-control ${error(meta)}`}
-							placeholder="Select date of crime"
-							value={crimeDate}
-							onChange={([date]) => {
-								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setCrimeDate(date);
-							}}
-						/>
-					)}
-				</Field>
-				<ErrorBlock name="crime_date" />
-			</div>
-			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="comment" className="form-label">
 					Assessment
 				</label>
@@ -293,8 +272,27 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="comment" />
 			</div>
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="activity_date" className="form-label">
+					Activity Date
+				</label>
+				<Field id="activity_date" name="activity_date">
+					{({ input, meta }) => (
+						<Flatpickr
+							className={`form-control ${error(meta)}`}
+							placeholder="Select Activity Date"
+							value={activityDate}
+							onChange={([date]) => {
+								input.onChange(date); // Pass the date directly to the form
+								setActivityDate(date); // Update activityDate in state
+							}}
+						/>
+					)}
+				</Field>
+				<ErrorBlock name="activity_date" />
+			</div>
 			<div className="col-lg-12" style={{ marginTop: '20px' }}>
-				{fileList.map((fileEntry, index) => (
+				{/* {fileList.map((fileEntry, index) => (
 					<div key={index} className="row mb-3 align-items-center">
 						<div className="col-lg-4">
 							{fileEntry.file?.url ? (
@@ -350,6 +348,60 @@ const EditAttack = ({ closeModal, activity }) => {
 							</Tooltip>
 						</div>
 					</div>
+				))} */}
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}
+						>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
+								/>
+							</Tooltip>
+						</div>
+					</div>
 				))}
 			</div>
 			<div className="row g-3">
@@ -359,7 +411,7 @@ const EditAttack = ({ closeModal, activity }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-10px',
+							marginTop: '5px',
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
