@@ -46,6 +46,7 @@ def add_activity():
             form_data = {
                 "type_id": request.form.get("type_id"),
                 "org_id": request.form.get("org_id"),
+                "title": request.form.get("title"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
                 "nature_of_attack": request.form.get("nature_of_attack"),
@@ -134,6 +135,7 @@ def add_activity():
                 "new_values": json.dumps({
                     "type_id": form_data["type_id"],
                     "org_id": form_data["org_id"],
+                    "title": form_data("title"),
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
                     "nature_of_attack": form_data["nature_of_attack"],
@@ -205,6 +207,7 @@ def get_activity(activity_id):
         activity_data = {
                 "id": activity.id,
                 "org_id": activity.org_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
@@ -260,6 +263,7 @@ def edit_activity(activity_id):
         # Form data
         type_id = request.form.get("type_id")
         org_id = request.form.get("org_id")
+        title = request.form.get("title")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
         nature_of_attack = request.form.get("nature_of_attack")
@@ -275,6 +279,7 @@ def edit_activity(activity_id):
         # Update basic activity details
         activity.type_id = type_id
         activity.org_id = org_id
+        activity.title = title
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
         activity.nature_of_attack = nature_of_attack
@@ -364,6 +369,7 @@ def edit_activity(activity_id):
                 "new_values": json.dumps({
                     "type_id": type_id,
                     "org_id": org_id,
+                    "title": title,
                     "crime_id": crime_id,
                     "casualties_recorded": casualties_recorded,
                     "nature_of_attack": nature_of_attack,
@@ -509,8 +515,8 @@ def get_activities_by_org(org_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"
-            org_activities_query = org_activities_query.filter(OrgActivity.comment.ilike(search_pattern) | OrgActivity.location.ilike(search_pattern) | OrgActivity.location_from.ilike(search_pattern) | OrgActivity.location_to.ilike(search_pattern) | OrgActivity.nature_of_attack.ilike(search_pattern) | OrgActivity.facilitator.ilike(search_pattern))
-            poi_activities_query = poi_activities_query.filter(Activity.comment.ilike(search_pattern))
+            org_activities_query = org_activities_query.filter(OrgActivity.title.ilike(search_pattern) | OrgActivity.comment.ilike(search_pattern) | OrgActivity.location.ilike(search_pattern) | OrgActivity.location_from.ilike(search_pattern) | OrgActivity.location_to.ilike(search_pattern) | OrgActivity.nature_of_attack.ilike(search_pattern) | OrgActivity.facilitator.ilike(search_pattern))
+            poi_activities_query = poi_activities_query.filter(Activity.title.ilike(search_pattern) | Activity.comment.ilike(search_pattern))
 
         # Order both queries by activity_date in descending order
         org_activities_query = org_activities_query.order_by(OrgActivity.activity_date.desc())
@@ -565,6 +571,7 @@ def get_activities_by_org(org_id):
                 "type_id": activity.type_id,
                 "activity_type": activity_type,
                 "org_id": activity.org_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
@@ -606,6 +613,7 @@ def get_activities_by_org(org_id):
             activity_list.append({
                 "id": activity.id,
                 "poi_id": activity.poi_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
