@@ -88,43 +88,36 @@ const EditAttack = ({ closeModal, activity }) => {
 			);
 			appendIfExists('comment', values.comment || null);
 
-			// for(let pair of formData.entries()){
-			// 	console.log(`${pair[0]}: ${pair[1]}`);
-			// }
-			// return;
-
-			//Handle file uploads
-			// if (fileList.length > 0) {
-			//     fileList.forEach((fileEntry) => {
-			//         appendIfExists('file[]', fileEntry.file);
-			//         appendIfExists('media_caption[]', fileEntry.caption);
-			//     });
-			// }
-			// fileList.forEach((fileEntry) => {
-			//     if (fileEntry.file && fileEntry.file.originFileObj) {  // new file
-			//         appendIfExists('file[]', fileEntry.file.originFileObj);
-			//     }
-			//     appendIfExists('media_caption[]', fileEntry.caption);
-			// });
-			// for(let pair of formData.entries()){
-			// 	console.log(`${pair[0]}: ${pair[1]}`);
-			// }
-			// Handle file uploads
-			// fileList.forEach((fileEntry) => {
-			// 	if (fileEntry.file && fileEntry.file.originFileObj) {  // for newly uploaded files
-			// 		appendIfExists('file[]', fileEntry.file.originFileObj);
-			// 	} else if (fileEntry.file && fileEntry.file.url) {  // for existing files
-			// 		appendIfExists('file[]', fileEntry.file.url);
+			// fileList.forEach(fileEntry => {
+			// 	const file = fileEntry.file.originFileObj || fileEntry.file;
+			// 	if (file) {
+			// 		appendIfExists('file[]', file);
+			// 		console.log(`Appending file: ${file.name}`);
 			// 	}
 			// 	appendIfExists('media_caption[]', fileEntry.caption);
 			// });
-			fileList.forEach(fileEntry => {
+			// Append each file and caption to formData
+			// fileList.forEach((fileEntry, index) => {
+			// 	const file = fileEntry.file.originFileObj || fileEntry.file;
+			// 	if (file) {
+			// 		formData.append('file[]', file); // Use 'file[]' to support multiple files
+			// 		console.log(`Appending file: ${file.name}`);
+			// 	}
+			// 	formData.append('media_caption[]', fileEntry.caption); // Append each caption with 'media_caption[]'
+			// });
+			// Check if fileList meets condition and append files and captions accordingly
+			// Filter out fileList entries with null/undefined file or caption
+			// Filter fileList to skip entries without a file or caption
+			const validFileList = fileList.filter(
+				fileEntry => fileEntry.file || fileEntry.caption
+			);
+
+			validFileList.forEach(fileEntry => {
 				const file = fileEntry.file.originFileObj || fileEntry.file;
 				if (file) {
-					appendIfExists('file[]', file);
-					console.log(`Appending file: ${file.name}`);
+					appendIfExists('file[]', file); // Appends only if there’s a valid file
 				}
-				appendIfExists('media_caption[]', fileEntry.caption);
+				appendIfExists('media_caption[]', fileEntry.caption); // Appends only if caption exists
 			});
 
 			for (let pair of formData.entries()) {
@@ -202,7 +195,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="crime_id" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="location" className="form-label">
 					Location
 				</label>
@@ -218,7 +211,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="location" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="nature_of_attack" className="form-label">
 					Nature of Attack
 				</label>
@@ -234,7 +227,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="nature_of_attack" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="casualties_recorded" className="form-label">
 					Casualties Recorded
 				</label>
@@ -250,7 +243,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="casualties_recorded" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="action_taken" className="form-label">
 					Action Taken
 				</label>
@@ -266,7 +259,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="action_taken" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="crime_date" className="form-label">
 					Crime Date
 				</label>
@@ -285,7 +278,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="crime_date" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="comment" className="form-label">
 					Assessment
 				</label>
@@ -300,54 +293,65 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="comment" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
+			<div className="col-lg-12" style={{ marginTop: '20px' }}>
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						<div className="col-lg-4">
+							{fileEntry.file?.url ? (
+								<a
+									href={fileEntry.file.url}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{fileEntry.file.url.split('/').pop()}
+								</a>
+							) : (
+								<Field name={`file_${index}`}>
+									{({ input, meta }) => (
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false;
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+									)}
+								</Field>
 							)}
-						</Field>
-					</div>
-
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
+						</div>
+						<div className="col-lg-7">
+							{fileEntry.caption ? (
+								<p>{fileEntry.caption}</p>
+							) : (
+								<Field id={`caption_${index}`} name={`caption_${index}`}>
+									{({ input, meta }) => (
+										<input
+											{...input}
+											type="text"
+											className={`form-control ${error(meta)}`}
+											placeholder="Caption"
+											onBlur={e =>
+												handleFileChange(index, 'caption', e.target.value)
+											} // Update fileList on blur
+										/>
+									)}
+								</Field>
+							)}
+						</div>
+						<div className="col-lg-1 d-flex align-items-center justify-content-center">
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
 								/>
-							)}
-						</Field>
+							</Tooltip>
+						</div>
 					</div>
-					<div className="col-lg-1 d-flex align-items-center justify-content-center">
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
+				))}
+			</div>
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
 				<div className="col-lg-3">

@@ -200,7 +200,7 @@ const EditAttack = ({ closeModal, activity }) => {
 					</button>
 				</div>
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="activity_date" className="form-label">
 					Activity Date
 				</label>
@@ -219,7 +219,7 @@ const EditAttack = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="comment" className="form-label">
 					Assessment
 				</label>
