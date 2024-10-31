@@ -221,7 +221,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-40px',
+							marginTop: '-10px',
 							marginLeft: '-14px',
 						}}
 						onClick={addItem}
@@ -253,7 +253,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="location_from" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="location_to" className="form-label">
 					Location To
 				</label>
@@ -269,7 +269,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="location_to" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="activity_date" className="form-label">
 					Activity Date
 				</label>
@@ -288,7 +288,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="facilitator" className="form-label">
 					Facilitator
 				</label>
@@ -304,7 +304,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="facilitator" />
 			</div>
-			<div className="col-lg-12">
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
 				<label htmlFor="comment" className="form-label">
 					Assessment
 				</label>
@@ -319,62 +319,64 @@ const EditProcurement = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="comment" />
 			</div>
-			{fileList.map((fileEntry, index) => (
-				<div key={index} className="row mb-3 align-items-center">
-					{/* Upload Data Field */}
-					<div className="col-lg-4">
-						<Field id={`file_${index}`} name={`file_${index}`}>
-							{({ input, meta }) => (
-								<div style={{ marginTop: '15px' }}>
-									<Upload
-										fileList={fileEntry.file ? [fileEntry.file] : []}
-										beforeUpload={file => {
-											handleFileChange(index, 'file', file);
-											return false; // Prevent automatic upload
-										}}
-										onRemove={() => handleFileChange(index, 'file', null)}
-									>
-										<Button icon={<UploadOutlined />}>Select File</Button>
-									</Upload>
-									<ErrorBlock name={`file_${index}`} />
-								</div>
-							)}
-						</Field>
-					</div>
+			<div className="col-lg-12" style={{ marginTop: '20px' }}>
+				{fileList.map((fileEntry, index) => (
+					<div key={index} className="row mb-3 align-items-center">
+						{/* Upload Data Field */}
+						<div className="col-lg-4">
+							<Field id={`file_${index}`} name={`file_${index}`}>
+								{({ input, meta }) => (
+									<div style={{ marginTop: '15px' }}>
+										<Upload
+											fileList={fileEntry.file ? [fileEntry.file] : []}
+											beforeUpload={file => {
+												handleFileChange(index, 'file', file);
+												return false; // Prevent automatic upload
+											}}
+											onRemove={() => handleFileChange(index, 'file', null)}
+										>
+											<Button icon={<UploadOutlined />}>Select File</Button>
+										</Upload>
+										<ErrorBlock name={`file_${index}`} />
+									</div>
+								)}
+							</Field>
+						</div>
 
-					{/* Caption Field */}
-					<div className="col-lg-7">
-						<Field id={`caption_${index}`} name={`caption_${index}`}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									type="text"
-									className={`form-control ${error(meta)}`}
-									placeholder="Enter caption"
-									value={fileEntry.caption}
-									onChange={e =>
-										handleFileChange(index, 'caption', e.target.value)
-									}
-									style={{ marginTop: '15px' }}
+						{/* Caption Field */}
+						<div className="col-lg-7">
+							<Field id={`caption_${index}`} name={`caption_${index}`}>
+								{({ input, meta }) => (
+									<input
+										{...input}
+										type="text"
+										className={`form-control ${error(meta)}`}
+										placeholder="Enter caption"
+										value={fileEntry.caption}
+										onChange={e =>
+											handleFileChange(index, 'caption', e.target.value)
+										}
+										style={{ marginTop: '15px' }}
+									/>
+								)}
+							</Field>
+							<ErrorBlock name={`caption_${index}`} />
+						</div>
+
+						<div
+							className="col-lg-1 d-flex align-items-center justify-content-center"
+							style={{ paddingTop: '15px' }}
+						>
+							<Tooltip title="Remove">
+								<DeleteOutlined
+									style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
+									onClick={() => removeFileEntry(index)}
 								/>
-							)}
-						</Field>
-						<ErrorBlock name={`caption_${index}`} />
+							</Tooltip>
+						</div>
 					</div>
-
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeFileEntry(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
+				))}
+			</div>
 
 			<div className="row g-3">
 				<div className="col-lg-8"></div>
@@ -383,7 +385,7 @@ const EditProcurement = ({ closeModal, activity }) => {
 						type="button"
 						style={{
 							width: '100px',
-							marginTop: '-40px',
+							marginTop: '-10px',
 							marginLeft: '-14px',
 						}}
 						onClick={addFileEntry}
