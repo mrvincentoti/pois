@@ -31,12 +31,20 @@ import EditItemsCartedAway from '../../modals/EditItemsCartedAway';
 import EditPressRelease from '../../modals/EditPressRelease';
 import EditOthers from '../../modals/EditOthers';
 
+import AttackDetails from '../../modals/AttackDetails'; // Import Attack Details modal
+import ProcurementDetails from '../../modals/ProcurementDetails'; // Import Procurement Details modal
+import ItemsCartedAwayDetails from '../../modals/ItemsCartedAwayDetails'; // Import Items Carted Away Details modal
+import PressReleaseDetails from '../../modals/PressReleaseDetails'; // Import Press Release Details modal
+import OtherDetails from '../../modals/OtherDetails'; // Import Other Details modal
+
 const Timeline = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimesData, setCrimesData] = useState([]);
 	const [activitiesData, setActivitiesData] = useState([]);
 	const [showModal, setShowModal] = useState(false);
 	const [showEditModal, setShowEditModal] = useState(false);
+	const [showDetailsModal, setShowDetailsModal] = useState(false);
+	const [selectedActivity, setSelectedActivity] = useState(null);
 	const [showArmsModal, setShowArmsModal] = useState(false); // State for Arms modal
 	const [showNotesModal, setShowNotesModal] = useState(false);
 	const [showMediaModal, setShowMediaModal] = useState(false); // State for Media modal
@@ -46,8 +54,6 @@ const Timeline = ({ refreshPoiData }) => {
 	const [notes, setNotes] = useState(null);
 	const [loadError, setLoadError] = useState('');
 	const [activities, setActivities] = useState(null);
-	const [showDetailsModal, setShowDetailsModal] = useState(false);
-	const [selectedActivity, setSelectedActivity] = useState(null);
 
 	const [meta, setMeta] = useState(paginate);
 	const [page, setPage] = useState(null);
@@ -133,13 +139,10 @@ const Timeline = ({ refreshPoiData }) => {
 		document.body.classList.remove('modal-open');
 	};
 
-	// const handleEditClick = id => {
-	// 	navigate(`/pois/${id}/edit`);
-	// };
 	const renderEditModal = () => {
 		// console.log("Selected Activity:", selectedActivity);
 		// console.log("Show Edit Modal:", showEditModal);
-		if (!selectedActivity) return null;
+		if (!selectedActivity || !showEditModal) return null;
 
 		switch (selectedActivity.activity_type) {
 			case 'Attack':
@@ -192,12 +195,6 @@ const Timeline = ({ refreshPoiData }) => {
 		setShowModal(true);
 	};
 
-	// const editActivity = item => {
-	// 	document.body.classList.add('modal-open');
-	// 	setActivities(item);
-	// 	setShowModal(true);
-	// };
-
 	const closeModal = () => {
 		setShowModal(false);
 		setActivities(null);
@@ -227,15 +224,75 @@ const Timeline = ({ refreshPoiData }) => {
 	};
 
 	const showDetails = item => {
-		setActivities(item);
+		setSelectedActivity(item);
 		setShowDetailsModal(true);
 		document.body.classList.add('modal-open');
 	};
 
 	const closeDetailsModal = () => {
 		setShowDetailsModal(false);
+		setSelectedActivity(null);
 		document.body.classList.remove('modal-open');
 	};
+	const renderDetailsModal = () => {
+		if (!selectedActivity || !showDetailsModal) return null;
+
+		switch (selectedActivity.activity_type) {
+			case 'Attack':
+				return (
+					<AttackDetails
+						visible={showDetailsModal}
+						activity={selectedActivity}
+						closeModal={closeDetailsModal}
+					/>
+				);
+			case 'Procurement':
+				return (
+					<ProcurementDetails
+						visible={showDetailsModal}
+						activity={selectedActivity}
+						closeModal={closeDetailsModal}
+					/>
+				);
+			case 'Items Carted Away':
+				return (
+					<ItemsCartedAwayDetails
+						visible={showDetailsModal}
+						activity={selectedActivity}
+						closeModal={closeDetailsModal}
+					/>
+				);
+			case 'Press Release':
+				return (
+					<PressReleaseDetails
+						visible={showDetailsModal}
+						activity={selectedActivity}
+						closeModal={closeDetailsModal}
+					/>
+				);
+			case 'Others':
+				return (
+					<OtherDetails
+						visible={showDetailsModal}
+						activity={selectedActivity}
+						closeModal={closeDetailsModal}
+					/>
+				);
+			default:
+				return null;
+		}
+	};
+
+	// const showDetails = item => {
+	// 	setActivities(item);
+	// 	setShowDetailsModal(true);
+	// 	document.body.classList.add('modal-open');
+	// };
+
+	// const closeDetailsModal = () => {
+	// 	setShowDetailsModal(false);
+	// 	document.body.classList.remove('modal-open');
+	// };
 
 	const min = useMemo(() => {
 		return meta.per_page * (meta.current_page - 1) + 1;
@@ -299,7 +356,8 @@ const Timeline = ({ refreshPoiData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none',
 																		display: 'inline-block',
-																	}}>
+																	}}
+																>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -343,7 +401,8 @@ const Timeline = ({ refreshPoiData }) => {
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => handleEditClick(item)}>
+															onClick={() => handleEditClick(item)}
+														>
 															Edit
 														</button>
 														{/*<button
@@ -358,7 +417,8 @@ const Timeline = ({ refreshPoiData }) => {
 														</button> */}
 														<button
 															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}>
+															onClick={() => showDetails(item)}
+														>
 															Details
 														</button>
 													</div>
@@ -400,6 +460,7 @@ const Timeline = ({ refreshPoiData }) => {
 				/>
 			)}
 			{renderEditModal()}
+			{renderDetailsModal()}
 		</>
 	);
 };
