@@ -82,6 +82,12 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 		}
 	}, [activities, loaded, itemsOptions]);
 
+	// Reset fields when the type changes
+	useEffect(() => {
+		setItems([{ item: '', quantity: '' }]); // Reset items
+		setFileList([{ file: null, caption: '' }]); // Reset file list
+	}, [type]);
+
 	// Function to load items
 	const loadItems = async () => {
 		const response = await request(FETCH_ARMS_API); // Replace with your API endpoint
@@ -124,10 +130,10 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			appendIfExists('facilitator', values.facilitator || null);
 			appendIfExists('casualties_recorded', values.casualties_recorded || null);
 			appendIfExists('action_taken', values.action_taken || '');
-			appendIfExists(
-				'activity_date',
-				moment(values.activityDate).format('YYYY-MM-DD') || null
-			);
+			// appendIfExists(
+			// 	'activity_date',
+			// 	moment(values.activityDate).format('YYYY-MM-DD') || null
+			// );
 			// appendIfExists(
 			// 	'activity_date',
 			// 	moment(values.activityDate).format('YYYY-MM-DD') || null
@@ -375,10 +381,10 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 						<Flatpickr
 							className={`form-control ${error(meta)}`}
 							placeholder="Select date of crime"
-							value={crimeDate}
+							value={activityDate}
 							onChange={([date]) => {
 								input.onChange(moment(date).format('YYYY-MM-DD'));
-								setCrimeDate(date);
+								setActivityDate(date);
 							}}
 						/>
 					)}

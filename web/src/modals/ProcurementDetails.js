@@ -1,9 +1,9 @@
 import React from 'react';
 import ModalWrapper from '../container/ModalWrapper';
 
-const AttackDetails = ({ closeModal, activity }) => {
+const ProcurementDetails = ({ closeModal, activity }) => {
 	return (
-		<ModalWrapper title="Attack Details" closeModal={closeModal}>
+		<ModalWrapper title="Procurement Details" closeModal={closeModal}>
 			<div className="modal-body">
 				<div className="row g-3">
 					<div className="col-lg-12">
@@ -18,45 +18,27 @@ const AttackDetails = ({ closeModal, activity }) => {
 					<div className="col-lg-12" style={{ marginTop: '15px' }}>
 						<p>
 							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
-								Crime:
+								Location From:
 							</span>{' '}
-							{activity?.crime_name || 'N/A'}
+							{activity?.location_from || 'N/A'}
 						</p>
 					</div>
 
 					<div className="col-lg-12" style={{ marginTop: '15px' }}>
 						<p>
 							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
-								Location:
+								Location To:
 							</span>{' '}
-							{activity?.location || 'N/A'}
+							{activity?.location_to || 'N/A'}
 						</p>
 					</div>
 
 					<div className="col-lg-12" style={{ marginTop: '15px' }}>
 						<p>
 							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
-								Nature of Attack:
+								Facilitator:
 							</span>{' '}
-							{activity?.nature_of_attack || 'N/A'}
-						</p>
-					</div>
-
-					<div className="col-lg-12" style={{ marginTop: '15px' }}>
-						<p>
-							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
-								Casualties Recorded:
-							</span>{' '}
-							{activity?.casualties_recorded || 'N/A'}
-						</p>
-					</div>
-
-					<div className="col-lg-12" style={{ marginTop: '15px' }}>
-						<p>
-							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
-								Action Take:
-							</span>{' '}
-							{activity?.action_taken || 'N/A'}
+							{activity?.facilitator || 'N/A'}
 						</p>
 					</div>
 
@@ -77,6 +59,31 @@ const AttackDetails = ({ closeModal, activity }) => {
 							{activity?.activity_date
 								? new Date(activity.activity_date).toLocaleDateString()
 								: 'N/A'}
+						</p>
+					</div>
+
+					<div className="col-lg-12" style={{ marginTop: '20px' }}>
+						<p>
+							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
+								Items:
+							</span>{' '}
+							{activity?.items?.length > 0 ? (
+								activity.items.map((item, index) => (
+									<div
+										key={index}
+										style={{ marginBottom: '10px', marginLeft: '20px' }}
+									>
+										<div>
+											<strong>Item:</strong> {item.item || 'N/A'}
+										</div>
+										<div>
+											<strong>Quantity:</strong> {item.qty || 'N/A'}
+										</div>
+									</div>
+								))
+							) : (
+								<p className="form-control-plaintext">No items available</p>
+							)}
 						</p>
 					</div>
 
@@ -133,4 +140,4 @@ const AttackDetails = ({ closeModal, activity }) => {
 	);
 };
 
-export default AttackDetails;
+export default ProcurementDetails;

@@ -36,7 +36,9 @@ const EditOthers = ({ closeModal, activity }) => {
 				activity_date: activity.activity_date,
 				comment: activity.comment,
 			});
-			setActivityDate(new Date(activity.activity_date));
+			setActivityDate(
+				activity.activity_date ? new Date(activity.activity_date) : null
+			);
 			setType(activity.type_id);
 			// Map existing media_files into fileList
 			// const existingFiles = activity.media_files.map(file => ({
@@ -62,10 +64,10 @@ const EditOthers = ({ closeModal, activity }) => {
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
 			appendIfExists('poi_id', parseInt(params.id));
-			appendIfExists(
-				'activity_date',
-				moment(values.activity_date).format('YYYY-MM-DD') || null
-			);
+			const formattedDate = values.activity_date
+				? moment(values.activity_date).format('YYYY-MM-DD')
+				: null;
+			appendIfExists('activity_date', formattedDate);
 			appendIfExists('title', values.title || null);
 			appendIfExists('comment', values.comment || null);
 
@@ -174,10 +176,10 @@ const EditOthers = ({ closeModal, activity }) => {
 						<Flatpickr
 							className={`form-control ${error(meta)}`}
 							placeholder="Select Activity Date"
-							value={activityDate}
+							value={activityDate || null} // Default to null to avoid "1970-01-01"
 							onChange={([date]) => {
-								input.onChange(date); // Pass the date directly to the form
-								setActivityDate(date); // Update activityDate in state
+								input.onChange(date || null); // Set null if no date is selected
+								setActivityDate(date || null); // Update activityDate in state
 							}}
 						/>
 					)}
