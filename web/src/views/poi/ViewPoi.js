@@ -148,31 +148,31 @@ const ViewPoi = () => {
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.organisation?.name || 'N/A'}
+												{poiData.alias || 'N/A'}
 											</div>
 										</div>
 									</div>
 								</div>
-								{/* <div className="col-12 col-lg-auto order-last order-lg-0">
+								<div className="col-12 col-lg-auto order-last order-lg-0">
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
-											<div className="p-2">
+											<div className="p-1">
 												<h4 className="text-white mb-1">
-													{poiData.crime_count || 0}
+													{poiData.organisation?.name || 'N/A'}
 												</h4>
-												<p className="fs-14 mb-0">Crime</p>
+												<p className="fs-14 mb-0">organisation</p>
 											</div>
 										</div>
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
 												<h4 className="text-white mb-1">
-													{poiData.age || 'NA'}
+													{poiData.affiliation || 'NA'}
 												</h4>
-												<p className="fs-14 mb-0">Years</p>
+												<p className="fs-14 mb-0">Affiliation</p>
 											</div>
 										</div>
 									</div>
-								</div> */}
+								</div>
 							</div>
 						</div>
 
