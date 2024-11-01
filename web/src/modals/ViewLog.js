@@ -80,7 +80,7 @@ const ViewLog = ({ closeModal, update, selectedLog }) => {
 						<div className="content">
 							<p>
 								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
-									event
+									Event
 								</span>{' '}
 								{selectedLog?.event}
 							</p>
@@ -90,6 +90,36 @@ const ViewLog = ({ closeModal, update, selectedLog }) => {
 									url
 								</span>{' '}
 								{selectedLog?.url}
+							</p>
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+									Ip address
+								</span>{' '}
+								{selectedLog?.ip_address}
+							</p>
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+									User agent
+								</span>{' '}
+								{selectedLog?.user_agent}
+							</p>
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+									Old values
+								</span>{' '}
+								{selectedLog.old_values ? selectedLog.old_values : 'None'}
+							</p>
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+									New values
+								</span>{' '}
+								{selectedLog.new_values ? selectedLog.new_values : 'None'}
+							</p>
+							<p>
+								<span className="badge bg-success-subtle text-success fs-10 align-middle ms-1">
+									Date
+								</span>{' '}
+								{selectedLog?.created_at}
 							</p>
 						</div>
 

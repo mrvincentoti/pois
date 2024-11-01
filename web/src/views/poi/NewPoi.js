@@ -19,7 +19,7 @@ import {
 	CREATE_POI_API,
 	FETCH_GENDERS_API,
 	FETCH_STATES_API,
-	FETCH_CATEGORIES_API,
+	FETCH_POI_CATEGORY_API,
 	FETCH_SOURCES_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
@@ -146,7 +146,7 @@ const NewPoi = () => {
 			const urls = [
 				FETCH_GENDERS_API,
 				`${FETCH_COUNTRIES_API}?per_page=300`,
-				FETCH_CATEGORIES_API,
+				FETCH_POI_CATEGORY_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
 				FETCH_POI_STATUSES_API,
@@ -217,6 +217,10 @@ const NewPoi = () => {
 		setAffliation(value);
 	};
 
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
+
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -225,6 +229,8 @@ const NewPoi = () => {
 	}, [fetchApis, loaded]);
 
 	const onSubmit = async values => {
+		console.log(values);
+
 		try {
 			// Create a FormData object
 			const formData = new FormData();
@@ -242,7 +248,7 @@ const NewPoi = () => {
 
 			appendIfExists('country_id', country);
 			appendIfExists('affiliation_id', affiliation);
-			appendIfExists('marital_status', values.marital_status?.name);
+			appendIfExists('marital_status', maritalStatus);
 			appendIfExists('picture', imageUrl?.file);
 			appendIfExists('alias', alias.length > 0 ? alias.join(', ') : null);
 			appendIfExists('affiliation', affiliation?.join(','));
@@ -282,15 +288,15 @@ const NewPoi = () => {
 					validate={values => {
 						const errors = {};
 
-						if (!values.first_name) {
-							errors.first_name = 'Enter first name';
+						if (!values.category_id) {
+							errors.category_id = 'Enter Category';
 						}
-						if (!values.last_name) {
-							errors.last_name = 'enter first name';
-						}
-						if (!values.ref_numb) {
-							errors.ref_numb = 'enter ref number';
-						}
+						// if (!values.last_name) {
+						// 	errors.last_name = 'enter first name';
+						// }
+						// if (!values.ref_numb) {
+						// 	errors.ref_numb = 'enter ref number';
+						// }
 
 						return errors;
 					}}
@@ -307,10 +313,9 @@ const NewPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
-														<span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="ref_numb" name="ref_numb">
 														{({ input, meta }) => (
@@ -325,9 +330,9 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="ref_numb" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="first_name">
-														First Name <span style={{ color: 'red' }}>*</span>
+														First Name
 													</label>
 													<Field id="first_name" name="first_name">
 														{({ input, meta }) => (
@@ -342,7 +347,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="first_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="middle_name">
 														Middle Name
 													</label>
@@ -358,9 +363,9 @@ const NewPoi = () => {
 														)}
 													</Field>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="last_name">
-														Last Name <span style={{ color: 'red' }}>*</span>
+														Last Name
 													</label>
 													<Field id="last_name" name="last_name">
 														{({ input, meta }) => (
@@ -375,7 +380,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="last_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="alias">
 														Alias <span style={{ color: 'red' }}></span>
 													</label>
@@ -418,7 +423,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="alias" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="phone_number">
 														Phone
 													</label>
@@ -435,7 +440,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -452,9 +457,9 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="email" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="gender_id">
-														Gender <span style={{ color: 'red' }}>*</span>
+														Gender
 													</label>
 													<Field id="gender_id" name="gender_id">
 														{({ input, meta }) => (
@@ -480,7 +485,7 @@ const NewPoi = () => {
 													<ErrorBlock name="gender_id" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="dob">
 														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
@@ -507,7 +512,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="dob" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
 														htmlFor="marital_status"
@@ -541,121 +546,9 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="marital_status" />
 												</div>
-											</div>
-										</div>
-									</div>
-									<div className="card">
-										<div className="card-header">
-											<h5 className="card-title mb-0">Technical Information</h5>
-										</div>
-										<div className="card-body">
-											<div className="row">
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="passport_number"
-													>
-														Passport Number
-													</label>
-													<Field id="passport_number" name="passport_number">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="passport_number"
-																placeholder="Enter passport no"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="passport_number" />
-												</div>
-												<div className="col-lg-6 mb-3">
-													<label
-														className="form-label"
-														htmlFor="other_id_number"
-													>
-														Other ID Number
-													</label>
-													<Field id="other_id_number" name="other_id_number">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="other_id_number"
-																placeholder="Enter number"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="other_id_number" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="affiliation">
-														Affiliation <span style={{ color: 'red' }}></span>
-													</label>
-
-													<Field id="affiliation" name="affiliation">
-														{({ input, meta }) => (
-															<Select
-																mode="multiple"
-																allowClear
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor: '#ced4da',
-																}}
-																placeholder="Please Affiliation"
-																onChange={handleAffiliationChange}
-																options={affiliations}
-															/>
-														)}
-													</Field>
-
-													<ErrorBlock name="affiliation" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="role">
-														Role
-													</label>
-													<Field id="role" name="role">
-														{({ input, meta }) => (
-															<input
-																{...input}
-																type="text"
-																className={`form-control ${error(meta)}`}
-																id="role"
-																placeholder="Enter role"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="role" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label
-														className="form-label"
-														htmlFor="organisation_id"
-													>
-														Organization <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="organisation_id" name="organisation_id">
-														{({ input, meta }) => (
-															<Select
-																style={{ width: '100%', height: '40px' }}
-																placeholder="Select Organisation"
-																onChange={value => {
-																	setSelectedOrganization(value); // Store selected organization in state
-																	input.onChange(value); // Sync with form
-																}}
-																options={organizations} // Provide organizations list
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="organisation_id" />
-												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="country_id">
-														Country <span style={{ color: 'red' }}>*</span>
+														Country
 													</label>
 													<Field id="country_id" name="country_id">
 														{({ input, meta }) => (
@@ -688,9 +581,9 @@ const NewPoi = () => {
 													<ErrorBlock name="country_id" />
 												</div>
 
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="state_id">
-														State <span style={{ color: 'red' }}>*</span>
+														State
 													</label>
 													<Field id="state_id" name="state_id">
 														{({ input, meta }) => (
@@ -715,9 +608,18 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="state_id" />
 												</div>
-												<div className="col-lg-4 mb-3">
+											</div>
+										</div>
+									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Technical Information</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="category_id">
-														Category <span style={{ color: 'red' }}></span>
+														Category <span style={{ color: 'red' }}>*</span>
 													</label>
 													<Field id="category_id" name="category_id">
 														{({ input, meta }) => (
@@ -736,13 +638,118 @@ const NewPoi = () => {
 																	value: category.id, // Map id to value
 																	label: category.name, // Map name to label
 																}))}
-																className="custom-category-select" // Custom class for further styling
+																className={`custom-category-select ${error(
+																	meta
+																)}`} // Custom class for further styling
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category_id" />
+													<ErrorBlock name="category_id">ctyfctfcht</ErrorBlock>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="organisation_id"
+													>
+														Organization
+													</label>
+													<Field id="organisation_id" name="organisation_id">
+														{({ input, meta }) => (
+															<Select
+																style={{ width: '100%', height: '40px' }}
+																placeholder="Select Organisation"
+																onChange={value => {
+																	setSelectedOrganization(value); // Store selected organization in state
+																	input.onChange(value); // Sync with form
+																}}
+																options={organizations} // Provide organizations list
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="organisation_id" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="passport_number"
+													>
+														Passport Number
+													</label>
+													<Field id="passport_number" name="passport_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="passport_number"
+																placeholder="Enter passport no"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="passport_number" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label
+														className="form-label"
+														htmlFor="other_id_number"
+													>
+														Other ID Number
+													</label>
+													<Field id="other_id_number" name="other_id_number">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="other_id_number"
+																placeholder="Enter number"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="other_id_number" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="affiliation">
+														Affiliation <span style={{ color: 'red' }}></span>
+													</label>
+
+													<Field id="affiliation" name="affiliation">
+														{({ input, meta }) => (
+															<Select
+																mode="multiple"
+																allowClear
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor: '#ced4da',
+																}}
+																placeholder="Please Affiliation"
+																onChange={handleAffiliationChange}
+																options={affiliations}
+															/>
+														)}
+													</Field>
+
+													<ErrorBlock name="affiliation" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="role">
+														Role
+													</label>
+													<Field id="role" name="role">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="role"
+																placeholder="Enter role"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="role" />
+												</div>
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="source_id">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
@@ -769,7 +776,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="source_id" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="status_id">
 														Status <span style={{ color: 'red' }}></span>
 													</label>
@@ -797,7 +804,7 @@ const NewPoi = () => {
 													<ErrorBlock name="status_id" />
 												</div>
 
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
 														Address
 													</label>
@@ -814,7 +821,7 @@ const NewPoi = () => {
 													</Field>
 													<ErrorBlock name="address" />
 												</div>
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="remark">
 														Remark
 													</label>
@@ -834,10 +841,128 @@ const NewPoi = () => {
 											</div>
 										</div>
 									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Social Media</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Website
+													</label>
+													<Field id="website" name="website">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="website"
+																placeholder="Website"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="website" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Facebook
+													</label>
+													<Field id="fb" name="fb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="hq"
+																placeholder="Facebook"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="fb" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="instagram">
+														Instagram
+													</label>
+													<Field id="instagram" name="instagram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="instagram"
+																placeholder="Instagram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="instagram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="twitter">
+														X
+													</label>
+													<Field id="twitter" name="twitter">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="twitter"
+																placeholder="X handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="twitter" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="telegram">
+														Telegram
+													</label>
+													<Field id="telegram" name="telegram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="telegram"
+																placeholder="Telegram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="telegram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="tiktok">
+														Tiktok
+													</label>
+													<Field id="tiktok" name="tiktok">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="tiktok"
+																placeholder="Tiktok Handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="tiktok" />
+												</div>
+											</div>
+										</div>
+									</div>
 									<div className="text-end mb-4">
-										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
+										<button
+											type="button"
+											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}
+										>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
 											Create POI
 										</button>

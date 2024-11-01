@@ -60,7 +60,9 @@ const Login = () => {
 						<form onSubmit={handleSubmit}>
 							<FormSubmitError error={submitError} />
 							<div className="mb-3">
-								<label className="form-label" htmlFor="username">
+								<label
+									className="form-label text-start d-block"
+									htmlFor="username">
 									Username
 								</label>
 								<Field id="username" name="username">
@@ -83,7 +85,9 @@ const Login = () => {
 										Forgot password?
 									</Link>
 								</div> */}
-								<label className="form-label" htmlFor="password">
+								<label
+									className="form-label text-start d-block"
+									htmlFor="password">
 									Password
 								</label>
 								<div className="position-relative auth-pass-inputgroup mb-3">
@@ -104,8 +108,7 @@ const Login = () => {
 										onClick={() => setPasswordShow(!passwordShow)}
 										className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
 										type="button"
-										id="password-addon"
-									>
+										id="password-addon">
 										<i className="ri-eye-fill align-middle"></i>
 									</button>
 									<ErrorBlock name="password" />

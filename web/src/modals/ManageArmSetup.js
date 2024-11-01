@@ -28,14 +28,14 @@ const ManageArmSetup = ({ closeModal, update, arm }) => {
 	};
 
 	return (
-		<ModalWrapper title={`${arm ? 'Edit' : 'Add'} Arm`} closeModal={closeModal}>
+		<ModalWrapper title={`${arm ? 'Edit' : 'Add'} Item`} closeModal={closeModal}>
 			<Form
 				initialValues={{ ...arm }}
 				onSubmit={onSubmit}
 				validate={values => {
 					const errors = {};
 					if (!values.name) {
-						errors.name = 'enter arm';
+						errors.name = 'enter item';
 					}
 					if (!values.description) {
 						errors.description = 'enter description';
@@ -50,7 +50,7 @@ const ManageArmSetup = ({ closeModal, update, arm }) => {
 							<div className="row g-3">
 								<div className="col-lg-12">
 									<label htmlFor="name" className="form-label">
-										Arm
+										Item
 									</label>
 									<Field id="name" name="name">
 										{({ input, meta }) => (
@@ -59,7 +59,7 @@ const ManageArmSetup = ({ closeModal, update, arm }) => {
 												type="text"
 												className={`form-control ${error(meta)}`}
 												id="name"
-												placeholder="Enter arm"
+												placeholder="Enter item"
 											/>
 										)}
 									</Field>
@@ -91,7 +91,7 @@ const ManageArmSetup = ({ closeModal, update, arm }) => {
 									className="btn btn-success"
 									disabled={submitting}
 								>
-									Save Arm
+									Save Item
 								</button>
 							</div>
 						</div>

@@ -1,6 +1,5 @@
 from datetime import datetime
 from .. import db  # from __init__.py
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, event
 
 class PoiMedia(db.Model):
     __tablename__ = 'poi_media'
@@ -28,7 +27,7 @@ class PoiMedia(db.Model):
         self.created_by = created_by
         self.created_at = created_at
 
-    def update(self, media=None, media_url=None, media_caption=None, poi_id=None, activity_id=None, deleted_at=None, created_by=None):
+    def update(self, media_type=None, media_url=None, media_caption=None, poi_id=None, activity_id=None, deleted_at=None, created_by=None):
         if media_type is not None:
             self.media_type = media_type
         if media_url is not None:

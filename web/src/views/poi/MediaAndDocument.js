@@ -236,9 +236,9 @@ const MediaAndDocument = () => {
 													</div>
 												</td>
 												<td>
-													{item.crime_id ? (
+													{item.activity_id ? (
 														<span className="badge border border-warning text-warning">
-															Crime
+															Activity
 														</span>
 													) : (
 														<span className="badge border border-success text-success">

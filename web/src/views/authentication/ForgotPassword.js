@@ -31,14 +31,12 @@ const ForgotPassword = () => {
 					colors="primary:#0ab39c"
 					className="avatar-xl"
 					delay="1000"
-					style={{ width: '120px', height: '120px' }}
-				></lord-icon>
+					style={{ width: '120px', height: '120px' }}></lord-icon>
 			</div>
 
 			<div
 				className="alert border-0 alert-warning text-center mb-2 mx-2"
-				role="alert"
-			>
+				role="alert">
 				Enter your email and instructions will be sent to you!
 			</div>
 			<div className="p-2">
@@ -56,7 +54,9 @@ const ForgotPassword = () => {
 						<form onSubmit={handleSubmit}>
 							<FormSubmitError error={submitError} />
 							<div className="mb-4">
-								<label className="form-label" htmlFor="email">
+								<label
+									className="form-label text-start d-block"
+									htmlFor="email">
 									Email
 								</label>
 								<Field id="email" name="email">
@@ -91,8 +91,7 @@ const ForgotPassword = () => {
 					Remembered your password?{' '}
 					<Link
 						to="/login"
-						className="fw-bold text-primary text-decoration-underline"
-					>
+						className="fw-bold text-primary text-decoration-underline">
 						Login here
 					</Link>
 				</p>

@@ -15,20 +15,20 @@ import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 import { DeleteButton, EditButton } from '../../components/Buttons';
 import {
-	FETCH_ARMS_RECOVERED_API,
-	DELETE_ARMS_RECOVERED_API,
+	GET_ORGS_CAPACITIES_API,
+	DELETE_ORGS_CAPACITIES_API,
 } from '../../services/api';
 import NewEditOpsCapacity from './NewEditOpsCapacity';
 
 const OperationalCapacity = ({ refreshPoiData }) => {
-	document.title = `Arms Recovered - ${APP_SHORT_NAME}`;
+	document.title = `Organisational Capacity - ${APP_SHORT_NAME}`;
 
 	const [fetching, setFetching] = useState(true);
 	const [working, setWorking] = useState(false);
 	const [list, setList] = useState([]);
 	const [meta, setMeta] = useState(paginate);
 	const [showModal, setShowModal] = useState(false);
-	const [currentArm, setCurrentArm] = useState(null);
+	const [currentOrg, setCurrentOrg] = useState(null);
 	const [modalType, setModalType] = useState('add');
 
 	const [page, setPage] = useState(null);
@@ -39,13 +39,13 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 	const params = useParams();
 	const query = useQuery();
 
-	const fetchArmsRecovered = useCallback(
+	const fetchOrgsCapacity = useCallback(
 		async (per_page, page, q) => {
 			try {
-				const url = `${FETCH_ARMS_RECOVERED_API}?per_page=${per_page}&page=${page}&q=${q}`;
+				const url = `${GET_ORGS_CAPACITIES_API}?per_page=${per_page}&page=${page}&q=${q}`;
 				const rs = await request(url.replace(':id', params.id));
-				const { recovered_arms, message, ...rest } = rs;
-				setList(recovered_arms);
+				const { capacities, message, ...rest } = rs;
+				setList(capacities);
 				setMeta({ ...rest, per_page });
 			} catch (error) {
 				// Handle error if needed
@@ -68,7 +68,7 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 				setFetching(true);
 			}
 
-			fetchArmsRecovered(_limit, _page, _search).then(() => {
+			fetchOrgsCapacity(_limit, _page, _search).then(() => {
 				setFetching(false);
 				setPage(_page);
 				setSearch(_search);
@@ -76,45 +76,45 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 				setQueryLimit(_limit);
 			});
 		}
-	}, [fetchArmsRecovered, fetching, page, query, queryLimit, search]);
+	}, [fetchOrgsCapacity, fetching, page, query, queryLimit, search]);
 
-	const addArm = () => {
+	const addOrg = () => {
 		document.body.classList.add('modal-open');
 		setShowModal(true);
 	};
 
-	const editArmsRecovered = item => {
+	const editOrgsCapacity = item => {
 		document.body.classList.add('modal-open');
-		setCurrentArm(item);
+		setCurrentOrg(item);
 		setShowModal(true);
 	};
 
 	const closeModal = () => {
 		setShowModal(false);
-		setCurrentArm(null);
+		setCurrentOrg(null);
 		document.body.classList.remove('modal-open');
 	};
 
 	const confirmRemove = item => {
-		confirmAction(doRemove, item, 'You want to delete this media');
+		confirmAction(doRemove, item, 'You want to delete this org capacity');
 	};
 
 	const doRemove = async item => {
 		try {
 			setWorking(true);
 			const config = { method: 'DELETE' };
-			const uri = DELETE_ARMS_RECOVERED_API.replaceAll(':id', item.id);
+			const uri = DELETE_ORGS_CAPACITIES_API.replaceAll(':id', item.id);
 			const rs = await request(uri, config);
 
 			// Remove the item from the list immediately
-			setList(prevList => prevList.filter(arm => arm.id !== item.id));
+			setList(prevList => prevList.filter(org => org.id !== item.id));
 
 			notifyWithIcon('success', rs.message);
 			refreshPoiData(); // Refresh POI data after deleting
 
 			setWorking(false);
 		} catch (e) {
-			notifyWithIcon('error', e.message || 'Error: could not delete media');
+			notifyWithIcon('error', e.message || 'Error: could not delete org');
 			setWorking(false);
 		}
 	};
@@ -130,7 +130,7 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 					<div className="card">
 						<TitleSearchBar
 							title="Operational Capacity"
-							onClick={addArm}
+							onClick={addOrg}
 							queryLimit={queryLimit}
 							search={search}
 							searchTerm={searchTerm}
@@ -162,8 +162,14 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 												<td>
 													<div className="d-flex align-items-left">
 														<div className="flex-grow-1">
-															<span className="badge border border-danger text-danger">
-																{item.crime_committed}
+															<span
+																className={`badge border text-${item.type_id === 1 ? 'success' : item.type_id === 2 ? 'danger' : 'secondary'} border-${item.type_id === 1 ? 'success' : item.type_id === 2 ? 'danger' : 'secondary'}`}
+															>
+																{item.type_id === 1
+																	? 'Logistics'
+																	: item.type_id === 2
+																		? 'Firepower'
+																		: 'Unknown'}
 															</span>
 														</div>
 													</div>
@@ -171,18 +177,18 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 												<td>
 													<div className="d-flex align-items-left">
 														<div className="flex-grow-1">
-															<h6 className="fs-15 mb-0">{item.arm.name}</h6>
+															<h6 className="fs-15 mb-0">{item.item}</h6>
 														</div>
 													</div>
 												</td>
 												{/* <td>{item.arm.name}</td> */}
-												<td>{item.number_recovered}</td>
-												<td>{item.location || '--'}</td>
-												<td>{formatDate(item.recovery_date) || '--'}</td>
+												<td>{item.qty}</td>
+												<td>{item.description}</td>
+												{/* <td>{formatDate(item.recovery_date) || '--'}</td> */}
 												<td>
 													<div className="hstack gap-3 flex-wrap text-end">
 														<EditButton
-															onClick={() => editArmsRecovered(item)}
+															onClick={() => editOrgsCapacity(item)}
 														/>
 														<DeleteButton onClick={() => confirmRemove(item)} />
 													</div>
@@ -193,7 +199,7 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 								</table>
 								{list.length === 0 && (
 									<div className="noresult py-5">
-										<NoResult title="No Arms Recovered" />
+										<NoResult title="No Oranisational Capacity" />
 									</div>
 								)}
 							</TableWrapper>
@@ -206,9 +212,9 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 					{showModal && (
 						<NewEditOpsCapacity
 							closeModal={closeModal}
-							data={currentArm}
+							data={currentOrg}
 							update={async () => {
-								await fetchArmsRecovered(queryLimit, page, searchTerm);
+								await fetchOrgsCapacity(queryLimit, page, searchTerm);
 								refreshPoiData(); // Refresh POI data after updating arms
 							}}
 							modalType={modalType}

@@ -104,9 +104,9 @@ const ViewPoi = () => {
 							<div className="row g-4">
 								<div className="col-auto">
 									<div className="profile-user position-relative d-inline-block mb-4">
-										{poiData?.photo ? (
+										{poiData?.picture ? (
 											<img
-												src={poiData?.photo}
+												src={poiData?.picture}
 												className="rounded-circle avatar-xl img-thumbnail user-profile-image"
 												alt="user-profile"
 											/>
@@ -144,16 +144,16 @@ const ViewPoi = () => {
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.gender?.name || 'N/A'}
+												{poiData.age + ' Years' || 'N/A'}
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{poiData.age + ' Years' || 'N/A'}
+												{poiData.organisation?.name || 'N/A'}
 											</div>
 										</div>
 									</div>
 								</div>
-								<div className="col-12 col-lg-auto order-last order-lg-0">
+								{/* <div className="col-12 col-lg-auto order-last order-lg-0">
 									<div className="row text text-white-50 text-center">
 										<div className="col-lg-6 col-4">
 											<div className="p-2">
@@ -172,7 +172,7 @@ const ViewPoi = () => {
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> */}
 							</div>
 						</div>
 
@@ -186,7 +186,12 @@ const ViewPoi = () => {
 										>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'overview' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'overview' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('overview')}
 													role="tab"
 												>
@@ -195,16 +200,26 @@ const ViewPoi = () => {
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'activities' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'activities' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('activities')}
 													role="tab"
 												>
-													Timeline of Activites
+													Activites
 												</a>
 											</li>
 											<li className="nav-item">
 												<a
-													className={`nav-link fs-14 ${activeTab === 'media' ? 'active' : ''}`}
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${
+														activeTab === 'media' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('media')}
 													role="tab"
 												>

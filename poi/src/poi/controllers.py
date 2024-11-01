@@ -11,13 +11,14 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import func 
 from ..crimesCommitted.models import CrimeCommitted
 from ..armsRecovered.models import ArmsRecovered
-from ..arms.models import Arm
+from ..items.models import Item
 from ..crimesCommitted.models import CrimeCommitted
 from ..users.models import User
 from ..address.models import Address
 from ..arrestingBody.models import ArrestingBody
 from ..crimes.models import Crime
 from ..affiliation.models import Affiliation
+from ..activities.models import Activity
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -45,6 +46,12 @@ def create_poi():
     gender_id = data.get('gender_id')
     place_of_detention = data.get("place_of_detention")
     arresting_body_id = data.get("arresting_body_id")
+    website = data.get('website')
+    fb = data.get('fb')
+    instagram = data.get('instagram')
+    twitter = data.get('twitter')
+    telegram = data.get('telegram')
+    tiktok = data.get('tiktok')
     organisation_id = data.get("organisation_id")
     status_id = data.get('status_id')
     created_by = g.user["id"]
@@ -106,6 +113,12 @@ def create_poi():
             place_of_detention=place_of_detention,
             arresting_body_id=arresting_body_id,
             organisation_id=organisation_id,
+            website=website,
+            fb=fb,
+            instagram=instagram,
+            twitter=twitter,
+            telegram=telegram,
+            tiktok=tiktok,
             marital_status=marital_status,
             status_id=status_id,
             created_by=created_by
@@ -189,6 +202,12 @@ def create_poi():
                 "place_of_detention": poi.place_of_detention,
                 "arresting_body_id": poi.arresting_body_id,
                 "organisation_id": poi.organisation_id,
+                "website": poi.website,
+                "fb": poi.fb,
+                "instagram": poi.instagram,
+                "twitter": poi.twitter,
+                "telegram": poi.telegram,
+                "tiktok": poi.tiktok,
                 "picture": poi.picture,
                 "social_address": social_address,
                 "social_latitude": social_latitude,
@@ -254,7 +273,7 @@ def get_poi(poi_id):
                         }
 
             crime_count = CrimeCommitted.query.filter_by(poi_id=poi_id).count()
-            arms_count = ArmsRecovered.query.filter_by(poi_id=poi_id).count()
+            arms_count = 0 # To be removed
 
             affiliation_ids = [int(aff_id) for aff_id in poi.affiliation.split(",") if aff_id] if poi.affiliation is not None else []
             affiliations = Affiliation.query.filter(Affiliation.id.in_(affiliation_ids)).all()
@@ -277,6 +296,12 @@ def get_poi(poi_id):
                 "affiliation": affiliation_names_str,
                 "affiliation_ids": poi.affiliation,
                 "remark": poi.remark,
+                "website": poi.website,
+                "fb": poi.fb,
+                "instagram": poi.instagram,
+                "twitter": poi.instagram,
+                "telegram": poi.telegram,
+                "tiktok": poi.tiktok,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
                 "category": {
                     "id": poi.category.id,
@@ -440,6 +465,12 @@ def update_poi(poi_id):
                 place_of_detention=data.get('place_of_detention'),
                 arresting_body_id=data.get('arresting_body_id'),
                 organisation_id=data.get('organisation_id'),
+                website=data.get('website'),
+                fb=data.get('fb'),
+                instagram=data.get('instagram'),
+                twitter=data.get('twitter'),
+                telegram=data.get('telegram'),
+                tiktok=data.get('tiktok'),
                 status_id=data.get('status_id'),
                 deleted_at=data.get('deleted_at')
             )
@@ -509,6 +540,12 @@ def update_poi(poi_id):
                     "place_of_detention": poi.place_of_detention,
                     "arresting_body_id": poi.arresting_body_id,
                     "organisation_id": poi.organisation_id,
+                    "website": poi.website,
+                    "fb": poi.fb,
+                    "instagram": poi.instagram,
+                    "twitter": poi.twitter,
+                    "telegram": poi.telegram,
+                    "tiktok": poi.tiktok,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
@@ -536,6 +573,12 @@ def update_poi(poi_id):
                     "place_of_detention": poi.place_of_detention,
                     "arresting_body_id": poi.arresting_body_id,
                     "organisation_id": poi.organisation_id,
+                    "website": poi.website,
+                    "fb": poi.fb,
+                    "instagram": poi.instagram,
+                    "twitter": poi.twitter,
+                    "telegram": poi.telegram,
+                    "tiktok": poi.tiktok,
                     "status_id": poi.status_id,
                     "deleted_at": poi.deleted_at,
                     "picture": poi.picture
@@ -742,12 +785,6 @@ def list_pois():
             .join(Crime, Activity.crime_id == Crime.id) \
             .filter(Crime.id == crime_id)
 
-    # Filter by arms recovered
-    arm_id = request.args.get('arm_id')
-    if arm_id:
-        query = query.join(ArmsRecovered, Poi.id == ArmsRecovered.poi_id) \
-            .filter(ArmsRecovered.arm_id == arm_id)
-
     # Filter based on search term if supplied
     if search_term:
         search = f"%{search_term}%"
@@ -774,38 +811,7 @@ def list_pois():
     pois_list = []
 
     for poi in paginated_pois.items:
-        crime_count = len(poi.crimes) if hasattr(poi, 'crimes') else 0
-        arms_count = len(poi.arms_recovered) if hasattr(poi, 'arms_recovered') else 0
-        crimes_committed = CrimeCommitted.query.filter_by(poi_id=poi.id).first()
         created_by = User.query.filter_by(id=poi.created_by).first()
-
-        crime_data = None
-        arresting_body_data = None
-
-        if crimes_committed:
-            # Crime data
-            if crimes_committed.crime:
-                crime_data = {
-                    "id": crimes_committed.crime.id,
-                    "name": crimes_committed.crime.name
-                }
-
-            # Arresting body data
-            if crimes_committed.arresting_body:
-                arresting_body_data = {
-                    "id": crimes_committed.arresting_body.id,
-                    "name": crimes_committed.arresting_body.name
-                }
-                
-        # List arms recovered
-        arms_data = []
-        if poi.arms_recovered:
-            for arm in poi.arms_recovered:
-                arms_data.append({
-                    "id": arm.arm_id,
-                    "name": arm.arm.name,  
-                    "number_recovered": arm.number_recovered
-                })
 
         pois_list.append({
             "id": poi.id,
@@ -825,6 +831,10 @@ def list_pois():
             "address": poi.address,
             "remark": poi.remark,
             "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
+            "organisation": {
+                "id": poi.organisation.id,
+                "name": poi.organisation.org_name,
+            } if poi.organisation else None,
             "category": {
                 "id": poi.category.id,
                 "name": poi.category.name,
@@ -845,13 +855,6 @@ def list_pois():
                 "id": poi.gender.id,
                 "name": poi.gender.name,
             } if poi.gender else None,
-            "crimes_committed": {
-                "id": crimes_committed.id,
-                "poi_id": crimes_committed.poi_id,
-                "crime_id": crimes_committed.crime_id,
-                "crime": crime_data,  # Including the Crime details here
-                "arresting_body": arresting_body_data  # Including the ArrestingBody details here
-            } if crimes_committed else [],
             "user": {
                 "id": created_by.id,
                 "username": created_by.username,
@@ -863,9 +866,6 @@ def list_pois():
                 "id": poi.poi_status.id,
                 "name": poi.poi_status.name,
             } if poi.poi_status else None,
-            "crime_count": crime_count,
-            "arms_count": arms_count,
-            "arms_recovered": arms_data 
         })
 
     current_time = datetime.utcnow()

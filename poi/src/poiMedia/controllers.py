@@ -3,8 +3,6 @@ import uuid
 from .. import db
 from .models import PoiMedia
 from ..poi.models import Poi
-from ..crimesCommitted.models import CrimeCommitted
-from ..crimes.models import Crime
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, minio_client
@@ -149,7 +147,7 @@ def add_poi_media(poi_id):
                     "media_type": new_media.media_type,
                     "media_url": new_media.media_url,
                     "media_caption": new_media.media_caption,
-                    "crime_id": new_media.crime_id
+                    "acitivity_id": new_media.activity_id
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -174,7 +172,7 @@ def get_poi_media(poi_id):
     try:
         # Get pagination parameters from the request (default values: page=1, per_page=10)
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
 
         # Query the database for media associated with the given poi_id, ordered by created_at descending, and paginate
         media_paginated = PoiMedia.query.filter_by(poi_id=poi_id, deleted_at=None)\

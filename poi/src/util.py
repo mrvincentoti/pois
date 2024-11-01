@@ -15,6 +15,11 @@ import uuid
 from minio import Minio
 from minio.error import S3Error
 
+from .permissions.models import Permission
+from .rolePermissions.models import RolePermission  
+
+from .users.models import User
+
 # Load environment variables from a .env file
 load_dotenv()
 
@@ -34,6 +39,74 @@ minio_client = Minio(
     secret_key=minio_secret_key,
     secure=False
 )
+
+def permission_required(fn):
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        # Ensure the user is authenticated
+        token_data = custom_jwt_required(fn)
+        if not token_data:
+            return token_data
+
+        user_id = g.user['id']
+        user = User.query.get(user_id)
+
+        if user:
+            # Get the request path and method
+            request_path = request.path
+            request_method = request.method
+
+            # Check if any permission matches the user’s role, path, and method
+            has_permission = (
+                db.session.query(RolePermission)
+                .join(Permission, RolePermission.permission_id == Permission.id)
+                .filter(
+                    RolePermission.role_id == user.role_id,
+                    Permission.route_path.ilike(request_path), 
+                    Permission.method == request_method     
+                )
+                .first()
+            )
+
+            # Handle dynamic segments in the route path by adjusting the query
+            if not has_permission:
+                # Check if any route_path in permissions matches the request path with placeholders
+                permissions = (
+                    db.session.query(Permission)
+                    .join(RolePermission, RolePermission.permission_id == Permission.id)
+                    .filter(
+                        RolePermission.role_id == user.role_id,
+                        Permission.method == request_method
+                    )
+                    .all()
+                )
+                
+                # Compare each permission route_path with placeholders
+                for permission in permissions:
+                    if match_route_with_placeholders(permission.route_path, request_path):
+                        has_permission = True
+                        break
+
+            if not has_permission:
+                return jsonify({"message": "Unauthorized"}), 403
+
+        return fn(*args, **kwargs)
+
+    return decorated_function
+
+def match_route_with_placeholders(permission_route, request_path):
+    from werkzeug.routing import Map, Rule
+
+    # Define a rule map with the placeholder route path
+    url_map = Map([Rule(permission_route)])
+    matcher = url_map.bind("")
+
+    try:
+        # Try to match the request path to the rule
+        matcher.match(request_path)
+        return True
+    except:
+        return False
 
 # Custom JWT decorator
 def custom_jwt_required(fn):
@@ -250,7 +323,6 @@ def save_audit_data(audit_data):
         db.session.rollback()
         print(f"Error saving audit: {str(e)}")
 
-
 def upload_file_to_minio(bucket_name, file, new_filename):
     try:
         # Ensure the file stream is at the beginning
@@ -281,8 +353,6 @@ def upload_file_to_minio(bucket_name, file, new_filename):
     except Exception as e:
         print(f"An unexpected error occurred while saving picture file: {str(e)}")
         return None
-
-
 
 def save_picture_file(file):
     try:
@@ -340,7 +410,6 @@ def delete_picture_file(picture_url):
         # Log the error if needed
         print(f"Error deleting picture file {picture_url} from MinIO: {str(e)}")
 
-
 def get_media_type_from_extension(filename):
     extension = os.path.splitext(filename)[1].lower()
     if extension in ['.jpg', '.jpeg', '.png', '.gif']:
@@ -357,7 +426,6 @@ def get_media_type_from_extension(filename):
         return 'archive'
     else:
         return 'document'  # Default for other file types
-
 
 def calculate_poi_age(date_string):
     # Define the date format

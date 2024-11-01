@@ -284,6 +284,10 @@ export const UPDATE_ORG_MEDIA_API = `${BASE_POI_URL}/org-media/:id`;
 export const FETCH_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org-activities/:id`;
 export const CREATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities`;
 export const UPDATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities/`;
+export const GET_ORGS_CAPACITIES_API = `${BASE_POI_URL}/org-operational-capacities/:id`;
+export const CREATE_ORGS_CAPACITIES_API = `${BASE_POI_URL}/operational-capacities`;
+export const UPDATE_ORGS_CAPACITIES_API = `${BASE_POI_URL}/operational-capacities/:id`;
+export const DELETE_ORGS_CAPACITIES_API = `${BASE_POI_URL}/operational-capacities/:id`;
 
 // Media api
 export const CREATE_MEDIA_API = `${BASE_POI_URL}/poi-medias/:id`;
@@ -295,7 +299,7 @@ export const CREATE_ORG_API = `${BASE_POI_URL}/organisations`;
 // Activities
 export const FETCH_ACTIVITIES_API = `${BASE_POI_URL}/poi-activities/:id`;
 export const CREATE_ACTIVITIES_API = `${BASE_POI_URL}/activities`;
-export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/`;
+export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/:id`;
 export const GET_ACTIVITIES_API = `${BASE_POI_URL}/activities/:id`;
 
 // Arms recovered

@@ -16,7 +16,7 @@ import { message, Upload } from 'antd';
 import {
 	FETCH_GENDERS_API,
 	FETCH_STATES_API,
-	FETCH_CATEGORIES_API,
+	FETCH_ORG_CATEGORY_API,
 	FETCH_SOURCES_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
@@ -97,7 +97,7 @@ const EditOrganisation = () => {
 			const urls = [
 				FETCH_GENDERS_API,
 				`${FETCH_COUNTRIES_API}?per_page=300`,
-				FETCH_CATEGORIES_API,
+				FETCH_ORG_CATEGORY_API,
 				FETCH_SOURCES_API,
 				FETCH_AFFILIATIONS_API,
 			];
@@ -294,7 +294,7 @@ const EditOrganisation = () => {
 				);
 			}
 
-			if (category) {
+			if (values.category) {
 				formData.set('category_id', category);
 			}
 			if (source) {

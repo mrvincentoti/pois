@@ -226,7 +226,7 @@ const Poi = () => {
 								onClick={() => bulkUpload()}
 								onBulkUploadClick={() => bulkUpload()}
 								hasEmployeeCreate={true}
-								hasUploadBtn={true}
+								hasUploadBtn={false}
 								uploadBtnTitle="Bulk Upload"
 								linkTo="/pois/new"
 								hasFilter={true}
@@ -247,10 +247,9 @@ const Poi = () => {
 											<tr>
 												<th>S/N</th>
 												<th>NAME</th>
-												<th>CRIME COMMITTED</th>
-												{/* <th>ARRESTING BODY</th> */}
-												<th>ROLE</th>
-												<th>POI SOURCE</th>
+												<th>ALIAS</th>
+												<th>ORGANISATION</th>
+												<th>STATUS</th>
 												<th>ADDED BY</th>
 												<th>ACTIONS</th>
 											</tr>
@@ -291,13 +290,27 @@ const Poi = () => {
 																</div>
 															</div>
 														</td>
-
+														<td>{item.alias || 'N/A'}</td>
+														<td>{item.organisation?.name || 'N/A'}</td>
 														<td>
-															{item.crimes_committed?.crime?.name || 'N/A'}{' '}
+															<span
+																className={`badge border text-${
+																	item.poi_status?.id === 1
+																		? 'secondary'
+																		: item.poi_status?.id === 2
+																			? 'danger'
+																			: 'success'
+																} border-${
+																	item.poi_status?.id === 1
+																		? 'secondary'
+																		: item.poi_status?.id === 2
+																			? 'danger'
+																			: 'success'
+																}`}
+															>
+																{item.poi_status?.name || 'N/A'}
+															</span>
 														</td>
-														{/* <td>{item.crimes_committed?.arresting_body?.name || 'N/A'}</td> */}
-														<td>{item.role || 'N/A'}</td>
-														<td>{item.source?.name || 'N/A'}</td>
 														<td>{formatUserName(item.user)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">

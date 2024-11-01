@@ -8,7 +8,9 @@ from ..activityItem.models import ActivityItem
 from ..poi.models import Poi
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
+from ..crimes.models import Crime
 from dotenv import load_dotenv
+from sqlalchemy import or_
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
 
 load_dotenv()
@@ -43,10 +45,11 @@ def add_activity():
             form_data = {
                 "type_id": request.form.get("type_id"),
                 "poi_id": request.form.get("poi_id"),
+                "title": request.form.get("title"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
                 "nature_of_attack": request.form.get("nature_of_attack"),
-                "location": request.form.get("location"),
+                "location": request.form.get("location") or request.form.get("location_from"),
                 "action_taken": request.form.get("action_taken"),
                 "location_from": request.form.get("location_from"),
                 "location_to": request.form.get("location_to"),
@@ -66,8 +69,8 @@ def add_activity():
                 if not qtys or len(items) != len(qtys):
                     return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
-                # Prepare item-qty pairs as a list of dictionaries
-                item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
+            # Prepare item-qty pairs as a list of dictionaries
+            item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
 
             # Create and save a new activity
             new_activity = Activity(**form_data)
@@ -131,6 +134,7 @@ def add_activity():
                 "new_values": json.dumps({
                     "type_id": form_data["type_id"],
                     "poi_id": form_data["poi_id"],
+                    "title": form_data["title"],
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
                     "nature_of_attack": form_data["nature_of_attack"],
@@ -202,6 +206,7 @@ def get_activity(activity_id):
             "id": activity.id,
             "poi_id": activity.poi_id,
             "poi_name": poi_name,
+            "title": activity.title,
             "comment": activity.comment,
             "activity_date": activity.activity_date,
             "created_by_id": activity.created_by,
@@ -248,6 +253,7 @@ def edit_activity(activity_id):
         # Form data
         type_id = request.form.get("type_id")
         poi_id = request.form.get("poi_id")
+        title = request.form.get("title")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
         nature_of_attack = request.form.get("nature_of_attack")
@@ -263,6 +269,7 @@ def edit_activity(activity_id):
         # Update basic activity details
         activity.type_id = type_id
         activity.poi_id = poi_id
+        activity.title = title
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
         activity.nature_of_attack = nature_of_attack
@@ -278,9 +285,12 @@ def edit_activity(activity_id):
         # Getting updated items and quantities as lists
         items = request.form.getlist("items[]")
         qtys = request.form.getlist("qtys[]")
-
-        if len(items) != len(qtys):
-            return jsonify({"message": "Mismatch between items and quantities"}), 400
+        
+        # Check if there are any items first
+        if items:
+            # Validate that items and quantities match in length
+            if not qtys or len(items) != len(qtys):
+                return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
         # Remove old items for this activity
         ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).delete()
@@ -299,13 +309,16 @@ def edit_activity(activity_id):
         # Handle media file update (if any files are uploaded)
         files = request.files.getlist("file[]")  # Get all uploaded files
         captions = request.form.getlist("media_caption[]")  # Get all captions
-
-        # Delete existing media for this activity
-        PoiMedia.query.filter_by(activity_id=activity.id).delete()
+        
+        # Validate that the number of captions matches the number of files
+        if len(files) != len(captions):
+            return jsonify({"message": "Mismatch between files and captions"}), 400
 
         # Loop through each file and its corresponding caption
         for i in range(len(files)):
             file = files[i]
+            media_caption = captions[i] if i < len(captions) else "No caption provided"
+
             if file.filename != '' and allowed_file(file.filename):
                 file.seek(0)
 
@@ -318,19 +331,17 @@ def edit_activity(activity_id):
                 if not minio_file_url:
                     return jsonify({"message": "Error uploading file to MinIO"}), 500
 
-                if i < len(captions):  # Ensure there is a caption for the file
-                    media_caption = captions[i]
-                    # Save new media record linked to the updated activity
-                    new_media = PoiMedia(
-                        poi_id=poi_id,
-                        media_type=media_type,
-                        media_url=minio_file_url,
-                        media_caption=media_caption,
-                        activity_id=activity.id,
-                        created_by=created_by,
-                        created_at=datetime.utcnow()
-                    )
-                    db.session.add(new_media)
+                # Save new media record linked to the updated activity
+                new_media = PoiMedia(
+                    poi_id=poi_id,
+                    media_type=media_type,
+                    media_url=minio_file_url,
+                    media_caption=media_caption,
+                    activity_id=activity.id,
+                    created_by=created_by,
+                    created_at=datetime.utcnow()
+                )
+                db.session.add(new_media)
 
         try:
             db.session.commit()
@@ -349,6 +360,7 @@ def edit_activity(activity_id):
                 "new_values": json.dumps({
                     "type_id": type_id,
                     "poi_id": poi_id,
+                    "title": title,
                     "crime_id": crime_id,
                     "casualties_recorded": casualties_recorded,
                     "nature_of_attack": nature_of_attack,
@@ -487,10 +499,20 @@ def get_activities_by_poi(poi_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"
-            query = query.filter(Activity.comment.ilike(search_pattern))
+            query = query.filter(
+                or_(
+                    Activity.title.ilike(search_pattern),
+                    Activity.comment.ilike(search_pattern),
+                    Activity.location.ilike(search_pattern),
+                    Activity.location_from.ilike(search_pattern),
+                    Activity.location_to.ilike(search_pattern),
+                    Activity.facilitator.ilike(search_pattern),
+                    Activity.nature_of_attack.ilike(search_pattern)
+                )
+            )
 
-        # Order by activity_date in descending order (newest first)
-        query = query.order_by(Activity.activity_date.desc())
+        # Order by created_at in descending order (newest first)
+        query = query.order_by(Activity.created_at.desc())
 
         # Paginate the query
         paginated_activities = query.paginate(page=page, per_page=per_page, error_out=False)
@@ -516,10 +538,30 @@ def get_activities_by_poi(poi_id):
                 for media in media_files
             ] if media_files else []
 
+            # Mapping type_id to activity types
+            activity_type_mapping = {
+                1: "Attack",
+                2: "Procurement",
+                3: "Items Carted Away",
+                4: "Press Release",
+                5: "Others"
+            }
+
+            # Get activity type based on type_id
+            activity_type = activity_type_mapping.get(activity.type_id, "Unknown")
+
+            # Retrieve the crime name from the Crime table
+            crime = Crime.query.filter_by(id=activity.crime_id).first()
+            crime_name = crime.name if crime else "Unknown Crime"
+
             activity_data = {
                 "id": activity.id,
+                "type_id": activity.type_id,
+                "activity_type": activity_type,
                 "poi_id": activity.poi_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
+                "crime_name": crime_name,  # Added crime name here
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
                 "location": activity.location,
@@ -539,13 +581,11 @@ def get_activities_by_poi(poi_id):
         return jsonify({
             "status": "success",
             "status_code": 200,
+            'current_page': paginated_activities.page,
             "activities": activity_list,
-            "pagination": {
-                "page": page,
-                "per_page": per_page,
-                "total": paginated_activities.total,
-                "total_pages": paginated_activities.pages
-            }
+            "pages": paginated_activities.pages,
+            "per_page": per_page,
+            "total": paginated_activities.total,
         })
 
     except Exception as e:

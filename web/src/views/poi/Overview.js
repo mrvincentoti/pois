@@ -87,16 +87,14 @@ const Overview = () => {
 													<td className="text-muted">
 														{formatPoiName(poiData, true)}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Alias :
 													</th>
 													<td className="text-muted">
 														{poiData.alias || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Mobile :
 													</th>
@@ -111,24 +109,21 @@ const Overview = () => {
 													<td className="text-muted">
 														{poiData.email ? poiData.email : 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Gender :
 													</th>
 													<td className="text-muted">
 														{poiData.gender?.name || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														DOB :
 													</th>
 													<td className="text-muted">
 														{formatDate(poiData.dob) || 'N/A'}
 													</td>
-												</tr>
-												<tr>
+
 													<th className="ps-0" scope="row">
 														Marital Status :
 													</th>
@@ -284,7 +279,7 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Address :</p>
 												<h6 className="fw-semibold">
-													{poiData.address || 'N/A'}
+													{poiData?.address || 'N/A'}
 												</h6>
 											</div>
 										</div>
@@ -300,7 +295,125 @@ const Overview = () => {
 											<div className="flex-grow-1 overflow-hidden">
 												<p className="mb-1">Remark :</p>
 												<h6 className="fw-semibold">
-													{poiData.remark || 'N/A'}
+													{poiData?.remark || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-stack-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Organisation :</p>
+												<h6 className="fw-semibold">
+													{poiData.organisation?.name || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+								</div>
+								{/* end row */}
+							</div>
+							{/* end card-body */}
+						</div>
+						<div className="card">
+							<div className="card-body">
+								<h5 className="card-title mb-3">Social Media</h5>
+								<div className="row">
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-git-repository-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Website :</p>
+												<h6 className="text-truncate mb-0">
+													{poiData.website || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-file-hwp-line"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Facebook :</p>
+												<h6 className="text-truncate">{poiData.fb || 'N/A'}</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-guide-line"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Instagram :</p>
+												<h6 className="fw-semibold">
+													{poiData.instagram || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-user-2-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">X :</p>
+												<h6 className="fw-semibold">
+													{poiData.twitter || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-stack-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Telegram :</p>
+												<h6 className="fw-semibold">
+													{poiData.telegram || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div>
+									{/* end col */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-chat-1-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Tiktok :</p>
+												<h6 className="fw-semibold">
+													{poiData.tiktok || 'N/A'}
 												</h6>
 											</div>
 										</div>

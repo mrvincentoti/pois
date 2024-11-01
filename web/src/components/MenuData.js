@@ -228,11 +228,14 @@ const Navdata = () => {
 			stateVariables: isSetup,
 			subItems: [
 				{
-					id: 'crimes',
-					label: 'Crimes',
-					link: '/setup/crimes',
+					id: 'affiliations',
+					label: 'Affiliations',
+					link: '/setup/affiliations',
 					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-crimes-list'),
+					permission: checkPermission(
+						permissions,
+						'can-see-setup-affiliations-list'
+					),
 				},
 				{
 					id: 'arresting_bodies',
@@ -242,24 +245,6 @@ const Navdata = () => {
 					permission: checkPermission(
 						permissions,
 						'can-see-setup-arresting-bodies-list'
-					),
-				},
-				{
-					id: 'arms',
-					label: 'Arms',
-					link: '/setup/arms',
-					parentId: 'setup',
-					permission: checkPermission(permissions, 'can-see-setup-arms-list'),
-				},
-
-				{
-					id: 'sources',
-					label: 'Sources',
-					link: '/setup/sources',
-					parentId: 'setup',
-					permission: checkPermission(
-						permissions,
-						'can-see-setup-sources-list'
 					),
 				},
 				{
@@ -273,13 +258,28 @@ const Navdata = () => {
 					),
 				},
 				{
-					id: 'affiliations',
-					label: 'Affiliations',
-					link: '/setup/affiliations',
+					id: 'crimes',
+					label: 'Crimes',
+					link: '/setup/crimes',
+					parentId: 'setup',
+					permission: checkPermission(permissions, 'can-see-setup-crimes-list'),
+				},
+				{
+					id: 'arms',
+					label: 'Items',
+					link: '/setup/arms',
+					parentId: 'setup',
+					permission: checkPermission(permissions, 'can-see-setup-arms-list'),
+				},
+
+				{
+					id: 'sources',
+					label: 'Sources',
+					link: '/setup/sources',
 					parentId: 'setup',
 					permission: checkPermission(
 						permissions,
-						'can-see-setup-affiliations-list'
+						'can-see-setup-sources-list'
 					),
 				},
 			],

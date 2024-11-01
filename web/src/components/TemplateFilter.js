@@ -348,7 +348,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 				</div>
 
 				<div className="row g-2">
-					<div className="col-lg-6">
+					{/* <div className="col-lg-6">
 						<div className="mb-4">
 							<label
 								htmlFor="arrestingBody-select"
@@ -369,6 +369,30 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedArrestingBody(e);
 								}}
 								id="arrestingBody-select"
+							></Select>
+						</div>
+					</div> */}
+					<div className="col-lg-6">
+						<div className="mb-4">
+							<label
+								htmlFor="source-select"
+								className="form-label text-muted text-uppercase fw-semibold mb-3"
+							>
+								Source
+							</label>
+
+							<Select
+								isClearable
+								className="mb-0"
+								value={selectedSource}
+								getOptionValue={option => option.id}
+								getOptionLabel={option => option.name}
+								options={sources || []}
+								isSearchable={true}
+								onChange={e => {
+									setSelectedSource(e);
+								}}
+								id="source-select"
 							></Select>
 						</div>
 					</div>
@@ -398,32 +422,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 					</div>
 				</div>
 
-				<div className="row g-2">
-					<div className="col-lg-6">
-						<div className="mb-4">
-							<label
-								htmlFor="source-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
-								Source
-							</label>
-
-							<Select
-								isClearable
-								className="mb-0"
-								value={selectedSource}
-								getOptionValue={option => option.id}
-								getOptionLabel={option => option.name}
-								options={sources || []}
-								isSearchable={true}
-								onChange={e => {
-									setSelectedSource(e);
-								}}
-								id="source-select"
-							></Select>
-						</div>
-					</div>
-				</div>
+				<div className="row g-2"></div>
 
 				<div className="mb-4">
 					<div className="row g-2">

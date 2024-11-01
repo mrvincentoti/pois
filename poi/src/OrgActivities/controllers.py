@@ -1,6 +1,4 @@
-from flask import request, jsonify, json, g, current_app
-from sqlalchemy import or_
-from sqlalchemy.exc import SQLAlchemyError
+from flask import request, jsonify, json, g
 from datetime import datetime
 from .. import db
 import os
@@ -15,9 +13,6 @@ from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
-from werkzeug.utils import secure_filename
-from minio.error import S3Error
-from minio import Minio
 
 load_dotenv()
 
@@ -51,6 +46,7 @@ def add_activity():
             form_data = {
                 "type_id": request.form.get("type_id"),
                 "org_id": request.form.get("org_id"),
+                "title": request.form.get("title"),
                 "crime_id": request.form.get("crime_id"),
                 "casualties_recorded": request.form.get("casualties_recorded"),
                 "nature_of_attack": request.form.get("nature_of_attack"),
@@ -74,8 +70,8 @@ def add_activity():
                 if not qtys or len(items) != len(qtys):
                     return jsonify({"message": "Items or quantities missing or mismatched"}), 400
 
-                # Prepare item-qty pairs as a list of dictionaries
-                item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
+            # Prepare item-qty pairs as a list of dictionaries
+            item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
 
             # Create and save a new activity
             new_activity = OrgActivity(**form_data)
@@ -139,6 +135,7 @@ def add_activity():
                 "new_values": json.dumps({
                     "type_id": form_data["type_id"],
                     "org_id": form_data["org_id"],
+                    "title": form_data("title"),
                     "crime_id": form_data["crime_id"],
                     "casualties_recorded": form_data["casualties_recorded"],
                     "nature_of_attack": form_data["nature_of_attack"],
@@ -210,6 +207,7 @@ def get_activity(activity_id):
         activity_data = {
                 "id": activity.id,
                 "org_id": activity.org_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
@@ -265,6 +263,7 @@ def edit_activity(activity_id):
         # Form data
         type_id = request.form.get("type_id")
         org_id = request.form.get("org_id")
+        title = request.form.get("title")
         crime_id = request.form.get("crime_id")
         casualties_recorded = request.form.get("casualties_recorded")
         nature_of_attack = request.form.get("nature_of_attack")
@@ -275,11 +274,12 @@ def edit_activity(activity_id):
         facilitator = request.form.get("facilitator")
         comment = request.form.get("comment")
         activity_date = request.form.get("activity_date")
-        updated_by = g.user["id"]
+        created_by = g.user["id"]
 
         # Update basic activity details
         activity.type_id = type_id
         activity.org_id = org_id
+        activity.title = title
         activity.crime_id = crime_id
         activity.casualties_recorded = casualties_recorded
         activity.nature_of_attack = nature_of_attack
@@ -296,9 +296,12 @@ def edit_activity(activity_id):
         items = request.form.getlist("items[]")
         qtys = request.form.getlist("qtys[]")
 
-        if len(items) != len(qtys):
-            return jsonify({"message": "Mismatch between items and quantities"}), 400
-
+        # Check if there are any items first
+        if items:
+            # Validate that items and quantities match in length
+            if not qtys or len(items) != len(qtys):
+                return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+            
         # Remove old items for this activity
         ActivityItem.query.filter_by(activity_id=activity.id, org_id=activity.org_id).delete()
 
@@ -344,7 +347,7 @@ def edit_activity(activity_id):
                         media_url=minio_file_url,
                         media_caption=media_caption,
                         activity_id=activity.id,
-                        created_by=updated_by,
+                        created_by=created_by,
                         created_at=datetime.utcnow()
                     )
                     db.session.add(new_media)
@@ -364,19 +367,20 @@ def edit_activity(activity_id):
                 "auditable_id": activity.id,
                 "old_values": None,
                 "new_values": json.dumps({
-                    "type_id": form_data["type_id"],
-                    "org_id": form_data["org_id"],
-                    "crime_id": form_data["crime_id"],
-                    "casualties_recorded": form_data["casualties_recorded"],
-                    "nature_of_attack": form_data["nature_of_attack"],
-                    "location": form_data["location"],
-                    "action_taken": form_data["action_taken"],
-                    "location_from": form_data["location_from"],
-                    "location_to": form_data["location_to"],
-                    "facilitator": form_data["facilitator"],
-                    "comment": form_data["comment"],
-                    "activity_date": form_data["activity_date"],
-                    "created_by": form_data["created_by"]
+                    "type_id": type_id,
+                    "org_id": org_id,
+                    "title": title,
+                    "crime_id": crime_id,
+                    "casualties_recorded": casualties_recorded,
+                    "nature_of_attack": nature_of_attack,
+                    "location": location,
+                    "action_taken": action_taken,
+                    "location_from": location_from,
+                    "location_to": location_to,
+                    "facilitator": facilitator,
+                    "comment": comment,
+                    "activity_date": activity_date,
+                    "created_by": created_by
                 }),
                 "url": request.url,
                 "ip_address": request.remote_addr,
@@ -511,8 +515,8 @@ def get_activities_by_org(org_id):
         # Apply search filters if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"
-            org_activities_query = org_activities_query.filter(OrgActivity.comment.ilike(search_pattern))
-            poi_activities_query = poi_activities_query.filter(Activity.comment.ilike(search_pattern))
+            org_activities_query = org_activities_query.filter(OrgActivity.title.ilike(search_pattern) | OrgActivity.comment.ilike(search_pattern) | OrgActivity.location.ilike(search_pattern) | OrgActivity.location_from.ilike(search_pattern) | OrgActivity.location_to.ilike(search_pattern) | OrgActivity.nature_of_attack.ilike(search_pattern) | OrgActivity.facilitator.ilike(search_pattern))
+            poi_activities_query = poi_activities_query.filter(Activity.title.ilike(search_pattern) | Activity.comment.ilike(search_pattern))
 
         # Order both queries by activity_date in descending order
         org_activities_query = org_activities_query.order_by(OrgActivity.activity_date.desc())
@@ -549,10 +553,25 @@ def get_activities_by_org(org_id):
                 }
                 for media in media_files
             ] if media_files else []
+            
+            # Mapping type_id to activity types
+            activity_type_mapping = {
+                1: "Attack",
+                2: "Procurement",
+                3: "Items Carted Away",
+                4: "Press Release",
+                5: "Other"
+            }
 
+            # Get activity type based on type_id
+            activity_type = activity_type_mapping.get(activity.type_id, "Unknown")
+            
             activity_list.append({
                 "id": activity.id,
+                "type_id": activity.type_id,
+                "activity_type": activity_type,
                 "org_id": activity.org_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
@@ -594,6 +613,7 @@ def get_activities_by_org(org_id):
             activity_list.append({
                 "id": activity.id,
                 "poi_id": activity.poi_id,
+                "title": activity.title,
                 "crime_id": activity.crime_id,
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
@@ -616,14 +636,13 @@ def get_activities_by_org(org_id):
             "status": "success",
             "status_code": 200,
             "activities": activity_list,
-            "pagination": {
-                "current_page": page,
-                "per_page": per_page,
-                "total_org_pages": org_activities_paginated.pages,
-                "total_poi_pages": poi_activities_paginated.pages,
-                "total_org_items": org_activities_paginated.total,
-                "total_poi_items": poi_activities_paginated.total
-            }
+            "current_page": page,
+            "per_page": per_page,
+            "total_org_pages": org_activities_paginated.pages,
+            "total_poi_pages": poi_activities_paginated.pages,
+            "total_org_items": org_activities_paginated.total,
+            "total_poi_items": poi_activities_paginated.total
+           
         })
 
     except Exception as e:

@@ -38,8 +38,8 @@ const Arms = () => {
 			const rs = await request(
 				`${FETCH_ARMS_API}?per_page=${per_page}&page=${page}&q=${q}`
 			);
-			const { arms, ...rest } = rs;
-			setList(arms);
+			const { items, ...rest } = rs;
+			setList(items);
 			setMeta({ ...rest, per_page });
 		} catch (e) {
 			notifyWithIcon('error', e.message || 'error, could not fetch arms');
@@ -115,19 +115,19 @@ const Arms = () => {
 
 	return (
 		<div className="container-fluid">
-			<Breadcrumbs pageTitle="Arms" parentPage="Setup" />
+			<Breadcrumbs pageTitle="Items" parentPage="Setup" />
 			<div className="row">
 				<div className="col-lg-12">
 					<div className="card">
 						<TitleSearchBar
-							title="Arms"
+							title="Items"
 							onClick={() => addArm()}
 							queryLimit={queryLimit}
 							search={search}
 							searchTerm={searchTerm}
 							onChangeSearch={e => setSearchTerm(e.target.value)}
 							hasCreateBtn={true}
-							createBtnTitle="Add Arm"
+							createBtnTitle="Add Item"
 						/>
 						<div className="card-body">
 							<TableWrapper

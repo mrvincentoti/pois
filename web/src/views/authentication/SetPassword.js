@@ -72,7 +72,9 @@ const SetPassword = () => {
 						<form onSubmit={handleSubmit}>
 							<FormSubmitError error={submitError} />
 							<div className="mb-3">
-								<label className="form-label" htmlFor="password">
+								<label
+									className="form-label text-start d-block"
+									htmlFor="password">
 									Password
 								</label>
 								<div className="position-relative auth-pass-inputgroup">
@@ -92,15 +94,16 @@ const SetPassword = () => {
 									<button
 										onClick={() => setPasswordShow(!passwordShow)}
 										className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
-										type="button"
-									>
+										type="button">
 										<i className="ri-eye-fill align-middle"></i>
 									</button>
 									<ErrorBlock name="password" />
 								</div>
 							</div>
 							<div className="mb-3">
-								<label className="form-label" htmlFor="repassword">
+								<label
+									className="form-label text-start d-block"
+									htmlFor="repassword">
 									Repeat Password
 								</label>
 								<div className="position-relative auth-pass-inputgroup">
@@ -120,8 +123,7 @@ const SetPassword = () => {
 									<button
 										onClick={() => setPasswordShow(!passwordShow)}
 										className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
-										type="button"
-									>
+										type="button">
 										<i className="ri-eye-fill align-middle"></i>
 									</button>
 									<ErrorBlock name="repassword" />

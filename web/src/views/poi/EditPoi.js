@@ -16,8 +16,9 @@ import { message, Upload } from 'antd';
 import {
 	FETCH_GENDERS_API,
 	FETCH_STATES_API,
-	FETCH_CATEGORIES_API,
+	FETCH_POI_CATEGORY_API,
 	FETCH_SOURCES_API,
+	FETCH_ORG_API,
 	FETCH_COUNTRIES_API,
 	FETCH_AFFILIATIONS_API,
 	GET_POI_API,
@@ -48,11 +49,16 @@ const EditPoi = () => {
 	const [categories, setCategories] = useState([]);
 	const [sources, setSources] = useState([]);
 	const [source, setSource] = useState([]);
+	const [organisations, setOrganisations] = useState([]);
+	const [organisation, setOrganisation] = useState([]);
 	const [poiStatuses, setPoiStatuses] = useState(null);
 	const [poiStatus, setPoiStatus] = useState(null);
 	const [affiliations, setAffiliations] = useState([]);
 	const [alias, setAlias] = useState([]);
 	const [allAffiliations, setAllAffiliations] = useState([]);
+
+	// const [organizations, setOrganizations] = useState([]);
+	// const [selectedOrganization, setSelectedOrganization] = useState(null);
 
 	const [genders, setGenders] = useState([]);
 	const [countries, setCountries] = useState([]);
@@ -78,8 +84,9 @@ const EditPoi = () => {
 			const urls = [
 				FETCH_GENDERS_API,
 				`${FETCH_COUNTRIES_API}?per_page=300`,
-				FETCH_CATEGORIES_API,
+				FETCH_POI_CATEGORY_API,
 				FETCH_SOURCES_API,
+				FETCH_ORG_API,
 				`${FETCH_AFFILIATIONS_API}?page=0`,
 				FETCH_POI_STATUSES_API,
 			];
@@ -91,6 +98,7 @@ const EditPoi = () => {
 				rs_countries,
 				rs_categories,
 				rs_sources,
+				rs_orgs,
 				rs_affiliations,
 				rs_statuses,
 			] = await Promise.all(requests);
@@ -98,6 +106,7 @@ const EditPoi = () => {
 			setCountries(rs_countries.countries);
 			setCategories(rs_categories.categories);
 			setSources(rs_sources.sources);
+			setOrganisations(rs_orgs.orgs);
 			setAllAffiliations(rs_affiliations.affiliations);
 			setPoiStatuses(rs_statuses.statuses);
 		} catch (error) {
@@ -153,6 +162,7 @@ const EditPoi = () => {
 					setState(item.state?.id);
 					setCountry(item.country?.id);
 					setSource(item.source?.id);
+					setOrganisation(item.organisation?.name);
 					setPoi(item);
 					setCategory(item.category?.id);
 					setPoiStatus(item.poi_status?.id);
@@ -162,7 +172,7 @@ const EditPoi = () => {
 							const affiliation = allAffiliations.find(
 								item => item.id === Number(a)
 							);
-							console.log(affiliation);
+
 							return { label: affiliation?.name || '', value: Number(a) };
 						}) || [];
 					// console.log(affiliations_list);
@@ -170,6 +180,7 @@ const EditPoi = () => {
 					setAffiliations(affiliations_list);
 
 					setImageString(item.picture);
+					console.log(item.marital_status);
 					if (item.marital_status)
 						setMaritalStatus(
 							maritalStatusList.find(
@@ -211,6 +222,13 @@ const EditPoi = () => {
 		setInputValue('');
 	};
 
+	const handleChangeCat = value => {
+		setCategory(value);
+	};
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
+
 	const forMap = tag => (
 		<span key={tag} style={{ display: 'inline-block' }}>
 			<Tag closable onClose={() => handleClose(tag)}>
@@ -238,7 +256,7 @@ const EditPoi = () => {
 			const formData = new FormData();
 			// Append your values to FormData
 
-			if (maritalStatus) values.marital_status = maritalStatus.name;
+			if (maritalStatus) values.marital_status = maritalStatus;
 			if (dateOfBirth) values.dob = dateOfBirth;
 			if (tags) values.alias = tags;
 
@@ -255,7 +273,7 @@ const EditPoi = () => {
 
 			// Conditionally append values to FormData, with empty strings for non-existent values
 			if (values.category) {
-				formData.append('category_id', values.category.id);
+				formData.append('category_id', category);
 			}
 
 			// Conditionally append values to FormData, with empty strings for non-existent values
@@ -265,6 +283,9 @@ const EditPoi = () => {
 
 			if (values.source) {
 				formData.append('source_id', source || '');
+			}
+			if (values.organisation) {
+				formData.append('organisation_id', organisation || '');
 			}
 			if (values.gender) {
 				formData.append('gender_id', values.gender?.id || '');
@@ -327,12 +348,15 @@ const EditPoi = () => {
 	const handleChangeSource = value => {
 		setSource(value);
 	};
+	const handleChangeOrganisation = value => {
+		setOrganisation(value);
+	};
 	const handleChangeStatus = value => {
 		setPoiStatus(value);
 	};
-	const handleChangeCat = value => {
-		setCategory(value);
-	};
+	// const handleChangeCat = value => {
+	// 	setCategory(value);
+	// };
 	const handleChangeState = value => {
 		setState(value);
 	};
@@ -381,7 +405,7 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="ref_numb">
 														Reference Number{' '}
 														<span style={{ color: 'red' }}>*</span>
@@ -399,9 +423,9 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="ref_numb" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="first_name">
-														First Name <span style={{ color: 'red' }}>*</span>
+														First Name
 													</label>
 													<Field id="first_name" name="first_name">
 														{({ input, meta }) => (
@@ -416,7 +440,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="first_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="middle_name">
 														Middle Name
 													</label>
@@ -432,9 +456,9 @@ const EditPoi = () => {
 														)}
 													</Field>
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="last_name">
-														Last Name <span style={{ color: 'red' }}>*</span>
+														Last Name
 													</label>
 													<Field id="last_name" name="last_name">
 														{({ input, meta }) => (
@@ -449,7 +473,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="last_name" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="alias">
 														Alias <span style={{ color: 'red' }}></span>
 													</label>
@@ -475,8 +499,7 @@ const EditPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus"
-																	>
+																		className="site-tag-plus">
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -493,7 +516,7 @@ const EditPoi = () => {
 													<ErrorBlock name="alias" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="phone_number">
 														Phone
 													</label>
@@ -510,7 +533,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="phone" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="email">
 														Email
 													</label>
@@ -528,9 +551,9 @@ const EditPoi = () => {
 													<ErrorBlock name="email" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="gender_id">
-														Gender <span style={{ color: 'red' }}>*</span>
+														Gender <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="gender_id" name="gender_id">
 														{({ input, meta }) => (
@@ -561,7 +584,7 @@ const EditPoi = () => {
 													<ErrorBlock name="gender_id" />
 												</div>
 
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="dateOfBirth">
 														Date Of Birth <span style={{ color: 'red' }}></span>
 													</label>
@@ -586,11 +609,10 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="dateOfBirth" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status"
-													>
+														htmlFor="marital_status">
 														Marital Status
 													</label>
 
@@ -608,10 +630,10 @@ const EditPoi = () => {
 																			: '#ced4da',
 																}}
 																options={maritalStatusList.map(status => ({
-																	value: status.id, // Set the ID as value
+																	value: status.name, // Set the ID as value
 																	label: status.name, // Set the name as label
 																}))}
-																value={maritalStatus} // Bind the selected value
+																value={maritalStatus?.name} // Bind the selected value
 																className={
 																	meta.touched && meta.error ? 'error' : ''
 																}
@@ -626,6 +648,65 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="marital_status" />
 												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="country_id">
+														Country <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="country_id" name="country_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Country"
+																onChange={handleCountryChange}
+																value={country}
+																options={countries.map(country => ({
+																	value: country.id, // Set the ID as value
+																	label: country.en_short_name || country.name, // Use either en_short_name or name
+																}))}
+																className="custom-country-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="country_id" />
+												</div>
+
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="state_id">
+														State <span style={{ color: 'red' }}></span>
+													</label>
+													<Field id="state_id" name="state_id">
+														{({ input, meta }) => (
+															<Select
+																{...input}
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																onChange={handleChangeState}
+																placeholder="Select state"
+																value={state}
+																options={states.map(state => ({
+																	value: state.id, // Set the ID as value
+																	label: state.name, // Set the name as label
+																}))}
+																className="custom-state-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="state_id" />
+												</div>
 											</div>
 										</div>
 									</div>
@@ -635,11 +716,66 @@ const EditPoi = () => {
 										</div>
 										<div className="card-body">
 											<div className="row">
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="category">
+														Category <span style={{ color: 'red' }}>*</span>
+													</label>
+													<Field id="category" name="category">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da',
+																}}
+																placeholder="Select Category"
+																onChange={handleChangeCat}
+																value={category}
+																options={categories.map(c => ({
+																	label: c.name,
+																	value: c.id,
+																}))}
+																className="custom-category-select"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="category" />
+												</div>
+												<div className="col-lg-3 mb-3">
+													<label className="form-label" htmlFor="organisation">
+														Organisation <span style={{ color: 'red' }}></span>
+													</label>
+
+													<Field id="organisation" name="organisation">
+														{({ input, meta }) => (
+															<Select
+																style={{
+																	width: '100%',
+																	height: '40px',
+																	borderColor:
+																		meta.touched && meta.error
+																			? 'red'
+																			: '#ced4da', // Dynamic border color based on validation
+																}}
+																value={organisation}
+																placeholder="Select Organisation"
+																onChange={handleChangeOrganisation} // Handle change event
+																options={organisations?.map(o => ({
+																	label: o.org_name,
+																	value: o.id,
+																}))}
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="organisation" />
+												</div>
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number"
-													>
+														htmlFor="passport_number">
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -655,11 +791,10 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="passport_number" />
 												</div>
-												<div className="col-lg-6 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number"
-													>
+														htmlFor="other_id_number">
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -675,7 +810,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="other_id_number" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="affiliation">
 														Affiliation <span style={{ color: 'red' }}></span>
 													</label>
@@ -709,7 +844,7 @@ const EditPoi = () => {
 
 													<ErrorBlock name="affiliation" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="role">
 														Role
 													</label>
@@ -726,95 +861,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="role" />
 												</div>
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="country_id">
-														Country <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="country_id" name="country_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																placeholder="Select Country"
-																onChange={handleCountryChange}
-																value={country}
-																options={countries.map(country => ({
-																	value: country.id, // Set the ID as value
-																	label: country.en_short_name || country.name, // Use either en_short_name or name
-																}))}
-																className="custom-country-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="country_id" />
-												</div>
-
-												<div className="col-lg-6 mb-3">
-													<label className="form-label" htmlFor="state_id">
-														State <span style={{ color: 'red' }}>*</span>
-													</label>
-													<Field id="state_id" name="state_id">
-														{({ input, meta }) => (
-															<Select
-																{...input}
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																onChange={handleChangeState}
-																placeholder="Select state"
-																value={state}
-																options={states.map(state => ({
-																	value: state.id, // Set the ID as value
-																	label: state.name, // Set the name as label
-																}))}
-																className="custom-state-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="state_id" />
-												</div>
-												<div className="col-lg-4 mb-3">
-													<label className="form-label" htmlFor="category">
-														Category <span style={{ color: 'red' }}></span>
-													</label>
-													<Field id="category" name="category">
-														{({ input, meta }) => (
-															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
-																placeholder="Select Category"
-																onChange={handleChangeCat}
-																value={category}
-																options={categories.map(c => ({
-																	label: c.name,
-																	value: c.id,
-																}))}
-																className="custom-category-select"
-															/>
-														)}
-													</Field>
-													<ErrorBlock name="category" />
-												</div>
-
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="source">
 														Source <span style={{ color: 'red' }}></span>
 													</label>
@@ -842,7 +889,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="source" />
 												</div>
-												<div className="col-lg-4 mb-3">
+												<div className="col-lg-3 mb-3">
 													<label className="form-label" htmlFor="poiStatus">
 														Status <span style={{ color: 'red' }}></span>
 													</label>
@@ -871,7 +918,7 @@ const EditPoi = () => {
 													<ErrorBlock name="poiStatus" />
 												</div>
 
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
 														Address
 													</label>
@@ -888,7 +935,7 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="address" />
 												</div>
-												<div className="col-lg-12 mb-3">
+												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="remark">
 														Remark
 													</label>
@@ -908,10 +955,127 @@ const EditPoi = () => {
 											</div>
 										</div>
 									</div>
+									<div className="card">
+										<div className="card-header">
+											<h5 className="card-title mb-0">Social Media</h5>
+										</div>
+										<div className="card-body">
+											<div className="row">
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Website
+													</label>
+													<Field id="website" name="website">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="website"
+																placeholder="Website"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="website" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="hq">
+														Facebook
+													</label>
+													<Field id="fb" name="fb">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="hq"
+																placeholder="Facebook"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="fb" />
+												</div>
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="instagram">
+														Instagram
+													</label>
+													<Field id="instagram" name="instagram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="instagram"
+																placeholder="Instagram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="instagram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="twitter">
+														X
+													</label>
+													<Field id="twitter" name="twitter">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="twitter"
+																placeholder="X handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="twitter" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="telegram">
+														Telegram
+													</label>
+													<Field id="telegram" name="telegram">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="telegram"
+																placeholder="Telegram"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="telegram" />
+												</div>
+
+												<div className="col-lg-4 mb-3">
+													<label className="form-label" htmlFor="tiktok">
+														Tiktok
+													</label>
+													<Field id="tiktok" name="tiktok">
+														{({ input, meta }) => (
+															<input
+																{...input}
+																type="text"
+																className={`form-control ${error(meta)}`}
+																id="tiktok"
+																placeholder="Tiktok Handle"
+															/>
+														)}
+													</Field>
+													<ErrorBlock name="tiktok" />
+												</div>
+											</div>
+										</div>
+									</div>
 									<div className="text-end mb-4">
-										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
+										<button
+											type="button"
+											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
 											Update POI
 										</button>
