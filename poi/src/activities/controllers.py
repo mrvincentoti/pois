@@ -8,6 +8,7 @@ from ..activityItem.models import ActivityItem
 from ..poi.models import Poi
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
+from ..crimes.models import Crime
 from dotenv import load_dotenv
 from sqlalchemy import or_
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
@@ -549,13 +550,18 @@ def get_activities_by_poi(poi_id):
             # Get activity type based on type_id
             activity_type = activity_type_mapping.get(activity.type_id, "Unknown")
 
+            # Retrieve the crime name from the Crime table
+            crime = Crime.query.filter_by(id=activity.crime_id).first()
+            crime_name = crime.name if crime else "Unknown Crime"
+
             activity_data = {
                 "id": activity.id,
                 "type_id": activity.type_id,
-                "activity_type": activity_type, 
+                "activity_type": activity_type,
                 "poi_id": activity.poi_id,
                 "title": activity.title,
                 "crime_id": activity.crime_id,
+                "crime_name": crime_name,  # Added crime name here
                 "casualties_recorded": activity.casualties_recorded,
                 "nature_of_attack": activity.nature_of_attack,
                 "location": activity.location,
@@ -580,7 +586,6 @@ def get_activities_by_poi(poi_id):
             "pages": paginated_activities.pages,
             "per_page": per_page,
             "total": paginated_activities.total,
-           
         })
 
     except Exception as e:
