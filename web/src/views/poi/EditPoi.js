@@ -100,7 +100,7 @@ const EditPoi = () => {
 				rs_sources,
 				rs_orgs,
 				rs_affiliations,
-				rs_statuses,
+				rs_statuses
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
@@ -122,8 +122,17 @@ const EditPoi = () => {
 	const fetchPoi = useCallback(async id => {
 		try {
 			const rs = await request(GET_POI_API.replace(':id', id));
-
 			return rs.poi_data;
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	}, []);
+
+	const fetchPoiCountryStates = useCallback(async id => {
+		try {
+			const rs = await request(FETCH_STATES_API.replace('/:id', ''));
+			setStates(rs.states);
+			
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -151,13 +160,11 @@ const EditPoi = () => {
 							setAlias(tagsArray);
 							setTags(tagsArray);
 						} catch (error) {
-							console.error('Failed to parse alias:', error);
-
 							const jsonArray = [item.alias];
 							setAlias(jsonArray);
 						}
 					}
-
+					fetchPoiCountryStates(item.country?.id);
 					setDateOfBirth(new Date(item.dob));
 					setState(item.state?.id);
 					setCountry(item.country?.id);
@@ -175,12 +182,10 @@ const EditPoi = () => {
 
 							return { label: affiliation?.name || '', value: Number(a) };
 						}) || [];
-					// console.log(affiliations_list);
 
 					setAffiliations(affiliations_list);
 
 					setImageString(item.picture);
-					console.log(item.marital_status);
 					if (item.marital_status)
 						setMaritalStatus(
 							maritalStatusList.find(
@@ -199,6 +204,7 @@ const EditPoi = () => {
 		countries,
 		allAffiliations,
 		param.id,
+		fetchPoiCountryStates
 	]);
 
 	const handleClose = removedTag => {
@@ -259,10 +265,20 @@ const EditPoi = () => {
 			if (maritalStatus) values.marital_status = maritalStatus;
 			if (dateOfBirth) values.dob = dateOfBirth;
 			if (tags) values.alias = tags;
+			//console.log(values); return;
 
+			// for (const key in values) {
+			// 	formData.append(key, values[key]);
+			// }
 			for (const key in values) {
-				formData.append(key, values[key]);
+				// Check if the value is an object and has a 'value' property
+				if (values[key] && typeof values[key] === 'object' && values[key].hasOwnProperty('value')) {
+					formData.append(key, values[key].value); // Append the 'value' property of the object
+				} else {
+					formData.append(key, values[key]); // Append the value as is if it's not an object
+				}
 			}
+
 
 			// Function to append to formData only if the value exists
 			const appendIfExists = (key, value) => {
@@ -296,7 +312,7 @@ const EditPoi = () => {
 			}
 
 			if (values.marital_status) {
-				formData.append('marital_status', values.marital_status?.name || '');
+				formData.append('marital_status', values.marital_status);
 			}
 			if (imageUrl) {
 				formData.append('picture', imageUrl?.file || ''); // Ensure imageUrl is not null
@@ -361,7 +377,7 @@ const EditPoi = () => {
 		setState(value);
 	};
 
-	const handleCountryChange = value => {
+	const handleCountryChange = value => {	
 		setCountry(value);
 		setStates([]); // Clear the states when a new country is selected
 		fetchStates(value); // Fetch the states for the selected country
@@ -378,13 +394,25 @@ const EditPoi = () => {
 						category: poi?.category,
 						country: poi?.country,
 						state: poi?.state,
-						affiliation:
-							poi?.affiliation_ids.split(',').map(a => {
-								const affiliation = allAffiliations.find(
-									item => item.id === Number(a)
-								);
-								return { label: affiliation?.name || '', value: Number(a) };
-							}) || '',
+						// country_id: poi?.country
+						// 	? {
+						// 		value: poi.country.id, // Use the ID for value
+						// 		label: poi.country.en_short_name || poi.country.name, // Use the correct name for label
+						// 	}
+						// 	: '',
+						// state_id: poi?.state
+						// 	? {
+						// 		value: poi.state.id, // Use the ID for value
+						// 		label: poi.state.name, // Use the state name for label
+						// 	}
+						// 	: '',
+						// affiliation:
+						// 	poi?.affiliation_ids.split(',').map(a => {
+						// 		const affiliation = allAffiliations.find(
+						// 			item => item.id === Number(a)
+						// 		);
+						// 		return { label: affiliation?.name || '', value: Number(a) };
+						// 	}) || '',
 					}}
 					onSubmit={onSubmit}
 					validate={values => {
@@ -664,9 +692,9 @@ const EditPoi = () => {
 																			? 'red'
 																			: '#ced4da',
 																}}
+																value={country}
 																placeholder="Select Country"
 																onChange={handleCountryChange}
-																value={country}
 																options={countries.map(country => ({
 																	value: country.id, // Set the ID as value
 																	label: country.en_short_name || country.name, // Use either en_short_name or name

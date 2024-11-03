@@ -47,8 +47,6 @@ const AppPagination = ({ meta, filters }) => {
 	}, [meta.current_page, meta.pages]);
 
 	const min = useMemo(() => {
-		console.log('ygf');
-		console.log(meta);
 		return meta.per_page * (meta.current_page - 1) + 1;
 	}, [meta.per_page, meta.current_page]);
 

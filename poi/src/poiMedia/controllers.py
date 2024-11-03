@@ -10,6 +10,7 @@ from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from minio.error import S3Error
 from minio import Minio
+from urllib.parse import urljoin
 
 load_dotenv()
 
@@ -51,6 +52,7 @@ def get_media(media_id):
         "poi_name": poi_name,
         "media_type": media_record.media_type,
         "media_url": media_record.media_url,
+        "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media_record.media_url) if media_record.media_url else None,
         "created_by": media_record.created_by,
         "created_at": media_record.created_at.isoformat() if media_record.created_at else None,
     }
@@ -205,7 +207,7 @@ def get_poi_media(poi_id):
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
-                "media_url": media.media_url,
+                "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                 "media_caption": media.media_caption or 'No caption',
                 "poi_id": poi.id if poi else None,
                 "poi_name": poi_name,
