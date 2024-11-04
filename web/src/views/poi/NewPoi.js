@@ -644,7 +644,7 @@ const NewPoi = () => {
 															/>
 														)}
 													</Field>
-													<ErrorBlock name="category_id">ctyfctfcht</ErrorBlock>
+													<ErrorBlock name="category_id" />
 												</div>
 												<div className="col-lg-3 mb-3">
 													<label
