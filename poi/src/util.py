@@ -441,3 +441,8 @@ def calculate_poi_age(date_string):
     age = current_date.year - birth_date.year - (
                 (current_date.month, current_date.day) < (birth_date.month, birth_date.day))
     return age
+
+def allowed_file(filename):
+    # Define allowed file extensions
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs','zip','docx','csv'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

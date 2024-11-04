@@ -777,6 +777,11 @@ def list_pois():
     organisation_id = request.args.get('organisation_id')
     if organisation_id:
         query = query.filter(Poi.organisation_id == organisation_id)
+        
+    # Filter by status
+    status_id = request.args.get('status_id')
+    if status_id:
+        query = query.filter(Poi.status_id == status_id)
 
     # Filter by crimes committed
     crime_id = request.args.get('crime_id')
