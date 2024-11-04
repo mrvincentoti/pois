@@ -11,6 +11,7 @@ import {
 } from '../services/utilities';
 import {
 	FETCH_CRIMES_API,
+	FETCH_POI_STATUSES_API,
 	FETCH_SOURCES_API,
 	FETCH_AFFILIATIONS_API,
 	FETCH_ARRESTING_BODY_API,
@@ -23,6 +24,8 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimes, setCrimes] = useState([]);
 	const [selectedCrime, setSelectedCrime] = useState(null);
+	const [statuses, setStatuses] = useState([]);
+	const [selectedStatus, setSelectedStatus] = useState(null);
 	const [arms, setArms] = useState([]);
 	const [selectedArm, setSelectedArm] = useState(null);
 	const [organisations, setOrganisations] = useState([]);
@@ -48,6 +51,15 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		try {
 			const rs = await request(`${FETCH_CRIMES_API}`);
 			setCrimes(rs.crimes);
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	}, []);
+
+	const fetchStatus = useCallback(async () => {
+		try {
+			const rs = await request(`${FETCH_POI_STATUSES_API}`);
+			setStatuses(rs.statuses);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -104,6 +116,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setStartDate(null);
 			setEndDate(null);
 			setSelectedCrime('');
+			setSelectedStatus('');
 			setSelectedArm('');
 			setSelectedOrganisation('');
 			setSelectedSource('');
@@ -125,6 +138,11 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setSelectedCrime(
 				filters?.crime_id
 					? crimes.find(crime => crime.id === Number(filters.crime_id))
+					: ''
+			);
+			setSelectedStatus(
+				filters?.status_id
+					? statuses.find(status => status.id === Number(filters.status_id))
 					: ''
 			);
 
@@ -180,6 +198,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		location.hash,
 		selectedCategory,
 		crimes,
+		statuses,
 		arms,
 		organisations,
 		sources,
@@ -190,6 +209,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	useEffect(() => {
 		if (!loaded) {
 			fetchCrimes();
+			fetchStatus();
 			fetchArms();
 			fetchOrganisations();
 			fetchSources();
@@ -205,6 +225,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	}, [
 		clearFilterParams,
 		fetchCrimes,
+		fetchStatus,
 		fetchArms,
 		fetchOrganisations,
 		fetchSources,
@@ -221,6 +242,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			...(endDate ? { to_date: endDate } : ''),
 			...(selectedCategory?.id && { category_id: selectedCategory.id }),
 			...(selectedCrime?.id && { crime_id: selectedCrime.id }),
+			...(selectedStatus?.id && { status_id: selectedStatus.id }),
 			...(selectedArm?.id && { arm_id: selectedArm.id }),
 			...(selectedOrganisation?.id && {
 				organisation_id: selectedOrganisation.id,
@@ -449,7 +471,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 						</div>
 					</div>
 					<div className="col-lg-6">
-						<div className="mb-4">
+						{/* <div className="mb-4">
 							<label
 								htmlFor="crime-select"
 								className="form-label text-muted text-uppercase fw-semibold mb-3"
@@ -469,6 +491,28 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedCrime(e);
 								}}
 								id="crime-select"
+							></Select>
+						</div> */}
+						<div className="mb-4">
+							<label
+								htmlFor="status-select"
+								className="form-label text-muted text-uppercase fw-semibold mb-3"
+							>
+								Status
+							</label>
+
+							<Select
+								isClearable
+								className="mb-0"
+								value={selectedStatus}
+								getOptionValue={option => option.id}
+								getOptionLabel={option => option.name}
+								options={statuses || []}
+								isSearchable={true}
+								onChange={e => {
+									setSelectedStatus(e);
+								}}
+								id="status-select"
 							></Select>
 						</div>
 					</div>
