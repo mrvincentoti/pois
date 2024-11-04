@@ -169,7 +169,7 @@ const EditPoi = () => {
 					setState(item.state?.id);
 					setCountry(item.country?.id);
 					setSource(item.source?.id);
-					setOrganisation(item.organisation?.name);
+					setOrganisation(item.organisation?.id);
 					setPoi(item);
 					setCategory(item.category?.id);
 					setPoiStatus(item.poi_status?.id);
@@ -192,6 +192,12 @@ const EditPoi = () => {
 								status => status.name === item.marital_status
 							)
 						);
+					// if (item.marital_status) {
+					// 	const maritalStatusObject = maritalStatusList.find(
+					// 		status => status.name === item.marital_status
+					// 	);
+					// 	setMaritalStatus(maritalStatusObject); // Set as the full object { label, value }
+					// }
 					setLoaded(true);
 				});
 			}
@@ -355,7 +361,8 @@ const EditPoi = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'POI updated successfully');
-				navigate(`/pois/poi/${values.category.id}/list`);
+				navigate(-1);
+				// navigate(`/pois/poi/${values.category.id}/list`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -527,7 +534,8 @@ const EditPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus">
+																		className="site-tag-plus"
+																	>
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -640,7 +648,8 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status">
+														htmlFor="marital_status"
+													>
 														Marital Status
 													</label>
 
@@ -666,9 +675,11 @@ const EditPoi = () => {
 																	meta.touched && meta.error ? 'error' : ''
 																}
 																onChange={value => {
+																	// input.onChange(value);
 																	value
 																		? input.onChange(value)
 																		: input.onChange(''); // Update
+
 																	setMaritalStatus(value); // Update local state
 																}}
 															/>
@@ -803,7 +814,8 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number">
+														htmlFor="passport_number"
+													>
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -822,7 +834,8 @@ const EditPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number">
+														htmlFor="other_id_number"
+													>
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -1101,7 +1114,8 @@ const EditPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}>
+											onClick={handleCancel}
+										>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">
