@@ -39,4 +39,17 @@
   .folder-list {
     height: 100vh !important;
   }
+
+  #printButton {
+    display: none;
+  }
+
+  #printButton, .page-title {
+    display: none;
+  }
 }
+
+@page {
+  margin: 0;
+}
+

@@ -251,7 +251,7 @@ const ViewPoi = () => {
 												icon={<i className="ri-printer-line" />}
 												onClick={handlePrintPage}
 											>
-												Print
+												Print Preview
 											</Button>
 										</div>
 									</div>

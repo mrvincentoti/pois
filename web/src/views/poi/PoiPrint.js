@@ -53,21 +53,37 @@ const PoiPrint = () => {
 		navigate(`/pois/${id}/edit`);
 	};
 
+	const handlePrintPage = () => {
+		window.print();
+	}
+
 	return (
 		<>
 			<div className="container-fluid">
 				<div className="row">
 					<div className="col-md-12">
-						<div className="chat-wrapper d-lg-flex gap-1 p-1" style={{border: '1px dashed #000'}}>
+						<div className="mb-3" style={{ textAlign: 'right' }}>
+							<div className="flex-shrink-0">
+								<Button
+									id="printButton"
+									type="primary"
+									icon={<i className="ri-printer-line" />}
+									onClick={handlePrintPage}
+								>
+									Print
+								</Button>
+							</div>
+						</div>
+						<div id="printDiv" className="chat-wrapper d-lg-flex gap-1 p-1" style={{border: '1px dashed #000'}}>
 							<div className="row">
 								<div className="col-6 border-right">
 									<div className="p-3 d-flex flex-column h-100 text-left align-items-right">
 										<div className="card-body">
 											<div className="text-center mb-4">
 												<div className="profile-user position-relative d-inline-block  mb-4">
-													{poiData?.photo ? (
+													{poiData?.picture ? (
 														<img
-															src={poiData?.photo}
+															src={poiData?.picture}
 															className="rounded-circle avatar-xl img-thumbnail user-profile-image"
 															alt="user-profile"
 														/>
