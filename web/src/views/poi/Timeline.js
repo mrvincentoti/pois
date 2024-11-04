@@ -73,7 +73,6 @@ const Timeline = ({ refreshPoiData }) => {
 				`${FETCH_ACTIVITIES_API.replace(':id', id)}?per_page=${per_page}&page=${page}&q=${q}`
 			);
 			const { activities, ...rest } = rs;
-			console.log(rs);
 			setActivitiesData(activities);
 			setMeta({ ...rest });
 		} catch (error) {
@@ -86,17 +85,6 @@ const Timeline = ({ refreshPoiData }) => {
 		const _search = query.get('q') || '';
 		const _limit = Number(query.get('entries_per_page') || limit);
 
-		const fetchInitialData = async () => {
-			await fetchActivityDetails(params.id, limit, 1, '');
-			setLoaded(true);
-			setFetching(false);
-		};
-		fetchInitialData();
-
-		if (!loaded) {
-			fetchActivityDetails(params.id);
-			setLoaded(true);
-		}
 		if (
 			fetching ||
 			_page !== page ||
@@ -118,7 +106,6 @@ const Timeline = ({ refreshPoiData }) => {
 	}, [
 		fetchActivityDetails,
 		fetching,
-		loaded,
 		params.id,
 		page,
 		query,
@@ -127,7 +114,6 @@ const Timeline = ({ refreshPoiData }) => {
 	]);
 
 	const handleEditClick = activity => {
-		// console.log("Activity clicked for editing:", activity);
 		document.body.classList.add('modal-open');
 		setSelectedActivity(activity);
 		setShowEditModal(true);
@@ -140,8 +126,6 @@ const Timeline = ({ refreshPoiData }) => {
 	};
 
 	const renderEditModal = () => {
-		// console.log("Selected Activity:", selectedActivity);
-		// console.log("Show Edit Modal:", showEditModal);
 		if (!selectedActivity || !showEditModal) return null;
 
 		switch (selectedActivity.activity_type) {
@@ -283,17 +267,6 @@ const Timeline = ({ refreshPoiData }) => {
 		}
 	};
 
-	// const showDetails = item => {
-	// 	setActivities(item);
-	// 	setShowDetailsModal(true);
-	// 	document.body.classList.add('modal-open');
-	// };
-
-	// const closeDetailsModal = () => {
-	// 	setShowDetailsModal(false);
-	// 	document.body.classList.remove('modal-open');
-	// };
-
 	const min = useMemo(() => {
 		return meta.per_page * (meta.current_page - 1) + 1;
 	}, [meta.per_page, meta.current_page]);
@@ -301,20 +274,24 @@ const Timeline = ({ refreshPoiData }) => {
 	return (
 		<>
 			<div className="container-fluid no-printme mb-5">
-				{loaded ? (
-					<div className="card">
-						<TitleSearchBar
-							title="Activities"
-							onClick={() => addActivity()}
-							queryLimit={queryLimit}
-							search={search}
-							searchTerm={searchTerm}
-							onChangeSearch={e => setSearchTerm(e.target.value)}
-							hasCreateBtn={true}
-							createBtnTitle="Add Activity"
-						/>
-						<div className="card-body">
-							{/* <div className="d-flex align-items-center mb-4">
+				{fetching ? <div>
+					<Spin spinning={true} indicator={antIconSync}>
+						<div className="fetching" />
+					</Spin>
+				</div>:
+				<div className="card">
+					<TitleSearchBar
+						title="Activities"
+						onClick={() => addActivity()}
+						queryLimit={queryLimit}
+						search={search}
+						searchTerm={searchTerm}
+						onChangeSearch={e => setSearchTerm(e.target.value)}
+						hasCreateBtn={true}
+						createBtnTitle="Add Activity"
+					/>
+					<div className="card-body">
+						{/* <div className="d-flex align-items-center mb-4">
 								<h5 className="card-title flex-grow-1 mb-0">Activities</h5>
 								<div className="d-flex gap-2">
 									<div onClick={addActivity}>
@@ -325,87 +302,87 @@ const Timeline = ({ refreshPoiData }) => {
 									</div>
 								</div>
 							</div> */}
-							{activitiesData.length > 0 ? (
-								<div className="row">
-									{activitiesData.map((item, i) => (
-										<div key={i} className="col-xxl-4 col-sm-4">
-											<div className="card profile-project-card shadow-lg profile-project-dark">
-												<div className="card-body p-4">
-													<div className="d-flex">
-														<div className="flex-grow-1 text-muted overflow-hidden">
-															<h5 className="fs-14 text-truncate">
-																<span
-																	className={
-																		item.type_id === 1
-																			? 'bg-success text-light'
-																			: item.type_id === 2
-																				? ' bg-info text-light'
-																				: item.type_id === 3
-																					? 'bg-danger text-light'
-																					: item.type_id === 4
-																						? 'bg-warning text-light'
-																						: item.type_id === 5
-																							? 'bg-secondary text-light'
-																							: 'bg-dark text-light'
-																	}
-																	style={{
-																		cursor: 'pointer',
-																		borderStyle: 'solid',
-																		borderWidth: '1px',
-																		borderRadius: '5px',
-																		padding: '5px 10px',
-																		textDecoration: 'none',
-																		display: 'inline-block',
-																	}}
-																>
-																	{item.activity_type || 'N/A'}
-																</span>
-															</h5>
+						{activitiesData.length > 0 ? (
+							<div className="row">
+								{activitiesData.map((item, i) => (
+									<div key={i} className="col-xxl-4 col-sm-4">
+										<div className="card profile-project-card shadow-lg profile-project-dark">
+											<div className="card-body p-4">
+												<div className="d-flex">
+													<div className="flex-grow-1 text-muted overflow-hidden">
+														<h5 className="fs-14 text-truncate">
+															<span
+																className={
+																	item.type_id === 1
+																		? 'bg-success text-light'
+																		: item.type_id === 2
+																			? ' bg-info text-light'
+																			: item.type_id === 3
+																				? 'bg-danger text-light'
+																				: item.type_id === 4
+																					? 'bg-warning text-light'
+																					: item.type_id === 5
+																						? 'bg-secondary text-light'
+																						: 'bg-dark text-light'
+																}
+																style={{
+																	cursor: 'pointer',
+																	borderStyle: 'solid',
+																	borderWidth: '1px',
+																	borderRadius: '5px',
+																	padding: '5px 10px',
+																	textDecoration: 'none',
+																	display: 'inline-block',
+																}}
+															>
+																{item.activity_type || 'N/A'}
+															</span>
+														</h5>
 
-															<p className="text-muted text-truncate mb-0">
-																Title:
-																<span className="fw-semibold text-body p-2 text-success">
-																	{item.title || 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Location:
-																<span className="fw-semibold text-body p-2">
-																	{item.location || item.location_from || 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Media Files:
-																<span className="fw-semibold text-body p-2">
-																	{item.media_files.length > 0 ? 'Yes' : 'No'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Activity Date:
-																<span className="fw-semibold text-body p-2">
-																	{item.activity_date
-																		? new Date(
-																				item.activity_date
-																			).toLocaleDateString()
-																		: 'N/A'}
-																</span>
-															</p>
-															<p className="text-muted text-truncate mb-0">
-																Created by:
-																<span className="fw-semibold text-body p-2">
-																	{item.created_by_name || 'N/A'}
-																</span>
-															</p>
-														</div>
+														<p className="text-muted text-truncate mb-0">
+															Title:
+															<span className="fw-semibold text-body p-2 text-success">
+																{item.title || 'N/A'}
+															</span>
+														</p>
+														<p className="text-muted text-truncate mb-0">
+															Location:
+															<span className="fw-semibold text-body p-2">
+																{item.location || item.location_from || 'N/A'}
+															</span>
+														</p>
+														<p className="text-muted text-truncate mb-0">
+															Media Files:
+															<span className="fw-semibold text-body p-2">
+																{item.media_files.length > 0 ? 'Yes' : 'No'}
+															</span>
+														</p>
+														<p className="text-muted text-truncate mb-0">
+															Activity Date:
+															<span className="fw-semibold text-body p-2">
+																{item.activity_date
+																	? new Date(
+																		item.activity_date
+																	).toLocaleDateString()
+																	: 'N/A'}
+															</span>
+														</p>
+														<p className="text-muted text-truncate mb-0">
+															Created by:
+															<span className="fw-semibold text-body p-2">
+																{item.created_by_name || 'N/A'}
+															</span>
+														</p>
 													</div>
-													<div className="mt-3 d-flex justify-content-end gap-2">
-														<button
-															className="btn btn-sm btn-outline-secondary"
-															onClick={() => handleEditClick(item)}
-														>
-															Edit
-														</button>
-														{/*<button
+												</div>
+												<div className="mt-3 d-flex justify-content-end gap-2">
+													<button
+														className="btn btn-sm btn-outline-secondary"
+														onClick={() => handleEditClick(item)}
+													>
+														Edit
+													</button>
+													{/*<button
 															className="btn btn-sm btn-outline-success"
 															onClick={() => addNotes(item)}>
 															Add Note
@@ -415,39 +392,32 @@ const Timeline = ({ refreshPoiData }) => {
 															onClick={() => addMedia(item)}>
 															Add Media
 														</button> */}
-														<button
-															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}
-														>
-															Details
-														</button>
-													</div>
+													<button
+														className="btn btn-sm btn-success"
+														onClick={() => showDetails(item)}
+													>
+														Details
+													</button>
 												</div>
 											</div>
 										</div>
-									))}
-								</div>
-							) : (
-								<NoResult
-									title={
-										loadError
-											? 'Error Loading Activities'
-											: 'No Activities Found'
-									}
-								/>
-							)}
-							<div className="d-flex justify-content-end mt-3">
-								<AppPagination meta={meta} />
+									</div>
+								))}
 							</div>
+						) : (
+							<NoResult
+								title={
+									loadError
+										? 'Error Loading Activities'
+										: 'No Activities Found'
+								}
+							/>
+						)}
+						<div className="d-flex justify-content-end mt-3">
+							<AppPagination meta={meta} />
 						</div>
 					</div>
-				) : (
-					<div>
-						<Spin spinning={true} indicator={antIconSync}>
-							<div className="fetching" />
-						</Spin>
-					</div>
-				)}
+				</div>}
 			</div>
 			{showModal && (
 				<ManageActivities
@@ -455,7 +425,7 @@ const Timeline = ({ refreshPoiData }) => {
 					activities={activities}
 					update={async () => {
 						await refreshTable();
-						refreshPoiData(); // Refresh POI data after updating crimes
+						refreshPoiData();
 					}}
 				/>
 			)}
