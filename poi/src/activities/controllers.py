@@ -12,6 +12,7 @@ from ..crimes.models import Crime
 from dotenv import load_dotenv
 from sqlalchemy import or_
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
+from urllib.parse import urljoin
 
 load_dotenv()
 
@@ -528,7 +529,7 @@ def get_activities_by_poi(poi_id):
             media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
-                    "media_url": media.media_url,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                     "media_type": media.media_type,
                     "media_caption": media.media_caption,
                     "activity_id": media.activity_id,

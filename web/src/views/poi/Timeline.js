@@ -36,6 +36,7 @@ import ProcurementDetails from '../../modals/ProcurementDetails'; // Import Proc
 import ItemsCartedAwayDetails from '../../modals/ItemsCartedAwayDetails'; // Import Items Carted Away Details modal
 import PressReleaseDetails from '../../modals/PressReleaseDetails'; // Import Press Release Details modal
 import OtherDetails from '../../modals/OtherDetails'; // Import Other Details modal
+import ActivityDetails from '../../modals/ActivityDetails';
 
 const Timeline = ({ refreshPoiData }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -221,50 +222,13 @@ const Timeline = ({ refreshPoiData }) => {
 	const renderDetailsModal = () => {
 		if (!selectedActivity || !showDetailsModal) return null;
 
-		switch (selectedActivity.activity_type) {
-			case 'Attack':
-				return (
-					<AttackDetails
-						visible={showDetailsModal}
-						activity={selectedActivity}
-						closeModal={closeDetailsModal}
-					/>
-				);
-			case 'Procurement':
-				return (
-					<ProcurementDetails
-						visible={showDetailsModal}
-						activity={selectedActivity}
-						closeModal={closeDetailsModal}
-					/>
-				);
-			case 'Items Carted Away':
-				return (
-					<ItemsCartedAwayDetails
-						visible={showDetailsModal}
-						activity={selectedActivity}
-						closeModal={closeDetailsModal}
-					/>
-				);
-			case 'Press Release':
-				return (
-					<PressReleaseDetails
-						visible={showDetailsModal}
-						activity={selectedActivity}
-						closeModal={closeDetailsModal}
-					/>
-				);
-			case 'Others':
-				return (
-					<OtherDetails
-						visible={showDetailsModal}
-						activity={selectedActivity}
-						closeModal={closeDetailsModal}
-					/>
-				);
-			default:
-				return null;
-		}
+		return (
+			<ActivityDetails
+				visible={showEditModal}
+				activity={selectedActivity}
+				closeModal={closeEditModal}
+			/>
+		);
 	};
 
 	const min = useMemo(() => {
