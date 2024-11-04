@@ -11,13 +11,14 @@ from datetime import datetime as dt
 from flask import request, jsonify, g, current_app
 from functools import wraps
 import uuid
+from sqlalchemy import func 
 
 from minio import Minio
 from minio.error import S3Error
 
 from .permissions.models import Permission
 from .rolePermissions.models import RolePermission  
-
+from .poi.models import Poi
 from .users.models import User
 
 # Load environment variables from a .env file
@@ -441,3 +442,18 @@ def calculate_poi_age(date_string):
     age = current_date.year - birth_date.year - (
                 (current_date.month, current_date.day) < (birth_date.month, birth_date.day))
     return age
+
+def allowed_file(filename):
+    # Define allowed file extensions
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs','zip','docx','csv'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+def generate_unique_ref_numb():
+    # Query to get the highest existing ref_numb
+    highest_ref_numb = db.session.query(func.max(Poi.ref_numb)).scalar()
+    if highest_ref_numb is None:
+        return "REF001"  # Starting point if no POIs exist
+    else:
+        # Extract the numeric part, increment it, and format it back to string
+        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
+        return f"REF{num_part:03}"  # Format to maintain leading zeros

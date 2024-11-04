@@ -20,7 +20,7 @@ const AttackDetails = ({ closeModal, activity }) => {
 							<span className="badge bg-success-subtle text-success fs-50 align-middle ms-1">
 								Crime:
 							</span>{' '}
-							{activity?.crime?.name || 'N/A'}
+							{activity?.crime_name || 'N/A'}
 						</p>
 					</div>
 

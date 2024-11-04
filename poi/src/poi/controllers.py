@@ -3,7 +3,7 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age, allowed_file, generate_unique_ref_numb
 import os
 import uuid
 from urllib.parse import urljoin
@@ -772,11 +772,21 @@ def list_pois():
     if arresting_body_id:
         query = query.filter(Poi.arresting_body_id == arresting_body_id)
         
-    
     # Filter by organisation
     organisation_id = request.args.get('organisation_id')
     if organisation_id:
         query = query.filter(Poi.organisation_id == organisation_id)
+        
+    # Filter by status
+    status_id = request.args.get('status_id')
+    if status_id:
+        query = query.filter(Poi.status_id == status_id)
+        
+    
+    # Filter by affiliation
+    affiliation = request.args.get('affiliation_id')
+    if affiliation:
+        query = query.filter(Poi.affiliation == affiliation)
 
     # Filter by crimes committed
     crime_id = request.args.get('crime_id')
@@ -895,42 +905,3 @@ def list_pois():
         'current_page': paginated_pois.page,
         'pois': pois_list
     })
-
-
-def allowed_file(filename):
-    # Define allowed file extensions
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
-
-def save_picture_file(file):
-    # Generate a new filename using UUID
-    file_extension = os.path.splitext(file.filename)[1]  # Get the file extension
-    new_filename = f"{uuid.uuid4()}{file_extension}"  # Create a new unique filename
-    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], new_filename)
-    
-    # Save the file to the POI_PICTURE_UPLOAD_FOLDER
-    file.save(file_path)
-
-    # Return the URL path for the saved file
-    return f"poi/storage/media/{new_filename}"
-
-def delete_picture_file(picture_url):
-    # Construct the full file path from the picture URL
-    file_path = os.path.join(current_app.config['POI_PICTURE_UPLOAD_FOLDER'], os.path.basename(picture_url))
-    
-    try:
-        if os.path.exists(file_path):
-            os.remove(file_path)  # Delete the file
-    except Exception as e:
-        # Log the error if needed
-        print(f"Error deleting picture file {file_path}: {str(e)}")
-
-def generate_unique_ref_numb():
-    # Query to get the highest existing ref_numb
-    highest_ref_numb = db.session.query(func.max(Poi.ref_numb)).scalar()
-    if highest_ref_numb is None:
-        return "REF001"  # Starting point if no POIs exist
-    else:
-        # Extract the numeric part, increment it, and format it back to string
-        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
-        return f"REF{num_part:03}"  # Format to maintain leading zeros
