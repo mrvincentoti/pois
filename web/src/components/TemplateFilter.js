@@ -15,6 +15,7 @@ import {
 	FETCH_AFFILIATIONS_API,
 	FETCH_ARRESTING_BODY_API,
 	FETCH_ARMS_API,
+	FETCH_ORG_API,
 } from '../services/api';
 import { doClearFilter } from '../redux/slices/employee';
 
@@ -24,6 +25,8 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 	const [selectedCrime, setSelectedCrime] = useState(null);
 	const [arms, setArms] = useState([]);
 	const [selectedArm, setSelectedArm] = useState(null);
+	const [organisations, setOrganisations] = useState([]);
+	const [selectedOrganisation, setSelectedOrganisation] = useState(null);
 	const [affiliations, setAffliation] = useState([]);
 	const [selectedAffiliation, setSelectedAffiliation] = useState('');
 	const [arrestingBodies, setArrestingBody] = useState([]);
@@ -59,6 +62,15 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		}
 	}, []);
 
+	const fetchOrganisations = useCallback(async () => {
+		try {
+			const rs = await request(`${FETCH_ORG_API}`);
+			setOrganisations(rs.orgs);
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	}, []);
+
 	const fetchSources = useCallback(async () => {
 		try {
 			const rs = await request(`${FETCH_SOURCES_API}`);
@@ -72,6 +84,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		try {
 			const rs = await request(`${FETCH_AFFILIATIONS_API}`);
 			setAffliation(rs.affiliations);
+			console.log('Fetched affiliations:', rs.affiliations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -92,6 +105,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setEndDate(null);
 			setSelectedCrime('');
 			setSelectedArm('');
+			setSelectedOrganisation('');
 			setSelectedSource('');
 			setSelectedAffiliation('');
 			setSelectedArrestingBody('');
@@ -103,6 +117,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const setFilters = useCallback(() => {
 		const filters = parseHashString(location.hash);
+		console.log('Parsed filters:', filters);
 		if (filters) {
 			setStartDate(filters?.from_date || null);
 			setEndDate(filters?.to_date || null);
@@ -116,6 +131,14 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			setSelectedArm(
 				filters?.arm_id
 					? arms.find(arm => arm.id === Number(filters.arm_id))
+					: ''
+			);
+			setSelectedOrganisation(
+				filters?.organisation_id
+					? organisations.find(
+							organisation =>
+								organisation.id === Number(filters.organisation_id)
+						)
 					: ''
 			);
 			setSelectedSource(
@@ -158,6 +181,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		selectedCategory,
 		crimes,
 		arms,
+		organisations,
 		sources,
 		affiliations,
 		arrestingBodies,
@@ -167,6 +191,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		if (!loaded) {
 			fetchCrimes();
 			fetchArms();
+			fetchOrganisations();
 			fetchSources();
 			fetchAffiliations();
 			fetchArrestingBodies();
@@ -181,6 +206,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		clearFilterParams,
 		fetchCrimes,
 		fetchArms,
+		fetchOrganisations,
 		fetchSources,
 		fetchAffiliations,
 		fetchArrestingBodies,
@@ -196,6 +222,9 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 			...(selectedCategory?.id && { category_id: selectedCategory.id }),
 			...(selectedCrime?.id && { crime_id: selectedCrime.id }),
 			...(selectedArm?.id && { arm_id: selectedArm.id }),
+			...(selectedOrganisation?.id && {
+				organisation_id: selectedOrganisation.id,
+			}),
 			...(selectedSource?.id && { source_id: selectedSource.id }),
 			...(selectedAffiliation?.id && {
 				affiliation_id: selectedAffiliation.id,
@@ -275,7 +304,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 				<div className="row g-2">
 					<div className="col-lg-6">
-						<div className="mb-4">
+						{/* <div className="mb-4">
 							<label
 								htmlFor="arm-select"
 								className="form-label text-muted text-uppercase fw-semibold mb-3"
@@ -295,6 +324,28 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedArm(e);
 								}}
 								id="arm-select"
+							></Select>
+						</div> */}
+						<div className="mb-4">
+							<label
+								htmlFor="organisation-select"
+								className="form-label text-muted text-uppercase fw-semibold mb-3"
+							>
+								Organisation
+							</label>
+
+							<Select
+								isClearable
+								className="mb-0"
+								value={selectedOrganisation}
+								getOptionValue={option => option.id}
+								getOptionLabel={option => option.org_name}
+								options={organisations || []}
+								isSearchable={true}
+								onChange={e => {
+									setSelectedOrganisation(e);
+								}}
+								id="organisation-select"
 							></Select>
 						</div>
 					</div>
@@ -340,6 +391,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								isSearchable={true}
 								onChange={e => {
 									setSelectedAffiliation(e);
+									console.log('Selected affiliation:', e);
 								}}
 								id="affiliation-select"
 							></Select>
