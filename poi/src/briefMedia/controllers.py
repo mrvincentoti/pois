@@ -5,7 +5,7 @@ from .models import BriefMedia
 from ..brief.models import Brief
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension, allowed_file
 from flask import jsonify, request, g, json, current_app
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
@@ -485,9 +485,3 @@ def restore_media(media_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "Error restoring media", "error": str(e)}), 500
-
-
-def allowed_file(filename):
-    # Define allowed file extensions
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

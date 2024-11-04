@@ -1,4 +1,4 @@
-from flask import request, jsonify, g, json, current_app
+from flask import request, jsonify, g, json
 from .models import Organisation, db
 from datetime import date, datetime as dt
 from datetime import datetime
@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from .. import db
 from sqlalchemy import func
 from ..users.models import User
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, generate_unique_ref_numb
 
 @custom_jwt_required
 @permission_required
@@ -604,19 +604,3 @@ def restore_organisation(org_id):
         }
 
     return jsonify(response), response.get('status_code', 500)
-
-
-def generate_unique_ref_numb():
-    # Query to get the highest existing ref_numb
-    highest_ref_numb = db.session.query(func.max(Organisation.ref_numb)).scalar()
-    if highest_ref_numb is None:
-        return "REF001"  # Starting point if no POIs exist
-    else:
-        # Extract the numeric part, increment it, and format it back to string
-        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
-        return f"REF{num_part:03}"  # Format to maintain leading zeros
-
-def allowed_file(filename):
-    # Define allowed file extensions
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
