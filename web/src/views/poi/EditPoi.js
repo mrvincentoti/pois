@@ -318,7 +318,7 @@ const EditPoi = () => {
 				formData.append('country_id', country);
 			}
 
-			if (values.source) {
+			if (source) {
 				formData.append('source_id', source || '');
 			}
 			if (organisation) {
@@ -383,7 +383,7 @@ const EditPoi = () => {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
 		}
 	};
-	const handleChangeSource = value => {
+	const handleChangeSource = value => {		
 		setSource(value);
 	};
 	const handleChangeOrganisation = value => {
