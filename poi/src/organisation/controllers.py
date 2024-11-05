@@ -46,7 +46,7 @@ def list_organisations():
 @permission_required
 def create_organisation():
     data = request.form
-    ref_numb = generate_unique_ref_numb()  # Generate a unique reference number
+    ref_numb = data.get('ref_numb')  # Generate a unique reference number
     reg_numb = data.get('reg_numb')
     org_name = data.get('org_name')
     date_of_registration = data.get('date_of_registration')
