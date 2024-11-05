@@ -11,64 +11,36 @@ def slugify(text):
 
 @custom_jwt_required
 def list_affiliations():
+    query = Affiliation.query
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Sort and paginate the results
+        query = query.order_by(Affiliation.name.asc()).all()
 
-        if page == 0:
-            affiliations = Affiliation.query.filter(Affiliation.deleted_at.is_(None)).all()
-
-            # Prepare the list of affiliations to return
-            affiliation_list = []
-            for affiliation in affiliations:
-                affiliation_list.append(affiliation.to_dict())
-
-            # Return the affiliations with status success
-            result = {
-                "status": "success",
-                "status_code": 200,
-                "affiliations": affiliation_list,
-            }
-            return jsonify(result)
-        
-        # Extract search term from the request
-        search_term = request.args.get('q', default=None, type=str)
-
-        # Query the database, applying search and ordering by name
-        query = Affiliation.query.order_by(Affiliation.name.asc())
-
-        # Apply search if search term is provided
-        if search_term:
-            search = f"%{search_term}%"
-            query = query.filter(Affiliation.name.ilike(search))
-        
-        # Paginate the query
-        paginated_affiliations = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        # Prepare the list of affiliations to return
+        # Format response
         affiliation_list = []
-        for affiliation in paginated_affiliations.items:
-            affiliation_data = affiliation.to_dict()
+        for affiliation in query:
+            # Fetch only the required attributes
+            affiliation_data = {
+                'id': affiliation.id,            
+                'name': affiliation.name
+            }
             affiliation_list.append(affiliation_data)
 
-        # Return the paginated and filtered affiliations with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "affiliations": affiliation_list,
-            "pagination": {
-                "total": paginated_affiliations.total,
-                "pages": paginated_affiliations.pages,
-                "current_page": paginated_affiliations.page,
-                "per_page": paginated_affiliations.per_page,
-                "next_page": paginated_affiliations.next_num if paginated_affiliations.has_next else None,
-                "prev_page": paginated_affiliations.prev_num if paginated_affiliations.has_prev else None
-            }
-        })
+        response = {
+            'affiliations': affiliation_list,
+            'status': 'success',
+            'status_code': 200
+        }
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the affiliations: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
 
 
 @custom_jwt_required

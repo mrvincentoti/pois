@@ -12,48 +12,36 @@ def slugify(text):
 
 @custom_jwt_required
 def list_arresting_bodies():
+    query = ArrestingBody.query
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Sort and paginate the results
+        query = query.order_by(ArrestingBody.name.asc()).all()
 
-        # Extract search term from the request
-        search_term = request.args.get('q', default=None, type=str)
-
-        # Query the database, applying search and ordering by name
-        query = ArrestingBody.query.order_by(ArrestingBody.name.asc())
-
-        # Apply search if search term is provided
-        if search_term:
-            search = f"%{search_term}%"
-            query = query.filter(ArrestingBody.name.ilike(search))
-
-        # Paginate the query
-        paginated_arresting_bodies = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        # Prepare the list of arresting bodies to return
-        arresting_body_list = []
-        for arresting_body in paginated_arresting_bodies.items:
-            arresting_body_data = arresting_body.to_dict()
-            arresting_body_list.append(arresting_body_data)
-
-        # Return the paginated and filtered arresting bodies with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "arresting_bodies": arresting_body_list,
-            "pagination": {
-                "total": paginated_arresting_bodies.total,
-                "pages": paginated_arresting_bodies.pages,
-                "current_page": paginated_arresting_bodies.page,
-                "per_page": paginated_arresting_bodies.per_page,
-                "next_page": paginated_arresting_bodies.next_num if paginated_arresting_bodies.has_next else None,
-                "prev_page": paginated_arresting_bodies.prev_num if paginated_arresting_bodies.has_prev else None
+        # Format response
+        arresting_bodies_list = []
+        for arresting_body in query:
+            # Fetch only the required attributes
+            arresting_bodies_data = {
+                'id': arresting_body.id,            
+                'name': arresting_body.name
             }
-        })
+            arresting_bodies_list.append(arresting_bodies_data)
+
+        response = {
+            'arresting_bodies': arresting_bodies_list,
+            'status': 'success',
+            'status_code': 200
+        }
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the arresting bodies: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
     
 
 @custom_jwt_required

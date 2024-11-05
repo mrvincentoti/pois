@@ -10,6 +10,39 @@ from ..users.models import User
 from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, generate_unique_ref_numb
 
 @custom_jwt_required
+def list_organisations():
+    query = Organisation.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(Organisation.org_name.asc()).all()
+
+        # Format response
+        org_list = []
+        for org in query:
+            # Fetch only the required attributes
+            org_data = {
+                'id': org.id,            
+                'name': org.org_name
+            }
+            org_list.append(org_data)
+
+        response = {
+            'orgs': org_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the organisations: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+
+@custom_jwt_required
 @permission_required
 def create_organisation():
     data = request.form

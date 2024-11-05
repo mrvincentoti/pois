@@ -11,68 +11,36 @@ def slugify(text):
 
 @custom_jwt_required
 def list_categories():
+    query = Category.query
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Sort and paginate the results
+        query = query.order_by(Category.name.asc()).all()
 
-        if page == 0:
-            categories = Category.query.filter(Category.deleted_at.is_(None)).all()
-
-            # Prepare the list of categories to return
-            category_list = []
-            for category in categories:
-                category_list.append(category.to_dict())
-
-            # Return the categories with status success
-            result = {
-                "status": "success",
-                "status_code": 200,
-                "categories": category_list,
+        # Format response
+        categories_list = []
+        for category in query:
+            # Fetch only the required attributes
+            categories_data = {
+                'id': category.id,            
+                'name': category.name
             }
-        else:
+            categories_list.append(categories_data)
 
-            # Extract search term from the request
-            search_term = request.args.get('q', default=None, type=str)
-
-            # Query the database, applying search and ordering by name
-            query = Category.query.order_by(Category.name.asc())
-
-            # Apply search if search term is provided
-            if search_term:
-                search = f"%{search_term}%"
-                query = query.filter(Category.name.ilike(search))
-            
-            # Paginate the query
-            paginated_categories = query.paginate(page=page, per_page=per_page, error_out=False)
-
-            # Prepare the list of categories to return
-            category_list = []
-            for category in paginated_categories.items:
-                category_data = category.to_dict()
-                category_list.append(category_data)
-
-            # Return the paginated and filtered categories with status success
-            result = {
-                "status": "success",
-                "status_code": 200,
-                "categories": category_list,
-                "pagination": {
-                    "total": paginated_categories.total,
-                    "pages": paginated_categories.pages,
-                    "current_page": paginated_categories.page,
-                    "per_page": paginated_categories.per_page,
-                    "next_page": paginated_categories.next_num if paginated_categories.has_next else None,
-                    "prev_page": paginated_categories.prev_num if paginated_categories.has_prev else None
-                }
-            }
-
-        return jsonify(result)
+        response = {
+            'categories': categories_list,
+            'status': 'success',
+            'status_code': 200
+        }
 
     except Exception as e:
-        print(e)
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the categories: {str(e)}"
+        }
 
+    return jsonify(response), response.get('status_code', 500)
 
 
 @custom_jwt_required
