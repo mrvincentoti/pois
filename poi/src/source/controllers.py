@@ -4,12 +4,47 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Source
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_sources():
+    query = Source.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(Source.name.asc()).all()
+
+        # Format response
+        sources_list = []
+        for source in query:
+            # Fetch only the required attributes
+            sources_data = {
+                'id': source.id,            
+                'name': source.name
+            }
+            sources_list.append(sources_data)
+
+        response = {
+            'sources': sources_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the sources: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+    
+
+@custom_jwt_required
+@permission_required
 def get_sources():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +91,7 @@ def get_sources():
 
 
 @custom_jwt_required
+@permission_required
 def add_source():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +145,7 @@ def add_source():
 
 
 @custom_jwt_required
+@permission_required
 def get_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
     if source:
@@ -145,6 +182,7 @@ def get_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
 
@@ -199,6 +237,7 @@ def edit_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
 
@@ -244,6 +283,7 @@ def delete_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_source(source_id):
     source = Source.query.filter_by(id=source_id).first()
 

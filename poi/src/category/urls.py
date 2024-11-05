@@ -1,12 +1,17 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_category, get_categories, get_poi_categories, get_org_categories, get_category, edit_category, delete_category,restore_category
+from .controllers import add_category, get_categories, get_poi_categories, get_org_categories, get_category, edit_category, delete_category,restore_category, list_categories
 from .models import Category
 
 
+@app.route("/list-categories", methods=['GET'])
+def get_list_categories():
+    if request.method == 'GET': return list_categories()
+    else: return 'Method is Not Allowed'
+
 @app.route("/categories", methods=['GET', 'POST'])
-def list_categories():
+def get_add_categories():
     if request.method == 'GET': return get_categories()
     if request.method == 'POST': return add_category()
     else: return 'Method is Not Allowed'

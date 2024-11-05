@@ -10,12 +10,12 @@ import {
 	request,
 } from '../services/utilities';
 import {
-	FETCH_CRIMES_API,
-	FETCH_CATEGORIES_API,
-	FETCH_SOURCES_API,
-	FETCH_AFFILIATIONS_API,
-	FETCH_ARRESTING_BODY_API,
-	FETCH_ARMS_API,
+	LIST_CRIMES_API,
+	FETCH_ORG_CATEGORY_API,
+	LIST_SOURCES_API,
+	LIST_AFFILIATIONS_API,
+	LIST_ARRESTING_BODY_API,
+	LIST_ARMS_API,
 } from '../services/api';
 import { doClearFilter } from '../redux/slices/employee';
 
@@ -44,7 +44,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchCategories = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_CATEGORIES_API}?page=1&per_page=10`);
+			const rs = await request(`${FETCH_ORG_CATEGORY_API}?page=1&per_page=10`);
 			setCategories(rs.categories);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
@@ -53,7 +53,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchCrimes = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_CRIMES_API}`);
+			const rs = await request(`${LIST_CRIMES_API}`);
 			setCrimes(rs.crimes);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
@@ -62,7 +62,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchArms = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_ARMS_API}`);
+			const rs = await request(`${LIST_ARMS_API}`);
 			setArms(rs.arms);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
@@ -71,7 +71,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchSources = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_SOURCES_API}`);
+			const rs = await request(`${LIST_SOURCES_API}`);
 			setSource(rs.sources);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
@@ -80,7 +80,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchAffiliations = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_AFFILIATIONS_API}`);
+			const rs = await request(`${LIST_AFFILIATIONS_API}`);
 			setAffliation(rs.affiliations);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
@@ -89,7 +89,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 	const fetchArrestingBodies = useCallback(async () => {
 		try {
-			const rs = await request(`${FETCH_ARRESTING_BODY_API}`);
+			const rs = await request(`${LIST_ARRESTING_BODY_API}`);
 			setArrestingBody(rs.arresting_bodies);
 		} catch (error) {
 			notifyWithIcon('error', error.message);

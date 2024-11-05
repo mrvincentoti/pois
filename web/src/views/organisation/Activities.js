@@ -73,92 +73,108 @@ const Activities = () => {
     };
 
     return (
-        <>
-            <div className="card">
-                <div className="card-body">
-                    <div className="d-flex align-items-center mb-2">
-                        <h5 className="card-title flex-grow-1 mb-0">Activities</h5>
-                        <div className="flex-shrink-0" onClick={addActivity}>
-                            <label htmlFor="formFile" className="btn btn-success">
-                                <i className="ri-add-fill me-1 align-bottom"></i> Add
-                            </label>
-                        </div>
-                    </div>
+			<>
+				<div className="card">
+					<div className="card-body">
+						<div className="d-flex align-items-center mb-2">
+							<h5 className="card-title flex-grow-1 mb-0">Activities</h5>
+							<div className="flex-shrink-0" onClick={addActivity}>
+								<label htmlFor="formFile" className="btn btn-success">
+									<i className="ri-add-fill me-1 align-bottom"></i> Add
+								</label>
+							</div>
+						</div>
 
-                    <div className="row" style={{ background: '#f3f3f9' }}>
-                        <div className="col-lg-12">
-                            <div>
-                                <div className="timeline">
-                                    {loaded ? (
-                                        activitiesData && activitiesData.length > 0 ? (
-                                            activitiesData.map((item, i) => (
-                                                <div
-                                                    className={`timeline-item ${i % 2 === 0 ? 'left' : 'right'}`}
-                                                    key={i}
-                                                >
-                                                    <i className="icon ri-stack-line"></i>
-                                                    <div className="date">
-                                                        {formatActivitiesDate(item.activity_date)}
-                                                    </div>
-                                                    <div className="content">
-                                                        <div className="d-flex">
-                                                            <div
-                                                                className="flex-shrink-0 avatar-xs acitivity-avatar"
-                                                                style={{ size: '20px' }}
-                                                            >
-                                                                <div className="avatar-title bg-success-subtle text-success rounded-circle">
-                                                                    {getActivitiesInitialLetter(item)}
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex-grow-1 ms-3">
-                                                                <h5 className="fs-15">
-                                                                    {item.created_by_name}{' '}
-                                                                    <small className="text-muted fs-13 fw-normal">
-                                                                        - {timeAgo(item.activity_date)}
-                                                                    </small>
-                                                                </h5>
-                                                                <p className="text-muted mb-2">
-                                                                    {item.comment}
-                                                                </p>
-                                                                <div className="mt-3 d-flex justify-content-end gap-2">
-                                                                    <button
-                                                                        className="btn btn-sm btn-outline-success"
-                                                                        onClick={() => editActivity(item)}
-                                                                    >
-                                                                        Edit
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <NoResult title="Activities" /> // Display "No data found" when activitiesData is empty
-                                        )
-                                    ) : (
-                                        <div>
-                                            <Spin spinning={true} indicator={antIconSync}>
-                                                <div className="fetching" />
-                                            </Spin>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+						<div className="row" style={{ background: '#f3f3f9' }}>
+							<div className="col-lg-12">
+								<div>
+									<div className="timeline">
+										{loaded ? (
+											activitiesData && activitiesData.length > 0 ? (
+												activitiesData.map((item, i) => (
+													<div
+														className={`timeline-item ${
+															i % 2 === 0 ? 'left' : 'right'
+														}`}
+														key={i}>
+														<i className="icon ri-stack-line"></i>
+														<div className="date">
+															{formatActivitiesDate(item.activity_date)}
+														</div>
+														<div className="content">
+															<div className="d-flex">
+																<div
+																	className="flex-shrink-0 avatar-xs acitivity-avatar"
+																	style={{ size: '20px' }}>
+																	<div className="avatar-title bg-success-subtle text-success rounded-circle">
+																		{getActivitiesInitialLetter(item)}
+																	</div>
+																</div>
+																<div className="flex-grow-1 ms-3">
+																	<h5 className="fs-15">
+																		Title: {item.title || 'N/A'}{' '}
+																	</h5>
+																	<p className="text-muted mb-2">
+																		Activity source:{' '}
+																		{item.activity_type === 'poi'
+																			? 'Person of Interest'
+																			: item.activity_type === 'org'
+																				? 'Organisation'
+																				: 'None'}
+																	</p>
+																	<p className="text-muted mb-2">
+																		Assessment: {item.comment || 'N/A'}
+																	</p>
+																	<p className="text-muted mb-2">
+																		Activity source:{' '}
+																		{item.activity_type === 'poi'
+																			? 'Person of Interest'
+																			: item.activity_type === 'org'
+																				? 'Organisation'
+																				: 'None'}
+																	</p>
+																	Created by: {item.created_by_name}{' '}
+																	<small className="text-muted fs-13 fw-normal">
+																		- {timeAgo(item.activity_date)}
+																	</small>
+																	<div className="mt-3 d-flex justify-content-end gap-2">
+																		<button
+																			className="btn btn-sm btn-outline-success"
+																			onClick={() => editActivity(item)}>
+																			Edit
+																		</button>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												))
+											) : (
+												<NoResult title="Activities" /> // Display "No data found" when activitiesData is empty
+											)
+										) : (
+											<div>
+												<Spin spinning={true} indicator={antIconSync}>
+													<div className="fetching" />
+												</Spin>
+											</div>
+										)}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            {/* NewEditComment modal for both adding and editing */}
-            <NewEditComment
-                closeModal={closeModal}
-                data={currentActivity} // Pass current activity for editing
-                update={refreshTable}
-                modalType={modalType} // Pass modal type (either 'add' or 'edit')
-            />
-        </>
-    );
+				{/* NewEditComment modal for both adding and editing */}
+				<NewEditComment
+					closeModal={closeModal}
+					data={currentActivity} // Pass current activity for editing
+					update={refreshTable}
+					modalType={modalType} // Pass modal type (either 'add' or 'edit')
+				/>
+			</>
+		);
 };
 
 export default Activities;

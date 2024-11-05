@@ -4,12 +4,47 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Crime
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_crimes():
+    query = Crime.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(Crime.name.asc()).all()
+
+        # Format response
+        crimes_list = []
+        for crime in query:
+            # Fetch only the required attributes
+            crimes_data = {
+                'id': crime.id,            
+                'name': crime.name
+            }
+            crimes_list.append(crimes_data)
+
+        response = {
+            'crimes': crimes_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the crimes: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+    
+    
+@custom_jwt_required
+@permission_required
 def get_crimes():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +91,7 @@ def get_crimes():
 
 
 @custom_jwt_required
+@permission_required
 def add_crime():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +145,7 @@ def add_crime():
 
 
 @custom_jwt_required
+@permission_required
 def get_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id, deleted_at=None).first()
     if crime:
@@ -145,6 +182,7 @@ def get_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id).first()
 
@@ -199,6 +237,7 @@ def edit_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id, deleted_at=None).first()
 
@@ -244,6 +283,7 @@ def delete_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id).first()
 

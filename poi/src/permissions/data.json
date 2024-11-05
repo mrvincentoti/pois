@@ -87,12 +87,17 @@
 	{"name":"can-see-affiliations","description":"Can See Affiliations","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliations"},
 	{"name":"can-create-affiliation","description":"Can Create Affiliation","group":"affiliation","module_id":"4","method":"POST","route_path":"/affiliations"},
 
+	{"name":"can-restore-arresting-body","description":"Can Restore Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_body/restore/<arresting_body_id>"},
+	{"name":"can-delete-arresting-body","description":"Can Delete Arresting Body","group":"arresting body","module_id":"4","method":"DELETE","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-update-arresting-body","description":"Can Update Arresting Body","group":"arresting body","module_id":"4","method":"PUT","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-view-arresting-body","description":"Can View Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-see-arresting-body","description":"Can See Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_bodies"},
+	{"name":"can-create-arresting-body","description":"Can Create Arresting Body","group":"arresting body","module_id":"4","method":"POST","route_path":"/arresting_bodies"},
+
 	{"name":"can-restore-category","description":"Can Restore Category","group":"category","module_id":"4","method":"GET","route_path":"/category/restore/<category_id>"},
 	{"name":"can-delete-category","description":"Can Delete Category","group":"category","module_id":"4","method":"DELETE","route_path":"/categories/<category_id>"},
 	{"name":"can-update-category","description":"Can Update Category","group":"category","module_id":"4","method":"PUT","route_path":"/categories/<category_id>"},
 	{"name":"can-view-category","description":"Can View Category","group":"category","module_id":"4","method":"GET","route_path":"/categories/<category_id>"},
-	{"name":"can-see-org-categories","description":"Can See Org Categories","group":"category","module_id":"4","method":"GET","route_path":"/org-categories"},
-	{"name":"can-see-poi-categories","description":"Can See POI Categories","group":"category","module_id":"4","method":"GET","route_path":"/poi-categories"},
 	{"name":"can-see-categories","description":"Can See Categories","group":"category","module_id":"4","method":"GET","route_path":"/categories"},
 	{"name":"can-create-category","description":"Can Create Category","group":"category","module_id":"4","method":"POST","route_path":"/categories"},
 
@@ -103,12 +108,12 @@
 	{"name":"can-see-crimes","description":"Can See Crimes","group":"crime","module_id":"4","method":"GET","route_path":"/crimes"},
 	{"name":"can-create-crime","description":"Can Create Crime","group":"crime","module_id":"4","method":"POST","route_path":"/crimes"},
 
-	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/item/restore/<item_id>"},
-	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/items/<item_id>"},
+	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/arm/restore/<item_id>"},
+	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/armss/<item_id>"},
 	{"name":"can-update-item","description":"Can Update Item","group":"item","module_id":"4","method":"PUT","route_path":"/arms/<item_id>"},
-	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/items/<item_id>"},
-	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/items"},
-	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/items"},
+	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/arms/<item_id>"},
+	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/arms"},
+	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/arms"},
 
 	{"name":"can-restore-source","description":"Can Restore Source","group":"source","module_id":"4","method":"GET","route_path":"/source/restore/<source_id>"},
 	{"name":"can-delete-source","description":"Can Delete Source","group":"source","module_id":"4","method":"DELETE","route_path":"/sources/<source_id>"},

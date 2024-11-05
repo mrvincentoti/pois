@@ -17,9 +17,9 @@ import { message, Upload } from 'antd';
 import {
 	CREATE_ORG_API,
 	FETCH_ORG_CATEGORY_API,
-	FETCH_SOURCES_API,
+	LIST_SOURCES_API,
 	FETCH_COUNTRIES_API,
-	FETCH_AFFILIATIONS_API,
+	LIST_AFFILIATIONS_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -129,8 +129,8 @@ const NewOrganisation = () => {
 			const urls = [
 				`${FETCH_COUNTRIES_API}?per_page=300`,
 				FETCH_ORG_CATEGORY_API,
-				FETCH_SOURCES_API,
-				FETCH_AFFILIATIONS_API,
+				LIST_SOURCES_API,
+				LIST_AFFILIATIONS_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
