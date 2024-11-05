@@ -108,12 +108,12 @@
 	{"name":"can-see-crimes","description":"Can See Crimes","group":"crime","module_id":"4","method":"GET","route_path":"/crimes"},
 	{"name":"can-create-crime","description":"Can Create Crime","group":"crime","module_id":"4","method":"POST","route_path":"/crimes"},
 
-	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/item/restore/<item_id>"},
-	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/items/<item_id>"},
+	{"name":"can-restore-item","description":"Can Restore Item","group":"item","module_id":"4","method":"GET","route_path":"/arm/restore/<item_id>"},
+	{"name":"can-delete-item","description":"Can Delete Item","group":"item","module_id":"4","method":"DELETE","route_path":"/armss/<item_id>"},
 	{"name":"can-update-item","description":"Can Update Item","group":"item","module_id":"4","method":"PUT","route_path":"/arms/<item_id>"},
-	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/items/<item_id>"},
-	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/items"},
-	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/items"},
+	{"name":"can-view-item","description":"Can View Item","group":"item","module_id":"4","method":"GET","route_path":"/arms/<item_id>"},
+	{"name":"can-see-items","description":"Can See Items","group":"item","module_id":"4","method":"GET","route_path":"/arms"},
+	{"name":"can-create-item","description":"Can Create Item","group":"item","module_id":"4","method":"POST","route_path":"/arms"},
 
 	{"name":"can-restore-source","description":"Can Restore Source","group":"source","module_id":"4","method":"GET","route_path":"/source/restore/<source_id>"},
 	{"name":"can-delete-source","description":"Can Delete Source","group":"source","module_id":"4","method":"DELETE","route_path":"/sources/<source_id>"},
