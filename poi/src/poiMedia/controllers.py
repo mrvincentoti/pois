@@ -5,7 +5,7 @@ from .models import PoiMedia
 from ..poi.models import Poi
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, minio_client, allowed_file
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from minio.error import S3Error
@@ -15,6 +15,7 @@ from urllib.parse import urljoin
 load_dotenv()
 
 @custom_jwt_required
+@permission_required
 def get_all_media():
     try:
         medias = PoiMedia.query.all()
@@ -34,6 +35,7 @@ def get_all_media():
 
 
 @custom_jwt_required
+@permission_required
 def get_media(media_id):
     # Fetch the media record
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -88,6 +90,7 @@ def get_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def add_poi_media(poi_id):
     poi = Poi.query.filter_by(id=poi_id, deleted_at=None).first()
 
@@ -170,6 +173,7 @@ def add_poi_media(poi_id):
 
 
 @custom_jwt_required
+@permission_required
 def get_poi_media(poi_id):
     try:
         # Get pagination parameters from the request (default values: page=1, per_page=10)
@@ -263,6 +267,7 @@ def get_poi_media(poi_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -399,6 +404,7 @@ def edit_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_media(media_id):
     media_record = PoiMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -451,6 +457,7 @@ def delete_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
     media_record = PoiMedia.query.filter_by(id=media_id).first()
