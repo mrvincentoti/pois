@@ -86,24 +86,12 @@ const Overview = () => {
 													<td className="text-muted">
 														{formatOrgName(orgData, true)}
 													</td>
-												</tr>
-												{/* <tr>
-													<th className="ps-0" scope="row">
-														Company Registration Number :
-													</th>
-													<td className="text-muted">
-														{orgData.reg_numb || 'N/A'}
-													</td>
-												</tr> */}
-												<tr>
 													<th className="ps-0" scope="row">
 														Reference Number :
 													</th>
 													<td className="text-muted">
 														{orgData.ref_numb || 'N/A'}
 													</td>
-												</tr>
-												<tr>
 													<th className="ps-0" scope="row">
 														Registration Number :
 													</th>

@@ -317,23 +317,6 @@ const ViewOrganisation = () => {
 														cursor: 'pointer',
 													}}
 													className={`nav-link fs-14 ${
-														activeTab === 'media' ? 'active' : ''
-													}`}
-													onClick={() => handleTabClick('media')}
-													role="tab">
-													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
-													<span className="d-none d-md-inline-block">
-														Files
-													</span>
-												</a>
-											</li>
-
-											<li className="nav-item">
-												<a
-													style={{
-														cursor: 'pointer',
-													}}
-													className={`nav-link fs-14 ${
 														activeTab === 'activities' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('activities')}
@@ -357,6 +340,21 @@ const ViewOrganisation = () => {
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Operational Capacity
+													</span>
+												</a>
+											</li>
+											<li className="nav-item">
+												<a
+													style={{
+														cursor: 'pointer',
+													}}
+													className={`nav-link fs-14 ${activeTab === 'media' ? 'active' : ''
+														}`}
+													onClick={() => handleTabClick('media')}
+													role="tab">
+													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
+													<span className="d-none d-md-inline-block">
+														Files
 													</span>
 												</a>
 											</li>
