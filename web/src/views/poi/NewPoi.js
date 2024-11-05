@@ -20,11 +20,11 @@ import {
 	FETCH_GENDERS_API,
 	FETCH_STATES_API,
 	FETCH_POI_CATEGORY_API,
-	FETCH_SOURCES_API,
+	LIST_SOURCES_API,
 	FETCH_COUNTRIES_API,
-	FETCH_AFFILIATIONS_API,
+	LIST_AFFILIATIONS_API,
 	FETCH_POI_STATUSES_API,
-	FETCH_ORG_API,
+	LIST_ORG_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -147,10 +147,10 @@ const NewPoi = () => {
 				FETCH_GENDERS_API,
 				`${FETCH_COUNTRIES_API}?per_page=300`,
 				FETCH_POI_CATEGORY_API,
-				FETCH_SOURCES_API,
-				FETCH_AFFILIATIONS_API,
+				LIST_SOURCES_API,
+				LIST_AFFILIATIONS_API,
 				FETCH_POI_STATUSES_API,
-				FETCH_ORG_API,
+				LIST_ORG_API,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())

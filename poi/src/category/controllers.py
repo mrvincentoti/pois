@@ -110,7 +110,6 @@ def get_categories():
 
 
 @custom_jwt_required
-@permission_required
 def get_poi_categories():
     try:
         # Extract pagination parameters from the request
@@ -157,7 +156,6 @@ def get_poi_categories():
 
 
 @custom_jwt_required
-@permission_required
 def get_org_categories():
     try:
         # Extract pagination parameters from the request

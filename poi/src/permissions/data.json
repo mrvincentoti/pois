@@ -98,8 +98,6 @@
 	{"name":"can-delete-category","description":"Can Delete Category","group":"category","module_id":"4","method":"DELETE","route_path":"/categories/<category_id>"},
 	{"name":"can-update-category","description":"Can Update Category","group":"category","module_id":"4","method":"PUT","route_path":"/categories/<category_id>"},
 	{"name":"can-view-category","description":"Can View Category","group":"category","module_id":"4","method":"GET","route_path":"/categories/<category_id>"},
-	{"name":"can-see-org-categories","description":"Can See Org Categories","group":"category","module_id":"4","method":"GET","route_path":"/org-categories"},
-	{"name":"can-see-poi-categories","description":"Can See POI Categories","group":"category","module_id":"4","method":"GET","route_path":"/poi-categories"},
 	{"name":"can-see-categories","description":"Can See Categories","group":"category","module_id":"4","method":"GET","route_path":"/categories"},
 	{"name":"can-create-category","description":"Can Create Category","group":"category","module_id":"4","method":"POST","route_path":"/categories"},
 

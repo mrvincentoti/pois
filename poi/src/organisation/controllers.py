@@ -22,7 +22,7 @@ def list_organisations():
             # Fetch only the required attributes
             org_data = {
                 'id': org.id,            
-                'name': org.org_name
+                'org_name': org.org_name
             }
             org_list.append(org_data)
 
