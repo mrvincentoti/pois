@@ -25,6 +25,7 @@ import {
 	FETCH_AFFILIATIONS_API,
 	FETCH_POI_STATUSES_API,
 	FETCH_ORG_API,
+	FETCH_ARRESTING_BODY_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -68,6 +69,7 @@ const NewPoi = () => {
 
 	const [organizations, setOrganizations] = useState([]);
 	const [selectedOrganization, setSelectedOrganization] = useState(null);
+	const [arrestingBodies, setArrestingBodies] = useState([]);
 
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
@@ -151,6 +153,7 @@ const NewPoi = () => {
 				FETCH_AFFILIATIONS_API,
 				FETCH_POI_STATUSES_API,
 				FETCH_ORG_API,
+				`${FETCH_ARRESTING_BODY_API}?per_page=300`,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -163,6 +166,7 @@ const NewPoi = () => {
 				rs_affiliations,
 				rs_statuses,
 				rs_orgs,
+				rs_arresting_bodies,
 			] = await Promise.all(requests);
 
 			const formattedAffiliations = rs_affiliations.affiliations.map(
@@ -184,6 +188,7 @@ const NewPoi = () => {
 			setAffliations(formattedAffiliations);
 			setPoiStatuses(rs_statuses.statuses);
 			setOrganizations(formattedOrganizations);
+			setArrestingBodies(rs_arresting_bodies.arresting_bodies);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -230,7 +235,6 @@ const NewPoi = () => {
 
 	const onSubmit = async values => {
 		console.log(values);
-
 		try {
 			// Create a FormData object
 			const formData = new FormData();
@@ -300,7 +304,7 @@ const NewPoi = () => {
 
 						return errors;
 					}}
-					render={({ handleSubmit, submitError, submitting, form }) => (
+					render={({ handleSubmit, submitError, submitting, form, values }) => (
 						<FormWrapper onSubmit={handleSubmit} submitting={submitting}>
 							<div className="row">
 								<div className="col-lg-12">
@@ -781,28 +785,81 @@ const NewPoi = () => {
 														Status <span style={{ color: 'red' }}></span>
 													</label>
 													<Field id="status_id" name="status_id">
-														{({ input, meta }) => (
+														{({ input }) => (
 															<Select
-																style={{
-																	width: '100%',
-																	height: '40px',
-																	borderColor:
-																		meta.touched && meta.error
-																			? 'red'
-																			: '#ced4da',
-																}}
+																style={{ width: '100%', height: '40px' }}
 																placeholder="Select Status"
-																onChange={value => input.onChange(value)}
-																options={poiStatuses?.map(source => ({
-																	value: source.id,
-																	label: source.name,
+																onChange={value => {
+																	input.onChange(value);
+
+																	form.change('arresting_body_id', undefined);
+																	form.change('place_of_detention', undefined);
+																}}
+																options={poiStatuses?.map(status => ({
+																	value: status.id,
+																	label: status.name,
 																}))}
-																className="custom-source-select"
 															/>
 														)}
 													</Field>
 													<ErrorBlock name="status_id" />
 												</div>
+
+												{values?.status_id === 1 && <></>}
+
+												{values?.status_id === 2 && <></>}
+
+												{values?.status_id === 3 && (
+													<>
+														<div className="col-lg-3 mb-3">
+															<label
+																className="form-label"
+																htmlFor="arresting_body_id"
+															>
+																Arresting Body
+															</label>
+															<Field
+																id="arresting_body_id"
+																name="arresting_body_id"
+															>
+																{({ input }) => (
+																	<Select
+																		style={{ width: '100%', height: '40px' }}
+																		placeholder="Select Arresting Body"
+																		onChange={input.onChange}
+																		options={arrestingBodies?.map(source => ({
+																			value: source.id,
+																			label: source.name,
+																		}))}
+																	/>
+																)}
+															</Field>
+														</div>
+														<div className="col-lg-3 mb-3">
+															<label
+																className="form-label"
+																htmlFor="place_of_detention"
+															>
+																Place of Detention
+															</label>
+															<Field
+																id="place_of_detention"
+																name="place_of_detention"
+															>
+																{({ input, meta }) => (
+																	<input
+																		{...input}
+																		type="text"
+																		className={`form-control ${error(meta)}`}
+																		placeholder="Enter Place of Detention"
+																	/>
+																)}
+															</Field>
+														</div>
+														<div className="col-lg-3 mb-3"></div>
+														<div className="col-lg-3 mb-3"></div>
+													</>
+												)}
 
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
