@@ -11,48 +11,36 @@ def slugify(text):
 
 @custom_jwt_required
 def list_crimes():
+    query = Crime.query
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Sort and paginate the results
+        query = query.order_by(Crime.name.asc()).all()
 
-        # Extract search term from the request
-        search_term = request.args.get('q', default=None, type=str)
-
-        # Query the database, applying search and ordering by name
-        query = Crime.query.order_by(Crime.name.asc())
-
-        # Apply search if search term is provided
-        if search_term:
-            search = f"%{search_term}%"
-            query = query.filter(Crime.name.ilike(search))
-
-        # Paginate the query
-        paginated_crimes = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        # Prepare the list of crimes to return
-        crime_list = []
-        for crime in paginated_crimes.items:
-            crime_data = crime.to_dict()
-            crime_list.append(crime_data)
-
-        # Return the paginated and filtered crimes with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "crimes": crime_list,
-            "pagination": {
-                "total": paginated_crimes.total,
-                "pages": paginated_crimes.pages,
-                "current_page": paginated_crimes.page,
-                "per_page": paginated_crimes.per_page,
-                "next_page": paginated_crimes.next_num if paginated_crimes.has_next else None,
-                "prev_page": paginated_crimes.prev_num if paginated_crimes.has_prev else None
+        # Format response
+        crimes_list = []
+        for crime in query:
+            # Fetch only the required attributes
+            crimes_data = {
+                'id': crime.id,            
+                'name': crime.name
             }
-        })
+            crimes_list.append(crimes_data)
+
+        response = {
+            'crimes': crimes_list,
+            'status': 'success',
+            'status_code': 200
+        }
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the crimes: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
     
     
 @custom_jwt_required

@@ -11,48 +11,36 @@ def slugify(text):
 
 @custom_jwt_required
 def list_items():
+    query = Item.query
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Sort and paginate the results
+        query = query.order_by(Item.name.asc()).all()
 
-        # Extract search term from the request
-        search_term = request.args.get('q', default=None, type=str)
-
-        # Query the database, applying search and ordering by name
-        query = Item.query.order_by(Item.name.asc())
-
-        # Apply search if search term is provided
-        if search_term:
-            search = f"%{search_term}%"
-            query = query.filter(Item.name.ilike(search))
-
-        # Paginate the query
-        paginated_items = query.paginate(page=page, per_page=per_page, error_out=False)
-
-        # Prepare the list of items to return
-        item_list = []
-        for item in paginated_items.items:
-            item_data = item.to_dict()
-            item_list.append(item_data)
-
-        # Return the paginated and filtered items with status success
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            "items": item_list,
-            "pagination": {
-                "total": paginated_items.total,
-                "pages": paginated_items.pages,
-                "current_page": paginated_items.page,
-                "per_page": paginated_items.per_page,
-                "next_page": paginated_items.next_num if paginated_items.has_next else None,
-                "prev_page": paginated_items.prev_num if paginated_items.has_prev else None
+        # Format response
+        items_list = []
+        for item in query:
+            # Fetch only the required attributes
+            items_data = {
+                'id': item.id,            
+                'name': item.name
             }
-        })
+            items_list.append(items_data)
+
+        response = {
+            'items': items_list,
+            'status': 'success',
+            'status_code': 200
+        }
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the items: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
     
 
 @custom_jwt_required
