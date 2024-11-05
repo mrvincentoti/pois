@@ -3,7 +3,7 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age, allowed_file, generate_unique_ref_numb
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age, allowed_file, generate_unique_ref_numb, permission_required
 import os
 import uuid
 from urllib.parse import urljoin
@@ -23,6 +23,7 @@ from sqlalchemy.orm import joinedload
 
 # Create POI
 @custom_jwt_required
+@permission_required
 def create_poi():
     data = request.form
     ref_numb = generate_unique_ref_numb()
@@ -246,6 +247,7 @@ def create_poi():
 
 # Get POI by ID
 @custom_jwt_required
+@permission_required
 def get_poi(poi_id):
     response = {}
     current_time = dt.utcnow()  # Get current time for logging
@@ -410,6 +412,7 @@ def get_poi(poi_id):
 
 # Update POI
 @custom_jwt_required
+@permission_required
 def update_poi(poi_id):
     data = request.form
     poi = Poi.query.get(poi_id)
@@ -645,6 +648,7 @@ def update_poi(poi_id):
 
 # Soft Delete POI
 @custom_jwt_required
+@permission_required
 def delete_poi(poi_id):
     poi = Poi.query.get(poi_id)
     if poi:
@@ -683,6 +687,7 @@ def delete_poi(poi_id):
 
 # Restore Soft-Deleted POI
 @custom_jwt_required
+@permission_required
 def restore_poi(poi_id):
     poi = Poi.query.filter(Poi.id == poi_id, Poi.deleted_at != None).first()
 
@@ -733,6 +738,7 @@ def restore_poi(poi_id):
 
 # List, Search and Filter POIs
 @custom_jwt_required
+@permission_required
 def list_pois():
     # Get pagination and search term from request parameters
     page = request.args.get('page', default=1, type=int)
