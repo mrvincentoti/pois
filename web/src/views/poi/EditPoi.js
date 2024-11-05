@@ -24,6 +24,7 @@ import {
 	GET_POI_API,
 	UPDATE_POI_API,
 	FETCH_POI_STATUSES_API,
+	FETCH_ARRESTING_BODY_API,
 } from '../../services/api';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
@@ -56,6 +57,8 @@ const EditPoi = () => {
 	const [affiliations, setAffiliations] = useState([]);
 	const [alias, setAlias] = useState([]);
 	const [allAffiliations, setAllAffiliations] = useState([]);
+	const [arrestingBodies, setArrestingBodies] = useState([]);
+	const [arrestingBody, setArrestingBody] = useState(null);
 
 	// const [organizations, setOrganizations] = useState([]);
 	// const [selectedOrganization, setSelectedOrganization] = useState(null);
@@ -89,6 +92,7 @@ const EditPoi = () => {
 				LIST_ORG_API,
 				`${LIST_AFFILIATIONS_API}?page=0`,
 				FETCH_POI_STATUSES_API,
+				`${FETCH_ARRESTING_BODY_API}?per_page=300`,
 			];
 			const requests = urls.map(url =>
 				asyncFetch(url).then(response => response.json())
@@ -100,7 +104,8 @@ const EditPoi = () => {
 				rs_sources,
 				rs_orgs,
 				rs_affiliations,
-				rs_statuses
+				rs_statuses,
+				rs_arresting_bodies,
 			] = await Promise.all(requests);
 			setGenders(rs_genders.genders);
 			setCountries(rs_countries.countries);
@@ -109,6 +114,7 @@ const EditPoi = () => {
 			setOrganisations(rs_orgs.orgs);
 			setAllAffiliations(rs_affiliations.affiliations);
 			setPoiStatuses(rs_statuses.statuses);
+			setArrestingBodies(rs_arresting_bodies.arresting_bodies);
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -132,7 +138,6 @@ const EditPoi = () => {
 		try {
 			const rs = await request(FETCH_STATES_API.replace('/:id', ''));
 			setStates(rs.states);
-			
 		} catch (error) {
 			notifyWithIcon('error', error.message);
 		}
@@ -173,6 +178,7 @@ const EditPoi = () => {
 					setPoi(item);
 					setCategory(item.category?.id);
 					setPoiStatus(item.poi_status?.id);
+					setArrestingBody(item.arresting_body?.id);
 
 					const affiliations_list =
 						item.affiliation_ids?.split(',').map(a => {
@@ -210,7 +216,7 @@ const EditPoi = () => {
 		countries,
 		allAffiliations,
 		param.id,
-		fetchPoiCountryStates
+		fetchPoiCountryStates,
 	]);
 
 	const handleClose = removedTag => {
@@ -279,7 +285,11 @@ const EditPoi = () => {
 			if (tags) values.alias = tags;
 			for (const key in values) {
 				// Check if the value is an object and has a 'value' property
-				if (values[key] && typeof values[key] === 'object' && values[key].hasOwnProperty('value')) {
+				if (
+					values[key] &&
+					typeof values[key] === 'object' &&
+					values[key].hasOwnProperty('value')
+				) {
 					formData.append(key, values[key].value); // Append the 'value' property of the object
 				} else {
 					formData.append(key, values[key]); // Append the value as is if it's not an object
@@ -296,6 +306,10 @@ const EditPoi = () => {
 			// Conditionally append values to FormData, with empty strings for non-existent values
 			if (values.category) {
 				formData.append('category_id', category);
+			}
+
+			if (arrestingBody) {
+				formData.append('arresting_body_id', arrestingBody);
 			}
 
 			// Conditionally append values to FormData, with empty strings for non-existent values
@@ -374,9 +388,6 @@ const EditPoi = () => {
 	const handleChangeOrganisation = value => {
 		setOrganisation(value);
 	};
-	const handleChangeStatus = value => {
-		setPoiStatus(value);
-	};
 	// const handleChangeCat = value => {
 	// 	setCategory(value);
 	// };
@@ -384,11 +395,12 @@ const EditPoi = () => {
 		setState(value);
 	};
 
-	const handleCountryChange = value => {	
+	const handleCountryChange = value => {
 		setCountry(value);
 		setStates([]); // Clear the states when a new country is selected
 		fetchStates(value); // Fetch the states for the selected country
 	};
+	console.log(poi);
 
 	return (
 		<div className="container-fluid">
@@ -401,6 +413,7 @@ const EditPoi = () => {
 						category: poi?.category,
 						country: poi?.country,
 						state: poi?.state,
+						arresting_body_id: poi?.arresting_body?.id || '',
 						// country_id: poi?.country
 						// 	? {
 						// 		value: poi.country.id, // Use the ID for value
@@ -427,7 +440,7 @@ const EditPoi = () => {
 
 						return errors;
 					}}
-					render={({ handleSubmit, submitError, submitting, form }) => (
+					render={({ handleSubmit, submitError, submitting, form, values }) => (
 						<FormWrapper onSubmit={handleSubmit} submitting={submitting}>
 							<div className="row">
 								<div className="col-lg-12">
@@ -946,7 +959,15 @@ const EditPoi = () => {
 																			: '#ced4da',
 																}}
 																placeholder="Select Status"
-																onChange={handleChangeStatus}
+																onChange={value => {
+																	input.onChange(value);
+																	setPoiStatus(value);
+
+																	form.change('arresting_body_id', undefined);
+																	setArrestingBody(null);
+
+																	form.change('place_of_detention', undefined);
+																}}
 																value={poiStatus}
 																options={poiStatuses?.map(source => ({
 																	value: source.id,
@@ -958,6 +979,66 @@ const EditPoi = () => {
 													</Field>
 													<ErrorBlock name="poiStatus" />
 												</div>
+
+												{poiStatus === 1 && <></>}
+
+												{poiStatus === 2 && <></>}
+
+												{poiStatus === 3 && (
+													<>
+														<div className="col-lg-3 mb-3">
+															<label
+																className="form-label"
+																htmlFor="arresting_body_id"
+															>
+																Arresting Body
+															</label>
+															<Field
+																id="arresting_body_id"
+																name="arresting_body_id"
+															>
+																{({ input }) => (
+																	<Select
+																		style={{ width: '100%', height: '40px' }}
+																		placeholder="Select Arresting Body"
+																		onChange={e => {
+																			input.onChange(e);
+																			setArrestingBody(e);
+																		}}
+																		options={arrestingBodies?.map(source => ({
+																			value: source.id,
+																			label: source.name,
+																		}))}
+																		value={arrestingBody}
+																	/>
+																)}
+															</Field>
+														</div>
+														<div className="col-lg-3 mb-3">
+															<label
+																className="form-label"
+																htmlFor="place_of_detention"
+															>
+																Place of Detention
+															</label>
+															<Field
+																id="place_of_detention"
+																name="place_of_detention"
+															>
+																{({ input, meta }) => (
+																	<input
+																		{...input}
+																		type="text"
+																		className={`form-control ${error(meta)}`}
+																		placeholder="Enter Place of Detention"
+																	/>
+																)}
+															</Field>
+														</div>
+														<div className="col-lg-3 mb-3"></div>
+														<div className="col-lg-3 mb-3"></div>
+													</>
+												)}
 
 												<div className="col-lg-6 mb-3">
 													<label className="form-label" htmlFor="address">
