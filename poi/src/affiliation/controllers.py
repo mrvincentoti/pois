@@ -4,12 +4,75 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Affiliation
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_affiliations():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        if page == 0:
+            affiliations = Affiliation.query.filter(Affiliation.deleted_at.is_(None)).all()
+
+            # Prepare the list of affiliations to return
+            affiliation_list = []
+            for affiliation in affiliations:
+                affiliation_list.append(affiliation.to_dict())
+
+            # Return the affiliations with status success
+            result = {
+                "status": "success",
+                "status_code": 200,
+                "affiliations": affiliation_list,
+            }
+            return jsonify(result)
+        
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Affiliation.query.order_by(Affiliation.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Affiliation.name.ilike(search))
+        
+        # Paginate the query
+        paginated_affiliations = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of affiliations to return
+        affiliation_list = []
+        for affiliation in paginated_affiliations.items:
+            affiliation_data = affiliation.to_dict()
+            affiliation_list.append(affiliation_data)
+
+        # Return the paginated and filtered affiliations with status success
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "affiliations": affiliation_list,
+            "pagination": {
+                "total": paginated_affiliations.total,
+                "pages": paginated_affiliations.pages,
+                "current_page": paginated_affiliations.page,
+                "per_page": paginated_affiliations.per_page,
+                "next_page": paginated_affiliations.next_num if paginated_affiliations.has_next else None,
+                "prev_page": paginated_affiliations.prev_num if paginated_affiliations.has_prev else None
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@custom_jwt_required
+@permission_required
 def get_affiliations():
     try:
         # Extract pagination parameters from the request
@@ -72,6 +135,7 @@ def get_affiliations():
 
 
 @custom_jwt_required
+@permission_required
 def add_affiliation():
     if request.method == "POST":
         data = request.get_json()
@@ -124,6 +188,7 @@ def add_affiliation():
 
 
 @custom_jwt_required
+@permission_required
 def get_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id, deleted_at=None).first()
     if affiliation:
@@ -160,6 +225,7 @@ def get_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id).first()
 
@@ -214,6 +280,7 @@ def edit_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id, deleted_at=None).first()
 
@@ -258,6 +325,7 @@ def delete_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id).first()
 

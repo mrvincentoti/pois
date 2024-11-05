@@ -4,12 +4,59 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Source
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_sources():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Source.query.order_by(Source.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Source.name.ilike(search))
+
+        # Paginate the query
+        paginated_sources = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of sources to return
+        source_list = []
+        for source in paginated_sources.items:
+            source_data = source.to_dict()
+            source_list.append(source_data)
+
+        # Return the paginated and filtered sources with status success
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "sources": source_list,
+            "pagination": {
+                "total": paginated_sources.total,
+                "pages": paginated_sources.pages,
+                "current_page": paginated_sources.page,
+                "per_page": paginated_sources.per_page,
+                "next_page": paginated_sources.next_num if paginated_sources.has_next else None,
+                "prev_page": paginated_sources.prev_num if paginated_sources.has_prev else None
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@custom_jwt_required
+@permission_required
 def get_sources():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +103,7 @@ def get_sources():
 
 
 @custom_jwt_required
+@permission_required
 def add_source():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +157,7 @@ def add_source():
 
 
 @custom_jwt_required
+@permission_required
 def get_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
     if source:
@@ -145,6 +194,7 @@ def get_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
 
@@ -199,6 +249,7 @@ def edit_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_source(source_id):
     source = Source.query.filter_by(id=source_id, deleted_at=None).first()
 
@@ -244,6 +295,7 @@ def delete_source(source_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_source(source_id):
     source = Source.query.filter_by(id=source_id).first()
 

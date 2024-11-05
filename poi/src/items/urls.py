@@ -1,11 +1,16 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_item, get_items, get_item, edit_item, delete_item,restore_item
+from .controllers import add_item, get_items, get_item, edit_item, delete_item, restore_item, list_items
 
+
+@app.route("/list-arms", methods=['GET'])
+def get_list_items():
+   if request.method == 'GET': return list_items()
+   else: return 'Method is Not Allowed'
 
 @app.route("/arms", methods=['GET', 'POST'])
-def list_items():
+def get_add_items():
    if request.method == 'GET': return get_items()
    if request.method == 'POST': return add_item()
    else: return 'Method is Not Allowed'

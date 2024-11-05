@@ -1,12 +1,17 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_arresting_body, get_arresting_bodies, get_arresting_body, edit_arresting_body, delete_arresting_body,restore_arresting_body
+from .controllers import add_arresting_body, get_arresting_bodies, get_arresting_body, edit_arresting_body, delete_arresting_body, restore_arresting_body, list_arresting_bodies
 from .models import ArrestingBody
 
 
+@app.route("/list-arresting_bodies", methods=['GET'])
+def get_list_arresting_bodys():
+    if request.method == 'GET': return list_arresting_bodies()
+    else: return 'Method is Not Allowed'
+    
 @app.route("/arresting_bodies", methods=['GET', 'POST'])
-def list_arresting_bodys():
+def get_add_arresting_bodys():
     if request.method == 'GET': return get_arresting_bodies()
     if request.method == 'POST': return add_arresting_body()
     else: return 'Method is Not Allowed'

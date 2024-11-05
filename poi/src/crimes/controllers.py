@@ -4,12 +4,59 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Crime
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_crimes():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Crime.query.order_by(Crime.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Crime.name.ilike(search))
+
+        # Paginate the query
+        paginated_crimes = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of crimes to return
+        crime_list = []
+        for crime in paginated_crimes.items:
+            crime_data = crime.to_dict()
+            crime_list.append(crime_data)
+
+        # Return the paginated and filtered crimes with status success
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "crimes": crime_list,
+            "pagination": {
+                "total": paginated_crimes.total,
+                "pages": paginated_crimes.pages,
+                "current_page": paginated_crimes.page,
+                "per_page": paginated_crimes.per_page,
+                "next_page": paginated_crimes.next_num if paginated_crimes.has_next else None,
+                "prev_page": paginated_crimes.prev_num if paginated_crimes.has_prev else None
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    
+@custom_jwt_required
+@permission_required
 def get_crimes():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +103,7 @@ def get_crimes():
 
 
 @custom_jwt_required
+@permission_required
 def add_crime():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +157,7 @@ def add_crime():
 
 
 @custom_jwt_required
+@permission_required
 def get_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id, deleted_at=None).first()
     if crime:
@@ -145,6 +194,7 @@ def get_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id).first()
 
@@ -199,6 +249,7 @@ def edit_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id, deleted_at=None).first()
 
@@ -244,6 +295,7 @@ def delete_crime(crime_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_crime(crime_id):
     crime = Crime.query.filter_by(id=crime_id).first()
 

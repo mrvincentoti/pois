@@ -1,12 +1,17 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_affiliation, get_affiliations, get_affiliation, edit_affiliation, delete_affiliation, restore_affiliation
+from .controllers import add_affiliation, get_affiliations, get_affiliation, edit_affiliation, delete_affiliation, restore_affiliation, list_affiliations
 from .models import Affiliation
 
 
+@app.route("/list-affiliations", methods=['GET'])
+def get_list_affiliations():
+   if request.method == 'GET': return list_affiliations()
+   else: return 'Method is Not Allowed'
+   
 @app.route("/affiliations", methods=['GET', 'POST'])
-def list_affiliations():
+def get_add_affiliations():
    if request.method == 'GET': return get_affiliations()
    if request.method == 'POST': return add_affiliation()
    else: return 'Method is Not Allowed'

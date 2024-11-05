@@ -4,12 +4,60 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import ArrestingBody
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
+
 @custom_jwt_required
+def list_arresting_bodies():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = ArrestingBody.query.order_by(ArrestingBody.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(ArrestingBody.name.ilike(search))
+
+        # Paginate the query
+        paginated_arresting_bodies = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of arresting bodies to return
+        arresting_body_list = []
+        for arresting_body in paginated_arresting_bodies.items:
+            arresting_body_data = arresting_body.to_dict()
+            arresting_body_list.append(arresting_body_data)
+
+        # Return the paginated and filtered arresting bodies with status success
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "arresting_bodies": arresting_body_list,
+            "pagination": {
+                "total": paginated_arresting_bodies.total,
+                "pages": paginated_arresting_bodies.pages,
+                "current_page": paginated_arresting_bodies.page,
+                "per_page": paginated_arresting_bodies.per_page,
+                "next_page": paginated_arresting_bodies.next_num if paginated_arresting_bodies.has_next else None,
+                "prev_page": paginated_arresting_bodies.prev_num if paginated_arresting_bodies.has_prev else None
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@custom_jwt_required
+@permission_required
 def get_arresting_bodies():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +104,7 @@ def get_arresting_bodies():
 
 
 @custom_jwt_required
+@permission_required
 def add_arresting_body():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +158,7 @@ def add_arresting_body():
 
 
 @custom_jwt_required
+@permission_required
 def get_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
     if arresting_body:
@@ -145,6 +195,7 @@ def get_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 
@@ -199,6 +250,7 @@ def edit_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
 
@@ -244,6 +296,7 @@ def delete_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 

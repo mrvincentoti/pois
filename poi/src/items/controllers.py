@@ -4,12 +4,59 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Item
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_items():
+    try:
+        # Extract pagination parameters from the request
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+
+        # Extract search term from the request
+        search_term = request.args.get('q', default=None, type=str)
+
+        # Query the database, applying search and ordering by name
+        query = Item.query.order_by(Item.name.asc())
+
+        # Apply search if search term is provided
+        if search_term:
+            search = f"%{search_term}%"
+            query = query.filter(Item.name.ilike(search))
+
+        # Paginate the query
+        paginated_items = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Prepare the list of items to return
+        item_list = []
+        for item in paginated_items.items:
+            item_data = item.to_dict()
+            item_list.append(item_data)
+
+        # Return the paginated and filtered items with status success
+        return jsonify({
+            "status": "success",
+            "status_code": 200,
+            "items": item_list,
+            "pagination": {
+                "total": paginated_items.total,
+                "pages": paginated_items.pages,
+                "current_page": paginated_items.page,
+                "per_page": paginated_items.per_page,
+                "next_page": paginated_items.next_num if paginated_items.has_next else None,
+                "prev_page": paginated_items.prev_num if paginated_items.has_prev else None
+            }
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@custom_jwt_required
+@permission_required
 def get_items():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +103,7 @@ def get_items():
 
 
 @custom_jwt_required
+@permission_required
 def add_item():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +157,7 @@ def add_item():
 
 
 @custom_jwt_required
+@permission_required
 def get_item(item_id):
     item = Item.query.filter_by(id=item_id, deleted_at=None).first()
     if item:
@@ -145,6 +194,7 @@ def get_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_item(item_id):
     item = Item.query.filter_by(id=item_id).first()
 
@@ -199,6 +249,7 @@ def edit_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_item(item_id):
     item = Item.query.filter_by(id=item_id, deleted_at=None).first()
 
@@ -244,6 +295,7 @@ def delete_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_item(item_id):
     item = Item.query.filter_by(id=item_id).first()
 

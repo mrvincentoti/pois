@@ -87,6 +87,13 @@
 	{"name":"can-see-affiliations","description":"Can See Affiliations","group":"affiliation","module_id":"4","method":"GET","route_path":"/affiliations"},
 	{"name":"can-create-affiliation","description":"Can Create Affiliation","group":"affiliation","module_id":"4","method":"POST","route_path":"/affiliations"},
 
+	{"name":"can-restore-arresting-body","description":"Can Restore Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_body/restore/<arresting_body_id>"},
+	{"name":"can-delete-arresting-body","description":"Can Delete Arresting Body","group":"arresting body","module_id":"4","method":"DELETE","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-update-arresting-body","description":"Can Update Arresting Body","group":"arresting body","module_id":"4","method":"PUT","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-view-arresting-body","description":"Can View Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_bodies/<arresting_body_id>"},
+	{"name":"can-see-arresting-body","description":"Can See Arresting Body","group":"arresting body","module_id":"4","method":"GET","route_path":"/arresting_bodies"},
+	{"name":"can-create-arresting-body","description":"Can Create Arresting Body","group":"arresting body","module_id":"4","method":"POST","route_path":"/arresting_bodies"},
+
 	{"name":"can-restore-category","description":"Can Restore Category","group":"category","module_id":"4","method":"GET","route_path":"/category/restore/<category_id>"},
 	{"name":"can-delete-category","description":"Can Delete Category","group":"category","module_id":"4","method":"DELETE","route_path":"/categories/<category_id>"},
 	{"name":"can-update-category","description":"Can Update Category","group":"category","module_id":"4","method":"PUT","route_path":"/categories/<category_id>"},
