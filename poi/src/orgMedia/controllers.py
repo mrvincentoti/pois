@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, generate_unique_ref_numb, allowed_file
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
+from urllib.parse import urljoin
 
 load_dotenv()
 
@@ -44,7 +45,7 @@ def get_media(media_id):
         "org_id": media_record.org_id,
         "media_caption": media_record.media_caption,
         "media_type": media_record.media_type,
-        "media_url": media_record.media_url,
+        "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media_record.media_url) if media_record.media_url else None,
         "created_by": media_record.created_by,
         "created_at": media_record.created_at.isoformat() if media_record.created_at else None,
     }
@@ -186,7 +187,7 @@ def get_org_media(org_id):
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
-                "media_url": media.media_url,
+                "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                 "media_caption": media.media_caption or 'No caption',
                 "org_id": org.id,
                 "org_name": org_name,
