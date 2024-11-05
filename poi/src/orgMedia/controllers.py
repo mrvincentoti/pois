@@ -5,7 +5,7 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, generate_unique_ref_numb, allowed_file
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
@@ -13,6 +13,7 @@ from urllib.parse import urljoin
 load_dotenv()
 
 @custom_jwt_required
+@permission_required
 def get_all_media():
     try:
         medias = OrgMedia.query.all()
@@ -32,6 +33,7 @@ def get_all_media():
 
 
 @custom_jwt_required
+@permission_required
 def get_media(media_id):
     # Fetch the media record
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -81,6 +83,7 @@ def get_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def add_org_media(org_id):
     org = Organisation.query.filter_by(id=org_id, deleted_at=None).first()
 
@@ -160,6 +163,7 @@ def add_org_media(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def get_org_media(org_id):
     try:
         # Extract pagination parameters from the request
@@ -246,6 +250,7 @@ def get_org_media(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -376,6 +381,7 @@ def edit_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -427,6 +433,7 @@ def delete_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
     media_record = OrgMedia.query.filter_by(id=media_id).first()
