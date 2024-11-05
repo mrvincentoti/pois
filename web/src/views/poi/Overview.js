@@ -41,6 +41,8 @@ const Overview = () => {
 					navigate('/not-found');
 				});
 		}
+		console.log(poiData);
+		
 	}, [fetchPoiDetails, loaded, navigate, params.id]);
 
 	const handleEditClick = id => {
@@ -131,6 +133,21 @@ const Overview = () => {
 														{poiData.marital_status || 'N/A'}
 													</td>
 												</tr>
+												{poiData?.poi_status?.id === 3 && <tr>
+													<th className="ps-0" scope="row">
+														Arresting Body :
+													</th>
+													<td className="text-muted">
+														{poiData?.arresting_body?.name || 'N/A'}
+													</td>
+
+													<th className="ps-0" scope="row">
+														Place Of Detention :
+													</th>
+													<td className="text-muted">
+														{poiData.place_of_detention || 'N/A'}
+													</td>
+												</tr>}
 											</tbody>
 										</table>
 									</div>

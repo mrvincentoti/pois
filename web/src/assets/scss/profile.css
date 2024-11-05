@@ -44,7 +44,7 @@
     display: none;
   }
 
-  #printButton, .page-title {
+  #printButton, .page-title, #backButton {
     display: none;
   }
 }

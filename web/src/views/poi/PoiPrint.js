@@ -62,7 +62,29 @@ const PoiPrint = () => {
 			<div className="container-fluid">
 				<div className="row">
 					<div className="col-md-12">
-						<div className="mb-3" style={{ textAlign: 'right' }}>
+						{/* <div className="mb-3" style={{ textAlign: 'right' }}>
+							<div className="flex-shrink-0">
+								<Button
+									id="printButton"
+									type="primary"
+									icon={<i className="ri-printer-line" />}
+									onClick={handlePrintPage}
+								>
+									Print
+								</Button>
+							</div>
+						</div> */}
+						<div className="mb-3" style={{ textAlign: 'right', display: 'flex', justifyContent: 'space-between' }}>
+							<div className="flex-shrink-0">
+								<Button
+									id="backButton"
+									type="primary"
+									icon={<i className="ri-arrow-left-line" />}
+									onClick={() => window.history.back()}
+								>
+									Back
+								</Button>
+							</div>
 							<div className="flex-shrink-0">
 								<Button
 									id="printButton"
@@ -74,6 +96,7 @@ const PoiPrint = () => {
 								</Button>
 							</div>
 						</div>
+
 						<div id="printDiv" className="chat-wrapper d-lg-flex gap-1 p-1" style={{border: '1px dashed #000'}}>
 							<div className="row">
 								<div className="col-6 border-right">

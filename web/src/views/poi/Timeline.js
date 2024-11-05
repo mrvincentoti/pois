@@ -224,9 +224,9 @@ const Timeline = ({ refreshPoiData }) => {
 
 		return (
 			<ActivityDetails
-				visible={showEditModal}
+				visible={showDetailsModal}
 				activity={selectedActivity}
-				closeModal={closeEditModal}
+				closeModal={closeDetailsModal}
 			/>
 		);
 	};
@@ -346,16 +346,6 @@ const Timeline = ({ refreshPoiData }) => {
 													>
 														Edit
 													</button>
-													{/*<button
-															className="btn btn-sm btn-outline-success"
-															onClick={() => addNotes(item)}>
-															Add Note
-														</button>
-														 <button
-															className="btn btn-sm btn-outline-warning"
-															onClick={() => addMedia(item)}>
-															Add Media
-														</button> */}
 													<button
 														className="btn btn-sm btn-success"
 														onClick={() => showDetails(item)}
@@ -393,7 +383,8 @@ const Timeline = ({ refreshPoiData }) => {
 					}}
 				/>
 			)}
-			{renderEditModal()}
+
+			{renderEditModal()}        
 			{renderDetailsModal()}
 		</>
 	);

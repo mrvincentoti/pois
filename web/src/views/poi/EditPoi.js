@@ -262,20 +262,21 @@ const EditPoi = () => {
 
 	const onSubmit = async values => {
 		convertNullToEmptyString(values);
-
 		try {
 			// Create a FormData object
 			const formData = new FormData();
 			// Append your values to FormData
 
-			if (maritalStatus) values.marital_status = maritalStatus;
+			if (maritalStatus) {
+				if (typeof maritalStatus === 'object' && maritalStatus !== null) {
+					values.marital_status = maritalStatus.name;
+				} else {
+					values.marital_status = maritalStatus;
+				}
+			}
+	
 			if (dateOfBirth) values.dob = dateOfBirth;
 			if (tags) values.alias = tags;
-			//console.log(values); return;
-
-			// for (const key in values) {
-			// 	formData.append(key, values[key]);
-			// }
 			for (const key in values) {
 				// Check if the value is an object and has a 'value' property
 				if (values[key] && typeof values[key] === 'object' && values[key].hasOwnProperty('value')) {
@@ -284,7 +285,6 @@ const EditPoi = () => {
 					formData.append(key, values[key]); // Append the value as is if it's not an object
 				}
 			}
-
 
 			// Function to append to formData only if the value exists
 			const appendIfExists = (key, value) => {
