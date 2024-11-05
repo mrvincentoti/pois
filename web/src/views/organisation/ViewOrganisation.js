@@ -37,6 +37,7 @@ import Overview from './Overview'; // Your components
 // import CrimeCommitted from './CrimeCommitted';
 import MediaAndDocument from './MediaAndDocument';
 import Activities from './Activities';
+import Timeline from './Timeline';
 import OperationalCapacity from './OperationalCapacity';
 
 const ViewOrganisation = () => {
@@ -115,84 +116,6 @@ const ViewOrganisation = () => {
 		setShowPrintModal(false);
 	};
 
-	const handlePrint = () => {
-		if (printRef.current) {
-			const printWindow = window.open('', '', 'width=1000,height=800');
-			printWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Print POI</title>
-                <style>
-                    /* Add your custom styles here */
-					@media print {
-					/* Adjust the layout for printing */
-					.row {
-						display: flex;
-						flex-wrap: nowrap; /* Ensure the columns stay on the same row */
-					}
-
-					.col {
-						flex: 0 0 auto; /* Reset flex properties to default */
-						width: auto; /* Reset width to auto */
-					}
-
-					/* Optionally, you can adjust specific columns' widths if needed */
-					.col-6 {
-						width: 50%; /* Make each column take up 50% of the row */
-					}
-					}
-
-
-					.setRight{
-					text-align: right !important;
-					}
-
-					.border-right{
-					border-right: 1px dashed black;
-					}
-
-					.printme{
-					display: none !important;
-					}
-					@media print {
-						.no-printme  {
-							display: none !important;
-						}
-						.printme  {
-							display: block !important;
-						}
-
-					.folder-list {
-						height: 100vh !important;
-					}
-					}
-
-                </style>
-            </head>
-            <body>
-                ${printRef.current.innerHTML}
-            </body>
-            </html>
-        `);
-
-			// Ensure the content is loaded before printing
-			printWindow.document.close();
-			printWindow.focus();
-
-			// Trigger the print dialog
-			printWindow.print();
-
-			// Close the window after printing is completed
-			printWindow.onafterprint = function () {
-				printWindow.close();
-			};
-		}
-
-		// Close the modal after the print operation
-		setShowPrintModal(false);
-	};
-
 	return (
 		<>
 			{loaded && orgData ? (
@@ -221,7 +144,8 @@ const ViewOrganisation = () => {
 											<div className="avatar-xl">
 												<div
 													className="avatar-title rounded-circle bg-light text-primary text-uppercase "
-													style={{ fontSize: '60px' }}>
+													style={{ fontSize: '60px' }}
+												>
 													{formatGetInitialsName(orgData)}
 												</div>
 											</div>
@@ -282,7 +206,8 @@ const ViewOrganisation = () => {
 										{/* Nav tabs */}
 										<ul
 											className="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1"
-											role="tablist">
+											role="tablist"
+										>
 											<li className="nav-item">
 												<a
 													style={{
@@ -292,7 +217,8 @@ const ViewOrganisation = () => {
 														activeTab === 'overview' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('overview')}
-													role="tab">
+													role="tab"
+												>
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Overview
@@ -320,7 +246,8 @@ const ViewOrganisation = () => {
 														activeTab === 'activities' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('activities')}
-													role="tab">
+													role="tab"
+												>
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Activities
@@ -336,7 +263,8 @@ const ViewOrganisation = () => {
 														activeTab === 'capacity' ? 'active' : ''
 													}`}
 													onClick={() => handleTabClick('capacity')}
-													role="tab">
+													role="tab"
+												>
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Operational Capacity
@@ -348,10 +276,12 @@ const ViewOrganisation = () => {
 													style={{
 														cursor: 'pointer',
 													}}
-													className={`nav-link fs-14 ${activeTab === 'media' ? 'active' : ''
-														}`}
+													className={`nav-link fs-14 ${
+														activeTab === 'media' ? 'active' : ''
+													}`}
 													onClick={() => handleTabClick('media')}
-													role="tab">
+													role="tab"
+												>
 													<i className="ri-airplay-fill d-inline-block d-md-none"></i>
 													<span className="d-none d-md-inline-block">
 														Files
@@ -362,7 +292,8 @@ const ViewOrganisation = () => {
 										<div className="flex-shrink-0">
 											<a
 												className="btn btn-info"
-												onClick={() => openPrintModal()}>
+												onClick={() => openPrintModal()}
+											>
 												<i className="ri-edit-box-line align-bottom"></i> Print
 											</a>
 										</div>
@@ -372,7 +303,8 @@ const ViewOrganisation = () => {
 										<div
 											className="tab-pane active"
 											id="overview-tab"
-											role="tabpanel">
+											role="tabpanel"
+										>
 											<div className="row">
 												<div className="col-xxl-12 col-lg-12">
 													{activeTab === 'overview' && (
@@ -385,7 +317,7 @@ const ViewOrganisation = () => {
 														<MediaAndDocument refreshOrgData={refreshOrgData} />
 													)}
 													{activeTab === 'activities' && (
-														<Activities refreshOrgData={refreshOrgData} />
+														<Timeline refreshOrgData={refreshOrgData} />
 													)}
 													{activeTab === 'capacity' && (
 														<OperationalCapacity
@@ -418,11 +350,12 @@ const ViewOrganisation = () => {
 					<Button key="back" onClick={closePrintModal}>
 						Cancel
 					</Button>,
-					<Button key="print" type="primary" onClick={handlePrint}>
+					<Button key="print" type="primary">
 						Print
 					</Button>,
 				]}
-				width={1000}>
+				width={1000}
+			>
 				{/* <div ref={printRef}>
                     <PoiPrint poiData={poiData} />
                 </div> */}
