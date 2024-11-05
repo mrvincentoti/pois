@@ -3,6 +3,7 @@ from datetime import datetime
 from .. import db
 import os
 import uuid
+from urllib.parse import urljoin
 from .models import OrgActivity
 from ..activityItem.models import ActivityItem
 from ..organisation.models import Organisation
@@ -281,19 +282,19 @@ def edit_activity(activity_id):
         created_by = g.user["id"]
 
         # Update basic activity details
-        activity.type_id = type_id
-        activity.org_id = org_id
-        activity.title = title
-        activity.crime_id = crime_id
-        activity.casualties_recorded = casualties_recorded
-        activity.nature_of_attack = nature_of_attack
-        activity.location = location
-        activity.action_taken = action_taken
-        activity.location_from = location_from
-        activity.location_to = location_to
-        activity.facilitator = facilitator
-        activity.comment = comment
-        activity.activity_date = activity_date
+        activity.type_id = type_id if type_id else activity.type_id
+        activity.org_id = org_id if org_id else activity.org_id
+        activity.title = title if title else activity.title 
+        activity.crime_id = crime_id if crime_id else activity.crime_id
+        activity.casualties_recorded = casualties_recorded if casualties_recorded else activity.casualties_recorded 
+        activity.nature_of_attack = nature_of_attack if nature_of_attack else activity.nature_of_attack 
+        activity.location = location if location else activity.location
+        activity.action_taken = action_taken if action_taken else activity.action_taken
+        activity.location_from = location_from if location_from else location_from
+        activity.location_to = location_to if location_to else activity.location_to
+        activity.facilitator = facilitator if facilitator else activity.facilitator 
+        activity.comment = comment if comment else activity.comment
+        activity.activity_date = activity_date if activity_date else  activity.activity_date
         activity.updated_at = datetime.utcnow()
 
         # Getting updated items and quantities as lists
@@ -552,6 +553,7 @@ def get_activities_by_org(org_id):
             media_data = [
                 {
                     "media_url": media.media_url,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                     "media_type": media.media_type,
                     "media_caption": media.media_caption,
                     "activity_id": media.activity_id,
@@ -567,7 +569,7 @@ def get_activities_by_org(org_id):
                 2: "Procurement",
                 3: "Items Carted Away",
                 4: "Press Release",
-                5: "Other"
+                5: "Others"
             }
 
             # Get activity type based on type_id
@@ -593,7 +595,7 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": "org"
+                "activity_type": activity_type
             })
 
         # Process POI activities

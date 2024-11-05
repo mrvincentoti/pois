@@ -117,7 +117,7 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(type));
-			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('org_id', parseInt(params.id));
 			appendIfExists('title', values.title || null);
 			appendIfExists('crime_id', parseInt(values.crime_id) || null);
 			appendIfExists('location', values.location || null);

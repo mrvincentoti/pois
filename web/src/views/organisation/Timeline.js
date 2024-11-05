@@ -5,7 +5,7 @@ import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 //import NewEditCrime from './NewEditCrime';
 import AppPagination from '../../components/AppPagination';
 import NoResult from '../../components/NoResult';
-import ManageActivities from '../../modals/ManageActivities';
+import ManageOrgActivities from '../../modals/ManageOrgActivities';
 import ManageArmsRecovered from '../../modals/ManageArmsRecovered'; // Import the new modal for managing arms
 import ManageCrimesMedia from '../../modals/ManageCrimesMedia'; // Import the new modal for managing media
 //import CrimeDetailsModal from './CrimeDetailsModal';
@@ -28,20 +28,14 @@ import { APP_SHORT_NAME, limit, paginate } from '../../services/constants';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 
-import EditAttack from '../../modals/EditAttack';
-import EditProcurement from '../../modals/EditProcurement';
-import EditItemsCartedAway from '../../modals/EditItemsCartedAway';
-import EditPressRelease from '../../modals/EditPressRelease';
-import EditOthers from '../../modals/EditOthers';
-
-import AttackDetails from '../../modals/AttackDetails'; // Import Attack Details modal
-import ProcurementDetails from '../../modals/ProcurementDetails'; // Import Procurement Details modal
-import ItemsCartedAwayDetails from '../../modals/ItemsCartedAwayDetails'; // Import Items Carted Away Details modal
-import PressReleaseDetails from '../../modals/PressReleaseDetails'; // Import Press Release Details modal
-import OtherDetails from '../../modals/OtherDetails'; // Import Other Details modal
+// import EditAttack from '../../modals/Organisation/EditAttack';
+// import EditProcurement from '../../modals/Organisation/EditProcurement';
+// import EditItemsCartedAway from '../../modals/Organisation/EditItemsCartedAway';
+// import EditPressRelease from '../../modals/Organisation/EditPressRelease';
+import EditOthers from '../../modals/Organisation/EditOthers';
 import ActivityDetails from '../../modals/ActivityDetails';
 
-const Timeline = ({ refreshPoiData }) => {
+const Timeline = ({ refreshOrgData }) => {
 	const [loaded, setLoaded] = useState(false);
 	const [crimesData, setCrimesData] = useState([]);
 	const [activitiesData, setActivitiesData] = useState([]);
@@ -131,40 +125,39 @@ const Timeline = ({ refreshPoiData }) => {
 
 	const renderEditModal = () => {
 		if (!selectedActivity || !showEditModal) return null;
-
 		switch (selectedActivity.activity_type) {
-			case 'Attack':
-				return (
-					<EditAttack
-						visible={showEditModal}
-						activity={selectedActivity}
-						closeModal={closeEditModal}
-					/>
-				);
-			case 'Procurement':
-				return (
-					<EditProcurement
-						visible={showEditModal}
-						activity={selectedActivity}
-						closeModal={closeEditModal}
-					/>
-				);
-			case 'Items Carted Away':
-				return (
-					<EditItemsCartedAway
-						visible={showEditModal}
-						activity={selectedActivity}
-						closeModal={closeEditModal}
-					/>
-				);
-			case 'Press Release':
-				return (
-					<EditPressRelease
-						visible={showEditModal}
-						activity={selectedActivity}
-						closeModal={closeEditModal}
-					/>
-				);
+			// case 'Attack':
+			// 	return (
+			// 		<EditAttack
+			// 			visible={showEditModal}
+			// 			activity={selectedActivity}
+			// 			closeModal={closeEditModal}
+			// 		/>
+			// 	);
+			// case 'Procurement':
+			// 	return (
+			// 		<EditProcurement
+			// 			visible={showEditModal}
+			// 			activity={selectedActivity}
+			// 			closeModal={closeEditModal}
+			// 		/>
+			// 	);
+			// case 'Items Carted Away':
+			// 	return (
+			// 		<EditItemsCartedAway
+			// 			visible={showEditModal}
+			// 			activity={selectedActivity}
+			// 			closeModal={closeEditModal}
+			// 		/>
+			// 	);
+			// case 'Press Release':
+			// 	return (
+			// 		<EditPressRelease
+			// 			visible={showEditModal}
+			// 			activity={selectedActivity}
+			// 			closeModal={closeEditModal}
+			// 		/>
+			// 	);
 			case 'Others':
 				return (
 					<EditOthers
@@ -380,12 +373,12 @@ const Timeline = ({ refreshPoiData }) => {
 				)}
 			</div>
 			{showModal && (
-				<ManageActivities
+				<ManageOrgActivities
 					closeModal={closeModal}
 					activities={activities}
 					update={async () => {
 						await refreshTable();
-						refreshPoiData();
+						refreshOrgData();
 					}}
 				/>
 			)}
