@@ -12,7 +12,7 @@ from ..activities.models import Activity
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, minio_client
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, permission_required
 
 load_dotenv()
 
@@ -20,6 +20,7 @@ def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+@permission_required
 def get_activities():
     try:
         activities = OrgActivity.query.all()
@@ -39,6 +40,7 @@ def get_activities():
 
 
 @custom_jwt_required
+@permission_required
 def add_activity():
     if request.method == "POST":
         try:
@@ -169,6 +171,7 @@ def add_activity():
 
 
 @custom_jwt_required
+@permission_required
 def get_activity(activity_id):
     # Fetch the activity by ID, ensuring it's not deleted
     activity = OrgActivity.query.filter_by(id=activity_id, deleted_at=None).first()
@@ -253,6 +256,7 @@ def get_activity(activity_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_activity(activity_id):
     activity = OrgActivity.query.filter_by(id=activity_id, deleted_at=None).first()
 
@@ -403,6 +407,7 @@ def edit_activity(activity_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_activity(activity_id):
     try:
         activity = OrgActivity.query.filter_by(id=activity_id, deleted_at=None).first()
@@ -449,6 +454,7 @@ def delete_activity(activity_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_activity(activity_id):
     try:
         activity = OrgActivity.query.filter(
@@ -498,6 +504,7 @@ def restore_activity(activity_id):
 
 
 @custom_jwt_required
+@permission_required
 def get_activities_by_org(org_id):
     try:
         # Get search and pagination parameters from request arguments
