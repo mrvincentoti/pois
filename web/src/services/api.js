@@ -245,12 +245,14 @@ export const FETCH_POI_CATEGORY_API = `${BASE_POI_URL}/poi-categories`;
 export const FETCH_ORG_CATEGORY_API = `${BASE_POI_URL}/org-categories`;
 
 // sources api
+export const LIST_SOURCES_API = `${BASE_POI_URL}/list-sources`;
 export const FETCH_SOURCES_API = `${BASE_POI_URL}/sources`;
 export const CREATE_SOURCES_API = `${BASE_POI_URL}/sources`;
 export const UPDATE_SOURCES_API = `${BASE_POI_URL}/sources/:id`;
 export const DELETE_SOURCES_API = `${BASE_POI_URL}/sources/:id`;
 
 // Affiliations api
+export const LIST_AFFILIATIONS_API = `${BASE_POI_URL}/list-affiliations`;
 export const FETCH_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations`;
 export const CREATE_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations`;
 export const UPDATE_AFFILIATIONS_API = `${BASE_POI_URL}/affiliations/:id`;
@@ -262,18 +264,21 @@ export const CREATE_CRIMES_COMMITTED_API = `${BASE_POI_URL}/crimes_committed`;
 export const UPDATE_CRIMES_COMMITTED_API = `${BASE_POI_URL}/crimes_committed/:id`;
 
 //Arresting Body
+export const LIST_ARRESTING_BODY_API = `${BASE_POI_URL}/list-arresting_bodies`;
 export const FETCH_ARRESTING_BODY_API = `${BASE_POI_URL}/arresting_bodies`;
 export const DELETE_ARRESTING_BODY_API = `${BASE_POI_URL}/arresting_bodies/:id`;
 export const CREATE_ARRESTING_BODY_API = `${BASE_POI_URL}/arresting_bodies`;
 export const UPDATE_ARRESTING_BODY_API = `${BASE_POI_URL}/arresting_bodies/:id`;
 
 //Fetch crimes
+export const LIST_CRIMES_API = `${BASE_POI_URL}/list-crimes`;
 export const FETCH_CRIMES_API = `${BASE_POI_URL}/crimes`;
 export const DELETE_CRIMES_API = `${BASE_POI_URL}/crimes/:id`;
 export const CREATE_CRIMES_API = `${BASE_POI_URL}/crimes`;
 export const UPDATE_CRIMES_API = `${BASE_POI_URL}/crimes/:id`;
-
+ 
 // Organisation api
+export const LIST_ORG_API = `${BASE_POI_URL}/list-organisations`;
 export const FETCH_ORG_API = `${BASE_POI_URL}/organisations`;
 export const UPDATE_ORG_API = `${BASE_POI_URL}/organisation/:id`;
 export const GET_ORG_API = `${BASE_POI_URL}/organisation/:id`;
@@ -281,7 +286,7 @@ export const DELETE_ORG_MEDIA_API = `${BASE_POI_URL}/org-media/:id`;
 export const FETCH_ORG_MEDIA_API = `${BASE_POI_URL}/org-medias/:id`;
 export const CREATE_ORG_MEDIA_API = `${BASE_POI_URL}/org-medias/:id`;
 export const UPDATE_ORG_MEDIA_API = `${BASE_POI_URL}/org-media/:id`;
-export const FETCH_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org-activities/:id`;
+export const FETCH_ORG_ACTIVITIES_API = `${BASE_POI_URL}/list-org-activities/:id`;
 export const CREATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities`;
 export const UPDATE_ORG_ACTIVITIES_API = `${BASE_POI_URL}/org/activities/`;
 export const GET_ORGS_CAPACITIES_API = `${BASE_POI_URL}/org-operational-capacities/:id`;
@@ -303,13 +308,14 @@ export const UPDATE_ACTIVITIES_API = `${BASE_POI_URL}/activities/:id`;
 export const GET_ACTIVITIES_API = `${BASE_POI_URL}/activities/:id`;
 
 // Arms recovered
-export const FETCH_ARMS_API = `${BASE_POI_URL}/arms`;
 export const CREATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms`;
 export const UPDATE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/`;
 export const FETCH_ARMS_RECOVERED_API = `${BASE_POI_URL}/poi-recovered-arms/:id`;
 export const DELETE_ARMS_RECOVERED_API = `${BASE_POI_URL}/recovered-arms/:id`;
 
 //Arms
+export const LIST_ARMS_API = `${BASE_POI_URL}/list-arms`;
+export const FETCH_ARMS_API = `${BASE_POI_URL}/arms`;
 export const DELETE_ARMS_API = `${BASE_POI_URL}/arms/:id`;
 export const CREATE_ARMS_API = `${BASE_POI_URL}/arms`;
 export const UPDATE_ARMS_API = `${BASE_POI_URL}/arms/:id`;

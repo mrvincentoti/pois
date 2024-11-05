@@ -5,13 +5,15 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, generate_unique_ref_numb, allowed_file
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
+from urllib.parse import urljoin
 
 load_dotenv()
 
 @custom_jwt_required
+@permission_required
 def get_all_media():
     try:
         medias = OrgMedia.query.all()
@@ -31,6 +33,7 @@ def get_all_media():
 
 
 @custom_jwt_required
+@permission_required
 def get_media(media_id):
     # Fetch the media record
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -44,7 +47,7 @@ def get_media(media_id):
         "org_id": media_record.org_id,
         "media_caption": media_record.media_caption,
         "media_type": media_record.media_type,
-        "media_url": media_record.media_url,
+        "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media_record.media_url) if media_record.media_url else None,
         "created_by": media_record.created_by,
         "created_at": media_record.created_at.isoformat() if media_record.created_at else None,
     }
@@ -80,6 +83,7 @@ def get_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def add_org_media(org_id):
     org = Organisation.query.filter_by(id=org_id, deleted_at=None).first()
 
@@ -159,6 +163,7 @@ def add_org_media(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def get_org_media(org_id):
     try:
         # Extract pagination parameters from the request
@@ -186,7 +191,7 @@ def get_org_media(org_id):
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
-                "media_url": media.media_url,
+                "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                 "media_caption": media.media_caption or 'No caption',
                 "org_id": org.id,
                 "org_name": org_name,
@@ -245,6 +250,7 @@ def get_org_media(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -375,6 +381,7 @@ def edit_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_media(media_id):
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -426,6 +433,7 @@ def delete_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
     media_record = OrgMedia.query.filter_by(id=media_id).first()

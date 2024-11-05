@@ -1,9 +1,14 @@
 from flask import request
 from ..app import app
 from .controllers import (
-    create_organisation, get_organisations, get_organisation, update_organisation, delete_organisation, restore_organisation
+    create_organisation, get_organisations, get_organisation, update_organisation, delete_organisation, restore_organisation, list_organisations
 )
 
+@app.route("/list-organisations", methods=['GET'])
+def get_organisations_list():
+    if request.method == 'GET': return list_organisations()
+    else: return 'Method is Not Allowed'
+    
 @app.route("/organisations", methods=['GET', 'POST'])
 def organisations_list_create():
     if request.method == 'GET': return get_organisations()

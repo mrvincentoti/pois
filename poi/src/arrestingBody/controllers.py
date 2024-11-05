@@ -4,12 +4,48 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import ArrestingBody
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
+
 @custom_jwt_required
+def list_arresting_bodies():
+    query = ArrestingBody.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(ArrestingBody.name.asc()).all()
+
+        # Format response
+        arresting_bodies_list = []
+        for arresting_body in query:
+            # Fetch only the required attributes
+            arresting_bodies_data = {
+                'id': arresting_body.id,            
+                'name': arresting_body.name
+            }
+            arresting_bodies_list.append(arresting_bodies_data)
+
+        response = {
+            'arresting_bodies': arresting_bodies_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the arresting bodies: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+    
+
+@custom_jwt_required
+@permission_required
 def get_arresting_bodies():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +92,7 @@ def get_arresting_bodies():
 
 
 @custom_jwt_required
+@permission_required
 def add_arresting_body():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +146,7 @@ def add_arresting_body():
 
 
 @custom_jwt_required
+@permission_required
 def get_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
     if arresting_body:
@@ -145,6 +183,7 @@ def get_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 
@@ -199,6 +238,7 @@ def edit_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id, deleted_at=None).first()
 
@@ -244,6 +284,7 @@ def delete_arresting_body(arresting_body_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_arresting_body(arresting_body_id):
     arresting_body = ArrestingBody.query.filter_by(id=arresting_body_id).first()
 

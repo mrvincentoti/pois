@@ -4,12 +4,47 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Item
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_items():
+    query = Item.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(Item.name.asc()).all()
+
+        # Format response
+        items_list = []
+        for item in query:
+            # Fetch only the required attributes
+            items_data = {
+                'id': item.id,            
+                'name': item.name
+            }
+            items_list.append(items_data)
+
+        response = {
+            'items': items_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the items: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+    
+
+@custom_jwt_required
+@permission_required
 def get_items():
     try:
         # Extract pagination parameters from the request
@@ -56,6 +91,7 @@ def get_items():
 
 
 @custom_jwt_required
+@permission_required
 def add_item():
     if request.method == "POST":
         data = request.get_json()
@@ -109,6 +145,7 @@ def add_item():
 
 
 @custom_jwt_required
+@permission_required
 def get_item(item_id):
     item = Item.query.filter_by(id=item_id, deleted_at=None).first()
     if item:
@@ -145,6 +182,7 @@ def get_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_item(item_id):
     item = Item.query.filter_by(id=item_id).first()
 
@@ -199,6 +237,7 @@ def edit_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_item(item_id):
     item = Item.query.filter_by(id=item_id, deleted_at=None).first()
 
@@ -244,6 +283,7 @@ def delete_item(item_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_item(item_id):
     item = Item.query.filter_by(id=item_id).first()
 

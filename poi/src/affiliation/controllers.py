@@ -4,12 +4,47 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Affiliation
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+def list_affiliations():
+    query = Affiliation.query
+    try:
+        # Sort and paginate the results
+        query = query.order_by(Affiliation.name.asc()).all()
+
+        # Format response
+        affiliation_list = []
+        for affiliation in query:
+            # Fetch only the required attributes
+            affiliation_data = {
+                'id': affiliation.id,            
+                'name': affiliation.name
+            }
+            affiliation_list.append(affiliation_data)
+
+        response = {
+            'affiliations': affiliation_list,
+            'status': 'success',
+            'status_code': 200
+        }
+
+    except Exception as e:
+        db.session.rollback()
+        response = {
+            'status': 'error',
+            'status_code': 500,
+            'message': f"An error occurred while fetching the affiliations: {str(e)}"
+        }
+
+    return jsonify(response), response.get('status_code', 500)
+
+
+@custom_jwt_required
+@permission_required
 def get_affiliations():
     try:
         # Extract pagination parameters from the request
@@ -72,6 +107,7 @@ def get_affiliations():
 
 
 @custom_jwt_required
+@permission_required
 def add_affiliation():
     if request.method == "POST":
         data = request.get_json()
@@ -124,6 +160,7 @@ def add_affiliation():
 
 
 @custom_jwt_required
+@permission_required
 def get_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id, deleted_at=None).first()
     if affiliation:
@@ -160,6 +197,7 @@ def get_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id).first()
 
@@ -214,6 +252,7 @@ def edit_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id, deleted_at=None).first()
 
@@ -258,6 +297,7 @@ def delete_affiliation(affiliation_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_affiliation(affiliation_id):
     affiliation = Affiliation.query.filter_by(id=affiliation_id).first()
 

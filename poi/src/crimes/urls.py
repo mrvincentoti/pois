@@ -1,12 +1,17 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_crime, get_crimes, get_crime, edit_crime, delete_crime,restore_crime
+from .controllers import add_crime, get_crimes, get_crime, edit_crime, delete_crime, restore_crime, list_crimes
 from .models import Crime
 
 
+@app.route("/list-crimes", methods=['GET'])
+def get_list_crimes():
+    if request.method == 'GET': return list_crimes()
+    else: return 'Method is Not Allowed'
+    
 @app.route("/crimes", methods=['GET', 'POST'])
-def list_crimes():
+def get_add_crimes():
     if request.method == 'GET': return get_crimes()
     if request.method == 'POST': return add_crime()
     else: return 'Method is Not Allowed'
