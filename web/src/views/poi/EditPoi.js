@@ -268,6 +268,7 @@ const EditPoi = () => {
 
 	const onSubmit = async values => {
 		convertNullToEmptyString(values);
+		
 		try {
 			// Create a FormData object
 			const formData = new FormData();
@@ -320,7 +321,7 @@ const EditPoi = () => {
 			if (values.source) {
 				formData.append('source_id', source || '');
 			}
-			if (values.organisation) {
+			if (organisation) {
 				formData.append('organisation_id', organisation || '');
 			}
 			if (values.gender) {
@@ -400,7 +401,6 @@ const EditPoi = () => {
 		setStates([]); // Clear the states when a new country is selected
 		fetchStates(value); // Fetch the states for the selected country
 	};
-	console.log(poi);
 
 	return (
 		<div className="container-fluid">
@@ -414,25 +414,6 @@ const EditPoi = () => {
 						country: poi?.country,
 						state: poi?.state,
 						arresting_body_id: poi?.arresting_body?.id || '',
-						// country_id: poi?.country
-						// 	? {
-						// 		value: poi.country.id, // Use the ID for value
-						// 		label: poi.country.en_short_name || poi.country.name, // Use the correct name for label
-						// 	}
-						// 	: '',
-						// state_id: poi?.state
-						// 	? {
-						// 		value: poi.state.id, // Use the ID for value
-						// 		label: poi.state.name, // Use the state name for label
-						// 	}
-						// 	: '',
-						// affiliation:
-						// 	poi?.affiliation_ids.split(',').map(a => {
-						// 		const affiliation = allAffiliations.find(
-						// 			item => item.id === Number(a)
-						// 		);
-						// 		return { label: affiliation?.name || '', value: Number(a) };
-						// 	}) || '',
 					}}
 					onSubmit={onSubmit}
 					validate={values => {
