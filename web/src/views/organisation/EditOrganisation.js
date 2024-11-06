@@ -258,6 +258,9 @@ const EditOrganisation = () => {
 	const handleChangeSource = value => {
 		setSource(value);
 	};
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
 
 	// Function to convert null or undefined values to an empty string
 	const convertNullToEmptyString = obj => {
@@ -370,7 +373,8 @@ const EditOrganisation = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'Organisation updated successfully');
-				navigate(`/org/organisation/${values.category.id}`);
+				// navigate(`/org/organisation/${values.category.id}`);
+				navigate(-1);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -1013,11 +1017,15 @@ const EditOrganisation = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link to="/pois/poi" className="btn btn-danger w-sm me-1">
+										<button
+											type="button"
+											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}
+										>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
-											Update
+											Update POI
 										</button>
 									</div>
 								</div>
