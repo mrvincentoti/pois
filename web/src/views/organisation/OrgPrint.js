@@ -221,7 +221,7 @@ const OrgPrint = () => {
 															<h6 className="fs-14 mb-2 text-black">
 																Affiliation :{' '}
 																<span className="text-muted mb-0">
-																	{OrgData?.affiliations?.name || 'N/A'}
+																	{OrgData?.affiliation?.name || 'N/A'}
 																</span>
 															</h6>
 															<h6 className="fs-14 mb-2 text-black">
