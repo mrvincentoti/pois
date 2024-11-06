@@ -13,7 +13,7 @@ from ..activities.models import Activity
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, permission_required
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, permission_required, allowed_file
 
 load_dotenv()
 
@@ -197,7 +197,7 @@ def get_activity(activity_id):
         media_files = OrgMedia.query.filter_by(activity_id=activity.id).all()
         media_data = [
             {
-                "media_url": media.media_url,
+                "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT", "/"), media.media_url) if media.media_url else None,
                 "media_type": media.media_type,
                 "media_caption": media.media_caption,
                 "activity_id": media.activity_id,
@@ -612,7 +612,7 @@ def get_activities_by_org(org_id):
             media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
-                    "media_url": media.media_url,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                     "media_type": media.media_type,
                     "media_caption": media.media_caption,
                     "activity_id": media.activity_id,
@@ -674,7 +674,3 @@ def get_activities_by_org(org_id):
         return jsonify({"error": str(e)}), 500
     
 
-def allowed_file(filename):
-    # Define allowed file extensions
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs','zip','docx','csv'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

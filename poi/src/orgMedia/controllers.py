@@ -231,8 +231,9 @@ def get_org_media(org_id):
             "status_code": 200,
             "current_page": page,
             "media": media_list,
-            "pages": org_media_paginated.pages,
+            "pages": max(org_media_paginated.pages, poi_media_paginated.pages),
             "per_page": per_page,
+            "total": org_media_paginated.total + poi_media_paginated.total,  
             "total_org_media": org_media_paginated.total,
             "total_poi_media": poi_media_paginated.total
         })
