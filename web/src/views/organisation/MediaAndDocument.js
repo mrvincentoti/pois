@@ -20,7 +20,7 @@ import { DELETE_ORG_MEDIA_API, FETCH_ORG_MEDIA_API } from '../../services/api';
 import AddMedia from './AddMedia';
 
 // PreviewModal Component
-const PreviewModal = ({ media, onClose }) => {
+const PreviewModal = ({ media, closePreviewMedia }) => {
     return (
         <div className="modal show" tabIndex="-1" style={{ display: 'block' }}>
             <div className="modal-dialog modal-lg">
@@ -30,7 +30,7 @@ const PreviewModal = ({ media, onClose }) => {
                         <button
                             type="button"
                             className="btn-close"
-                            onClick={onClose}
+                            onClick={closePreviewMedia}
                         ></button>
                     </div>
                     <div className="modal-body">
@@ -146,9 +146,16 @@ const MediaAndDocument = () => {
 
     const previewMedia = (item) => {
         document.body.classList.add('modal-open');
-        setSelectedMediaFile(item);
-        setShowPreviewModal(true);
+        // setSelectedMediaFile(item); 
+        setMediaForPreview(item)
+        setShowPreview(true)
     };
+
+    const closePreviewMedia = () => {
+        document.body.classList.remove('modal-open');
+        setMediaForPreview(null)
+        setShowPreview(false)
+    }
 
     const refreshTable = async () => {
         setWorking(true);
@@ -287,10 +294,7 @@ const MediaAndDocument = () => {
                     {showPreview && (
                         <PreviewModal
                             media={mediaForPreview}
-                            onClose={() => {
-                                setShowPreview(false);
-                                setMediaForPreview(null);
-                            }}
+                            closePreviewMedia={() => closePreviewMedia()}
                         />
                     )}
                 </div>
