@@ -6,6 +6,7 @@ from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required, minio_client
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required, minio_client
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin

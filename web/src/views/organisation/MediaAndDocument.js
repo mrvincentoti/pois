@@ -18,10 +18,9 @@ import TitleSearchBar from '../../components/TitleSearchBar';
 import { DeleteButton, EditButton } from '../../components/Buttons';
 import { DELETE_ORG_MEDIA_API, FETCH_ORG_MEDIA_API } from '../../services/api';
 import AddMedia from './AddMedia';
-import PreviewMedia from './PreviewMedia';
 
 // PreviewModal Component
-const PreviewModal = ({ media, onClose }) => {
+const PreviewModal = ({ media, closePreviewMedia }) => {
     return (
         <div className="modal show" tabIndex="-1" style={{ display: 'block' }}>
             <div className="modal-dialog modal-lg">
@@ -31,7 +30,7 @@ const PreviewModal = ({ media, onClose }) => {
                         <button
                             type="button"
                             className="btn-close"
-                            onClick={onClose}
+                            onClick={closePreviewMedia}
                         ></button>
                     </div>
                     <div className="modal-body">
@@ -79,13 +78,13 @@ const MediaAndDocument = () => {
 
 	const [showPreview, setShowPreview] = useState(false);
 	const [mediaForPreview, setMediaForPreview] = useState(null);
-	const [showPreviewModal, setShowPreviewModal] = useState(false);
-	const [selectedMediaFile, setSelectedMediaFile] = useState(null);
 
     const [page, setPage] = useState(null);
     const [search, setSearch] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [queryLimit, setQueryLimit] = useState(limit);
+    const [selectedMediaFile, setSelectedMediaFile] = useState(null);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
 
     const params = useParams();
     const query = useQuery();
@@ -145,6 +144,19 @@ const MediaAndDocument = () => {
         document.body.classList.remove('modal-open');
     };
 
+    const previewMedia = (item) => {
+        document.body.classList.add('modal-open');
+        // setSelectedMediaFile(item); 
+        setMediaForPreview(item)
+        setShowPreview(true)
+    };
+
+    const closePreviewMedia = () => {
+        document.body.classList.remove('modal-open');
+        setMediaForPreview(null)
+        setShowPreview(false)
+    }
+
     const refreshTable = async () => {
         setWorking(true);
         const _limit = Number(query.get('entries_per_page') || limit);
@@ -173,12 +185,6 @@ const MediaAndDocument = () => {
     const min = useMemo(() => {
         return meta.per_page * (meta.current_page - 1) + 1;
     }, [meta.per_page, meta.current_page]);
-
-    const previewMedia = item => {
-			document.body.classList.add('modal-open');
-			setSelectedMediaFile(item);
-			setShowPreviewModal(true);
-		};
 
 		const closeModalMedia = () => {
 			setShowPreviewModal(false);
@@ -306,30 +312,16 @@ const MediaAndDocument = () => {
 							/>
 						)}
 
-						{showPreview && (
-							<PreviewModal
-								media={mediaForPreview}
-								onClose={() => {
-									setShowPreview(false);
-									setMediaForPreview(null);
-								}}
-							/>
-						)}
-
-						{showPreviewModal && (
-							<PreviewMedia
-								id={params.id}
-								selectedMediaFile={selectedMediaFile}
-								closeModalMedia={() => closeModalMedia()}
-								update={async () => {
-									await refreshTable().then(() => setWorking(false));
-								}}
-							/>
-						)}
-					</div>
-				</div>
-			</div>
-		);
+                    {showPreview && (
+                        <PreviewModal
+                            media={mediaForPreview}
+                            closePreviewMedia={() => closePreviewMedia()}
+                        />
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default MediaAndDocument;
