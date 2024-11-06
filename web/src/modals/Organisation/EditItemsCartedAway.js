@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import Select from 'react-select';
-import ModalWrapper from '../container/ModalWrapper';
-import { notifyWithIcon, request, createHeaders } from '../services/utilities';
-import { FETCH_CRIMES_API, UPDATE_ACTIVITIES_API } from '../services/api';
-import { ErrorBlock, error, FormSubmitError } from '../components/FormBlock';
+import ModalWrapper from '../../container/ModalWrapper';
+import {
+	notifyWithIcon,
+	request,
+	createHeaders,
+} from '../../services/utilities';
+import {
+	FETCH_CRIMES_API,
+	UPDATE_ORG_ACTIVITIES_API,
+	FETCH_ARMS_API,
+} from '../../services/api';
+import { ErrorBlock, error, FormSubmitError } from '../../components/FormBlock';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import { Upload, Button } from 'antd';
@@ -16,7 +24,7 @@ import {
 	PlusOutlined,
 } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import FormWrapper from '../container/FormWrapper';
+import FormWrapper from '../../container/FormWrapper';
 
 const EditItemsCartedAway = ({ closeModal, activity }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -25,11 +33,32 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 	const [activityDate, setActivityDate] = useState(null);
 	const [fileList, setFileList] = useState([{ file: null, caption: '' }]);
 	const [items, setItems] = useState([{ item: '', qty: '' }]);
+	const [itemsOptions, setItemsOptions] = useState([]);
 	const params = useParams();
+
+	// Fetch items for dropdown options
+	const loadItems = useCallback(async () => {
+		const response = await request(FETCH_ARMS_API); // Replace with your actual API
+		const item_options = response.items || [];
+		setItemsOptions(item_options);
+		console.log(activity);
+		const preSelectedItems = activity.items.map(item => {
+			const _item = item_options.find(
+				option => option.id === Number(item.item)
+			);
+			return {
+				item: _item?.id || null, // Ensure this has full item details
+				qty: item.qty,
+			};
+		});
+		console.log(preSelectedItems);
+		setItems(preSelectedItems);
+	}, []);
 
 	useEffect(() => {
 		// Pre-fill form data on initial load
 		if (activity && !loaded) {
+			loadItems();
 			console.log('Setting initialValues:', activity);
 			setInitialValues({
 				type_id: activity.type_id,
@@ -53,7 +82,7 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 			// loadCrimes();
 			setLoaded(true);
 		}
-	}, [activity, loaded]);
+	}, [activity, loaded, loadItems]);
 
 	const onSubmit = async values => {
 		try {
@@ -66,7 +95,7 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
-			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('org_id', parseInt(params.id));
 			appendIfExists('title', values.title || null);
 			appendIfExists('location', values.location || null);
 			const formattedDate = values.activity_date
@@ -111,7 +140,7 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 			});
 
 			const response = await fetch(
-				UPDATE_ACTIVITIES_API.replace(':id', activity.id),
+				UPDATE_ORG_ACTIVITIES_API.replace(':id', activity.id),
 				{
 					method: 'PUT',
 					body: formData,
@@ -138,9 +167,14 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 	};
 
 	// Handle change for item and quantity fields
+	// const handleItemChange = (index, field, value) => {
+	// 	const newItems = [...items];
+	// 	newItems[index][field] = value;
+	// 	setItems(newItems);
+	// };
 	const handleItemChange = (index, field, value) => {
 		const newItems = [...items];
-		newItems[index][field] = value;
+		newItems[index][field] = value; // Store the entire item object
 		setItems(newItems);
 	};
 	const removeItem = index => {
@@ -231,80 +265,104 @@ const EditItemsCartedAway = ({ closeModal, activity }) => {
 				</Field>
 				<ErrorBlock name="activity_date" />
 			</div>
-			{items.map((item, index) => (
-				<div key={index} className="row mb-3">
-					<div className="col-lg-7" style={{ marginTop: '15px' }}>
-						<label htmlFor="location" className="form-label">
-							Items
-						</label>
-						<Field name={`items[${index}].item`} value={item.item}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									placeholder="Item"
-									value={item.item} // Ensure the correct value is used
-									onChange={e =>
-										handleItemChange(index, 'item', e.target.value)
-									} // Correct the onChange handler
-								/>
-							)}
-						</Field>
-					</div>
-					<div className="col-lg-4" style={{ marginTop: '15px' }}>
-						<label htmlFor="location" className="form-label">
-							Quantity
-						</label>
-						<Field name={`items[${index}].qty`} value={item.qty}>
-							{({ input, meta }) => (
-								<input
-									{...input}
-									className="form-control"
-									type="number"
-									placeholder="Quantity"
-									value={item.qty} // Ensure the correct value is used
-									onChange={
-										e => handleItemChange(index, 'qty', e.target.value) // Change 'quantity' to 'qty'
-									}
-								/>
-							)}
-						</Field>
-					</div>
-					<div
-						className="col-lg-1 d-flex align-items-center justify-content-center"
-						style={{ paddingTop: '15px' }}
-					>
-						<Tooltip title="Remove">
-							<DeleteOutlined
-								style={{ fontSize: '15px', color: 'red', cursor: 'pointer' }}
-								onClick={() => removeItem(index)}
-							/>
-						</Tooltip>
-					</div>
-				</div>
-			))}
+			<div className="col-lg-12" style={{ marginTop: '15px' }}>
+				<label htmlFor="items" className="form-label">
+					Items
+				</label>
+				{items.map((item, index) => {
+					console.log(item);
+					return (
+						<div key={index} className="row mb-3">
+							{/* Item Dropdown */}
+							<div className="col-lg-7" style={{ marginTop: '0px' }}>
+								<Field name={`items[${index}].item`} value={item.item}>
+									{({ input, meta }) => (
+										<Select
+											isClearable
+											getOptionValue={option => option.id}
+											getOptionLabel={option => option.name}
+											options={itemsOptions} // assuming itemOptions is an array of {id, name}
+											value={
+												itemsOptions.find(option => option.id === item.item) ||
+												null
+											}
+											// value={item.item || null}
+											classNamePrefix="select" // Add this to customize styling if needed
+											onChange={selectedOption =>
+												handleItemChange(
+													index,
+													'item',
+													selectedOption ? selectedOption.id : ''
+												)
+											}
+											// onChange={selectedOption =>
+											// 	handleItemChange(index, 'item', selectedOption || null)
+											// }
+											placeholder="Select an item"
+										/>
+									)}
+								</Field>
+							</div>
 
-			<div className="row g-3">
-				<div className="col-lg-8"></div>
-				<div className="col-lg-3">
-					<button
-						type="button"
-						style={{
-							width: '100px',
-							marginTop: '-10px',
-							marginLeft: '-14px',
-						}}
-						onClick={addItem}
-						className="btn btn-sm btn-success float-right"
-					>
-						<PlusOutlined
+							{/* Quantity Input */}
+							<div className="col-lg-4" style={{ marginTop: '0px' }}>
+								<Field name={`items[${index}].qty`} value={item.qty}>
+									{({ input, meta }) => (
+										<input
+											{...input}
+											className="form-control"
+											type="number"
+											placeholder="Quantity"
+											value={item.qty}
+											onChange={e =>
+												handleItemChange(index, 'qty', e.target.value)
+											}
+										/>
+									)}
+								</Field>
+							</div>
+
+							<div
+								className="col-lg-1 d-flex align-items-center justify-content-center"
+								style={{ paddingTop: '15px' }}
+							>
+								<Tooltip title="Remove">
+									<DeleteOutlined
+										style={{
+											fontSize: '15px',
+											color: 'red',
+											cursor: 'pointer',
+										}}
+										onClick={() => removeItem(index)}
+									/>
+								</Tooltip>
+							</div>
+						</div>
+					);
+				})}
+
+				<div className="row g-3">
+					<div className="col-lg-8"></div>
+					<div className="col-lg-3">
+						<button
+							type="button"
 							style={{
-								fontSize: '15px',
-								marginBottom: '2px',
+								width: '100px',
+								marginTop: '-10px',
+								marginLeft: '-14px',
 							}}
 							onClick={addItem}
-						/>
-					</button>
+							className="btn btn-sm btn-success float-right"
+						>
+							<PlusOutlined
+								style={{
+									fontSize: '15px',
+									marginBottom: '2px',
+								}}
+								onClick={addItem}
+							/>
+						</button>
+					</div>
 				</div>
 			</div>
 			<div className="col-lg-12" style={{ marginTop: '20px' }}>
