@@ -210,6 +210,10 @@ const NewOrganisation = () => {
 		setCountry(value);
 	};
 
+	const handleCancel = () => {
+		navigate(-1); // This will take the user back to the previous page
+	};
+
 	useEffect(() => {
 		if (!loaded) {
 			fetchApis();
@@ -968,12 +972,13 @@ const NewOrganisation = () => {
 										</div>
 									</div>
 									<div className="text-end mb-4">
-										<Link
-											to="/org/organisation"
+										<button
+											type="button"
 											className="btn btn-danger w-sm me-1"
+											onClick={handleCancel}
 										>
 											Cancel
-										</Link>
+										</button>
 										<button type="submit" className="btn btn-success w-sm">
 											Create Organisation
 										</button>
