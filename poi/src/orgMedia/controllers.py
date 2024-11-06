@@ -215,7 +215,7 @@ def get_org_media(org_id):
 
             media_list.append({
                 "media_id": media.id,
-                "media_url": media.media_url,
+                "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT", "/"), media.media_url) if media.media_url else None,
                 "media_type": media.media_type,
                 "media_caption": media.media_caption or 'No caption',
                 "file_size": file_size_str,

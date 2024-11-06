@@ -18,6 +18,7 @@ import TitleSearchBar from '../../components/TitleSearchBar';
 import { DeleteButton, EditButton } from '../../components/Buttons';
 import { DELETE_ORG_MEDIA_API, FETCH_ORG_MEDIA_API } from '../../services/api';
 import AddMedia from './AddMedia';
+import PreviewMedia from './PreviewMedia';
 
 // PreviewModal Component
 const PreviewModal = ({ media, onClose }) => {
@@ -76,8 +77,10 @@ const MediaAndDocument = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState(null);
 
-    const [showPreview, setShowPreview] = useState(false);
-    const [mediaForPreview, setMediaForPreview] = useState(null);
+	const [showPreview, setShowPreview] = useState(false);
+	const [mediaForPreview, setMediaForPreview] = useState(null);
+	const [showPreviewModal, setShowPreviewModal] = useState(false);
+	const [selectedMediaFile, setSelectedMediaFile] = useState(null);
 
     const [page, setPage] = useState(null);
     const [search, setSearch] = useState('');
@@ -171,6 +174,19 @@ const MediaAndDocument = () => {
         return meta.per_page * (meta.current_page - 1) + 1;
     }, [meta.per_page, meta.current_page]);
 
+    const previewMedia = item => {
+			document.body.classList.add('modal-open');
+			setSelectedMediaFile(item);
+			setShowPreviewModal(true);
+		};
+
+		const closeModalMedia = () => {
+			setShowPreviewModal(false);
+			setSelectedMediaFile(null);
+			//refreshTable();
+			document.body.classList.remove('modal-open');
+        };
+    
     return (
 			<div className="container-fluid">
 				<div className="row">
@@ -224,7 +240,6 @@ const MediaAndDocument = () => {
 																		href="javascript:void(0)"
 																		className="text-body"
 																		onClick={() => {
-																			console.log(item);
 																			setMediaForPreview(item);
 																			setShowPreview(true);
 																		}}>
@@ -250,6 +265,15 @@ const MediaAndDocument = () => {
 													<td>{item.created_at || '--'}</td>
 													<td>
 														<div className="hstack gap-3 flex-wrap text-end">
+															<button
+																onClick={() => previewMedia(item)}
+																type="button"
+																className="btn btn-icon text-muted btn-sm fs-18">
+																<i
+																	className="ri-eye-2-line"
+																	style={{ color: '#11d1b7' }}
+																/>
+															</button>
 															<DeleteButton
 																onClick={() => confirmRemove(item)}
 															/>
@@ -288,6 +312,17 @@ const MediaAndDocument = () => {
 								onClose={() => {
 									setShowPreview(false);
 									setMediaForPreview(null);
+								}}
+							/>
+						)}
+
+						{showPreviewModal && (
+							<PreviewMedia
+								id={params.id}
+								selectedMediaFile={selectedMediaFile}
+								closeModalMedia={() => closeModalMedia()}
+								update={async () => {
+									await refreshTable().then(() => setWorking(false));
 								}}
 							/>
 						)}
