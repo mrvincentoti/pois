@@ -234,7 +234,17 @@ const MediaAndDocument = () => {
 															</div>
 														</div>
 													</td>
-													<td>{item.source || '--'}</td>
+													<td>
+														{item.org_id ? (
+															<span className="badge border border-warning text-warning">
+																Organisation
+															</span>
+														) : (
+															<span className="badge border border-success text-success">
+																{item.source || '--'}
+															</span>
+														)}
+													</td>
 													<td>{formatType(item.media_type)} File</td>
 													<td>{item.file_size || '--'}</td>
 													<td>{item.created_at || '--'}</td>

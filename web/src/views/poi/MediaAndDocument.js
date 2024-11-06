@@ -212,7 +212,7 @@ const MediaAndDocument = () => {
 									<thead className="table-light">
 										<tr>
 											<th scope="col">Caption</th>
-											<th scope="col"></th>
+											<th scope="col">Source</th>
 											<th scope="col">Type</th>
 											<th scope="col">Size</th>
 											<th scope="col">Upload Date</th>
