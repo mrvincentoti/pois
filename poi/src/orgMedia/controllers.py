@@ -5,12 +5,13 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required, minio_client
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
 from ..poi.models import Poi
 from ..poiMedia.models import PoiMedia
+from minio.error import S3Error
 
 load_dotenv()
 
@@ -148,105 +149,92 @@ def add_org_media(org_id):
 @permission_required
 def get_org_media(org_id):
     try:
-        # Extract pagination parameters from the request
-        page = request.args.get('page', default=1, type=int)
-        per_page = request.args.get('per_page', default=10, type=int)
+        # Get search and pagination parameters from request arguments
+        search_term = request.args.get('q', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 9, type=int)
 
-        # Query for organization's media
-        org_media_query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc())
+        # Query media files directly linked to the organization activities
+        org_media_query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None)
 
-        # Query for media from POIs belonging to the organization
-        poi_media_query = PoiMedia.query.join(Poi, Poi.id == PoiMedia.poi_id).filter(
-            Poi.organisation_id == org_id, PoiMedia.deleted_at == None
-        ).order_by(PoiMedia.created_at.desc())
+        # Query media files related to POIs that belong to the organization
+        poi_ids = Poi.query.with_entities(Poi.id).filter_by(organisation_id=org_id, deleted_at=None).subquery()
+        poi_media_query = PoiMedia.query.filter(PoiMedia.poi_id.in_(poi_ids), PoiMedia.deleted_at == None)
 
-        # Combine both media queries with pagination
-        combined_media = org_media_query.union_all(poi_media_query)
-        paginated_media = combined_media.paginate(page=page, per_page=per_page, error_out=False)
+        # Apply search filters if a search term is provided
+        if search_term:
+            search_pattern = f"%{search_term}%"
+            org_media_query = org_media_query.filter(OrgMedia.media_caption.ilike(search_pattern))
+            poi_media_query = poi_media_query.filter(PoiMedia.media_caption.ilike(search_pattern))
 
-        # Check if any media records were found
-        if not paginated_media.items:
-            return jsonify({"message": "No media found for the given organization"}), 404
+        # Order both queries by creation date in descending order
+        org_media_query = org_media_query.order_by(OrgMedia.created_at.desc())
+        poi_media_query = poi_media_query.order_by(PoiMedia.created_at.desc())
 
-        # Prepare the list of media to return
+        # Apply pagination to both queries
+        org_media_paginated = org_media_query.paginate(page=page, per_page=per_page, error_out=False)
+        poi_media_paginated = poi_media_query.paginate(page=page, per_page=per_page, error_out=False)
+
+        # Combine the paginated media from both organization and POI
+        org_media_files = org_media_paginated.items
+        poi_media_files = poi_media_paginated.items
+
+        # Prepare the list of media files to return
         media_list = []
-        for media in paginated_media.items:
-            # Check if media is OrgMedia or PoiMedia and set appropriate values
-            if isinstance(media, OrgMedia):
-                org = Organisation.query.filter_by(id=media.org_id).first()
-                media_data = {
-                    "media_id": media.id,
+
+        # Process organization media files
+        for media in org_media_files:   
+            org = Organisation.query.filter_by(id=org_id).first()        
+            file_size_str = None
+            try:
+                file_name = media.media_url.split("/")[-1]
+                stat_info = minio_client.stat_object(os.getenv("MINIO_BUCKET_NAME"), file_name)
+                file_size = round(stat_info.size / (1024 * 1024), 2)
+                file_size_str = f"{file_size} MB"
+            except S3Error as e:
+                print(f"Error fetching file size for {media.media_url}: {str(e)}")
+
+            media_list.append({
+                "media_id": media.id,
                     "media_type": media.media_type,
-                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT", "/"), media.media_url) if media.media_url else None,
                     "media_caption": media.media_caption or 'No caption',
+                    "file_size": file_size_str,
                     "org_id": org.id if org else None,
                     "org_name": org.org_name if org else 'Unknown',
                     "activity_id": media.activity_id,
                     "created_by": media.created_by,
                     "created_at": media.created_at.isoformat() if media.created_at else None,
                     "source": 'Organisation'
-                }
-            elif isinstance(media, PoiMedia):
-                poi = Poi.query.filter_by(id=media.poi_id).first()
-                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else 'Unknown'
-                
-                media_data = {
-                    "media_id": media.id,
-                    "media_type": media.media_type,
-                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
-                    "media_caption": media.media_caption or 'No caption',
-                    "poi_id": poi.id if poi else None,
-                    "poi_name": poi_name,
-                    "activity_id": media.activity_id,
-                    "created_by": media.created_by,
-                    "created_at": media.created_at.isoformat() if media.created_at else None,
-                    "source": f"POI ({poi.ref_num or ''})".strip() if poi else 'Unknown'
-                }
+            })
 
-            media_list.append(media_data)
+        # Process POI media files
+        for media in poi_media_files:
+            poi_ref = Poi.query.filter_by(id=media.poi_id, deleted_at=None).first()
+            poi_ref_name = f"{poi_ref.ref_numb}" if poi_ref else "Unknown POI"
 
-        # Log audit event
-        try:
-            current_time = datetime.utcnow()
-            audit_data = {
-                "user_id": g.user["id"] if hasattr(g, "user") else None,
-                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-                "user_email": g.user["email"] if hasattr(g, "user") else None,
-                "event": "get_org_media",
-                "auditable_id": org_id,
-                "old_values": None,
-                "new_values": json.dumps({
-                    "media_records_count": len(media_list),
-                    "media_details": media_list
-                }),
-                "url": request.url,
-                "ip_address": request.remote_addr,
-                "user_agent": request.user_agent.string,
-                "tags": "Media, Retrieve",
-                "created_at": current_time.isoformat(),
-                "updated_at": current_time.isoformat(),
-            }
+            media_list.append({
+                "media_id": media.id,
+                "media_url": media.media_url,
+                "media_type": media.media_type,
+                "media_caption": media.media_caption or 'No caption',
+                "file_size": file_size_str,
+                "activity_id": media.activity_id,
+                "created_by": media.created_by,
+                "created_at": media.created_at.isoformat(),
+                "source": f"POI ({poi_ref_name})"
+            })
 
-            save_audit_data(audit_data)
-
-        except Exception as e:
-            return jsonify({"message": "Error logging audit data", "error": str(e)}), 500
-
-        # Return the paginated media list with pagination details
+        # Return paginated results, including metadata for pagination
         return jsonify({
             "status": "success",
             "status_code": 200,
+            "current_page": page,
             "media": media_list,
-            "pagination": {
-                "total": paginated_media.total,
-                "pages": paginated_media.pages,
-                "current_page": paginated_media.page,
-                "per_page": paginated_media.per_page,
-                "next_page": paginated_media.next_num if paginated_media.has_next else None,
-                "prev_page": paginated_media.prev_num if paginated_media.has_prev else None
-            }
+            "pages": org_media_paginated.pages,
+            "per_page": per_page,
+            "total_org_media": org_media_paginated.total,
+            "total_poi_media": poi_media_paginated.total
         })
 
     except Exception as e:

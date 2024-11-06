@@ -172,117 +172,119 @@ const MediaAndDocument = () => {
     }, [meta.per_page, meta.current_page]);
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-lg-12">
-                    <div className="card">
-                        <TitleSearchBar
-                            title="Media"
-                            onClick={() => addMedia()}
-                            queryLimit={queryLimit}
-                            search={search}
-                            searchTerm={searchTerm}
-                            onChangeSearch={e => setSearchTerm(e.target.value)}
-                            hasCreateBtn={true}
-                            createBtnTitle="Add Media"
-                        />
-                        <div className="card-body">
-                            <TableWrapper
-                                className="table-responsive table-card"
-                                fetching={fetching}
-                                working={working}
-                            >
-                                <table className="table table-borderless align-middle mb-0">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th scope="col">Caption</th>
-                                            <th scope="col">Type</th>
-                                            <th scope="col">Size</th>
-                                            <th scope="col">Upload Date</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="list">
-                                        {list?.map((item, i) => (
-                                            <tr key={i}>
-                                                <td>
-                                                    <div className="d-flex align-items-center">
-                                                        <div className="avatar-sm">
-                                                            <div
-                                                                className={`avatar-title bg-primary-subtle ${getMediaDetails(item.media_type).colorClass} rounded fs-20`}
-                                                            >
-                                                                <i
-                                                                    className={
-                                                                        getMediaDetails(item.media_type).icon
-                                                                    }
-                                                                ></i>
-                                                            </div>
-                                                        </div>
-                                                        <div className="ms-3 flex-grow-1">
-                                                            <h6 className="fs-15 mb-0">
-                                                                <a
-                                                                    href="javascript:void(0)"
-                                                                    className="text-body"
-                                                                    onClick={() => {
-                                                                        console.log(item);
-                                                                        setMediaForPreview(item);
-                                                                        setShowPreview(true);
-                                                                    }}
-                                                                >
-                                                                    {formatCaption(item.media_caption)}
-                                                                </a>
-                                                            </h6>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>{formatType(item.media_type)} File</td>
-                                                <td>{item.file_size || '--'}</td>
-                                                <td>{item.created_at || '--'}</td>
-                                                <td>
-                                                    <div className="hstack gap-3 flex-wrap text-end">
-                                                        <DeleteButton onClick={() => confirmRemove(item)} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                {list.length === 0 && (
-                                    <div className="noresult py-5">
-                                        <NoResult title="Media" />
-                                    </div>
-                                )}
-                            </TableWrapper>
-                            <div className="d-flex justify-content-end mt-3">
-                                <AppPagination meta={meta} />
-                            </div>
-                        </div>
-                    </div>
+			<div className="container-fluid">
+				<div className="row">
+					<div className="col-lg-12">
+						<div className="card">
+							<TitleSearchBar
+								title="Media"
+								onClick={() => addMedia()}
+								queryLimit={queryLimit}
+								search={search}
+								searchTerm={searchTerm}
+								onChangeSearch={e => setSearchTerm(e.target.value)}
+								hasCreateBtn={true}
+								createBtnTitle="Add Media"
+							/>
+							<div className="card-body">
+								<TableWrapper
+									className="table-responsive table-card"
+									fetching={fetching}
+									working={working}>
+									<table className="table table-borderless align-middle mb-0">
+										<thead className="table-light">
+											<tr>
+												<th scope="col">Caption</th>
+												<th scope="col">Source</th>
+												<th scope="col">Type</th>
+												<th scope="col">Size</th>
+												<th scope="col">Upload Date</th>
+												<th scope="col">Action</th>
+											</tr>
+										</thead>
+										<tbody className="list">
+											{list?.map((item, i) => (
+												<tr key={i}>
+													<td>
+														<div className="d-flex align-items-center">
+															<div className="avatar-sm">
+																<div
+																	className={`avatar-title bg-primary-subtle ${
+																		getMediaDetails(item.media_type).colorClass
+																	} rounded fs-20`}>
+																	<i
+																		className={
+																			getMediaDetails(item.media_type).icon
+																		}></i>
+																</div>
+															</div>
+															<div className="ms-3 flex-grow-1">
+																<h6 className="fs-15 mb-0">
+																	<a
+																		href="javascript:void(0)"
+																		className="text-body"
+																		onClick={() => {
+																			console.log(item);
+																			setMediaForPreview(item);
+																			setShowPreview(true);
+																		}}>
+																		{formatCaption(item.media_caption)}
+																	</a>
+																</h6>
+															</div>
+														</div>
+													</td>
+													<td>{item.source || '--'}</td>
+													<td>{formatType(item.media_type)} File</td>
+													<td>{item.file_size || '--'}</td>
+													<td>{item.created_at || '--'}</td>
+													<td>
+														<div className="hstack gap-3 flex-wrap text-end">
+															<DeleteButton
+																onClick={() => confirmRemove(item)}
+															/>
+														</div>
+													</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+									{list.length === 0 && (
+										<div className="noresult py-5">
+											<NoResult title="Media" />
+										</div>
+									)}
+								</TableWrapper>
+								<div className="d-flex justify-content-end mt-3">
+									<AppPagination meta={meta} />
+								</div>
+							</div>
+						</div>
 
-                    {showModal && (
-                        <AddMedia
-                            id={params.id}
-                            selectedMedia={selectedMedia}
-                            closeModal={() => closeModal()}
-                            update={async () => {
-                                await refreshTable().then(() => setWorking(false));
-                            }}
-                        />
-                    )}
+						{showModal && (
+							<AddMedia
+								id={params.id}
+								selectedMedia={selectedMedia}
+								closeModal={() => closeModal()}
+								update={async () => {
+									await refreshTable().then(() => setWorking(false));
+								}}
+							/>
+						)}
 
-                    {showPreview && (
-                        <PreviewModal
-                            media={mediaForPreview}
-                            onClose={() => {
-                                setShowPreview(false);
-                                setMediaForPreview(null);
-                            }}
-                        />
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+						{showPreview && (
+							<PreviewModal
+								media={mediaForPreview}
+								onClose={() => {
+									setShowPreview(false);
+									setMediaForPreview(null);
+								}}
+							/>
+						)}
+					</div>
+				</div>
+			</div>
+		);
 };
 
 export default MediaAndDocument;
