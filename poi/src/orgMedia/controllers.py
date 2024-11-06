@@ -9,6 +9,8 @@ from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, g
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
+from ..poi.models import Poi
+from ..poiMedia.models import PoiMedia
 
 load_dotenv()
 
@@ -170,19 +172,54 @@ def get_org_media(org_id):
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
 
-        # Query the database for media associated with the given org_id, ordered by created_at descending
-        query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc())
+        # Query for organization's media
+        org_media_query = OrgMedia.query.filter_by(org_id=org_id, deleted_at=None).order_by(OrgMedia.created_at.desc())
 
-        # Paginate the query
-        paginated_media = query.paginate(page=page, per_page=per_page, error_out=False)
+        # Query for media from POIs belonging to the organization
+        poi_media_query = PoiMedia.query.join(Poi, Poi.id == PoiMedia.poi_id).filter(
+            Poi.organisation_id == org_id, PoiMedia.deleted_at == None
+        ).order_by(PoiMedia.created_at.desc())
+
+        # Combine both media queries with pagination
+        combined_media = org_media_query.union_all(poi_media_query)
+        paginated_media = combined_media.paginate(page=page, per_page=per_page, error_out=False)
 
         # Check if any media records were found
         if not paginated_media.items:
-            return jsonify({"message": "No media found for the given organisation"}), 404
+            return jsonify({"message": "No media found for the given organization"}), 404
 
         # Prepare the list of media to return
         media_list = []
         for media in paginated_media.items:
+            # Check if media is OrgMedia or PoiMedia and set appropriate values
+            if isinstance(media, OrgMedia):
+                org = Organisation.query.filter_by(id=media.org_id).first()
+                media_data = {
+                    "media_id": media.id,
+                    "media_type": media.media_type,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
+                    "media_caption": media.media_caption or 'No caption',
+                    "org_id": org.id if org else None,
+                    "org_name": org.org_name if org else 'Unknown',
+                    "activity_id": media.activity_id,
+                    "created_by": media.created_by,
+                    "created_at": media.created_at.isoformat() if media.created_at else None,
+                }
+            elif isinstance(media, PoiMedia):
+                poi = Poi.query.filter_by(id=media.poi_id).first()
+                poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else 'Unknown'
+                media_data = {
+                    "media_id": media.id,
+                    "media_type": media.media_type,
+                    "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
+                    "media_caption": media.media_caption or 'No caption',
+                    "poi_id": poi.id if poi else None,
+                    "poi_name": poi_name,
+                    "activity_id": media.activity_id,
+                    "created_by": media.created_by,
+                    "created_at": media.created_at.isoformat() if media.created_at else None,
+                }
+
             org = Organisation.query.filter_by(id=OrgMedia.org_id).first()
 
             if org:

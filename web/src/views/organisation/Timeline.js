@@ -295,8 +295,7 @@ const Timeline = ({ refreshOrgData }) => {
 																		padding: '5px 10px',
 																		textDecoration: 'none',
 																		display: 'inline-block',
-																	}}
-																>
+																	}}>
 																	{item.activity_type || 'N/A'}
 																</span>
 															</h5>
@@ -330,6 +329,14 @@ const Timeline = ({ refreshOrgData }) => {
 																</span>
 															</p>
 															<p className="text-muted text-truncate mb-0">
+																Source:
+																<u>
+																	<span className="fw-semibold text-body p-2">
+																		{item.source || 'N/A'}
+																	</span>
+																</u>
+															</p>
+															<p className="text-muted text-truncate mb-0">
 																Created by:
 																<span className="fw-semibold text-body p-2">
 																	{item.created_by_name || 'N/A'}
@@ -340,14 +347,12 @@ const Timeline = ({ refreshOrgData }) => {
 													<div className="mt-3 d-flex justify-content-end gap-2">
 														<button
 															className="btn btn-sm btn-outline-secondary"
-															onClick={() => handleEditClick(item)}
-														>
+															onClick={() => handleEditClick(item)}>
 															Edit
 														</button>
 														<button
 															className="btn btn-sm btn-success"
-															onClick={() => showDetails(item)}
-														>
+															onClick={() => showDetails(item)}>
 															Details
 														</button>
 													</div>
