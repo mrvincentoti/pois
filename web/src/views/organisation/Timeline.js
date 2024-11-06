@@ -28,10 +28,10 @@ import { APP_SHORT_NAME, limit, paginate } from '../../services/constants';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
 
-// import EditAttack from '../../modals/Organisation/EditAttack';
-// import EditProcurement from '../../modals/Organisation/EditProcurement';
-// import EditItemsCartedAway from '../../modals/Organisation/EditItemsCartedAway';
-// import EditPressRelease from '../../modals/Organisation/EditPressRelease';
+import EditAttack from '../../modals/Organisation/EditAttack';
+import EditProcurement from '../../modals/Organisation/EditProcurement';
+import EditItemsCartedAway from '../../modals/Organisation/EditItemsCartedAway';
+import EditPressRelease from '../../modals/Organisation/EditPressRelease';
 import EditOthers from '../../modals/Organisation/EditOthers';
 import ActivityDetails from '../../modals/ActivityDetails';
 
@@ -126,38 +126,38 @@ const Timeline = ({ refreshOrgData }) => {
 	const renderEditModal = () => {
 		if (!selectedActivity || !showEditModal) return null;
 		switch (selectedActivity.activity_type) {
-			// case 'Attack':
-			// 	return (
-			// 		<EditAttack
-			// 			visible={showEditModal}
-			// 			activity={selectedActivity}
-			// 			closeModal={closeEditModal}
-			// 		/>
-			// 	);
-			// case 'Procurement':
-			// 	return (
-			// 		<EditProcurement
-			// 			visible={showEditModal}
-			// 			activity={selectedActivity}
-			// 			closeModal={closeEditModal}
-			// 		/>
-			// 	);
-			// case 'Items Carted Away':
-			// 	return (
-			// 		<EditItemsCartedAway
-			// 			visible={showEditModal}
-			// 			activity={selectedActivity}
-			// 			closeModal={closeEditModal}
-			// 		/>
-			// 	);
-			// case 'Press Release':
-			// 	return (
-			// 		<EditPressRelease
-			// 			visible={showEditModal}
-			// 			activity={selectedActivity}
-			// 			closeModal={closeEditModal}
-			// 		/>
-			// 	);
+			case 'Attack':
+				return (
+					<EditAttack
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Procurement':
+				return (
+					<EditProcurement
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Items Carted Away':
+				return (
+					<EditItemsCartedAway
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
+			case 'Press Release':
+				return (
+					<EditPressRelease
+						visible={showEditModal}
+						activity={selectedActivity}
+						closeModal={closeEditModal}
+					/>
+				);
 			case 'Others':
 				return (
 					<EditOthers

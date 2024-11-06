@@ -3,10 +3,17 @@ import { useParams } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { FORM_ERROR } from 'final-form';
 import Select from 'react-select';
-import ModalWrapper from '../container/ModalWrapper';
-import { notifyWithIcon, request, createHeaders } from '../services/utilities';
-import { FETCH_CRIMES_API, UPDATE_ACTIVITIES_API } from '../services/api';
-import { ErrorBlock, error, FormSubmitError } from '../components/FormBlock';
+import ModalWrapper from '../../container/ModalWrapper';
+import {
+	notifyWithIcon,
+	request,
+	createHeaders,
+} from '../../services/utilities';
+import {
+	FETCH_CRIMES_API,
+	UPDATE_ORG_ACTIVITIES_API,
+} from '../../services/api';
+import { ErrorBlock, error, FormSubmitError } from '../../components/FormBlock';
 import Flatpickr from 'react-flatpickr';
 import moment from 'moment';
 import { Upload, Button } from 'antd';
@@ -16,7 +23,7 @@ import {
 	PlusOutlined,
 } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import FormWrapper from '../container/FormWrapper';
+import FormWrapper from '../../container/FormWrapper';
 
 const EditAttack = ({ closeModal, activity }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -63,7 +70,7 @@ const EditAttack = ({ closeModal, activity }) => {
 
 			// Append basic form values to formData
 			appendIfExists('type_id', parseInt(values.type_id));
-			appendIfExists('poi_id', parseInt(params.id));
+			appendIfExists('org_id', parseInt(params.id));
 			appendIfExists('title', values.title || null);
 			const formattedDate = values.activity_date
 				? moment(values.activity_date).format('YYYY-MM-DD')
@@ -97,7 +104,7 @@ const EditAttack = ({ closeModal, activity }) => {
 			});
 
 			const response = await fetch(
-				UPDATE_ACTIVITIES_API.replace(':id', activity.id),
+				UPDATE_ORG_ACTIVITIES_API.replace(':id', activity.id),
 				{
 					method: 'PUT',
 					body: formData,
