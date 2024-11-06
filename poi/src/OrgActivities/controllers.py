@@ -595,7 +595,7 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": activity_type
+                "source": 'Organisation'
             })
 
         # Process POI activities
@@ -605,7 +605,11 @@ def get_activities_by_org(org_id):
 
             activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=activity.poi_id).all()
             items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
-
+            
+            
+            poi_ref = Poi.query.filter_by(id=activity.poi_id, deleted_at=None).first()
+            poi_ref_name = f"{poi_ref.ref_numb}" if poi_ref else "Unknown User"
+            
             media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
@@ -650,7 +654,8 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": activity_type
+                "activity_type": activity_type,
+                "source": f"POI ({poi_ref_name or ''})".strip() if poi_ref_name else 'Unknown'
             })
 
         # Return paginated results, including metadata for pagination
