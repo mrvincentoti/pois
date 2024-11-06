@@ -1,13 +1,14 @@
 from flask import request, jsonify, json, g
 from datetime import datetime
 from .. import db
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 from .models import OperationalCapacity
 
 def slugify(text):
     return text.replace(' ', '-').lower()
 
 @custom_jwt_required
+@permission_required
 def create_operational_capacity():
     try:
         data = request.get_json()
@@ -53,6 +54,7 @@ def create_operational_capacity():
 
 
 @custom_jwt_required
+@permission_required
 def get_operational_capacity_by_org(org_id):
     try:
         # Get search parameters from the request arguments
@@ -121,6 +123,7 @@ def get_operational_capacity_by_org(org_id):
 
 
 @custom_jwt_required
+@permission_required
 def update_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
@@ -167,6 +170,7 @@ def update_operational_capacity(id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
@@ -205,6 +209,7 @@ def delete_operational_capacity(id):
     
 
 @custom_jwt_required
+@permission_required
 def restore_operational_capacity(id):
     try:
         capacity = OperationalCapacity.query.get(id)
