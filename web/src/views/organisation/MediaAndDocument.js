@@ -83,6 +83,8 @@ const MediaAndDocument = () => {
     const [search, setSearch] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [queryLimit, setQueryLimit] = useState(limit);
+    const [selectedMediaFile, setSelectedMediaFile] = useState(null);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
 
     const params = useParams();
     const query = useQuery();
@@ -140,6 +142,12 @@ const MediaAndDocument = () => {
         setShowModal(false);
         setSelectedMedia(null);
         document.body.classList.remove('modal-open');
+    };
+
+    const previewMedia = (item) => {
+        document.body.classList.add('modal-open');
+        setSelectedMediaFile(item);
+        setShowPreviewModal(true);
     };
 
     const refreshTable = async () => {
@@ -224,7 +232,6 @@ const MediaAndDocument = () => {
                                                                     href="javascript:void(0)"
                                                                     className="text-body"
                                                                     onClick={() => {
-                                                                        console.log(item);
                                                                         setMediaForPreview(item);
                                                                         setShowPreview(true);
                                                                     }}
@@ -240,6 +247,13 @@ const MediaAndDocument = () => {
                                                 <td>{item.created_at || '--'}</td>
                                                 <td>
                                                     <div className="hstack gap-3 flex-wrap text-end">
+                                                        <button
+                                                            onClick={() => previewMedia(item)}
+                                                            type="button"
+                                                            className="btn btn-icon text-muted btn-sm fs-18"
+                                                        >
+                                                            <i className="ri-eye-2-line" style={{ color: '#11d1b7' }} />
+                                                        </button>
                                                         <DeleteButton onClick={() => confirmRemove(item)} />
                                                     </div>
                                                 </td>

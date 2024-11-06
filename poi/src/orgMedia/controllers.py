@@ -5,7 +5,7 @@ from .models import OrgMedia
 from ..organisation.models import Organisation
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, delete_picture_file, allowed_file, permission_required, minio_client
 from flask import jsonify, request, g, json
 from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
@@ -188,6 +188,13 @@ def get_org_media(org_id):
             if org:
                 org_name = f"{org.org_name or ''}".strip()
 
+
+            file_size = None
+            # Assuming the filename is the last part of the URL
+            file_name = media.media_url.split("/")[-1]
+            stat_info = minio_client.stat_object(os.getenv("MINIO_BUCKET_NAME"), file_name)
+            file_size = round(stat_info.size / (1024 * 1024), 2)
+            file_size_str = f"{file_size} MB"
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
@@ -197,7 +204,8 @@ def get_org_media(org_id):
                 "org_name": org_name,
                 "activity_id": media.activity_id,
                 "created_by": media.created_by,
-                "created_at": media.created_at.isoformat() if media.created_at else None
+                "created_at": media.created_at.isoformat() if media.created_at else None,
+                "file_size": file_size_str
             }
             media_list.append(media_data)
 
