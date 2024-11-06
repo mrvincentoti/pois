@@ -16,26 +16,6 @@ load_dotenv()
 
 @custom_jwt_required
 @permission_required
-def get_all_media():
-    try:
-        medias = OrgMedia.query.all()
-
-        media_list = []
-        for media in medias:
-            media_data = media.to_dict()
-            media_list.append(media_data)
-
-        return jsonify({
-            "status": "success",
-            "status_code": 200,
-            'medias': media_list,
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-
-@custom_jwt_required
-@permission_required
 def get_media(media_id):
     # Fetch the media record
     media_record = OrgMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -204,10 +184,12 @@ def get_org_media(org_id):
                     "activity_id": media.activity_id,
                     "created_by": media.created_by,
                     "created_at": media.created_at.isoformat() if media.created_at else None,
+                    "source": 'Organisation'
                 }
             elif isinstance(media, PoiMedia):
                 poi = Poi.query.filter_by(id=media.poi_id).first()
                 poi_name = f"{poi.first_name or ''} {poi.middle_name or ''} {poi.last_name or ''} ({poi.ref_numb or ''})".strip() if poi else 'Unknown'
+                
                 media_data = {
                     "media_id": media.id,
                     "media_type": media.media_type,
@@ -218,6 +200,7 @@ def get_org_media(org_id):
                     "activity_id": media.activity_id,
                     "created_by": media.created_by,
                     "created_at": media.created_at.isoformat() if media.created_at else None,
+                    "source": f"POI ({poi.ref_num or ''})".strip() if poi else 'Unknown'
                 }
 
             media_list.append(media_data)

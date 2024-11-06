@@ -1,14 +1,9 @@
 from flask import request
 
 from ..app import app
-from .controllers import add_org_media, get_all_media, get_org_media, get_media, edit_media, delete_media, restore_media
+from .controllers import add_org_media, get_org_media, get_media, edit_media, delete_media, restore_media
 from .models import OrgMedia
 
-
-@app.route("/org-media", methods=['GET', 'POST'])
-def list_org_medias():
-   if request.method == 'GET': return get_all_media()
-   return 'Method is Not Allowed'
 
 @app.route("/org-medias/<org_id>", methods=['GET', 'POST'])
 def list_org_media(org_id):
