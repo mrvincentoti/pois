@@ -511,7 +511,7 @@ def get_activities_by_org(org_id):
         # Get search and pagination parameters from request arguments
         search_term = request.args.get('q', '')
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 19, type=int)
+        per_page = request.args.get('per_page', 9, type=int)
 
         # Query activities directly linked to the organization
         org_activities_query = OrgActivity.query.filter_by(org_id=org_id, deleted_at=None)
@@ -619,8 +619,21 @@ def get_activities_by_org(org_id):
                 for media in media_files
             ] if media_files else []
 
+            # Mapping type_id to activity types
+            activity_type_mapping = {
+                1: "Attack",
+                2: "Procurement",
+                3: "Items Carted Away",
+                4: "Press Release",
+                5: "Others"
+            }
+
+            # Get activity type based on type_id
+            activity_type = activity_type_mapping.get(activity.type_id, "Unknown")
+            
             activity_list.append({
                 "id": activity.id,
+                "type_id": activity.type_id,
                 "poi_id": activity.poi_id,
                 "title": activity.title,
                 "crime_id": activity.crime_id,
@@ -637,21 +650,20 @@ def get_activities_by_org(org_id):
                 "created_by_name": created_by_name,
                 "items": items_data,
                 "media_files": media_data,
-                "activity_type": "poi"
+                "activity_type": activity_type
             })
 
         # Return paginated results, including metadata for pagination
         return jsonify({
             "status": "success",
             "status_code": 200,
-            "activities": activity_list,
             "current_page": page,
+            "activities": activity_list,
+            "pages": org_activities_paginated.pages,
             "per_page": per_page,
-            "total_org_pages": org_activities_paginated.pages,
+            "total": org_activities_paginated.total,
             "total_poi_pages": poi_activities_paginated.pages,
-            "total_org_items": org_activities_paginated.total,
             "total_poi_items": poi_activities_paginated.total
-           
         })
 
     except Exception as e:
