@@ -50,7 +50,7 @@
 	{"name":"can-delete-org-file","description":"Can Delete Org File","group":"organisation","module_id":"4","method":"DELETE","route_path":"/org-media/<media_id>"},
 	{"name":"can-update-org-file","description":"Can Update Org File","group":"organisation","module_id":"4","method":"PUT","route_path":"/org-media/<media_id>"},
 	{"name":"can-view-org-file","description":"Can View Org File","group":"organisation","module_id":"4","method":"GET","route_path":"/org-media/<media_id>"},
-	{"name":"can-see-org-files","description":"Can See Org Files","group":"organisation","module_id":"4","method":"GET","route_path":"/org-medias/<org_id>>"},
+	{"name":"can-see-org-files","description":"Can See Org Files","group":"organisation","module_id":"4","method":"GET","route_path":"/org-medias/<org_id>"},
 	{"name":"can-create-org-file","description":"Can Create Org File","group":"organisation","module_id":"4","method":"POST","route_path":"/org-medias/<org_id>"},
 
 	{"name":"can-restore-org-capacity","description":"Can Restore Op Capacity","group":"organisation","module_id":"4","method":"GET","route_path":"/operational-capacity/restore/<operational_capacity_id>"},
