@@ -4,6 +4,7 @@ import Organisation from './Organisation';
 import NewOrganisation from './NewOrganisation';
 import EditOrganisation from './EditOrganisation';
 import ViewOrganisation from './ViewOrganisation';
+import OrgPrint from './OrgPrint';
 
 const Index = () => {
 	return (
@@ -12,6 +13,7 @@ const Index = () => {
 			<Route path="new" element={<NewOrganisation />} />
 			<Route path=":id/edit" element={<EditOrganisation />} />
 			<Route path=":id/view" element={<ViewOrganisation />} />
+			<Route path=":id/print" element={<OrgPrint />} />
 			<Route path="*" element={<Navigate to="/not-found" />} />
 		</Routes>
 	);

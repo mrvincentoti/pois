@@ -18,6 +18,7 @@ import {
 	formatName,
 	formatOrgName,
 	formatUserName,
+	formatGetInitialsNameOrg,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -274,7 +275,7 @@ const Organisation = () => {
 																			/>
 																		) : (
 																			<span className="mini-stat-icon avatar-title rounded-circle text-secondary bg-secondary-subtle fs-4 text-uppercase">
-																				{formatName(item)}
+																				{formatGetInitialsNameOrg(item)}
 																			</span>
 																		)}
 																	</div>

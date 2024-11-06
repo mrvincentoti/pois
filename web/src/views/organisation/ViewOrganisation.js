@@ -8,6 +8,7 @@ import {
 	formatDateWord,
 	formatPoiName,
 	formatGetInitialsName,
+	formatGetInitialsNameOrg,
 	notifyWithIcon,
 	request,
 	formatOrgName,
@@ -106,14 +107,19 @@ const ViewOrganisation = () => {
 		}
 	};
 
-	// Function to open the modal
-	const openPrintModal = () => {
-		setShowPrintModal(true);
-	};
+	// // Function to open the modal
+	// const openPrintModal = () => {
+	// 	setShowPrintModal(true);
+	// };
 
-	// Function to close the modal
-	const closePrintModal = () => {
-		setShowPrintModal(false);
+	// // Function to close the modal
+	// const closePrintModal = () => {
+	// 	setShowPrintModal(false);
+	// };
+
+	// Handle the print action to navigate to a new print page
+	const handlePrintPage = () => {
+		navigate(`/org/${params.id}/print`);
 	};
 
 	return (
@@ -146,7 +152,7 @@ const ViewOrganisation = () => {
 													className="avatar-title rounded-circle bg-light text-primary text-uppercase "
 													style={{ fontSize: '60px' }}
 												>
-													{formatGetInitialsName(orgData)}
+													{formatGetInitialsNameOrg(orgData)}
 												</div>
 											</div>
 										)}
@@ -290,12 +296,13 @@ const ViewOrganisation = () => {
 											</li>
 										</ul>
 										<div className="flex-shrink-0">
-											<a
-												className="btn btn-info"
-												onClick={() => openPrintModal()}
+											<Button
+												type="primary"
+												icon={<i className="ri-printer-line" />}
+												onClick={handlePrintPage}
 											>
-												<i className="ri-edit-box-line align-bottom"></i> Print
-											</a>
+												Print Preview
+											</Button>
 										</div>
 									</div>
 									{/* Tab panes */}
@@ -334,32 +341,13 @@ const ViewOrganisation = () => {
 					</div>
 				</>
 			) : (
-				<div>
-					<Spin spinning={true} indicator={antIconSync}>
-						<div className="fetching" />
-					</Spin>
+				<div
+					className="d-flex justify-content-center"
+					style={{ marginTop: '20%' }}
+				>
+					<Spin size="large" indicator={antIconSync} />
 				</div>
 			)}
-
-			{/* Ant Design Modal */}
-			<Modal
-				title=""
-				visible={showPrintModal}
-				onCancel={closePrintModal}
-				footer={[
-					<Button key="back" onClick={closePrintModal}>
-						Cancel
-					</Button>,
-					<Button key="print" type="primary">
-						Print
-					</Button>,
-				]}
-				width={1000}
-			>
-				{/* <div ref={printRef}>
-                    <PoiPrint poiData={poiData} />
-                </div> */}
-			</Modal>
 		</>
 	);
 };
