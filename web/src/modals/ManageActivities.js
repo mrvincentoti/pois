@@ -6,9 +6,9 @@ import Select from 'react-select';
 import ModalWrapper from '../container/ModalWrapper';
 import { notifyWithIcon, request, createHeaders } from '../services/utilities';
 import {
-	CREATE_ORG_ACTIVITIES_API,
+	CREATE_ACTIVITIES_API,
 	FETCH_CRIMES_API,
-	UPDATE_ORG_ACTIVITIES_API,
+	UPDATE_ACTIVITIES_API,
 	FETCH_ARMS_API,
 } from '../services/api';
 import { ErrorBlock, FormSubmitError, error } from '../components/FormBlock';
@@ -178,8 +178,8 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 			};
 
 			const uri = activities
-				? UPDATE_ORG_ACTIVITIES_API.replace(':id', activities.id)
-				: CREATE_ORG_ACTIVITIES_API;
+				? UPDATE_ACTIVITIES_API.replace(':id', activities.id)
+				: CREATE_ACTIVITIES_API;
 
 			const headers = createHeaders(true);
 			const response = await fetch(uri, {
@@ -1313,17 +1313,23 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 								</div>
 
 								{/* Render fields based on TYPE selection */}
-								{renderFieldsForType()}
+								{type === 1 && renderFieldsForType()}
+								{type === 2 && renderFieldsForType()}
+								{type === 3 && renderFieldsForType()}
+								{type === 4 && renderFieldsForType()}
+								{type === 5 && renderFieldsForType()}
 							</div>
 						</div>
 						<div className="modal-footer">
-							<button
-								type="submit"
-								className="btn btn-success"
-								disabled={submitting}
-							>
-								{`${activities ? 'Update' : 'Add'} Activity`}
-							</button>
+							{type && (
+								<button
+									type="submit"
+									className="btn btn-success"
+									disabled={submitting}
+								>
+									{`${activities ? 'Update' : 'Add'} Activity`}
+								</button>
+							)}
 						</div>
 					</FormWrapper>
 				)}

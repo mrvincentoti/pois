@@ -1311,19 +1311,24 @@ const ManageActivities = ({ closeModal, update, activities }) => {
 										placeholder="Select type"
 									/>
 								</div>
-
 								{/* Render fields based on TYPE selection */}
-								{renderFieldsForType()}
+								{type === 1 && renderFieldsForType()}
+								{type === 2 && renderFieldsForType()}
+								{type === 3 && renderFieldsForType()}
+								{type === 4 && renderFieldsForType()}
+								{type === 5 && renderFieldsForType()}
 							</div>
 						</div>
 						<div className="modal-footer">
-							<button
-								type="submit"
-								className="btn btn-success"
-								disabled={submitting}
-							>
-								{`${activities ? 'Update' : 'Add'} Activity`}
-							</button>
+							{type && (
+								<button
+									type="submit"
+									className="btn btn-success"
+									disabled={submitting}
+								>
+									{`${activities ? 'Update' : 'Add'} Activity`}
+								</button>
+							)}
 						</div>
 					</FormWrapper>
 				)}
