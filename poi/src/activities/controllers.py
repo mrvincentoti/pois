@@ -9,6 +9,7 @@ from ..poi.models import Poi
 from ..poiMedia.models import PoiMedia
 from ..users.models import User
 from ..crimes.models import Crime
+from ..items.models import Item
 from dotenv import load_dotenv
 from sqlalchemy import or_
 from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio, get_media_type_from_extension, permission_required
@@ -532,7 +533,8 @@ def get_activities_by_poi(poi_id):
             created_by = User.query.filter_by(id=activity.created_by, deleted_at=None).first()
             created_by_name = f"{created_by.username} ({created_by.email})" if created_by else "Unknown User"
             activity_items = ActivityItem.query.filter_by(activity_id=activity.id, poi_id=poi_id).all()
-            items_data = [{"item": item.item, "qty": item.qty} for item in activity_items] if activity_items else []
+            items_data = [{"item": item.item, "qty": item.qty, "item_name": get_item_name(item.item)}
+                          for item in activity_items] if activity_items else []
             media_files = PoiMedia.query.filter_by(activity_id=activity.id).all()
             media_data = [
                 {
@@ -604,3 +606,7 @@ def allowed_file(filename):
     # Define allowed file extensions
     allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'avi', 'pdf', 'docs','zip','docx','csv'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+def get_item_name(id):
+    item = Item.query.filter_by(id=id).first()
+    return item.name
