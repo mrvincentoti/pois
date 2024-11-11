@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import { useEffect, useState } from 'react';
-import { GET_POI_API } from '../../services/api';
+import { GET_POI_API, GET_ORG_API } from '../../services/api';
 import {
 	antIconSync,
 	formatDate,
@@ -46,7 +46,6 @@ const Overview = () => {
 					navigate('/not-found');
 				});
 		}
-		console.log(poiData);
 	}, [fetchPoiDetails, loaded, navigate, params.id]);
 
 	const handleEditClick = id => {
@@ -61,21 +60,22 @@ const Overview = () => {
 		navigate(`/org/${orgId}/view?tab=overview`);
 	};
 
-	const handleOpenModal = org => {
-		if (closeTimeout) {
-			clearTimeout(closeTimeout);
-			setCloseTimeout(null);
-		}
-		setOrganizationDetails(org);
+	const handleOpenModal = org => {		
+		fetchOrgDetailsAPI(org.id)
 		setIsModalVisible(true);
 	};
 
+	const fetchOrgDetailsAPI = useCallback(async id => {
+		try {
+			const rs = await request(GET_ORG_API.replace(':id', id));			
+			setOrganizationDetails(rs.organisation);
+		} catch (error) {
+			notifyWithIcon('error', error.message);
+		}
+	}, []);
+
 	const handleCloseModal = () => {
-		const timeout = setTimeout(() => {
-			setIsModalVisible(false);
-			setOrganizationDetails(null);
-		}, 2000); // delay of 200ms
-		setCloseTimeout(timeout);
+		setIsModalVisible(false);
 	};
 	return (
 		<>
@@ -343,21 +343,6 @@ const Overview = () => {
 											</div>
 										</div>
 									</div>
-									{/* <div className="col-6 col-md-4">
-										<div className="d-flex mt-4">
-											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
-												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
-													<i className="ri-stack-fill"></i>
-												</div>
-											</div>
-											<div className="flex-grow-1 overflow-hidden">
-												<p className="mb-1">Organisation :</p>
-												<h6 className="fw-semibold">
-													{poiData.organisation?.name || 'N/A'}
-												</h6>
-											</div>
-										</div>
-									</div> */}
 									<div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
 											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
@@ -380,7 +365,7 @@ const Overview = () => {
 															onMouseEnter={() =>
 																handleOpenModal(poiData.organisation)
 															}
-															onMouseLeave={handleCloseModal}
+															// onMouseLeave={handleCloseModal}
 														>
 															{poiData?.organisation?.name}
 														</span>
@@ -509,14 +494,14 @@ const Overview = () => {
 					</div>
 				)}
 			</div>
-			{isModalVisible && (
-				<OrganisationDetail
-					visible={isModalVisible}
-					onMouseEnter={() => handleOpenModal(organizationDetails)}
-					onMouseLeave={handleCloseModal}
-					organization={organizationDetails}
-				/>
-			)}
+				
+						{isModalVisible && (
+							<OrganisationDetail
+								visible={isModalVisible}
+								onClose={handleCloseModal}
+								organization={organizationDetails}
+							/>
+						)}
 		</>
 	);
 };

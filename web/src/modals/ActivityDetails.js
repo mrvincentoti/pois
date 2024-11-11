@@ -2,9 +2,6 @@ import React, { useEffect } from 'react';
 import ModalWrapper from '../container/ModalWrapper';
 
 const ActivityDetails = ({ closeModal, activity }) => {
-	useEffect(() => {
-		console.log(activity);
-	}, []);
 
 	return (
 		<ModalWrapper
