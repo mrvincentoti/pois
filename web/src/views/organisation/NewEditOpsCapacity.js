@@ -172,11 +172,10 @@ const NewEditOpsCapacity = ({ closeModal, data, update }) => {
 												{...input}
 												className={`form-control ${error(meta)}`}
 												placeholder="Description"
-												value={description}
-												onChange={e => setDescription(e.target.value)}
 											/>
 										)}
 									</Field>
+
 									<ErrorBlock name="description" />
 								</div>
 							</div>
