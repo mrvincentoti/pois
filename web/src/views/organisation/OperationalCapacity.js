@@ -177,7 +177,7 @@ const OperationalCapacity = ({ refreshPoiData }) => {
 												<td>
 													<div className="d-flex align-items-left">
 														<div className="flex-grow-1">
-															<h6 className="fs-15 mb-0">{item.item}</h6>
+															<h6 className="fs-15 mb-0">{item.item.name}</h6>
 														</div>
 													</div>
 												</td>
