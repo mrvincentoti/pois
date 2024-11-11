@@ -20,6 +20,8 @@ from .permissions.models import Permission
 from .rolePermissions.models import RolePermission  
 from .poi.models import Poi
 from .users.models import User
+from .affiliation.models import Affiliation
+from .country.models import Country
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -457,3 +459,20 @@ def generate_unique_ref_numb():
         # Extract the numeric part, increment it, and format it back to string
         num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
         return f"REF{num_part:03}"  # Format to maintain leading zeros
+    
+def getAffiliationNames(ids):
+    id_list = [int(i) for i in ids.split(',')]
+    affiliations = Affiliation.query.filter(Affiliation.id.in_(id_list)).all()
+    name_list = [aff.name for aff in affiliations]
+    name_string = ', '.join(name_list)
+
+    return name_string
+
+
+def getCountryNames(ids):
+    id_list = [int(i) for i in ids.split(',')]
+    countries = Country.query.filter(Country.id.in_(id_list)).all()
+    name_list = [coun.en_short_name for coun in countries]
+    name_string = ', '.join(name_list)
+
+    return name_string
