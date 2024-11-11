@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from .. import db
 from sqlalchemy import func
 from ..users.models import User
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, generate_unique_ref_numb
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, generate_unique_ref_numb, getAffiliationNames, getCountryNames
 
 @custom_jwt_required
 def list_organisations():
@@ -333,43 +333,59 @@ def get_organisations():
 def get_organisation(organisation_id):
     response = {}
     try:
-        organisation = Organisation.query.get_or_404(organisation_id)
+        organisation = Organisation.query.get(organisation_id)
+        
+        if organisation and not organisation.deleted_at:
+            # Prepare the organisation data including source and category
+            affiliation_name = getAffiliationNames(
+                organisation.affiliations) if organisation.affiliations else None
+            country_name = getCountryNames(
+                organisation.countries_operational) if organisation.countries_operational else None
+            org_data = organisation.to_dict()
+            org_data['picture'] = urljoin(os.getenv(
+                "MINIO_IMAGE_ENDPOINT"), organisation.picture) if organisation.picture else None
+            org_data['source'] = organisation.source.to_dict(
+            ) if organisation.source else None
+            org_data['category'] = organisation.category.to_dict(
+            ) if organisation.category else None
+            org_data['affiliations'] = affiliation_name
+            org_data['countries_operational'] = country_name
 
-        # Prepare the organisation data including source and category
-        org_data = organisation.to_dict()
-        org_data['picture'] = urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), organisation.picture) if organisation.picture else None
-        org_data['source'] = organisation.source.to_dict() if organisation.source else None
-        org_data['category'] = organisation.category.to_dict() if organisation.category else None
+            response = {
+                'status': 'success',
+                'status_code': 200,
+                'organisation': org_data
+            }
 
-        response = {
-            'status': 'success',
-            'status_code': 200,
-            'organisation': org_data
-        }
-
-        # Audit logging
-        audit_data = {
-            "user_id": g.user["id"] if hasattr(g, "user") else None,
-            "first_name": g.user["first_name"] if hasattr(g, "user") else None,
-            "last_name": g.user["last_name"] if hasattr(g, "user") else None,
-            "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
-            "user_email": g.user["email"] if hasattr(g, "user") else None,
-            "event": "view_organisation",
-            "auditable_id": organisation_id,
-            "old_values": None,
-            "new_values": json.dumps({
-                "organisation_id": organisation.id,
-                "category_id": organisation.category_id,
-                "source_id": organisation.source_id
-            }),
-            "url": request.url,
-            "ip_address": request.remote_addr,
-            "user_agent": request.user_agent.string,
-            "tags": "Organisation, View",
-            "created_at": dt.utcnow().isoformat(),
-            "updated_at": dt.utcnow().isoformat(),
-        }
-        save_audit_data(audit_data)
+            # Audit logging
+            audit_data = {
+                "user_id": g.user["id"] if hasattr(g, "user") else None,
+                "first_name": g.user["first_name"] if hasattr(g, "user") else None,
+                "last_name": g.user["last_name"] if hasattr(g, "user") else None,
+                "pfs_num": g.user["pfs_num"] if hasattr(g, "user") else None,
+                "user_email": g.user["email"] if hasattr(g, "user") else None,
+                "event": "view_organisation",
+                "auditable_id": organisation_id,
+                "old_values": None,
+                "new_values": json.dumps({
+                    "organisation_id": organisation.id,
+                    "category_id": organisation.category_id,
+                    "source_id": organisation.source_id
+                }),
+                "url": request.url,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string,
+                "tags": "Organisation, View",
+                "created_at": dt.utcnow().isoformat(),
+                "updated_at": dt.utcnow().isoformat(),
+            }
+            save_audit_data(audit_data)
+        else:
+            response = {
+                "status": "error",
+                "status_code": 404,
+                "message": "Organisation not found",
+            }
 
     except Exception as e:
         response = {
