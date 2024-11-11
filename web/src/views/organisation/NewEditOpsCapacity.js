@@ -5,6 +5,7 @@ import moment from 'moment';
 import {
 	CREATE_ORGS_CAPACITIES_API,
 	UPDATE_ORGS_CAPACITIES_API,
+	FETCH_ARMS_API,
 } from '../../services/api';
 import { notifyWithIcon, request } from '../../services/utilities';
 import ModalWrapper from '../../container/ModalWrapper';
@@ -15,11 +16,34 @@ import Select from 'react-select';
 
 const NewEditOpsCapacity = ({ closeModal, data, update }) => {
 	const [type, setType] = useState(null);
-	const [item, setItem] = useState('');
+	const [item, setItem] = useState(null);
 	const [qty, setQty] = useState('');
 	const [description, setDescription] = useState('');
-
+	const [itemOptions, setItemOptions] = useState([]);
 	const params = useParams();
+
+	// Fetch item options from FETCH_ARMS_API
+	useEffect(() => {
+		const fetchItems = async () => {
+			try {
+				const response = await request(FETCH_ARMS_API);
+				console.log('Fetched response:', response);
+				if (response && response.items && Array.isArray(response.items)) {
+					const options = response.items.map(item => ({
+						label: item.name,
+						value: item.id,
+					}));
+					console.log('Mapped item options:', options);
+					setItemOptions(options); // Set fetched items as options
+				} else {
+					console.error('No items found in response:', response);
+				}
+			} catch (error) {
+				console.error('Error fetching items:', error);
+			}
+		};
+		fetchItems();
+	}, []);
 
 	// Populate fields when editing an existing activity
 	useEffect(() => {
@@ -29,17 +53,33 @@ const NewEditOpsCapacity = ({ closeModal, data, update }) => {
 					? { label: 'Logistics', value: 1 }
 					: { label: 'FirePower', value: 2 }
 			);
-			setItem(data.item || '');
+
+			let selectedItem = null;
+			if (Array.isArray(data.item) && data.item.length > 0) {
+				selectedItem = itemOptions.find(
+					option => option.value === data.item[0]?.id
+				);
+			} else if (data.item) {
+				// If item is not an array, handle it as a single item
+				selectedItem = itemOptions.find(
+					option => option.value === data.item.id
+				);
+			}
+
+			console.log('Selected Item:', selectedItem); // Log the selected item
+
+			setItem(selectedItem || null);
+
 			setQty(data.qty || '');
 			setDescription(data.description || '');
 		} else {
 			// Reset the form fields when adding new data
 			setType(null);
-			setItem('');
+			setItem(null);
 			setQty('');
 			setDescription('');
 		}
-	}, [data]);
+	}, [data, itemOptions]); // Ensure itemOptions is updated
 
 	const onSubmit = async (values, form) => {
 		try {
@@ -49,6 +89,8 @@ const NewEditOpsCapacity = ({ closeModal, data, update }) => {
 					...values,
 					org_id: params.id, // Assuming the poi_id is required
 					type_id: values.type.value, // type_id is required as 1 or 2
+					item: values.item.value, // Ensure item is sent
+					description: values.description,
 				},
 			};
 			const uri = data
@@ -125,19 +167,22 @@ const NewEditOpsCapacity = ({ closeModal, data, update }) => {
 									</Field>
 									<ErrorBlock name="type" />
 								</div>
-
 								<div className="col-lg-12">
 									<label htmlFor="item" className="form-label">
 										Item
 									</label>
 									<Field id="item" name="item">
 										{({ input, meta }) => (
-											<input
-												{...input}
-												className={`form-control ${error(meta)}`}
-												placeholder="Item"
+											<Select
+												isClearable
+												options={itemOptions}
 												value={item}
-												onChange={e => setItem(e.target.value)}
+												onChange={e => {
+													setItem(e);
+													e ? input.onChange(e) : input.onChange('');
+												}}
+												className={error(meta)}
+												placeholder="Select Item"
 											/>
 										)}
 									</Field>

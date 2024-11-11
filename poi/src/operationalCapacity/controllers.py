@@ -3,6 +3,7 @@ from datetime import datetime
 from .. import db
 from ..util import custom_jwt_required, save_audit_data, permission_required
 from .models import OperationalCapacity
+from ..items.models import Item
 
 def slugify(text):
     return text.replace(' ', '-').lower()
@@ -20,6 +21,7 @@ def create_operational_capacity():
             org_id=data["org_id"],
             item=data["item"],
             qty=data["qty"],
+            description=data["description"],
             created_by=created_by,
         )
 
@@ -66,12 +68,12 @@ def get_operational_capacity_by_org(org_id):
         query = OperationalCapacity.query.filter(
             OperationalCapacity.org_id == org_id,
             OperationalCapacity.deleted_at == None
-        )
+        ).join(Item, OperationalCapacity.item == Item.id)  # Join with Item model
 
         # Apply search filter if a search term is provided
         if search_term:
             search_pattern = f"%{search_term}%"  # Search pattern for LIKE query
-            query = query.filter(OperationalCapacity.item.ilike(search_pattern))
+            query = query.filter(Item.name.ilike(search_pattern))  # Filter by item name
 
         # Order by created_at in descending order (newest first)
         query = query.order_by(OperationalCapacity.created_at.desc())
@@ -79,12 +81,19 @@ def get_operational_capacity_by_org(org_id):
         # Paginate the results
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-        # Get the paginated records
-        operational_capacities = pagination.items
+        # Prepare the list of operational capacities with item details to return
+        capacity_list = [
+        {
+            **capacity.to_dict(), 
+            "item": {
+                "id": item.id,
+                "name": item.name,
+            } if (item := Item.query.get(capacity.item)) else None 
+        }
+        for capacity in pagination.items
+        ]
 
-        # Prepare the list of operational capacities to return
-        capacity_list = [capacity.to_dict() for capacity in operational_capacities]
-
+        # Audit data logging
         current_time = datetime.utcnow()
         audit_data = {
             "user_id": g.user["id"],
@@ -104,7 +113,7 @@ def get_operational_capacity_by_org(org_id):
             "updated_at": current_time.isoformat(),
         }
         save_audit_data(audit_data)
-        
+
         # Return the paginated list of capacities with pagination metadata
         return jsonify({
             "status": "success",
