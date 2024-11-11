@@ -1,6 +1,6 @@
 ## POI
 
-POI system
+POI Application
 
 #### Prerequisites
 1. Install docker desktop v4.23.0 >
