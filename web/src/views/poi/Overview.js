@@ -13,11 +13,16 @@ import {
 	request,
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
+import OrganisationDetail from '../../modals/Organisation/OrganisationDetail';
 // import PoiPrint from "./PoiProfilePrint";
 
 const Overview = () => {
 	const [loaded, setLoaded] = useState(false);
 	const [poiData, setPoiData] = useState(null);
+
+	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [organizationDetails, setOrganizationDetails] = useState(null);
+	const [closeTimeout, setCloseTimeout] = useState(null);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -42,7 +47,6 @@ const Overview = () => {
 				});
 		}
 		console.log(poiData);
-		
 	}, [fetchPoiDetails, loaded, navigate, params.id]);
 
 	const handleEditClick = id => {
@@ -53,6 +57,26 @@ const Overview = () => {
 		window.print();
 	};
 
+	const handleOrganisationClick = orgId => {
+		navigate(`/org/${orgId}/view?tab=overview`);
+	};
+
+	const handleOpenModal = org => {
+		if (closeTimeout) {
+			clearTimeout(closeTimeout);
+			setCloseTimeout(null);
+		}
+		setOrganizationDetails(org);
+		setIsModalVisible(true);
+	};
+
+	const handleCloseModal = () => {
+		const timeout = setTimeout(() => {
+			setIsModalVisible(false);
+			setOrganizationDetails(null);
+		}, 2000); // delay of 200ms
+		setCloseTimeout(timeout);
+	};
 	return (
 		<>
 			<div className="container-fluid no-printme mb-5">
@@ -133,21 +157,23 @@ const Overview = () => {
 														{poiData.marital_status || 'N/A'}
 													</td>
 												</tr>
-												{poiData?.poi_status?.id === 3 && <tr>
-													<th className="ps-0" scope="row">
-														Arresting Body :
-													</th>
-													<td className="text-muted">
-														{poiData?.arresting_body?.name || 'N/A'}
-													</td>
+												{poiData?.poi_status?.id === 3 && (
+													<tr>
+														<th className="ps-0" scope="row">
+															Arresting Body :
+														</th>
+														<td className="text-muted">
+															{poiData?.arresting_body?.name || 'N/A'}
+														</td>
 
-													<th className="ps-0" scope="row">
-														Place Of Detention :
-													</th>
-													<td className="text-muted">
-														{poiData.place_of_detention || 'N/A'}
-													</td>
-												</tr>}
+														<th className="ps-0" scope="row">
+															Place Of Detention :
+														</th>
+														<td className="text-muted">
+															{poiData.place_of_detention || 'N/A'}
+														</td>
+													</tr>
+												)}
 											</tbody>
 										</table>
 									</div>
@@ -317,7 +343,7 @@ const Overview = () => {
 											</div>
 										</div>
 									</div>
-									<div className="col-6 col-md-4">
+									{/* <div className="col-6 col-md-4">
 										<div className="d-flex mt-4">
 											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
 												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
@@ -328,6 +354,39 @@ const Overview = () => {
 												<p className="mb-1">Organisation :</p>
 												<h6 className="fw-semibold">
 													{poiData.organisation?.name || 'N/A'}
+												</h6>
+											</div>
+										</div>
+									</div> */}
+									<div className="col-6 col-md-4">
+										<div className="d-flex mt-4">
+											<div className="flex-shrink-0 avatar-xs align-self-center me-3">
+												<div className="avatar-title bg-light rounded-circle fs-16 text-primary">
+													<i className="ri-stack-fill"></i>
+												</div>
+											</div>
+											<div className="flex-grow-1 overflow-hidden">
+												<p className="mb-1">Organisation :</p>
+												<h6 className="fw-semibold">
+													{poiData.organisation ? (
+														<span
+															className="text-primary"
+															style={{ cursor: 'pointer' }}
+															onClick={() =>
+																handleOrganisationClick(
+																	poiData?.organisation.id
+																)
+															}
+															onMouseEnter={() =>
+																handleOpenModal(poiData.organisation)
+															}
+															onMouseLeave={handleCloseModal}
+														>
+															{poiData?.organisation?.name}
+														</span>
+													) : (
+														'N/A'
+													)}
 												</h6>
 											</div>
 										</div>
@@ -450,6 +509,14 @@ const Overview = () => {
 					</div>
 				)}
 			</div>
+			{isModalVisible && (
+				<OrganisationDetail
+					visible={isModalVisible}
+					onMouseEnter={() => handleOpenModal(organizationDetails)}
+					onMouseLeave={handleCloseModal}
+					organization={organizationDetails}
+				/>
+			)}
 		</>
 	);
 };

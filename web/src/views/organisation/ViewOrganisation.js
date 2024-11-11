@@ -170,36 +170,38 @@ const ViewOrganisation = () => {
 										<div className="hstack text-white-50 gap-1">
 											<div className="me-2">
 												<i className="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{orgData.address || 'N/A'}
+												<span className="badge bg-danger">
+													{orgData.ceo || 'N/A'}
+												</span>
 											</div>
 											<div>
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{orgData.hq || 'N/A'}
+												{orgData.address || 'N/A'}
 											</div>
 										</div>
 									</div>
 								</div>
 								{/* end col */}
-								{/* <div className="col-12 col-lg-auto order-last order-lg-0">
-                                    <div className="row text text-white-50 text-center">
-                                        <div className="col-lg-6 col-4">
-                                            <div className="p-2">
-                                                <h4 className="text-white mb-1">
-                                                    {orgData.crime_count || 0}
-                                                </h4>
-                                                <p className="fs-14 mb-0">Crime</p>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-6 col-4">
-                                            <div className="p-2">
-                                                <h4 className="text-white mb-1">
-                                                    {orgData.arms_count || 0}
-                                                </h4>
-                                                <p className="fs-14 mb-0">Arms</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
+								<div className="col-12 col-lg-auto order-last order-lg-0">
+									<div className="row text text-white-50 text-center">
+										<div className="col-lg-6 col-4">
+											<div className="p-2">
+												<h4 className="text-white mb-1">
+													{orgData.nature_of_business || 'N/A'}
+												</h4>
+												<p className="fs-14 mb-0">Modus Operandi</p>
+											</div>
+										</div>
+										<div className="col-lg-6 col-4">
+											<div className="p-2">
+												<h4 className="text-white mb-1">
+													{orgData.employee_strength || 'N/A'}
+												</h4>
+												<p className="fs-14 mb-0">Total Number of Members</p>
+											</div>
+										</div>
+									</div>
+								</div>
 								{/* end col */}
 							</div>
 							{/* end row */}
