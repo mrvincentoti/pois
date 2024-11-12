@@ -168,15 +168,17 @@ const ViewOrganisation = () => {
                                             REG NUMB : {orgData.reg_numb || 'N/A'}
                                         </p> */}
 										<div className="hstack text-white-50 gap-1">
-											<div className="me-2">
+											<div className="me-2 d-flex align-items-center">
 												<i className="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
+												<p className="fs-14 mb-0 me-1">Leader:</p>
 												<span className="badge bg-danger">
 													{orgData.ceo || 'N/A'}
 												</span>
 											</div>
-											<div>
+
+											<div className="d-flex align-items-center">
 												<i className="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
-												{orgData.address || 'N/A'}
+												<span>{orgData.address || 'N/A'}</span>
 											</div>
 										</div>
 									</div>

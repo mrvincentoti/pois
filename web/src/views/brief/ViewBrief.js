@@ -198,7 +198,7 @@ function ViewBrief() {
 																	</h5>
 																</div>
 															</div>
-															<div className="col-lg-3 col-sm-6">
+															{/* <div className="col-lg-3 col-sm-6">
 																<div>
 																	<p className="mb-2 text-uppercase fw-semibold fs-13">
 																		Category :
@@ -207,7 +207,7 @@ function ViewBrief() {
 																		{briefData?.category?.name}
 																	</div>
 																</div>
-															</div>
+															</div> */}
 															<div className="col-lg-3 col-sm-6">
 																<div>
 																	<p className="mb-2 text-uppercase fw-semibold fs-13">
@@ -280,7 +280,7 @@ function ViewBrief() {
 																					style={{ color: '#11d1b7' }}
 																				/>
 																			</button>
-																			<div className="dropdown">
+																			{/* <div className="dropdown">
 																				<button
 																					className="btn btn-icon text-muted btn-sm fs-18 dropdown"
 																					type="button"
@@ -292,7 +292,7 @@ function ViewBrief() {
 																						style={{ color: '#ffc061' }}
 																					></i>
 																				</button>
-																			</div>
+																			</div> */}
 																			<div className="dropdown">
 																				<button
 																					onClick={() => confirmRemove(item)}
