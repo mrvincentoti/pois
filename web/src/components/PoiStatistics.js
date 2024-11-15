@@ -30,7 +30,7 @@ const menuItems = [
 	},
 ];
 
-const POICategoryStatistics = () => {
+const POICategoryStatistics = ({ poi_category_statistics }) => {
 	const menu = <Menu items={menuItems} />;
 
 	return (
@@ -61,7 +61,7 @@ const POICategoryStatistics = () => {
 					</div>
 				</div>
 				<div className="card-header align-items-center d-flex">
-					<PoiStatisticsChart />
+					<PoiStatisticsChart {...{ poi_category_statistics }} />
 				</div>
 			</div>
 		</div>

@@ -1,13 +1,13 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const OrganisationStatisticsChart = () => {
+const OrganisationStatisticsChart = ({ org_category_statistics }) => {
 	const options = {
 		chart: {
 			width: 380,
 			type: 'pie',
 		},
-		labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+		labels: org_category_statistics.categories,
 		responsive: [
 			{
 				breakpoint: 480,
@@ -23,7 +23,7 @@ const OrganisationStatisticsChart = () => {
 		],
 	};
 
-	const series = [44, 55, 13, 43, 22]; // Data for the pie chart
+	const series = org_category_statistics.series;
 
 	return (
 		<div>
