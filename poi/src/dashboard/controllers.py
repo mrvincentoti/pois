@@ -8,6 +8,7 @@ from ..util import custom_jwt_required
 from ..poi.models import Poi
 from ..organisation.models import Organisation
 from ..brief.models import Brief
+from ..category.models import Category
 
 
 def get_percentage_difference(old_value, new_value):
@@ -15,6 +16,33 @@ def get_percentage_difference(old_value, new_value):
         return 100.0 if new_value > 0 else 0.0
     return ((new_value - old_value) / old_value) * 100
 
+
+def fetch_poi_data_by_category():
+    # Query to get category names and their corresponding counts
+    category_counts = db.session.query(
+        Category.name,
+        func.count(Poi.id)
+    ).join(Poi, Category.id == Poi.category_id).group_by(Category.name).all()
+
+    # Convert the result to separate lists for names and counts
+    category_names = [result[0] for result in category_counts]
+    category_counts_list = [result[1] for result in category_counts]
+
+    return category_names, category_counts_list
+
+
+def fetch_org_data_by_category():
+    # Query to get category names and their corresponding counts for Organisation
+    organisation_counts = db.session.query(
+        Category.name,
+        func.count(Organisation.id)
+    ).join(Organisation, Category.id == Organisation.category_id).group_by(Category.name).all()
+
+    # Convert the result to separate lists for names and counts
+    organisation_names = [result[0] for result in organisation_counts]
+    organisation_counts_list = [result[1] for result in organisation_counts]
+
+    return organisation_names, organisation_counts_list
 
 # Get the current date and a day before
 current_time = datetime.now()
@@ -87,6 +115,9 @@ def get_data():
         profile_today = poi_count_today + org_count_today
         profile_percentage_diff = get_percentage_difference(profile_yesterday, profile_today)
         
+        categories, category_counts_list = fetch_poi_data_by_category()
+        organisation_names, organisation_counts_list = fetch_org_data_by_category()
+        
         result.append({
             "poi": {
                 "poi_count": poi_count,
@@ -103,6 +134,14 @@ def get_data():
             "profile": {
                 "profile_count": poi_count + org_count,
                 "brief_percentage_diff": profile_percentage_diff
+            },
+            "poi_category_statistics": {
+                "categories": categories,
+                "series": category_counts_list
+            },
+            "org_category_statistics": {
+                "categories": organisation_names,
+                "series": organisation_counts_list
             }
         })
 
