@@ -36,7 +36,7 @@ const ReportsByUnits = () => {
 	return (
 		<div className="card">
 			<div className="card-header border-0 align-items-center d-flex">
-				<h4 className="card-title mb-0 flex-grow-1">Reports by units</h4>
+				<h4 className="card-title mb-0 flex-grow-1">POI Activities By Type</h4>
 				<div className="flex-shrink-0">
 					<Dropdown overlay={menu} trigger={['click']}>
 						<a

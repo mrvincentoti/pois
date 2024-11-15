@@ -9,7 +9,7 @@ from ..poi.models import Poi
 from ..organisation.models import Organisation
 from ..brief.models import Brief
 from ..category.models import Category
-
+from ..activities.models import Activity
 
 def get_percentage_difference(old_value, new_value):
     if old_value == 0:
@@ -29,6 +29,26 @@ def fetch_poi_data_by_category():
     category_counts_list = [result[1] for result in category_counts]
 
     return category_names, category_counts_list
+
+
+def get_activity_counts_by_type():
+    type_id_names = {
+        1: "Attack",
+        2: "Procurement",
+        3: "Items Carted Away",
+        4: "Press Release",
+        5: "Others"
+    }
+    
+    activity_counts = db.session.query(
+        Activity.type_id,
+        func.count(Activity.id)
+    ).filter(Activity.deleted_at.is_(None)).group_by(Activity.type_id).all()
+
+    type_names = [type_id_names.get(result[0], "Unknown") for result in activity_counts]
+    counts = [result[1] for result in activity_counts]
+
+    return type_names, counts
 
 
 def fetch_org_data_by_category():
@@ -117,6 +137,7 @@ def get_data():
         
         categories, category_counts_list = fetch_poi_data_by_category()
         organisation_names, organisation_counts_list = fetch_org_data_by_category()
+        type_names, type_counts_list = get_activity_counts_by_type()
         
         result.append({
             "poi": {
@@ -142,6 +163,10 @@ def get_data():
             "org_category_statistics": {
                 "categories": organisation_names,
                 "series": organisation_counts_list
+            },
+            "poi_activities_by_type": {
+                "categories": type_names,
+                "series": type_counts_list
             }
         })
 
