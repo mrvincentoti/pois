@@ -87,13 +87,15 @@ const Dashboard = () => {
 		 											<DateRange />
 		 										</div> */}
 												<div className="col-auto">
-													<button
-														type="button"
-														className="btn btn-soft-success"
-													>
-														<i className="ri-add-circle-line align-middle me-1"></i>{' '}
-														Add POI
-													</button>
+													<Link to="/pois/new">
+														<button
+															type="button"
+															className="btn btn-soft-success"
+														>
+															<i className="ri-add-circle-line align-middle me-1"></i>{' '}
+															Add POI
+														</button>
+													</Link>
 												</div>
 											</div>
 										</form>
@@ -109,6 +111,7 @@ const Dashboard = () => {
 								percentage={profile?.brief_percentage_diff}
 								iconClass="bx bx-user-circle text-primary"
 								linkText="View Profiles"
+								linkHref="/"
 							/>
 							<StatBoxItem
 								title="POI"
@@ -116,6 +119,7 @@ const Dashboard = () => {
 								percentage={poi?.poi_percentage_diff}
 								iconClass="bx bx-user-circle text-info"
 								linkText="View POIs"
+								linkHref="/pois/poi/1/list"
 							/>
 							<StatBoxItem
 								title="Organisation"
@@ -123,13 +127,16 @@ const Dashboard = () => {
 								percentage={organisation?.org_percentage_diff}
 								iconClass="bx bx-shopping-bag text-primary"
 								linkText="View ORGs"
+								linkHref="/org/organisation/${item.id}" // Add the route here
 							/>
+
 							<StatBoxItem
 								title="Brief/Digest"
 								count={brief?.brief_count}
 								percentage={brief?.brief_percentage_diff}
 								iconClass="bx bx-wallet text-info"
 								linkText="View Briefs"
+								linkHref="/brief"
 							/>
 						</div>
 
