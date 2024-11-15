@@ -30,7 +30,7 @@ const menuItems = [
 	},
 ];
 
-const OrganisationCategoryStatistics = () => {
+const OrganisationCategoryStatistics = ({ org_category_statistics }) => {
 	const menu = <Menu items={menuItems} />;
 
 	return (
@@ -60,7 +60,7 @@ const OrganisationCategoryStatistics = () => {
 						</Dropdown>
 					</div>
 				</div>
-				<OrganisationStatisticsChart />
+				<OrganisationStatisticsChart {...{ org_category_statistics }} />
 			</div>
 		</div>
 	);

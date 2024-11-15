@@ -1,26 +1,30 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-const ReportByUnitsChart = () => {
+const ReportByUnitsChart = ({ poi_activities_by_type }) => {
 	const options = {
-		series: [{
-			name: 'Total',
-			data: [44, 55, 41, 67, 22, 43, 21, 33, 45, 31, 87, 65, 35]
-		}],
+		series: [
+			{
+				name: 'Total',
+				data: poi_activities_by_type.series,
+			},
+		],
 		annotations: {
-			points: [{
-				x: 'Bananas',
-				seriesIndex: 0,
-				label: {
-					borderColor: '#775DD0',
-					offsetY: 0,
-					style: {
-						color: '#fff',
-						background: '#775DD0',
+			points: [
+				{
+					x: 'Bananas',
+					seriesIndex: 0,
+					label: {
+						borderColor: '#775DD0',
+						offsetY: 0,
+						style: {
+							color: '#fff',
+							background: '#775DD0',
+						},
+						text: '',
 					},
-					text: '',
-				}
-			}]
+				},
+			],
 		},
 		chart: {
 			height: 350,
@@ -30,27 +34,25 @@ const ReportByUnitsChart = () => {
 			bar: {
 				borderRadius: 10,
 				columnWidth: '50%',
-			}
+			},
 		},
 		dataLabels: {
-			enabled: false
+			enabled: false,
 		},
 		stroke: {
-			width: 0
+			width: 0,
 		},
 		grid: {
 			row: {
-				colors: ['#fff', '#f2f2f2']
-			}
+				colors: ['#fff', '#f2f2f2'],
+			},
 		},
 		xaxis: {
 			labels: {
-				rotate: -45
+				rotate: -45,
 			},
-			categories: ['Apples', 'Oranges', 'Strawberries', 'Pineapples', 'Mangoes', 'Bananas',
-				'Blackberries', 'Pears', 'Watermelons', 'Cherries', 'Pomegranates', 'Tangerines', 'Papayas'
-			],
-			tickPlacement: 'on'
+			categories: poi_activities_by_type.categories,
+			tickPlacement: 'on',
 		},
 		yaxis: {
 			title: {
@@ -61,20 +63,25 @@ const ReportByUnitsChart = () => {
 			type: 'gradient',
 			gradient: {
 				shade: 'light',
-				type: "horizontal",
+				type: 'horizontal',
 				shadeIntensity: 0.25,
 				gradientToColors: undefined,
 				inverseColors: true,
 				opacityFrom: 0.85,
 				opacityTo: 0.85,
-				stops: [50, 0, 100]
+				stops: [50, 0, 100],
 			},
-		}
+		},
 	};
 
 	return (
 		<div id="chart">
-			<Chart options={options} series={options.series} type="bar" height={520} />
+			<Chart
+				options={options}
+				series={options.series}
+				type="bar"
+				height={520}
+			/>
 		</div>
 	);
 };

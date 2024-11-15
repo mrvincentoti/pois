@@ -32,8 +32,8 @@ export const DELETE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
 export const UPDATE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
 export const RESTORE_USER_API = `${BASE_AUTH_URL}/poi/user/restore/:id`;
 
-// dashboard apis
-export const FETCH_DASHBOARD_API = `${BASE_EMPLOYEE_URL}/dashboard`;
+// // dashboard apis
+// export const FETCH_DASHBOARD_API = `${BASE_EMPLOYEE_URL}/dashboard`;
 
 // employee apis
 export const FETCH_EMPLOYEES_API = `${BASE_EMPLOYEE_URL}/employees`;
@@ -331,3 +331,6 @@ export const GET_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const CREATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`;
 export const DELETE_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-media/:id`;
+
+// dashboard apis
+export const FETCH_DASHBOARD_API = `${BASE_POI_URL}/dashboard`;

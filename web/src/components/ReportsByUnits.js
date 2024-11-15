@@ -30,7 +30,7 @@ const menuItems = [
 	},
 ];
 
-const ReportsByUnits = () => {
+const ReportsByUnits = ({ poi_activities_by_type }) => {
 	const menu = <Menu items={menuItems} />;
 
 	return (
@@ -60,7 +60,7 @@ const ReportsByUnits = () => {
 
 			<div className="card-body p-0 pb-2">
 				<div className="w-100">
-					<ReportByUnitsChart />
+					<ReportByUnitsChart {...{ poi_activities_by_type }} />
 				</div>
 			</div>
 		</div>
