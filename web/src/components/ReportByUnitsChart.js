@@ -3,89 +3,78 @@ import Chart from 'react-apexcharts';
 
 const ReportByUnitsChart = () => {
 	const options = {
+		series: [{
+			name: 'Total',
+			data: [44, 55, 41, 67, 22, 43, 21, 33, 45, 31, 87, 65, 35]
+		}],
+		annotations: {
+			points: [{
+				x: 'Bananas',
+				seriesIndex: 0,
+				label: {
+					borderColor: '#775DD0',
+					offsetY: 0,
+					style: {
+						color: '#fff',
+						background: '#775DD0',
+					},
+					text: '',
+				}
+			}]
+		},
 		chart: {
-			type: 'bar',
 			height: 350,
-			stacked: true,
+			type: 'bar',
 		},
 		plotOptions: {
 			bar: {
-				horizontal: true,
-				dataLabels: {
-					total: {
-						enabled: true,
-						offsetX: 0,
-						style: {
-							fontSize: '13px',
-							fontWeight: 900,
-						},
-					},
-				},
-			},
+				borderRadius: 10,
+				columnWidth: '50%',
+			}
+		},
+		dataLabels: {
+			enabled: false
 		},
 		stroke: {
-			width: 1,
-			colors: ['#fff'],
+			width: 0
 		},
-		title: {
-			text: '',
+		grid: {
+			row: {
+				colors: ['#fff', '#f2f2f2']
+			}
 		},
 		xaxis: {
-			categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
 			labels: {
-				formatter: function (val) {
-					return val + 'K';
-				},
+				rotate: -45
 			},
+			categories: ['Apples', 'Oranges', 'Strawberries', 'Pineapples', 'Mangoes', 'Bananas',
+				'Blackberries', 'Pears', 'Watermelons', 'Cherries', 'Pomegranates', 'Tangerines', 'Papayas'
+			],
+			tickPlacement: 'on'
 		},
 		yaxis: {
 			title: {
-				text: undefined,
-			},
-		},
-		tooltip: {
-			y: {
-				formatter: function (val) {
-					return val + 'K';
-				},
+				text: 'Total',
 			},
 		},
 		fill: {
-			opacity: 1,
-		},
-		legend: {
-			position: 'top',
-			horizontalAlign: 'left',
-			offsetX: 40,
-		},
+			type: 'gradient',
+			gradient: {
+				shade: 'light',
+				type: "horizontal",
+				shadeIntensity: 0.25,
+				gradientToColors: undefined,
+				inverseColors: true,
+				opacityFrom: 0.85,
+				opacityTo: 0.85,
+				stops: [50, 0, 100]
+			},
+		}
 	};
 
-	const series = [
-		{
-			name: 'Unit 1',
-			data: [44, 55, 41, 37, 22, 43, 21],
-		},
-		{
-			name: 'Unit 2',
-			data: [53, 32, 33, 52, 13, 43, 32],
-		},
-		{
-			name: 'Unit 3',
-			data: [12, 17, 11, 9, 15, 11, 20],
-		},
-		{
-			name: 'Unit 4',
-			data: [9, 7, 5, 8, 6, 9, 4],
-		},
-		{
-			name: 'Unit 5',
-			data: [25, 12, 19, 32, 25, 24, 10],
-		},
-	];
-
 	return (
-		<div>
-			<Chart options={options} series={series} type="bar" height={500} />
+		<div id="chart">
+			<Chart options={options} series={options.series} type="bar" height={520} />
 		</div>
 	);
 };
