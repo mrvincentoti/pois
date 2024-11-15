@@ -326,7 +326,7 @@ const NewBrief = () => {
 														</Field>
 														<ErrorBlock name="title" />
 													</div>
-													<div className="col-lg-6 mb-3">
+													{/* <div className="col-lg-6 mb-3">
 														<label className="form-label" htmlFor="category_id">
 															Category <span style={{ color: 'red' }}></span>
 														</label>
@@ -352,7 +352,7 @@ const NewBrief = () => {
 															)}
 														</Field>
 														<ErrorBlock name="category_id" />
-													</div>
+													</div> */}
 													<div className="col-lg-6 mb-3">
 														<label className="form-label" htmlFor="source_id">
 															Source <span style={{ color: 'red' }}></span>

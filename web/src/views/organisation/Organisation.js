@@ -251,8 +251,8 @@ const Organisation = () => {
 												<th>NAME</th>
 												<th>LEADER</th>
 												<th>ESTABLISHMENT DATE</th>
-												<th>AFFILIATION</th>
-												{/* <th>ORG SOURCE</th> */}
+												{/* <th>AFFILIATION</th> */}
+												<th>SOURCE</th>
 												<th>ADDED BY</th>
 												<th>ACTIONS</th>
 											</tr>
@@ -298,8 +298,8 @@ const Organisation = () => {
 														<td>
 															{formatDate(item.date_of_registration) || 'N/A'}
 														</td>
-														<td>{item.affiliations?.name || 'N/A'}</td>
-														{/* <td>{item.source?.name || 'N/A'}</td> */}
+														{/* <td>{item.affiliations || 'N/A'}</td> */}
+														<td>{item.source?.name || 'N/A'}</td>
 														<td>{formatUserName(item.user)}</td>
 														<td className="text-end">
 															<div className="hstack gap-3 flex-wrap text-end">

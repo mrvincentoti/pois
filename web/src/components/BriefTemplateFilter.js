@@ -235,6 +235,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 
 		onCloseClick();
 	};
+
 	return (
 		<div
 			className={`offcanvas offcanvas-end border-0 ${show ? 'show' : ''}`}
@@ -298,7 +299,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 					<hr />
 				</div>
 
-				<div className="row g-2">
+				{/* <div className="row g-2">
 					<div className="col-lg-6">
 						<div className="mb-4">
 							<label
@@ -346,7 +347,7 @@ const OrgTemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							></Select>
 						</div>
 					</div>
-				</div>
+				</div> */}
 
 				<div className="row g-2">
 					{/* <div className="col-lg-6">

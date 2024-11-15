@@ -240,19 +240,36 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		const filterObject = {
 			...(startDate ? { from_date: startDate } : ''),
 			...(endDate ? { to_date: endDate } : ''),
-			...(selectedCategory?.id && { category_id: selectedCategory.id }),
-			...(selectedCrime?.id && { crime_id: selectedCrime.id }),
-			...(selectedStatus?.id && { status_id: selectedStatus.id }),
-			...(selectedArm?.id && { arm_id: selectedArm.id }),
+			...(selectedCategory?.id && {
+				category_id: selectedCategory.id,
+				name: selectedCategory.name,
+			}),
+			...(selectedCrime?.id && {
+				crime_id: selectedCrime.id,
+				name: selectedCrime.name,
+			}),
+			...(selectedStatus?.id && {
+				status_id: selectedStatus.id,
+				name: selectedStatus.name,
+			}),
+			...(selectedArm?.id && {
+				arm_id: selectedArm.id,
+				name: selectedArm.name,
+			}),
 			...(selectedOrganisation?.id && {
 				organisation_id: selectedOrganisation.id,
 			}),
-			...(selectedSource?.id && { source_id: selectedSource.id }),
+			...(selectedSource?.id && {
+				source_id: selectedSource.id,
+				name: selectedSource.name,
+			}),
 			...(selectedAffiliation?.id && {
 				affiliation_id: selectedAffiliation.id,
+				name: selectedAffiliation.name,
 			}),
 			...(selectedArrestingBody?.id && {
 				arrestingBody_id: selectedArrestingBody.id,
+				name: selectedArrestingBody.name,
 			}),
 		};
 
