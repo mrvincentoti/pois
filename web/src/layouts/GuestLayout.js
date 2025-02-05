@@ -28,16 +28,19 @@ const GuestLayout = ({ children }) => {
 				style={{
 					background:
 						'linear-gradient(0deg, #132649 0%, #4000BF 50%, #35007F 60.81%, #000000 93.75%)',
-				}}
-			>
+				}}>
 				<GsapWrapper>
 					<div className="d-flex h-100 flex-column align-items-center justify-content-center">
 						<div
 							className="position-relative z-3 d-flex flex-column min-h-[300px] rounded bg-white"
-							style={{ width: '373px' }}
-						>
+							style={{ width: '373px' }}>
 							<div className="position-absolute top-[-32px] d-flex w-100 flex-column align-items-center justify-content-center">
-								<img className="w-16" src={logo} alt="logo" />
+								<img
+									className="w-16"
+									src={logo}
+									alt="logo"
+									style={{ width: '75px' }}
+								/>
 							</div>
 							{children}
 							<div className="text-center p-4 mt-4">

@@ -1,20 +1,16 @@
 import React, { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import DocumentMediaDropDown from '../../components/DocumentMediaDropDown';
 import { useEffect, useState } from 'react';
 import { GET_POI_API, GET_ORG_API } from '../../services/api';
 import {
 	antIconSync,
 	formatDate,
-	formatDateWord,
 	formatPoiName,
-	formatGetInitialsName,
 	notifyWithIcon,
 	request,
 } from '../../services/utilities';
 import Spin from 'antd/es/spin';
 import OrganisationDetail from '../../modals/Organisation/OrganisationDetail';
-// import PoiPrint from "./PoiProfilePrint";
 
 const Overview = () => {
 	const [loaded, setLoaded] = useState(false);
@@ -22,7 +18,6 @@ const Overview = () => {
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 	const [organizationDetails, setOrganizationDetails] = useState(null);
-	const [closeTimeout, setCloseTimeout] = useState(null);
 
 	const navigate = useNavigate();
 	const params = useParams();
@@ -50,10 +45,6 @@ const Overview = () => {
 
 	const handleEditClick = id => {
 		navigate(`/pois/${id}/edit`);
-	};
-
-	const handlePrint = () => {
-		window.print();
 	};
 
 	const handleOrganisationClick = orgId => {

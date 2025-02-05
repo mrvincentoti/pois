@@ -11,9 +11,9 @@ class Poi(db.Model):
     id = db.Column(db.Integer, primary_key=True) #captured
     ref_numb = db.Column(db.String(64), unique=False, nullable=False) #captured
     picture = db.Column(db.Text(length=200000000), unique=False, nullable=True)  # captured
-    first_name = db.Column(db.String(64), nullable=False) #captured
+    first_name = db.Column(db.String(64), nullable=True) #captured
     middle_name = db.Column(db.String(64), nullable=True) #captured
-    last_name = db.Column(db.String(64), nullable=False) #captured
+    last_name = db.Column(db.String(64), nullable=True) #captured
     marital_status = db.Column(db.String(64), nullable=True) #captured
     alias = db.Column(db.Text, unique=False, nullable=True)
     dob = db.Column(db.Text, nullable=True) #captured

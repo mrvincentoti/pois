@@ -9,6 +9,7 @@ import {
 	confirmAction,
 	notifyWithIcon,
 	request,
+	formatFullName,
 } from '../../services/utilities';
 import { useQuery } from '../../hooks/query';
 import TitleSearchBar from '../../components/TitleSearchBar';
@@ -142,7 +143,7 @@ const Users = () => {
 									<thead className="table-light">
 										<tr>
 											<th>S/N</th>
-											<th>Username</th>
+											<th>Name</th>
 											<th>Role</th>
 											<th>Email</th>
 											<th>Last Login</th>
@@ -155,7 +156,7 @@ const Users = () => {
 											return (
 												<tr key={item.id}>
 													<td>{i + min}</td>
-													<td>{item.username}</td>
+													<td>{item.name}</td>
 													<td>{item.role?.name}</td>
 													<td>{item.email || '--'}</td>
 													<td>{item.last_login_time || '--'}</td>

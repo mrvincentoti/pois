@@ -72,6 +72,11 @@ def add_activity():
                 # Validate that items and quantities match in length
                 if not qtys or len(items) != len(qtys):
                     return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+                # Ensure all qtys are valid numbers
+                try:
+                    qtys = [int(qty) for qty in qtys] 
+                except ValueError:
+                    return jsonify({"message": "Quantities must be valid numbers"}), 400
 
             # Prepare item-qty pairs as a list of dictionaries
             item_qty_pairs = [{"item": items[i], "qty": int(qtys[i])} for i in range(len(items))]
@@ -306,6 +311,11 @@ def edit_activity(activity_id):
             # Validate that items and quantities match in length
             if not qtys or len(items) != len(qtys):
                 return jsonify({"message": "Items or quantities missing or mismatched"}), 400
+            # Ensure all qtys are valid numbers
+            try:
+                qtys = [int(qty) for qty in qtys] 
+            except ValueError:
+                return jsonify({"message": "Quantities must be valid numbers"}), 400
             
         # Remove old items for this activity
         ActivityItem.query.filter_by(activity_id=activity.id, org_id=activity.org_id).delete()

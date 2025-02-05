@@ -10,17 +10,11 @@ import { APP_SHORT_NAME } from '../services/constants';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/auth';
 import {
-	antIconSync,
-	formatDate,
-	formatFullName,
-	formatGetInitialsName,
 	notifyWithIcon,
 	request,
 } from '../services/utilities';
 import { FETCH_DASHBOARD_API } from '../services/api';
 import StatBoxItem from '../components/StatBoxItem';
-import NoResult from '../components/NoResult';
-import PieChart from '../components/PieChart';
 import '../assets/scss/posting.css';
 
 const Dashboard = () => {
@@ -85,18 +79,8 @@ const Dashboard = () => {
 		 										</div>
 		 										<div className="col-sm-auto">
 		 											<DateRange />
-		 										</div> */}
-												<div className="col-auto">
-													<Link to="/pois/new">
-														<button
-															type="button"
-															className="btn btn-soft-success"
-														>
-															<i className="ri-add-circle-line align-middle me-1"></i>{' '}
-															Add POI
-														</button>
-													</Link>
-												</div>
+		 										</div> 
+												*/}
 											</div>
 										</form>
 									</div>
@@ -108,33 +92,29 @@ const Dashboard = () => {
 							<StatBoxItem
 								title="Total Profiles"
 								count={profile?.profile_count}
-								percentage={profile?.brief_percentage_diff}
-								iconClass="bx bx-user-circle text-primary"
-								linkText="View Profiles"
+								iconClass="bx bx-user-circle text-warning"
+								linkText="_"
 								linkHref="/"
 							/>
 							<StatBoxItem
-								title="POI"
+								title="Person of Interests"
 								count={poi?.poi_count}
-								percentage={poi?.poi_percentage_diff}
-								iconClass="bx bx-user-circle text-info"
+								iconClass="bx bx-user-circle text-danger"
 								linkText="View POIs"
-								linkHref="/pois/poi/1/list"
+								linkHref="/pois/poi/list"
 							/>
 							<StatBoxItem
-								title="Organisation"
+								title="Organisations"
 								count={organisation?.org_count}
-								percentage={organisation?.org_percentage_diff}
-								iconClass="bx bx-shopping-bag text-primary"
+								iconClass="bx bx-shopping-bag text-info"
 								linkText="View ORGs"
-								linkHref="/org/organisation/${item.id}" // Add the route here
+								linkHref="/org/organisation/list"
 							/>
 
 							<StatBoxItem
-								title="Brief/Digest"
+								title="Briefs/Digests"
 								count={brief?.brief_count}
-								percentage={brief?.brief_percentage_diff}
-								iconClass="bx bx-wallet text-info"
+								iconClass="bx bx-wallet text-dark"
 								linkText="View Briefs"
 								linkHref="/brief"
 							/>

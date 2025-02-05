@@ -12,7 +12,9 @@ services:
 
   web:
     container_name: web
-    build: ./web
+    build:
+      context: ./web
+      target: production
     env_file:
       - ./web/.env
     volumes:
@@ -54,6 +56,21 @@ services:
     networks:
       - poi-network
 
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_USER=mysbl
+      - PMA_PASSWORD=password
+    ports:
+      - 8888:80
+    networks:
+      - poi-network
+
+  
   supervisor:
     container_name: supervisor
     build:
@@ -68,7 +85,8 @@ services:
       - rabbitmq
     networks:
       - poi-network
-
+      
+  
   rabbitmq:
     build:
       context: ./rabbitmq

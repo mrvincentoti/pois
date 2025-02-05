@@ -282,8 +282,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 		<div
 			className={`offcanvas offcanvas-end border-0 ${show ? 'show' : ''}`}
 			tabIndex="-1"
-			id="theme-settings-offcanvas"
-		>
+			id="theme-settings-offcanvas">
 			<div className="d-flex align-items-center bg-dark p-3 offcanvas-header">
 				<h5 className="m-0 me-2 text-white"> Filter POI</h5>
 
@@ -293,22 +292,19 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 					className="btn-close btn-close-white ms-auto"
 					id="customizerclose-btn"
 					data-bs-dismiss="offcanvas"
-					aria-label="Close"
-				></button>
+					aria-label="Close"></button>
 			</div>
 			<div className="offcanvas-body">
 				<div className="row g-1">
 					<label
 						htmlFor="datepicker-range"
-						className="form-label text-muted text-uppercase fw-semibold"
-					>
+						className="form-label text-muted text-uppercase fw-semibold">
 						Date
 					</label>
 					<div className="col-lg-6 mb-2">
 						<label
 							htmlFor="datepicker-range"
-							className="form-label text-muted text-uppercase fw-semibold mb-3"
-						>
+							className="form-label text-muted text-uppercase fw-semibold mb-3">
 							From
 						</label>
 						<Flatpickr
@@ -324,8 +320,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 					<div className="col-lg-6 mb-2">
 						<label
 							htmlFor="endDate"
-							className="form-label text-muted text-uppercase fw-semibold mb-3"
-						>
+							className="form-label text-muted text-uppercase fw-semibold mb-3">
 							To
 						</label>
 						<Flatpickr
@@ -368,8 +363,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 						<div className="mb-4">
 							<label
 								htmlFor="organisation-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
+								className="form-label text-muted text-uppercase fw-semibold mb-3">
 								Organisation
 							</label>
 
@@ -384,8 +378,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								onChange={e => {
 									setSelectedOrganisation(e);
 								}}
-								id="organisation-select"
-							></Select>
+								id="organisation-select"></Select>
 						</div>
 					</div>
 					{/* <div className="col-lg-6">
@@ -415,8 +408,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 						<div className="mb-4">
 							<label
 								htmlFor="affiliation-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
+								className="form-label text-muted text-uppercase fw-semibold mb-3">
 								Affiliation
 							</label>
 
@@ -432,8 +424,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 									setSelectedAffiliation(e);
 									console.log('Selected affiliation:', e);
 								}}
-								id="affiliation-select"
-							></Select>
+								id="affiliation-select"></Select>
 						</div>
 					</div>
 				</div>
@@ -467,8 +458,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 						<div className="mb-4">
 							<label
 								htmlFor="source-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
+								className="form-label text-muted text-uppercase fw-semibold mb-3">
 								Source
 							</label>
 
@@ -483,8 +473,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								onChange={e => {
 									setSelectedSource(e);
 								}}
-								id="source-select"
-							></Select>
+								id="source-select"></Select>
 						</div>
 					</div>
 					<div className="col-lg-6">
@@ -513,8 +502,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 						<div className="mb-4">
 							<label
 								htmlFor="status-select"
-								className="form-label text-muted text-uppercase fw-semibold mb-3"
-							>
+								className="form-label text-muted text-uppercase fw-semibold mb-3">
 								Status
 							</label>
 
@@ -529,8 +517,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 								onChange={e => {
 									setSelectedStatus(e);
 								}}
-								id="status-select"
-							></Select>
+								id="status-select"></Select>
 						</div>
 					</div>
 				</div>
@@ -551,8 +538,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							type="button"
 							onClick={onClearFilter}
 							className="btn btn-light w-100"
-							id="reset-layout"
-						>
+							id="reset-layout">
 							Clear
 						</button>
 					</div>
@@ -561,8 +547,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							type="button"
 							onClick={onCloseClick}
 							className="btn btn-light w-100"
-							id="reset-layout"
-						>
+							id="reset-layout">
 							Close
 						</button>
 					</div>
@@ -571,8 +556,7 @@ const TemplateFilter = ({ show, onCloseClick, onFilter, onClearFilter }) => {
 							type="button"
 							onClick={doFilter}
 							className="btn btn-primary w-100"
-							id="reset-layout"
-						>
+							id="reset-layout">
 							Submit
 						</button>
 					</div>

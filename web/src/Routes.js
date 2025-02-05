@@ -50,6 +50,8 @@ const Profile = lazy(() => import('./views/Profile'));
 const PoiIndex = lazy(() => import('./views/poi/Index'));
 const OrganisationIndex = lazy(() => import('./views/organisation/Index'));
 const BriefIndex = lazy(() => import('./views/brief/Index'));
+const FeedbackIndex = lazy(() => import('./views/feedback/Index'));
+const ContactIndex = lazy(() => import('./views/contact/Index'));
 const AuditIndex = lazy(() => import('./views/audit/Index'));
 
 const authProtectedRoutes = [
@@ -61,6 +63,8 @@ const authProtectedRoutes = [
 	{ path: 'pois/*', component: <PoiIndex /> },
 	{ path: 'org/*', component: <OrganisationIndex /> },
 	{ path: 'brief/*', component: <BriefIndex /> },
+	{ path: 'feedback/*', component: <FeedbackIndex /> },
+	{ path: 'send-feedback/*', component: <ContactIndex /> },
 	{ path: 'audit/*', component: <AuditIndex /> },
 ];
 
@@ -93,7 +97,7 @@ function RequireAuth({ children }) {
 		) {
 			return (
 				<Navigate
-					to={`/users/${user?.username}`}
+					to={`/users/${user?.user_id}`}
 					state={{ from: location }}
 					replace
 				/>

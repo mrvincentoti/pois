@@ -1,0 +1,32 @@
+FROM python:3.9
+
+# prevent python from writing pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Keeps python from buffering stdout and stderr to avoid situations where
+# the application crashes without emitting any logs due to buffering
+ENV PYTHONUNBUFFERED=1
+
+# Set working directory
+WORKDIR /app
+
+# install dependencies
+RUN apt-get update && \
+    apt-get install -y supervisor && \
+    rm -rf /var/lib/apt/lists/*
+
+# upgrade pip
+RUN python -m pip install --upgrade pip
+
+# Copy everything into the working directory
+COPY . .
+
+# Copy requirements.txt to the working directory and install
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy Supervisor configuration file into the container
+RUN mkdir -p /var/log/supervisor
+COPY supervisor.conf /etc/supervisor/conf.d/
+
+# Start Supervisor when the container starts
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf

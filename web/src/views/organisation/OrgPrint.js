@@ -146,7 +146,7 @@ const OrgPrint = () => {
 											<div className="d-flex align-items-left">
 												<div className="mb-4 pb-2">
 													<h5 className="card-title text-decoration-underline mb-3">
-														PERSONAL INFORMATION
+														ORGANISATIONAL INFORMATION
 													</h5>
 													<div className="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
 														<div className="flex-grow-1">

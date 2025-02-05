@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from .. import db
 from .models import Permission
-from ..util import custom_jwt_required, save_audit_data
+from ..util import custom_jwt_required, save_audit_data, permission_required
 
 
 def slugify(text):
@@ -12,6 +12,7 @@ def slugify(text):
 
 
 @custom_jwt_required
+@permission_required
 def add_permission():
     if request.method == "POST":
         data = request.get_json()
@@ -72,6 +73,7 @@ def add_permission():
 
 
 @custom_jwt_required
+@permission_required
 def list_permissions():
     try:
         # Get query parameters for pagination
@@ -164,6 +166,7 @@ def list_permissions():
 
 
 @custom_jwt_required
+@permission_required
 def list_all_permissions():
     try:
        
@@ -222,6 +225,7 @@ def list_all_permissions():
 
 
 @custom_jwt_required
+@permission_required
 def get_permission(permission_id):
     permission = Permission.query.filter_by(id=permission_id, deleted_at=None).first()
     if permission:
@@ -265,6 +269,7 @@ def get_permission(permission_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_permission(permission_id):
     permission = Permission.query.filter_by(id=permission_id, deleted_at=None).first()
 
@@ -327,6 +332,7 @@ def edit_permission(permission_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_permission(permission_id):
     permission = Permission.query.filter_by(id=permission_id, deleted_at=None).first()
 
@@ -376,6 +382,7 @@ def delete_permission(permission_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_permission(permission_id):
     permission = Permission.query.filter_by(id=permission_id).first()
 

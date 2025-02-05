@@ -12,7 +12,7 @@ class OrgActivity(db.Model):
     nature_of_attack = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=True)
     action_taken = db.Column(db.Text, nullable=True)
-    comment = db.Column(db.String(252))
+    comment = db.Column(db.Text, nullable=True)
     activity_date = db.Column(db.DateTime, nullable=True)
     location_from = db.Column(db.String(64), nullable=True)
     location_to = db.Column(db.String(64), nullable=True)

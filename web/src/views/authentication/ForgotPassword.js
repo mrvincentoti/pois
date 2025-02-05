@@ -26,7 +26,7 @@ const ForgotPassword = () => {
 
 			<div className="mt-2 text-center">
 				<lord-icon
-					src="https://cdn.lordicon.com/aycieyht.json"
+					src="../../assets/json/aycieyht.json"
 					trigger="loop"
 					colors="primary:#0ab39c"
 					className="avatar-xl"

@@ -14,9 +14,6 @@ from .religion.models import Religion
 from .state.models import State
 from .lga.models import Lga
 from .country.models import Country
-from .region.models import Region
-from .station.models import Station
-from .implication.models import Implication
 from .cadre.models import Cadre
 from .rank.models import Rank
 
@@ -35,6 +32,7 @@ from .arrestingBody.models import ArrestingBody
 from .crimesCommitted.models import CrimeCommitted
 from .activities.models import Activity
 from .poiStatus.models import PoiStatus
+from .feedback.models import Feedback
 
 
 from . import create_app, db
@@ -53,13 +51,9 @@ def seed_users_data():
     permissions_file_path = os.path.join(os.path.dirname(__file__), 'permissions/data.json')
     if request.method == 'GET':
         Gender.create_seed_data()
-        Religion.create_seed_data()
         State.create_seed_data()
         Lga.create_seed_data()
         Country.create_seed_data()
-        Region.create_seed_data()
-        Station.create_seed_data()
-        Implication.create_seed_data()
         Role.create_seed_data()
         User.create_seed_data()
         Module.create_seed_data()
@@ -72,29 +66,17 @@ def seed_users_data():
 
 from .directorate import urls
 from .unit import urls
-from .training import urls
 from .state import urls
-from .specialty import urls
-from .sanction import urls
 from .religion import urls
 from .rank import urls
-from .nok import urls
 from .lga import urls
 from .gender import urls
-from .employee import urls
 from .designation import urls
-from .deployment import urls
 from .department import urls
-from .contact import urls
-from .conference import urls
 from .address import urls
 from .dashboard import urls
 from .country import urls
-from .region import urls
-from .station import urls
 from .cadre import urls
-from .employeePosting import urls
-from .implication import urls
 from .users import urls
 from .roles import urls
 from .permissions import urls
@@ -119,6 +101,7 @@ from .orgActivities import urls
 from .poiStatus import urls
 from .activityItem import urls
 from .operationalCapacity import urls
+from .feedback import urls
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

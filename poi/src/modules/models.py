@@ -28,9 +28,7 @@ class Module(db.Model):
     def create_seed_data(cls):
         # Sample data for modules
         modules_data = [
-            {"name": "Auth Service", "description": "Authentication Service"},
-            {"name": "Employee Service", "description": "Employee Service"},
-            {"name": "Audit Trail", "description": "Audit Trail"},
+            {"name": "EOI Service", "description": "EOI Service"}
         ]
 
         # Loop through the sample data and add to the database

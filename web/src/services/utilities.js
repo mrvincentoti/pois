@@ -229,11 +229,9 @@ export function confirmAction(
 			return (
 				<div className="custom-ui p-5 text-center">
 					<lord-icon
-						//src={`https://cdn.lordicon.com/${icons[type]}.json`}
 						trigger="loop"
 						colors="primary:#405189,secondary:#f06548"
-						style={{ width: '90px', height: '90px' }}
-					></lord-icon>
+						style={{ width: '90px', height: '90px' }}></lord-icon>
 					<div className="mt-4 text-center">
 						<h4>{alertHead ? alertHead : 'Are you sure?'}</h4>
 						<p className="text-muted fs-15 mb-4">

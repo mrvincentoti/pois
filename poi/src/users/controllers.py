@@ -132,6 +132,10 @@ def list_users():
                 "id": user.id,
                 "email": user.email,
                 "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "pfs_num": user.pfs_num,
+                "name": f"{user.username} {user.last_name} ({user.username})" if user else "Unknown User",
                 "is_active": user.is_active,
                 "is_first_time": user.is_first_time,
                 "last_login_time": (
@@ -239,12 +243,20 @@ def update_user(user_id):
         user = User.query.get(user_id)
         if user is not None:
             data = request.get_json()
+            
+            first_name = data["first_name"]
+            last_name = data["last_name"]
+            password = data["password"]
+            pfs_num = data["pfs_num"]
 
             new_value = {
                 "email": data.get("email", user.email),
                 "username": data.get("username", user.username),
                 "is_active": data.get("is_active", user.is_active),
-                "role_id": data.get("role_id", user.role_id)
+                "role_id": data.get("role_id", user.role_id),
+                "first_name": data.get("first_name", first_name),
+                "last_name": data.get("last_name", last_name),
+                "pfs_num": data.get("pfs_num", pfs_num),
             }
 
             old_values = {
@@ -252,12 +264,17 @@ def update_user(user_id):
                 "username": user.username,
                 "password": user.password,
                 "role_id": user.role_id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "password": user.password,
+                "pfs_num": user.pfs_num,
             }
 
             user_username = data.get("username", user.username)
             user_email = data.get("email", user.email)
             user_role_id = data.get("role_id", user.role_id)
-            user.update(username=user_username, role_id=user_role_id, email=user_email)
+            
+            user.update(username=user_username, first_name=first_name, last_name=last_name, password=password, pfs_num=pfs_num, role_id=user_role_id, email=user_email)
 
             current_time = dt.utcnow()
             audit_data = {

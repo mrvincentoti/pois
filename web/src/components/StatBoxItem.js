@@ -34,9 +34,9 @@ const StatBoxItem = ({
 						<div className="flex-shrink-0">
 							<h5 className={`fs-14 mb-0 ${percentageColorClass}`}>
 								<i
-									className={`ri-arrow-${arrowDirection}-line fs-13 align-middle`}
+								
 								></i>{' '}
-								{percentage} %
+								{percentage}
 							</h5>
 						</div>
 					</div>
@@ -52,7 +52,7 @@ const StatBoxItem = ({
 							)}
 						</div>
 						<div className="avatar-sm flex-shrink-0">
-							<span className="avatar-title bg-primary-subtle rounded fs-3">
+							<span className="avatar-title bg-light rounded fs-3">
 								<i className={iconClass}></i>
 							</span>
 						</div>

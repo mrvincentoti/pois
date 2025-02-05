@@ -20,7 +20,7 @@ class Organisation(db.Model):
     investors = db.Column(db.Text, nullable=True)
     ceo = db.Column(db.String(64), nullable=True)
     board_of_directors = db.Column(db.Text, nullable=True)
-    employee_strength = db.Column(db.Integer, nullable=True)
+    employee_strength = db.Column(db.Integer, nullable=True, default=0)
     affiliations = db.Column(db.Text, nullable=True)
     website = db.Column(db.String(64), nullable=True)
     email = db.Column(db.String(64), nullable=True)

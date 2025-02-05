@@ -1,5 +1,6 @@
 import React, { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+
 import Organisation from './Organisation';
 import NewOrganisation from './NewOrganisation';
 import EditOrganisation from './EditOrganisation';
@@ -15,7 +16,7 @@ const Index = () => {
 			<Route path=":id/view" element={<ViewOrganisation />} />
 			<Route path=":id/print" element={<OrgPrint />} />
 			<Route path="*" element={<Navigate to="/not-found" />} />
-		</Routes>
+		</Routes> 
 	);
 };
 

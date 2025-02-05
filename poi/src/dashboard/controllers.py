@@ -113,8 +113,8 @@ def get_data():
         result = []
         
         poi_count = Poi.query.filter(Poi.deleted_at.is_(None)).count()
-        org_count = Organisation.query.filter(Poi.deleted_at.is_(None)).count()
-        brief_count = Brief.query.filter(Poi.deleted_at.is_(None)).count()
+        org_count = Organisation.query.filter(Organisation.deleted_at.is_(None)).count()
+        brief_count = Brief.query.filter(Brief.deleted_at.is_(None)).count()
         
         poi_count_yesterday = Poi.query.filter(Poi.deleted_at.is_(None), Poi.created_at < yesterday).count()
         org_count_yesterday = Organisation.query.filter(Organisation.deleted_at.is_(None), Organisation.created_at < yesterday).count()

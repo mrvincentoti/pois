@@ -60,6 +60,12 @@ docker exec -it poi-service flask db migrate
 docker exec -it poi-service flask db upgrade
 ```
 
+## Setup Services (on Server)
+```
+docker exec -it poi-service flask --app src.app db migrate
+docker exec -it poi-service flask --app src.app db upgrade
+```
+
 ## Run Seeder
 ```
 {url}/poi/seed
