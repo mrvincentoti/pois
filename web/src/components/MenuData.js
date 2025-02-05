@@ -8,6 +8,7 @@ const Navdata = () => {
 	const [isSetup, setIsSetup] = useState(false);
 	const [isPoi, setIsPoi] = useState(false);
 	const [isOrganisation, setIsOrganisation] = useState(false);
+	const [isFeedback, setIsFeedback] = useState(false);
 
 	const permissions = useSelector(state => state.user.permissions);
 	const categories = useSelector(state => state.category.list);
@@ -47,6 +48,9 @@ const Navdata = () => {
 		}
 		if (isCurrentState !== 'Setup') {
 			setIsSetup(false);
+		}
+		if (isCurrentState !== 'Feedback') {
+			setIsFeedback(false);
 		}
 	}, [isCurrentState]);
 
@@ -97,7 +101,7 @@ const Navdata = () => {
 					.map(item => ({
 						id: item.name,
 						label: item.name,
-						link: `/pois/poi/${item.id}/list`,
+						link: `/pois/poi/${item.id}`,
 						parentId: 'poi',
 						permission: checkPermission(permissions, 'can-see-poi-link'),
 					})),
@@ -107,10 +111,10 @@ const Navdata = () => {
 			id: 'organisation',
 			label: 'Organisation',
 			icon: 'ri-organization-chart',
-			link: '/org/organisation',
+			link: '/#',
 			click: function (e) {
 				e.preventDefault();
-				setIsPoi(!isOrganisation);
+				setIsOrganisation(!isOrganisation);
 				setIsCurrentState('Organisation');
 				updateIconSidebar(e);
 			},
@@ -140,7 +144,7 @@ const Navdata = () => {
 				e.preventDefault();
 				setIsCurrentState('Brief');
 			},
-			permission: checkPermission(permissions, 'can-see-brief-list'),
+			permission: checkPermission(permissions, 'can-see-brief-link'),
 		},
 		{
 			label: 'AUDIT',
@@ -283,6 +287,29 @@ const Navdata = () => {
 					),
 				},
 			],
+		},
+
+		{
+			id: 'feedback',
+			label: 'Feedback',
+			icon: 'ri-feedback-line',
+			link: '/feedback',
+			click: function (e) {
+				e.preventDefault();
+				setIsCurrentState('Feedback');
+			},
+			permission: checkPermission(permissions, 'can-see-feedback-link'),
+		},
+		{
+			id: 'contact',
+			label: 'Send Feedback',
+			icon: 'ri-customer-service-2-line',
+			link: '/send-feedback',
+			click: function (e) {
+				e.preventDefault();
+				setIsCurrentState('Contact');
+			},
+			permission: checkPermission(permissions, 'can-see-contactus-link'),
 		},
 	];
 	return <React.Fragment>{menuItems}</React.Fragment>;

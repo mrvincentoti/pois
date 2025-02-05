@@ -36,7 +36,7 @@ const Organisation = () => {
 
 	const [fetching, setFetching] = useState(true);
 	const [working, setWorking] = useState(false);
-	const [list, setList] = useState([]);
+	const [list, setList] = useState([]); 
 	const [meta, setMeta] = useState(paginate);
 	const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -67,7 +67,7 @@ const Organisation = () => {
 				setList(orgs);
 				setMeta({ ...rest, per_page });
 			} catch (e) {
-				notifyWithIcon('error', e.message || 'error, could not fetch pois');
+				notifyWithIcon('error', e.message || 'error, could not fetch organisations');
 			}
 		},
 		[]
@@ -77,7 +77,6 @@ const Organisation = () => {
 		const _page = Number(query.get('page') || 1);
 		const _search = query.get('q') || '';
 		const _limit = Number(query.get('entries_per_page') || limit);
-
 		const _categoryId = params?.category;
 
 		const _queryString = parseHashString(location.hash);
@@ -134,7 +133,7 @@ const Organisation = () => {
 
 	// eslint-disable-next-line no-unused-vars
 	const confirmRemove = item => {
-		confirmAction(doRemove, item, 'You want to deactivate this poi;');
+		confirmAction(doRemove, item, 'You want to deactivate this organisation;');
 	};
 
 	const doRemove = async item => {

@@ -5,14 +5,15 @@ from .models import BriefMedia
 from ..brief.models import Brief
 from datetime import datetime
 from dotenv import load_dotenv
-from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension, allowed_file, minio_client
+from ..util import custom_jwt_required, save_audit_data, upload_file_to_minio,get_media_type_from_extension, allowed_file, permission_required, minio_client
 from flask import jsonify, request, g, json
-from werkzeug.utils import secure_filename
 from urllib.parse import urljoin
+from minio.error import S3Error
 
 load_dotenv()
 
 @custom_jwt_required
+@permission_required
 def get_all_media():
     try:
         medias = BriefMedia.query.all()
@@ -32,6 +33,7 @@ def get_all_media():
 
 
 @custom_jwt_required
+@permission_required
 def get_media(media_id):
     # Fetch the media record
     media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
@@ -81,6 +83,7 @@ def get_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def add_brief_media(brief_id):
     brief = Brief.query.filter_by(id=brief_id, deleted_at=None).first()
 
@@ -162,6 +165,7 @@ def add_brief_media(brief_id):
 
 
 @custom_jwt_required
+@permission_required
 def get_brief_media(brief_id):
     try:
         # Extract pagination parameters from the request
@@ -187,18 +191,28 @@ def get_brief_media(brief_id):
         for media in paginated_media.items:
             brief = Brief.query.filter_by(id=BriefMedia.brief_id).first()
         
-            if brief:
-                brief_title = f"{brief.title or ''}".strip()
+            brief_title = f"{brief.title or ''}".strip() if brief else ""
+
+            # Fetch file size from MinIO
+            file_size_str = "Unknown"  # Default value to prevent reference errors
+            try:
+                file_name = media.media_url.split("/")[-1]  # Extract filename
+                stat_info = minio_client.stat_object(os.getenv("MINIO_BUCKET_NAME"), file_name)
+                file_size = round(stat_info.size / (1024 * 1024), 2)
+                file_size_str = f"{file_size} MB"
+            except S3Error as e:
+                print(f"Error fetching file size for {media.media_url}: {str(e)}")
 
             media_data = {
                 "media_id": media.id,
                 "media_type": media.media_type,
                 "media_url": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), media.media_url) if media.media_url else None,
                 "media_caption": media.media_caption or 'No caption',
-                "brief_id": brief.id,
+                "brief_id": brief.id if brief else None,
                 "brief_title": brief_title,
                 "created_by": media.created_by,
-                "created_at": media.created_at.isoformat() if media.created_at else None
+                "created_at": media.created_at.isoformat() if media.created_at else None,
+                "file_size": file_size_str 
             }
             media_list.append(media_data)
 
@@ -229,11 +243,7 @@ def get_brief_media(brief_id):
             save_audit_data(audit_data)
 
         except Exception as e:
-            return jsonify({
-                "status": "success",
-                "status_code": 200,
-                "media": [],
-            })
+            print(f"Audit log error: {str(e)}")  # Log error instead of returning an empty response
 
         # Return the paginated media list with pagination details
         return jsonify({
@@ -255,6 +265,7 @@ def get_brief_media(brief_id):
 
 
 @custom_jwt_required
+@permission_required
 def edit_media(media_id):
     media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -382,6 +393,7 @@ def edit_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_media(media_id):
     media_record = BriefMedia.query.filter_by(id=media_id, deleted_at=None).first()
 
@@ -433,6 +445,7 @@ def delete_media(media_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_media(media_id):
     # Fetch the media record that was soft-deleted
     media_record = BriefMedia.query.filter_by(id=media_id).first()

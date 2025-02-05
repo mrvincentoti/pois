@@ -7,9 +7,7 @@ import NoResult from '../../components/NoResult';
 import TableWrapper from '../../container/TableWrapper';
 import {
 	confirmAction,
-	formatDate,
 	formatFullName,
-	formatGetInitialsName,
 	getHashString,
 	getQueryString,
 	notifyWithIcon,
@@ -240,8 +238,7 @@ const Poi = () => {
 								<TableWrapper
 									className="table-responsive table-card"
 									fetching={fetching}
-									working={working}
-								>
+									working={working}>
 									<table className="table align-middle table-nowrap table-hover">
 										<thead className="table-light">
 											<tr>
@@ -280,8 +277,7 @@ const Poi = () => {
 																<div>
 																	<a
 																		href={`/pois/${item.id}/view?tab=overview`}
-																		className="text-reset text-underline"
-																	>
+																		className="text-reset text-underline">
 																		<h5 className="fs-14 my-1">
 																			{formatFullName(item)}
 																		</h5>
@@ -306,8 +302,7 @@ const Poi = () => {
 																		: item.poi_status?.id === 2
 																			? 'danger'
 																			: 'success'
-																}`}
-															>
+																}`}>
 																{item.poi_status?.name || 'N/A'}
 															</span>
 														</td>

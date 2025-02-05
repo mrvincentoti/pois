@@ -13,8 +13,7 @@ const StatRetiringSoon = ({ items }) => {
 				<div className="flex-shrink-0">
 					<Link
 						to="employees/returning-from-post"
-						className="btn btn-info btn-sm"
-					>
+						className="btn btn-info btn-sm">
 						<i className="ri-file-list-3-line align-middle me-2" />
 						View all
 					</Link>
@@ -63,14 +62,13 @@ const StatRetiringSoon = ({ items }) => {
 					<div className="d-flex flex-column py-5 my-5">
 						<div className="text-center">
 							<lord-icon
-								src="https://cdn.lordicon.com/msoeawqm.json"
+								src="../../assets/json/msoeawqm.json"
 								trigger="loop"
 								colors="primary:#121331,secondary:#08a88a"
 								style={{
 									width: '75px',
 									height: '75px',
-								}}
-							></lord-icon>
+								}}></lord-icon>
 							<h5 className="mt-2">Sorry! No Data Found</h5>
 							<p className="text-muted mb-0">No employees are retiring soon.</p>
 						</div>

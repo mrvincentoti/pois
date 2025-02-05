@@ -5,10 +5,11 @@ from .models import RolePermission
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..roles.models import Role
-from ..util import  custom_jwt_required, save_audit_data
+from ..util import  custom_jwt_required, save_audit_data, permission_required
 from datetime import datetime
 
 @custom_jwt_required
+@permission_required
 def get_role_permissions():
     roles_permission = RolePermission.query.all()
     role_list = []
@@ -25,6 +26,7 @@ def get_role_permissions():
     return jsonify({'roles_permissions': role_list})
 
 @custom_jwt_required
+@permission_required
 def add_role_premission(role_id):
     if request.method == 'POST':
         data = request.get_json()
@@ -94,6 +96,7 @@ def add_role_premission(role_id):
             db.session.close()
 
 @custom_jwt_required
+@permission_required
 def get_role_permission_by_module(role_id, module_id):
     response = {}  # Initialize the response dictionary
 
@@ -140,6 +143,7 @@ def get_role_permission_by_module(role_id, module_id):
     return get_grouped_module_permissions(permission_list, role), 200
 
 @custom_jwt_required
+@permission_required
 def get_role_permission(role_id):
     response = {}  # Initialize the response dictionary
     permission_list = []
@@ -243,6 +247,7 @@ def get_grouped_module_permissions(data, role):
     return jsonify(list(grouped_data.values()))
 
 @custom_jwt_required
+@permission_required
 def delete_role_permission_by_module(role_id, module_id, permission_id):
     module = Module.query.filter_by(id=role_id, deleted_at=None).first()
     role = Role.query.filter_by(id=module_id, deleted_at=None).first()

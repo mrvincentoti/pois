@@ -1,0 +1,37 @@
+# emp-service/Dockerfile
+FROM python:3.9-slim
+
+# prevent python from writing pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Keeps python from buffering stdout and stderr to avoid situations where
+# the application crashes without emitting any logs due to buffering
+ENV PYTHONUNBUFFERED=1
+
+# install dependencies (vim editor)
+RUN apt-get update && \
+    apt-get install -y vim && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the working directory to /app
+WORKDIR /usr/src/app
+
+# upgrade pip
+RUN python -m pip install --upgrade pip
+
+# Copy the current directory contents into the container at /app
+COPY . .
+
+# Copy requirements.txt to the working directory and install
+RUN pip install --no-cache-dir -r /usr/src/app/src/requirements.txt
+RUN pip install gunicorn
+
+# export service port
+EXPOSE 5001
+
+# copy entrypoint and make executable
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# run entrypoint
+CMD ["/usr/local/bin/entrypoint.sh"]

@@ -10,7 +10,7 @@ from . import db
 from datetime import datetime as dt
 from flask import request, jsonify, g, current_app
 from functools import wraps
-import uuid
+import uuid, re
 from sqlalchemy import func 
 
 from minio import Minio
@@ -451,14 +451,35 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def generate_unique_ref_numb():
-    # Query to get the highest existing ref_numb
-    highest_ref_numb = db.session.query(func.max(Poi.ref_numb)).scalar()
-    if highest_ref_numb is None:
-        return "REF001"  # Starting point if no POIs exist
-    else:
-        # Extract the numeric part, increment it, and format it back to string
-        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
-        return f"REF{num_part:03}"  # Format to maintain leading zeros
+    # Query to get all existing ref_numb values
+    existing_refs = db.session.query(Poi.ref_numb).all()
+
+    # Convert to a list of strings
+    ref_numbers = [ref[0] for ref in existing_refs if ref[0]]
+
+    # Regex to match valid format (three letters + digits) like "ABC123"
+    ref_pattern = re.compile(r"^([A-Za-z]{3})(\d+)$")
+
+    valid_refs = []
+
+    # Extract valid references with their numeric part
+    for ref in ref_numbers:
+        match = ref_pattern.match(ref)
+        if match:
+            prefix, num_part = match.groups()
+            valid_refs.append((prefix, int(num_part)))
+
+    if not valid_refs:
+        return "ORG001"  # Default if no valid reference numbers exist
+
+    # Find the latest valid reference by numeric part
+    latest_prefix, latest_number = max(valid_refs, key=lambda x: x[1])
+
+    # Increment the numeric part
+    new_number = latest_number + 1
+
+    # Generate new reference with the same prefix
+    return f"{latest_prefix}{new_number:03}"  # Maintain leading zeros
     
 def getAffiliationNames(ids):
     id_list = [int(i) for i in ids.split(',')]

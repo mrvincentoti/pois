@@ -261,20 +261,18 @@ function ViewBrief() {
 																		<h5 className="fs-15 mb-1">
 																			<a
 																				href="#"
-																				className="text-body text-truncate d-block"
-																			>
+																				className="text-body text-truncate d-block">
 																				{item.media_caption}
 																			</a>
 																		</h5>
-																		<div>2.2MB</div>
+																		<div>Size: {item.file_size}</div>
 																	</div>
 																	<div className="flex-shrink-0 ms-2">
 																		<div className="d-flex gap-1">
 																			<button
 																				onClick={() => previewMedia(item)}
 																				type="button"
-																				className="btn btn-icon text-muted btn-sm fs-18"
-																			>
+																				className="btn btn-icon text-muted btn-sm fs-18">
 																				<i
 																					className="ri-eye-2-line"
 																					style={{ color: '#11d1b7' }}
@@ -299,12 +297,10 @@ function ViewBrief() {
 																					className="btn btn-icon text-muted btn-sm fs-18 dropdown"
 																					type="button"
 																					data-bs-toggle="dropdown"
-																					aria-expanded="false"
-																				>
+																					aria-expanded="false">
 																					<i
 																						className="ri-delete-bin-line"
-																						style={{ color: '#ff7f41' }}
-																					></i>
+																						style={{ color: '#ff7f41' }}></i>
 																				</button>
 																			</div>
 																		</div>

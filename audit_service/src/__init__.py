@@ -14,7 +14,7 @@ def create_app(config_mode):
     app.config['DEBUG'] = True
     
     # Enable CORS for all routes
-    CORS(app)
+    CORS(app, resources={r"*": {"origins": "*"}})
     app.config.from_object(config[config_mode])
 
     db.init_app(app)

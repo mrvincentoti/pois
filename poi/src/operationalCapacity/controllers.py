@@ -16,11 +16,17 @@ def create_operational_capacity():
         current_time = datetime.utcnow()
         created_by = g.user["id"]
 
+        # Ensure qty is a valid number
+        try:
+            qty = int(data["qty"])  # Convert to integer
+        except (ValueError, TypeError):
+            return jsonify({"message": "Quantity must be a valid number"}), 400
+
         new_capacity = OperationalCapacity(
             type_id=data["type_id"],
             org_id=data["org_id"],
             item=data["item"],
-            qty=data["qty"],
+            qty=qty,  # Now safely an integer
             description=data["description"],
             created_by=created_by,
         )

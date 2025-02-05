@@ -1,17 +1,18 @@
 import React, { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-const Poi = lazy(() => import('./Poi'));
-const NewPoi = lazy(() => import('./NewPoi'));
-const ViewPoi = lazy(() => import('./ViewPoi'));
-const PoiPrint = lazy(() => import('./PoiPrint'));
-const EditPoi = lazy(() => import('./EditPoi'));
-const ManagePoi = lazy(() => import('./ManagePoi'));
+import Poi from'./Poi';
+import NewPoi from'./NewPoi';
+import ViewPoi from'./ViewPoi';
+import PoiPrint from'./PoiPrint';
+import EditPoi from'./EditPoi';
+import ManagePoi from './ManagePoi';
+
 
 const Index = () => {
 	return (
 		<Routes>
-			<Route path="poi/:category/list" element={<Poi />} />
+			<Route path="poi/:category" element={<Poi />} />
 			<Route path="new" element={<NewPoi />} />
 			<Route path=":id/view" element={<ViewPoi />} />
 			<Route path=":id/print" element={<PoiPrint />} />

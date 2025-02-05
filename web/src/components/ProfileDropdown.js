@@ -49,7 +49,7 @@ const ProfileDropdown = () => {
 						/>
 						<span className="text-start ms-xl-2">
 							<span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-								{user?.person?.fullname}
+								{user?.username}
 							</span>
 							<span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
 								{user?.role?.name}
@@ -58,20 +58,6 @@ const ProfileDropdown = () => {
 					</span>
 				</DropdownToggle>
 				<DropdownMenu className="dropdown-menu-end">
-					<h6 className="dropdown-header">Welcome {user?.person?.fullname}!</h6>
-					<DropdownItem className="p-0">
-						{/* <Link to={`/users/${user?.username}`} className="dropdown-item">
-							<i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1" />
-							<span className="align-middle">Profile</span>
-						</Link> */}
-					</DropdownItem>
-					<div className="dropdown-divider"></div>
-					{/* <DropdownItem className="p-0">
-						<Link to="/#profile-settings" className="dropdown-item">
-							<i className="mdi mdi-cog-outline text-muted fs-16 align-middle me-1" />
-							<span className="align-middle">Settings</span>
-						</Link>
-					</DropdownItem> */}
 					<DropdownItem className="p-0">
 						<a
 							className="dropdown-item cursor-pointer"

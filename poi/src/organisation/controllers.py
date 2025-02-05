@@ -2,12 +2,14 @@ from flask import request, jsonify, g, json
 from .models import Organisation, db
 from datetime import date, datetime as dt
 from datetime import datetime
-import json, os, uuid
+import json, os, uuid, re
 from urllib.parse import urljoin
 from .. import db
 from sqlalchemy import func
 from ..users.models import User
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, generate_unique_ref_numb, getAffiliationNames, getCountryNames
+from ..category.models import Category
+from ..app import app
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, allowed_file, getAffiliationNames, getCountryNames
 
 @custom_jwt_required
 def list_organisations():
@@ -46,7 +48,7 @@ def list_organisations():
 @permission_required
 def create_organisation():
     data = request.form
-    ref_numb = data.get('ref_numb')  # Generate a unique reference number
+    ref_numb = generate_unique_ref_numb()
     reg_numb = data.get('reg_numb')
     org_name = data.get('org_name')
     date_of_registration = data.get('date_of_registration')
@@ -252,7 +254,22 @@ def get_organisations():
 
         # Apply category, source, country, and affiliation filters
         if category_id:
-            query = query.filter(Organisation.category_id == category_id)
+            try:
+                if category_id == "list":
+                    # If the category_id is "list", return all Organisations without filtering by category
+                    query = query  # No category filter applied
+                else:
+                 # Otherwise, filter by the provided category_id
+                    category = Category.query.filter_by(id=category_id).first()
+                    if category:
+                        query = query.filter(Organisation.category_id == category_id)
+                    else:
+                        # If the category_id does not exist, return an empty result
+                        query = query.filter(Organisation.id == None)  
+            except Exception as e:
+                app.logger.warning(f"Invalid category_id: {category_id}, skipping category filter")
+                # Optionally, return an empty result in case of an error
+                query = query.filter(Poi.id == None)
         if source_id:
             query = query.filter(Organisation.source_id == source_id)
         if country_id:
@@ -443,6 +460,7 @@ def update_organisation(org_id):
                 investors=data.get('investors'),
                 ceo=data.get('ceo'),
                 board_of_directors=data.get('board_of_directors'),
+                date_of_registration=data.get('date_of_registration'),
                 employee_strength=data.get('employee_strength'),
                 affiliations=data.get('affiliations'),
                 website=data.get('website'),
@@ -653,3 +671,35 @@ def restore_organisation(org_id):
         }
 
     return jsonify(response), response.get('status_code', 500)
+
+
+def generate_unique_ref_numb():
+    # Query to get all existing ref_numb values
+    existing_refs = db.session.query(Organisation.ref_numb).all()
+
+    # Convert to a list of strings
+    ref_numbers = [ref[0] for ref in existing_refs if ref[0]]
+
+    # Regex to match valid format (three letters + digits) like "ABC123"
+    ref_pattern = re.compile(r"^([A-Za-z]{3})(\d+)$")
+
+    valid_refs = []
+
+    # Extract valid references with their numeric part
+    for ref in ref_numbers:
+        match = ref_pattern.match(ref)
+        if match:
+            prefix, num_part = match.groups()
+            valid_refs.append((prefix, int(num_part)))
+
+    if not valid_refs:
+        return "ORG001"  # Default if no valid reference numbers exist
+
+    # Find the latest valid reference by numeric part
+    latest_prefix, latest_number = max(valid_refs, key=lambda x: x[1])
+
+    # Increment the numeric part
+    new_number = latest_number + 1
+
+    # Generate new reference with the same prefix
+    return f"{latest_prefix}{new_number:03}"  # Maintain leading zeros

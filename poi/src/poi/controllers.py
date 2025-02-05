@@ -3,9 +3,9 @@ from datetime import datetime as dt
 from datetime import datetime
 from .models import Poi
 from .. import db
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age, allowed_file, generate_unique_ref_numb, permission_required
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, calculate_poi_age, allowed_file, permission_required
 import os
-import uuid
+import uuid, re
 from urllib.parse import urljoin
 from werkzeug.utils import secure_filename
 from sqlalchemy import func 
@@ -19,6 +19,8 @@ from ..arrestingBody.models import ArrestingBody
 from ..crimes.models import Crime
 from ..affiliation.models import Affiliation
 from ..activities.models import Activity
+from ..category.models import Category
+from ..app import app
 from sqlalchemy.orm import joinedload
 
 # Create POI
@@ -766,7 +768,23 @@ def list_pois():
     # Filter by category
     category_id = request.args.get('category_id')
     if category_id:
-        query = query.filter(Poi.category_id == category_id)
+        try:
+            if category_id == "list":
+                # If the category_id is "list", return all POIs without filtering by category
+                query = query  # No category filter applied
+            else:
+                # Otherwise, filter by the provided category_id
+                category = Category.query.filter_by(id=category_id).first()
+                if category:
+                    query = query.filter(Poi.category_id == category_id)
+                else:
+                    # If the category_id does not exist, return an empty result
+                    query = query.filter(Poi.id == None)  # This will ensure no POIs are returned
+        except Exception as e:
+            app.logger.warning(f"Invalid category_id: {category_id}, skipping category filter")
+            # Optionally, return an empty result in case of an error
+            query = query.filter(Poi.id == None)
+
 
     # Filter by source
     source_id = request.args.get('source_id')
@@ -911,3 +929,34 @@ def list_pois():
         'current_page': paginated_pois.page,
         'pois': pois_list
     })
+
+def generate_unique_ref_numb():
+    # Query to get all existing ref_numb values
+    existing_refs = db.session.query(Poi.ref_numb).all()
+
+    # Convert to a list of strings
+    ref_numbers = [ref[0] for ref in existing_refs if ref[0]]
+
+    # Regex to match valid format (three letters + digits) like "ABC123"
+    ref_pattern = re.compile(r"^([A-Za-z]{3})(\d+)$")
+
+    valid_refs = []
+
+    # Extract valid references with their numeric part
+    for ref in ref_numbers:
+        match = ref_pattern.match(ref)
+        if match:
+            prefix, num_part = match.groups()
+            valid_refs.append((prefix, int(num_part)))
+
+    if not valid_refs:
+        return "POI001"  # Default if no valid reference numbers exist
+
+    # Find the latest valid reference by numeric part
+    latest_prefix, latest_number = max(valid_refs, key=lambda x: x[1])
+
+    # Increment the numeric part
+    new_number = latest_number + 1
+
+    # Generate new reference with the same prefix
+    return f"{latest_prefix}{new_number:03}"  # Maintain leading zeros

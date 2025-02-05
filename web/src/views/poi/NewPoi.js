@@ -277,7 +277,7 @@ const NewPoi = () => {
 				notifyWithIcon('error', errorMessage);
 			} else {
 				notifyWithIcon('success', 'POI created successfully');
-				navigate(`/pois/poi/${values.category_id}/list`);
+				navigate(`/pois/poi/${values.category_id}`);
 			}
 		} catch (e) {
 			return { [FORM_ERROR]: e.message || 'could not create Poi' };
@@ -412,8 +412,7 @@ const NewPoi = () => {
 																{!inputVisible && (
 																	<Tag
 																		onClick={showInput}
-																		className="site-tag-plus"
-																	>
+																		className="site-tag-plus">
 																		<i className="ri-add-line" /> Add
 																	</Tag>
 																)}
@@ -521,8 +520,7 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="marital_status"
-													>
+														htmlFor="marital_status">
 														Marital Status
 													</label>
 													<Field id="marital_status" name="marital_status">
@@ -655,8 +653,7 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="organisation_id"
-													>
+														htmlFor="organisation_id">
 														Organization
 													</label>
 													<Field id="organisation_id" name="organisation_id">
@@ -677,8 +674,7 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="passport_number"
-													>
+														htmlFor="passport_number">
 														Passport Number
 													</label>
 													<Field id="passport_number" name="passport_number">
@@ -697,8 +693,7 @@ const NewPoi = () => {
 												<div className="col-lg-3 mb-3">
 													<label
 														className="form-label"
-														htmlFor="other_id_number"
-													>
+														htmlFor="other_id_number">
 														Other ID Number
 													</label>
 													<Field id="other_id_number" name="other_id_number">
@@ -816,14 +811,12 @@ const NewPoi = () => {
 														<div className="col-lg-3 mb-3">
 															<label
 																className="form-label"
-																htmlFor="arresting_body_id"
-															>
+																htmlFor="arresting_body_id">
 																Arresting Body
 															</label>
 															<Field
 																id="arresting_body_id"
-																name="arresting_body_id"
-															>
+																name="arresting_body_id">
 																{({ input }) => (
 																	<Select
 																		style={{ width: '100%', height: '40px' }}
@@ -840,14 +833,12 @@ const NewPoi = () => {
 														<div className="col-lg-3 mb-3">
 															<label
 																className="form-label"
-																htmlFor="place_of_detention"
-															>
+																htmlFor="place_of_detention">
 																Place of Detention
 															</label>
 															<Field
 																id="place_of_detention"
-																name="place_of_detention"
-															>
+																name="place_of_detention">
 																{({ input, meta }) => (
 																	<input
 																		{...input}
@@ -1018,8 +1009,7 @@ const NewPoi = () => {
 										<button
 											type="button"
 											className="btn btn-danger w-sm me-1"
-											onClick={handleCancel}
-										>
+											onClick={handleCancel}>
 											Cancel
 										</button>
 										<button type="submit" className="btn btn-success w-sm">

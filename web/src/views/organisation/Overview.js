@@ -69,8 +69,7 @@ const Overview = () => {
 										/>
 										<button
 											className="btn btn-info"
-											onClick={() => handleEditClick(params.id)}
-										>
+											onClick={() => handleEditClick(params.id)}>
 											<i className="ri-pencil-line me-1 align-bottom"></i> Edit
 										</button>
 									</div>

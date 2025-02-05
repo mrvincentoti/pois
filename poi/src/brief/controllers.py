@@ -2,12 +2,13 @@ from flask import request, jsonify, g, json, current_app
 from .models import Brief
 from datetime import date, datetime as dt
 from datetime import datetime
-import json, os, uuid
+import json, os, uuid, re
 from .. import db
 from sqlalchemy import func 
-from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, delete_picture_file, save_picture_file
+from ..util import save_audit_data, custom_jwt_required, upload_file_to_minio, permission_required, minio_client
 
 @custom_jwt_required
+@permission_required
 def create_brief():
     data = request.form
     ref_numb = generate_unique_ref_numb()  # Generate a unique reference number
@@ -97,6 +98,7 @@ def create_brief():
 
 
 @custom_jwt_required
+@permission_required
 def get_briefs():
     page = request.args.get('page', default=1, type=int)
     per_page = request.args.get('per_page', default=10, type=int)
@@ -197,6 +199,7 @@ def get_briefs():
 
 
 @custom_jwt_required
+@permission_required
 def get_brief(brief_id):
     response = {}
     try:
@@ -249,6 +252,7 @@ def get_brief(brief_id):
 
 
 @custom_jwt_required
+@permission_required
 def update_brief(brief_id):
     data = request.form
     brief = Brief.query.get(brief_id)
@@ -377,6 +381,7 @@ def update_brief(brief_id):
 
 
 @custom_jwt_required
+@permission_required
 def delete_brief(brief_id):
     response = {}
     try:
@@ -437,6 +442,7 @@ def delete_brief(brief_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_brief(brief_id):
     response = {}
     try:
@@ -490,14 +496,35 @@ def restore_brief(brief_id):
 
 
 def generate_unique_ref_numb():
-    # Query to get the highest existing ref_numb
-    highest_ref_numb = db.session.query(func.max(Brief.ref_numb)).scalar()
-    if highest_ref_numb is None:
-        return "REF001"  # Starting point if no POIs exist
-    else:
-        # Extract the numeric part, increment it, and format it back to string
-        num_part = int(highest_ref_numb[3:]) + 1  # Assuming "REF" is the prefix
-        return f"REF{num_part:03}"  # Format to maintain leading zeros
+    # Query to get all existing ref_numb values
+    existing_refs = db.session.query(Brief.ref_numb).all()
+
+    # Convert to a list of strings
+    ref_numbers = [ref[0] for ref in existing_refs if ref[0]]
+
+    # Regex to match valid format (three letters + digits) like "ABC123"
+    ref_pattern = re.compile(r"^([A-Za-z]{3})(\d+)$")
+
+    valid_refs = []
+
+    # Extract valid references with their numeric part
+    for ref in ref_numbers:
+        match = ref_pattern.match(ref)
+        if match:
+            prefix, num_part = match.groups()
+            valid_refs.append((prefix, int(num_part)))
+
+    if not valid_refs:
+        return "BRF001"  # Default if no valid reference numbers exist
+
+    # Find the latest valid reference by numeric part
+    latest_prefix, latest_number = max(valid_refs, key=lambda x: x[1])
+
+    # Increment the numeric part
+    new_number = latest_number + 1
+
+    # Generate new reference with the same prefix
+    return f"{latest_prefix}{new_number:03}"  # Maintain leading zeros
 
 def allowed_file(filename):
     # Define allowed file extensions

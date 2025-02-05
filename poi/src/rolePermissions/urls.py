@@ -11,7 +11,7 @@ def list_create_rols():
     else: return 'Method is Not Allowed'
 
 
-@app.route("/roles/<role_id>/permissions", methods=['GET','POST', 'PUT', 'DELETE'])
+@app.route("/roles/<role_id>/permissions", methods=['GET','POST'])
 def retrieve_roles_permissions(role_id):
     if request.method == 'GET': return get_role_permission(role_id)
     if request.method == 'POST': return add_role_premission(role_id)

@@ -261,10 +261,11 @@ const Brief = () => {
 																<div>
 																	<a
 																		href={`/brief/${item.id}/view?tab=overview`}
-																		className="text-reset text-underline"
-																	>
+																		className="text-reset text-underline">
 																		<h5 className="fs-14 my-1">
-																			{item.title.toUpperCase()}
+																			{item.title
+																				? item.title.toUpperCase()
+																				: 'Untitled'}
 																		</h5>
 																		<span>{item.ref_numb}</span>
 																	</a>

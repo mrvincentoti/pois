@@ -1,10 +1,23 @@
-export const DEBUG = process.env.REACT_APP_DEBUG;
-export const APP_NAME = process.env.REACT_APP_NAME;
-export const APP_SHORT_NAME = process.env.REACT_APP_SHORT_NAME;
+export const IS_DOCKER_PROD = process.env.NODE_ENV === 'production' && process.env.REACT_APP_HOST_ENV === 'docker';
 
-export const BASE_AUTH_URL = process.env.REACT_APP_BASE_AUTH_URL;
+export const APP_NAME = IS_DOCKER_PROD
+	? window.REACT_APP_NAME
+	: process.env.REACT_APP_NAME;
+export const APP_SHORT_NAME = IS_DOCKER_PROD
+	? window.REACT_APP_SHORT_NAME
+	: process.env.REACT_APP_SHORT_NAME;
+
+export const BASE_AUTH_URL = IS_DOCKER_PROD
+	? window.REACT_APP_BASE_AUTH_URL
+	: process.env.REACT_APP_BASE_AUTH_URL;
 export const BASE_EMPLOYEE_URL = process.env.REACT_APP_BASE_EMPLOYEE_URL;
-export const BASE_AUDIT_URL = process.env.REACT_APP_BASE_AUDIT_URL;
+export const BASE_AUDIT_URL = IS_DOCKER_PROD
+	? window.REACT_APP_BASE_AUDIT_URL
+	: process.env.REACT_APP_BASE_AUDIT_URL;
+
+export const FILE_CDN = IS_DOCKER_PROD
+	? window.REACT_APP_CDN
+	: process.env.REACT_APP_CDN;
 
 export const TOKEN_COOKIE = 'eims:token:cookie';
 export const TOKEN_EXPIRATION = 'eims:token:expire';
@@ -19,7 +32,7 @@ export const GRADIENT_SUFFIXES = ['01', '02', '03', '04'];
 export const DURATION = 2;
 
 // Poi
-export const BASE_POI_URL = process.env.REACT_APP_BASE_POI_URL;
+export const BASE_POI_URL = IS_DOCKER_PROD ? window.REACT_APP_BASE_POI_URL : process.env.REACT_APP_BASE_POI_URL;
 
 export const limits = [2, 4, 9, 12, 16, 20];
 export const limit = 9;

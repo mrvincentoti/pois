@@ -6,31 +6,31 @@ import {
 } from './constants';
 
 // authentication apis
-export const LOGIN_API = `${BASE_AUTH_URL}/poi/user/login`;
-export const USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
-export const LOGOUT_API = `${BASE_AUTH_URL}/poi/user/logout`;
-export const SET_PASSWORD_API = `${BASE_AUTH_URL}/poi/user/set_password/:id`;
+export const LOGIN_API = `${BASE_AUTH_URL}/user/login`;
+export const USER_API = `${BASE_AUTH_URL}/users/:id`;
+export const LOGOUT_API = `${BASE_AUTH_URL}/user/logout`;
+export const SET_PASSWORD_API = `${BASE_AUTH_URL}/user/set_password/:id`;
 
 // modules api
-export const FETCH_MODULES_API = `${BASE_AUTH_URL}/poi/modules`;
+export const FETCH_MODULES_API = `${BASE_AUTH_URL}/modules`;
 
 // permissions api
-export const FETCH_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/permissions`;
-export const FETCH_ALL_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/all-permissions`;
-export const CREATE_PERMISSION_API = `${BASE_AUTH_URL}/poi/permissions`;
-export const SET_ROLE_PERMISSIONS_API = `${BASE_AUTH_URL}/poi/roles/:id/permissions`;
+export const FETCH_PERMISSIONS_API = `${BASE_AUTH_URL}/permissions`;
+export const FETCH_ALL_PERMISSIONS_API = `${BASE_AUTH_URL}/all-permissions`;
+export const CREATE_PERMISSION_API = `${BASE_AUTH_URL}/permissions`;
+export const SET_ROLE_PERMISSIONS_API = `${BASE_AUTH_URL}/roles/:id/permissions`;
 
 // roles api
-export const FETCH_ROLE_API = `${BASE_AUTH_URL}/poi/roles`;
-export const CREATE_ROLE_API = `${BASE_AUTH_URL}/poi/roles`;
-export const DELETE_ROLE_API = `${BASE_AUTH_URL}/poi/roles/:id`;
+export const FETCH_ROLE_API = `${BASE_AUTH_URL}/roles`;
+export const CREATE_ROLE_API = `${BASE_AUTH_URL}/roles`;
+export const DELETE_ROLE_API = `${BASE_AUTH_URL}/roles/:id`;
 
 // users api
-export const FETCH_USERS_API = `${BASE_AUTH_URL}/poi/users`;
-export const CREATE_USER_API = `${BASE_AUTH_URL}/poi/users`;
-export const DELETE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
-export const UPDATE_USER_API = `${BASE_AUTH_URL}/poi/users/:id`;
-export const RESTORE_USER_API = `${BASE_AUTH_URL}/poi/user/restore/:id`;
+export const FETCH_USERS_API = `${BASE_AUTH_URL}/users`;
+export const CREATE_USER_API = `${BASE_AUTH_URL}/users`;
+export const DELETE_USER_API = `${BASE_AUTH_URL}/users/:id`;
+export const UPDATE_USER_API = `${BASE_AUTH_URL}/users/:id`;
+export const RESTORE_USER_API = `${BASE_AUTH_URL}/user/restore/:id`;
 
 // // dashboard apis
 // export const FETCH_DASHBOARD_API = `${BASE_EMPLOYEE_URL}/dashboard`;
@@ -226,7 +226,7 @@ export const CHECK_API = `${BASE_EMPLOYEE_URL}/check`;
 
 // Poi api
 export const FET_POIS_API = `${BASE_POI_URL}/pois`;
-export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`;
+export const DELETE_POI_API = `${BASE_POI_URL}/pois/:id`; 
 export const CREATE_POI_API = `${BASE_POI_URL}/pois`;
 export const GET_POI_API = `${BASE_POI_URL}/pois/:id`;
 export const UPDATE_POI_API = `${BASE_POI_URL}/pois/:id`;
@@ -331,6 +331,13 @@ export const GET_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const CREATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-medias/:id`;
 export const UPDATE_BRIEF_MEDIA_API = `${BASE_POI_URL}/brief-media/:id`;
 export const DELETE_BRIEF_MEDIAS_API = `${BASE_POI_URL}/brief-media/:id`;
+
+//Feedback
+export const FETCH_FEEDBACK_API = `${BASE_POI_URL}/feedbacks`;
+export const DELETE_FEEDBACK_API = `${BASE_POI_URL}/feedback/:id`;
+export const CREATE_FEEDBACK_API = `${BASE_POI_URL}/feedbacks`;
+export const UPDATE_FEEDBACK_API = `${BASE_POI_URL}/feedback/:id`;
+export const GET_FEEDBACK_API = `${BASE_POI_URL}/feedback/:id`;
 
 // dashboard apis
 export const FETCH_DASHBOARD_API = `${BASE_POI_URL}/dashboard`;
