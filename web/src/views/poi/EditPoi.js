@@ -328,8 +328,8 @@ const EditPoi = () => {
 				formData.append('gender_id', values.gender?.id || '');
 			}
 
-			if (values.state) {
-				formData.append('state_id', state || '');
+			if (state) {
+				formData.append('state_id', state);
 			}
 
 			if (values.marital_status) {
@@ -377,10 +377,9 @@ const EditPoi = () => {
 			} else {
 				notifyWithIcon('success', 'POI updated successfully');
 				navigate(-1);
-				// navigate(`/pois/poi/${values.category.id}/list`);
 			}
 		} catch (e) {
-			return { [FORM_ERROR]: e.message || 'could not create Poi' };
+			return { [FORM_ERROR]: e.message || 'could not update Poi' };
 		}
 	};
 	const handleChangeSource = value => {		

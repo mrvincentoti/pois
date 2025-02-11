@@ -2,7 +2,7 @@ include .env
 
 export $(shell sed 's/=.*//' .env)
 
-VERSION=1.0.1
+VERSION=1.0.5
 DEV_DOMAIN=localhost
 UNAME:=$(shell uname)
 
