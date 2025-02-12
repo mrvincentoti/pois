@@ -58,6 +58,7 @@ def create_poi():
     organisation_id = data.get("organisation_id")
     status_id = data.get('status_id')
     created_by = g.user["id"]
+    address = data.get('address')
 
     # Address fields
     social_address = data.get('social_address')
@@ -107,6 +108,7 @@ def create_poi():
             email=email,
             role=role,
             affiliation=affiliation,
+            address=address,
             remark=remark,
             category_id=category_id,
             source_id=source_id,
@@ -299,11 +301,12 @@ def get_poi(poi_id):
                 "role": poi.role,
                 "affiliation": affiliation_names_str,
                 "affiliation_ids": poi.affiliation,
+                "address": poi.address,
                 "remark": poi.remark,
                 "website": poi.website,
                 "fb": poi.fb,
                 "instagram": poi.instagram,
-                "twitter": poi.instagram,
+                "twitter": poi.twitter,
                 "telegram": poi.telegram,
                 "tiktok": poi.tiktok,
                 "picture": urljoin(os.getenv("MINIO_IMAGE_ENDPOINT"), poi.picture) if poi.picture else None,
@@ -459,6 +462,7 @@ def update_poi(poi_id):
                 email=data.get('email'),
                 role=data.get('role'),
                 affiliation=data.get('affiliation'),
+                address=data.get('address'),
                 remark=data.get('remark'),
                 middle_name=data.get('middle_name'),
                 alias=data.get('alias'),

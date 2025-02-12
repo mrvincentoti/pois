@@ -97,7 +97,7 @@ const Dashboard = () => {
 								linkHref="/"
 							/>
 							<StatBoxItem
-								title="Person of Interests"
+								title="Persons of Interest"
 								count={poi?.poi_count}
 								iconClass="bx bx-user-circle text-danger"
 								linkText="View POIs"
