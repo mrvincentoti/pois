@@ -14,9 +14,9 @@ class User(db.Model):
     is_first_time = db.Column(db.Boolean, default=True)
     last_login_time = db.Column(db.DateTime, nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False)
-    unit_id = db.Column(db.Integer, nullable=True, default=1)
-    department_id = db.Column(db.Integer, nullable=True, default=1)
-    directorate_id = db.Column(db.Integer, nullable=True, default=1)
+    unit_id = db.Column(db.Integer, nullable=True)
+    department_id = db.Column(db.Integer, nullable=True)
+    directorate_id = db.Column(db.Integer, nullable=True)
     employee_id = db.Column(db.Integer, nullable=True)
     first_name = db.Column(db.String(128), unique=False, nullable=False)
     last_name = db.Column(db.String(128), unique=False, nullable=False)
@@ -74,6 +74,8 @@ class User(db.Model):
             self.directorate_id = directorate_id
         if email:
             self.email = email
+        if password:
+            self.set_password(password)
         db.session.commit()
 
     def to_dict(self):

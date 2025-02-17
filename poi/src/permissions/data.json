@@ -146,5 +146,12 @@
 	{"name":"can-set-role-permissions","description":"Can Set Role Permission","group":"permission","module_id":"1","method":"POST","route_path":"/roles/<role_id>/permissions"},
 	{"name":"can-fetch-permissions","description":"Can View Permissions","group":"permission","module_id":"1","method":"GET","route_path":"/permissions"},
 	{"name":"can-fetch-all-permissions","description":"Can See Permissions","group":"permission","module_id":"1","method":"GET","route_path":"/all-permissions"},
-	{"name":"can-create-permissions","description":"Can Create Permission","group":"permission","module_id":"1","method":"POST","route_path":"/permissions"}
+	{"name":"can-create-permissions","description":"Can Create Permission","group":"permission","module_id":"1","method":"POST","route_path":"/permissions"},
+
+	{"name":"can-restore-user","description":"Can Restore User","group":"user","module_id":"1","method":"GET","route_path":"/user/restore/<user_id>"},
+	{"name":"can-delete-fuser","description":"Can Delete User","group":"user","module_id":"1","method":"DELETE","route_path":"/users/<user_id>"},
+	{"name":"can-update-user","description":"Can Update User","group":"user","module_id":"1","method":"PUT","route_path":"/users/<user_id>"},
+	{"name":"can-view-user","description":"Can View User","group":"user","module_id":"1","method":"GET","route_path":"/users/<user_id>"},
+	{"name":"can-see-users","description":"Can See Users","group":"user","module_id":"1","method":"GET","route_path":"/users"},
+	{"name":"can-create-user","description":"Can Create User","group":"user","module_id":"1","method":"POST","route_path":"/users"}
 ]
