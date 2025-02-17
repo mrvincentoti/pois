@@ -11,7 +11,7 @@ from ..roles.models import Role
 from ..modules.models import Module
 from ..permissions.models import Permission
 from ..rolePermissions.models import RolePermission
-from ..util import save_audit_data, custom_jwt_required
+from ..util import save_audit_data, custom_jwt_required, permission_required
 
 
 
@@ -35,17 +35,23 @@ def create_user():
     data = request.get_json()
     email = data["email"] if 'email' in data else None
     username = data["username"]
+    #unit_id = data["unit_id"]
+    #department_id = data["department_id"]
+    #directorate_id = data["directorate_id"]
     password = data["password"]
     role_id = data["role_id"]
     employee_id = data['employee_id'] if 'employee_id' in data else None
     first_name = data["first_name"]
     last_name = data["last_name"]
     pfs_num = data["pfs_num"]
+    unit_id = 1
+    department_id = 1
+    directorate_id = 1
 
     response = {}  # Initialize the response dictionary
 
     try:
-        user = User(email=email, username=username, password=password, role_id=role_id, employee_id=employee_id,
+        user = User(email=email, username=username, unit_id=unit_id, department_id=department_id, directorate_id=directorate_id, password=password, role_id=role_id, employee_id=employee_id,
                     first_name=first_name, last_name=last_name, pfs_num=pfs_num)
 
         db.session.add(user)
@@ -95,6 +101,7 @@ def create_user():
 
 
 @custom_jwt_required
+@permission_required
 def list_users():
     try:
         # Get query parameters for pagination
@@ -196,6 +203,7 @@ def list_users():
 
 
 @custom_jwt_required
+@permission_required
 def get_user(user_id):
     try:
         user = User.query.get(user_id)
@@ -238,6 +246,7 @@ def get_user(user_id):
 
 
 @custom_jwt_required
+@permission_required
 def update_user(user_id):
     try:
         user = User.query.get(user_id)
@@ -248,6 +257,9 @@ def update_user(user_id):
             last_name = data["last_name"]
             password = data["password"]
             pfs_num = data["pfs_num"]
+            unit_id = 1
+            department_id = 1
+            directorate_id = 1
 
             new_value = {
                 "email": data.get("email", user.email),
@@ -274,7 +286,7 @@ def update_user(user_id):
             user_email = data.get("email", user.email)
             user_role_id = data.get("role_id", user.role_id)
             
-            user.update(username=user_username, first_name=first_name, last_name=last_name, password=password, pfs_num=pfs_num, role_id=user_role_id, email=user_email)
+            user.update(username=user_username, first_name=first_name, last_name=last_name, unit_id=unit_id, department_id=department_id, directorate_id=directorate_id, password=password, pfs_num=pfs_num, role_id=user_role_id, email=user_email)
 
             current_time = dt.utcnow()
             audit_data = {
@@ -323,6 +335,7 @@ def update_user(user_id):
 
 
 @custom_jwt_required
+@permission_required
 def soft_delete_user(user_id):
     try:
         user = User.query.get(user_id)
@@ -376,6 +389,7 @@ def soft_delete_user(user_id):
 
 
 @custom_jwt_required
+@permission_required
 def restore_user(user_id):
     user = User.query.get(user_id)
 
